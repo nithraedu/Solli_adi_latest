@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/drawable-v24/background4.xml" value="0.205" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/drawable/back_button1.xml" value="0.205" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/aa_ad_native.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/aaa_new.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/aaaaaa.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_clue__game.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_daily_reward.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_english_to_tamil.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_error_correction.xml" value="0.264" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_festival_game_start.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_fill_in_blanks.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_find_difference_between_pictures.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_find_words_from_picture.xml" value="0.264" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_game_level_page.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_game_sub_level_page.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_general_play.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_intro__sc.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_jamble_word_game.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_levels.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_makeword__rightorder.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_match__word.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_missing__words.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_my__multiplayer.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_new__main_.xml" value="0.23977272727272728" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_new_intro_sc.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_odd_man_out.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_pic__game.xml" value="0.2" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_quiz__game.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_solukul__sol.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_tirukural.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_word__game.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/activity_word_search_main.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/app_bar_main.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/back_pess.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/back_pess_mainacivity.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/back_pess_noti.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/challenge_view.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/chat_history.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/clue_ans_show.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/content_main.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/cross_app.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/daily_bones_newd.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/daily_bones_newd2.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/dia_challenge_games.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/dia_winning_report.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/earncoin.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/exit_lay.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/festival_game_activity.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/festival_game_complete_dia.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/free_roll.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/level_list_design.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/listview.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/match_the_fallows.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/native_banner_ad_layout.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/new_app_bar_main.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/new_contentmain.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/new_design.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/nextgame_find.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/noti_view.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/notification_shown_st.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/notification_url.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/notify_item.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/opposite_word.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/ote_to_tamil_game.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/purchase_dialog_lay.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/score_screen.xml" value="0.10989583333333333" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/score_screen2.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/send_feedback.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/share_dialog2.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/show_pic.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/shown_msg.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/st_lay.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/termsandpolicy.xml" value="0.25" />
+        <entry key="..\:/jaasim/Workspace/Solli_adi_Playstore/app/src/main/res/layout/wordsearch_view.xml" value="0.25" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

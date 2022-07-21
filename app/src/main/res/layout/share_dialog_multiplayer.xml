@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/score_coin"
+        android:layout_width="50dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/txt_12"/>
+    <TextView
+        android:id="@+id/score_coin1"
+        android:layout_width="50dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="@dimen/txt_12"
+        android:layout_marginRight="@dimen/wh_65"/>
+
+    <LinearLayout
+        android:id="@+id/bonus_lay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/txt_25"
+        android:layout_marginRight="@dimen/txt_25"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/yellowback">
+
+            <TextView
+                android:id="@+id/coin_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Daily "
+                android:textColor="#fff"
+                android:visibility="gone"
+                android:textSize="@dimen/txt_20"
+                android:gravity="center_horizontal"
+                android:layout_margin="@dimen/txt_10"
+                />
+
+            <ImageView
+                android:id="@+id/bonus_coin"
+                android:layout_width="@dimen/croll_insbut_width"
+                android:layout_height="@dimen/croll_insbut_width"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/coin_title"
+                android:layout_marginBottom="@dimen/txt_25"
+                android:layout_marginTop="@dimen/txt_12"
+                android:background="@drawable/bones_coins"
+                />
+
+            <ImageView
+                android:id="@+id/dismiss"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="@dimen/txt_10"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/coin_txt_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/bonus_coin"
+                android:gravity="center"
+                android:text="உங்களுக்கான கூடுதல் நாணயங்கள்"
+                android:layout_marginLeft="@dimen/txt_10"
+                android:layout_marginRight="@dimen/txt_10"
+                android:textColor="#fff"
+                android:textSize="@dimen/txt_16"
+                android:textStyle="bold"
+
+                />
+
+            <LinearLayout
+                android:id="@+id/today_coin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/coin_txt_content"
+                android:layout_centerHorizontal="true"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:visibility="gone"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                   />
+
+                <TextView
+                    android:id="@+id/b_scores"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="3dp"
+                    android:textColor="#ffffff"
+                    android:text="100"
+                    android:textSize="@dimen/txt_20"
+                   android:textStyle="bold" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/whiteback">
+
+            <TextView
+                android:id="@+id/ok_y"
+                android:layout_width="@dimen/croll_app_height"
+                android:layout_height="@dimen/wh_40"
+                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
+                android:layout_marginBottom="@dimen/txt_25"
+                android:layout_marginLeft="@dimen/lrtbp_20"
+                android:layout_marginTop="@dimen/txt_25"
+                android:background="@drawable/nandri"
+                android:gravity="center"
+                android:paddingBottom="@dimen/lrtbp_10"
+                android:paddingTop="@dimen/lrtbp_10"
+                android:textColor="#fff"
+                android:textSize="@dimen/txt_16"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bonus_coin_lay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bonus_lay"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/img_bonus_coin"
+            />
+
+        <TextView
+            android:id="@+id/bonus_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="3dp"
+            android:textColor="#f2d40f"
+            android:textSize="@dimen/txt_20"
+            android:textStyle="bold|italic"
+          />
+    </LinearLayout>
+</RelativeLayout>

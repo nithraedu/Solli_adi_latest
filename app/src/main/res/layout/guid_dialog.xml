@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000"
+    android:orientation="vertical">
+
+    <!--  android:shadowColor="#ae0606"
+      android:shadowDx="1"
+      android:shadowDy="1"
+      android:shadowRadius="2"-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_margin="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back_dialog"
+            android:gravity="center"
+            android:text="வார்த்தை தேடல் விளையாடும் முறை"
+            android:textColor="#f8ffffff"
+            android:textSize="22dp"
+            android:textStyle="bold" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/back_dialog"
+            android:orientation="vertical">
+
+
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/gif_load"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/done_exit"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:layout_marginTop="@dimen/wh_35"
+                android:layout_marginRight="@dimen/lrtbp_10"
+                android:layout_marginBottom="@dimen/wh_35"
+                android:background="#000" />
+
+            <TextView
+                android:id="@+id/done_exit"
+                android:layout_width="140dp"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="10dp"
+                android:background="@drawable/bt3"
+                android:gravity="center"
+                android:text=" சரி"
+                android:textColor="#fff"
+                android:textSize="15dp"
+                android:textStyle="bold" />
+
+
+        </RelativeLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back_dialog" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

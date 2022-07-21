@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#e2616455"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/lrtbp_5"
+        android:layout_marginRight="@dimen/lrtbp_5"
+        android:background="#fab700"
+        android:paddingBottom="@dimen/lrtbp_10">
+
+        <LinearLayout
+            android:id="@+id/asd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="@dimen/txt_25"
+                android:layout_height="@dimen/txt_25"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:layout_marginTop="@dimen/lrtbp_20"
+                android:visibility="gone" />
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/heading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/wh_2"
+                android:background="#126002"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_5"
+                android:text="Invite"
+                android:textColor="@color/white"
+                android:textSize="@dimen/txt_22" />
+
+            <TextView
+                android:id="@+id/txt_ex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_15"
+                android:text="* விரைவாக பதிலளிப்பவரே வெற்றியாளராக அறிவிக்கப்படுவார்."
+                android:textColor="#0043de"
+                android:textSize="@dimen/txt_16"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/entry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/back_dialog"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_5"
+                android:text="நுழைவு கட்டண நாணயங்கள்: 100"
+                android:textColor="@color/white"
+                android:textSize="@dimen/txt_16"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/winning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_5"
+                android:text="வெற்றி நாணயங்கள்:  200"
+                android:textColor="@color/dark_green"
+                android:textSize="@dimen/txt_16"
+                android:textStyle="bold" />
+
+            <CheckBox
+                android:id="@+id/dont_ask"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:text="மீண்டும் கேட்க வேண்டாம்."
+                android:textSize="@dimen/txt_16" />
+
+        </LinearLayout>
+
+
+        <RelativeLayout
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/asd"
+            android:layout_marginLeft="@dimen/lrtbp_10"
+            android:layout_marginTop="@dimen/lrtbp_15"
+            android:layout_marginRight="@dimen/lrtbp_10"
+            android:layout_marginBottom="@dimen/lrtbp_10">
+
+            <TextView
+                android:id="@+id/yes"
+                android:layout_width="@dimen/croll_app_height"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/lrtbp_20"
+                android:background="@drawable/b_go"
+                android:gravity="center"
+                android:paddingTop="@dimen/lrtbp_10"
+                android:paddingBottom="@dimen/lrtbp_10"
+                android:text="சரி"
+                android:textColor="@color/white"
+                android:textSize="@dimen/txt_16" />
+
+            <TextView
+                android:id="@+id/no"
+                android:layout_width="@dimen/croll_app_height"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/lrtbp_20"
+                android:background="@drawable/b_no"
+                android:gravity="center"
+                android:paddingLeft="@dimen/lrtbp_15"
+                android:paddingTop="@dimen/lrtbp_10"
+                android:paddingRight="@dimen/lrtbp_15"
+                android:paddingBottom="@dimen/lrtbp_10"
+                android:text="இல்லை"
+                android:textColor="@color/white"
+                android:textSize="@dimen/txt_16" />
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

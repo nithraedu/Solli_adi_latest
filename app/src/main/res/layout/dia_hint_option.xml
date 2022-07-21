@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back_dialog"
+            android:gravity="center"
+            android:padding="@dimen/lrtbp_10"
+            android:shadowColor="#ae0606"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:text="குறிப்பு பார்க்க"
+            android:textColor="#ffff"
+            android:textSize="18dp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back_dialog"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="குறிப்பு மற்றும் பதில் பார்க்க கீழேயுள்ள குறிப்பு படி நாணயங்கள் குறைக்கப்படும். மேலும் வெகுமதி நாணயங்கள் வழங்கப்படாது"
+                android:textColor="#ffff"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                android:visibility="visible" />
+
+            <RelativeLayout
+                android:id="@+id/ans_hint_lay"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@drawable/option_hint_a">
+
+                <ImageView
+                    android:id="@+id/option_A_tick"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="15dp"
+                    android:background="@drawable/option_done"
+                    android:visibility="invisible" />
+
+                <TextView
+                    android:id="@+id/ans_hint_txt"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/option_A_tick"
+                    android:gravity="center"
+                    android:text="பதில் பார்க்க - 10 நாணயங்கள் "
+                    android:textColor="#fff"
+                    android:textSize="14dp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/option_hint_lay"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@drawable/option_hint_b">
+
+                <ImageView
+                    android:id="@+id/option_B_tick"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/option_done"
+                    android:visibility="invisible" />
+
+                <TextView
+                    android:id="@+id/option_hint_txt"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@+id/option_B_tick"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="பதிலுடன் குறிப்பையும் பார்க்க - 20 நாணயங்கள்"
+                    android:textColor="#fff"
+                    android:textSize="14dp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+
+            <!-- <TextView
+                 android:id="@+id/option_hint_txt"
+                 android:layout_width="250dp"
+                 android:layout_height="50dp"
+                 android:layout_gravity="center_horizontal"
+                 android:layout_marginTop="5dp"
+                 android:background="#fff"
+                 android:gravity="center"
+                 android:text="விடை பார்க்க 20 நாணயங்கள்"
+                 android:textColor="#000"
+                 android:textSize="14dp"
+                 android:textStyle="bold">
+
+             </TextView>-->
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/cancel_hint_option"
+                    android:layout_width="140dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/b_no"
+                    android:gravity="center"
+                    android:paddingLeft="20dp"
+                    android:text="வேண்டாம்"
+                    android:textColor="#fff"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/done_hint_option"
+                    android:layout_width="140dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/b_go"
+                    android:gravity="center"
+                    android:paddingRight="20dp"
+                    android:text=" பார்க்க"
+                    android:textColor="#fff"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back_dialog" />
+
+    </LinearLayout>
+
+</RelativeLayout>

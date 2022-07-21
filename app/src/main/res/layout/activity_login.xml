@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/new_background"
+    tools:context="nithra.tamil.word.game.solliadi.LoginActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ads_lay"
+        android:background="@color/colorPrimary"
+        android:elevation="@dimen/lrtbp_20">
+
+        <RelativeLayout
+            android:id="@+id/top"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/wh_70"
+            android:layout_margin="@dimen/lrtbp_10">
+
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/login_txt"
+                android:layout_width="@dimen/wh_70"
+                android:layout_height="@dimen/wh_70"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:background="@drawable/pf_profilepic"
+                android:text="Register Form"
+                android:textSize="@dimen/txt_20"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/lrtbp_25"
+                android:text="பதிவு படிவம்"
+                android:textColor="@color/black"
+                android:textSize="@dimen/txt_24"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/back"
+                android:layout_width="@dimen/wh_40"
+                android:layout_height="@dimen/wh_40"
+                android:layout_alignParentLeft="true"
+                android:layout_centerInParent="true"
+                android:background="@drawable/back_arrow_green"
+                android:textSize="@dimen/txt_20" />
+
+            <TextView
+                android:id="@+id/prof_pif"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/login_txt"
+                android:layout_centerHorizontal="true"
+                android:text="புகைப்படத்தை மாற்ற"
+                android:textColor="@color/black"
+                android:textSize="@dimen/txt_22"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/pfedit"
+                android:layout_width="@dimen/wh_35"
+                android:layout_height="@dimen/wh_35"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_marginRight="@dimen/txt_20"
+                android:background="@drawable/edits"
+                android:textSize="@dimen/txt_16"
+                android:visibility="gone" />
+        </RelativeLayout>
+<ScrollView
+    android:layout_below="@+id/top"
+    android:layout_centerInParent="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/new_background">
+
+        <RelativeLayout
+            android:layout_marginTop="@dimen/lrtbp_20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+           >
+
+            <RelativeLayout
+                android:id="@+id/name_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/lrtbp_20"
+                android:layout_marginRight="@dimen/lrtbp_20"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/lrtbp_5"
+                    android:layout_toLeftOf="@+id/imp"
+                    android:background="#ffff"
+                    android:gravity="left|top">
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/name"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/wh_45"
+                        android:hint="பெயர்*"
+
+                        android:textColor="@color/dark_green"
+                        android:textColorHint="@color/dark_green"
+                        android:textSize="@dimen/txt_20"
+                        app:backgroundTint="@color/dark_green" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/imp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:gravity="end"
+                    android:text="*"
+                    android:textColor="#DF0915"
+                    android:textSize="@dimen/txt_24"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/email_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/name_layout"
+                android:layout_marginLeft="@dimen/lrtbp_20"
+                android:layout_marginRight="@dimen/lrtbp_20"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/lrtbp_5"
+                    android:layout_toLeftOf="@+id/imp1"
+                    android:background="#ffff"
+                    android:gravity="left|top">
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/email"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/wh_45"
+                        android:hint="மின்னஞ்சல்*"
+                        android:textColor="@color/dark_green"
+                        android:textColorHint="@color/dark_green"
+                        android:textSize="@dimen/txt_20"
+                        app:backgroundTint="@color/dark_green" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:visibility="gone"
+
+                    android:id="@+id/imp1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:gravity="end"
+                    android:text="*"
+                    android:textColor="#DF0915"
+                    android:textSize="@dimen/txt_24"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/phno_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/email_layout"
+                android:layout_marginLeft="@dimen/lrtbp_20"
+                android:layout_marginRight="@dimen/lrtbp_20"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/lrtbp_5"
+                    android:layout_toLeftOf="@+id/imp2"
+                    android:background="#ffff"
+                    android:gravity="left|top">
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/phno"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/wh_45"
+                        android:hint="தொலைபேசி எண்*"
+                        android:textColor="#000000"
+                        android:textColorHint="#000000"
+                        android:textSize="@dimen/txt_20"
+                        app:backgroundTint="#c2b301" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/imp2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:gravity="end"
+                    android:text="*"
+                    android:textColor="#DF0915"
+                    android:textSize="@dimen/txt_24"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/address_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/phno_layout"
+                android:layout_marginLeft="@dimen/lrtbp_20"
+                android:layout_marginRight="@dimen/lrtbp_20"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/lrtbp_5"
+                    android:layout_toLeftOf="@+id/imp3"
+                    android:background="#ffff"
+                    android:gravity="left|top">
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/address"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/wh_45"
+                        android:hint="ஊர்*"
+                        android:textColor="@color/dark_green"
+                        android:textColorHint="@color/dark_green"
+                        android:textSize="@dimen/txt_20"
+                        app:backgroundTint="@color/dark_green" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/imp3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:gravity="end"
+                    android:text="*"
+                    android:textColor="#DF0915"
+                    android:textSize="@dimen/txt_24"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/address_layout"
+                android:layout_margin="@dimen/lrtbp_5"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/city_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="City"
+                    android:visibility="gone" />
+
+                <Spinner
+                    android:id="@+id/spdist"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/wh_45"
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="@dimen/lrtbp_20"
+                    android:layout_marginRight="@dimen/lrtbp_10"
+                    android:layout_toLeftOf="@+id/imp4"
+                    android:layout_toRightOf="@+id/im4"
+                    android:background="@drawable/spinner_drop_down"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/dark_green"
+                    android:textSize="@dimen/txt_20">
+
+                </Spinner>
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/imp4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="*"
+                    android:textColor="#DF0915"
+                    android:textSize="@dimen/txt_24"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/upload_ph_lay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/city"
+                android:layout_margin="@dimen/lrtbp_5"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:padding="@dimen/lrtbp_5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/lrtbp_20"
+                    android:layout_marginRight="@dimen/lrtbp_20"
+                    android:background="#cc5b04"
+                    android:gravity="center"
+                    android:text="புகைப்படத்தை பதிவேற்ற (கட்டாயமற்றது)"
+                    android:textColor="#ffffff"
+                    android:textSize="@dimen/txt_18" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/terms_lay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/upload_ph_lay"
+                android:layout_centerHorizontal="true">
+
+                <CheckBox
+                    android:id="@+id/terms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:buttonTint="@color/red"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/txt_12" />
+
+                <TextView
+                    android:textColor="#ffff"
+                    android:id="@+id/terms_content"
+                    android:layout_marginTop="@dimen/wh_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/single_line"
+
+                    android:layout_gravity="center_vertical"
+                    android:text="விதிமுறைகள் மற்றும் நிபந்தனைகள்" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/terms_lay"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:background="@drawable/yellow_back"
+                android:elevation="@dimen/lrtbp_10"
+                android:padding="@dimen/lrtbp_10"
+                android:text="உள்நுழைய"
+                android:textColor="@color/dark_green"
+                android:textSize="@dimen/txt_22" />
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</ScrollView>
+    </RelativeLayout>
+    <com.facebook.ads.NativeAdLayout
+        android:id="@+id/native_banner_ad_container"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="50dp"
+        android:layout_alignParentBottom="true" />
+
+    <LinearLayout
+
+        android:id="@+id/ads_lay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+    </LinearLayout>
+</RelativeLayout>

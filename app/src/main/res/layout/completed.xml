@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:background="#082844"
+    tools:context=".MainActivity">
+    <!-- A CardView that contains a TextView -->
+    <androidx.cardview.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view"
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="6dp"
+        card_view:cardBackgroundColor="#082844"
+        card_view:cardElevation="7dp">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:layout_centerInParent="true"
+    android:orientation="vertical">
+    <ImageView
+        android:id="@+id/img"
+        android:layout_marginTop="5dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/congratulations"
+        />
+
+    <TextView
+        android:id="@+id/txt1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold"
+        android:textColor="#fff"
+        android:gravity="center"
+        android:text="வாழ்த்துக்கள் "
+        />
+
+<TextView
+    android:id="@+id/txt"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="10dp"
+    android:layout_marginTop="10dp"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:textStyle="bold"
+    android:textColor="#fff"
+    android:gravity="center"
+    android:text="நீங்கள் வெற்றிகரமாக பதிவு செய்துவிட்டீர்கள்."
+    />
+
+    <TextView
+        android:id="@+id/txt_id41"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textStyle="bold"
+        android:textColor="#fff"
+        android:gravity="center"
+        android:text="உங்கள் பதிவெண் "
+        />
+    <TextView
+        android:id="@+id/txt_id"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        android:textColor="#FFCC33"
+        android:gravity="center"
+        android:text=""
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="#FFCC33"
+        android:text="   நன்றி   "
+        android:padding="10dp"
+        android:id="@+id/com"
+        android:textColor="#fff"
+        android:textStyle="bold"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+
+
+</LinearLayout>
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

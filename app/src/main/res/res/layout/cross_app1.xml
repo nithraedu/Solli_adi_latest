@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/FrameLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto">
+<FrameLayout
+     android:id="@+id/sharemainlayy"
+     android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#B3000000">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+         android:padding="@dimen/lrtbp_5"
+        >
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            card_view:cardBackgroundColor="#fff"
+            app:cardCornerRadius="@dimen/lrtbp_5"
+            android:elevation="@dimen/lrtbp_10"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/lrtbp_5"
+            >
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical" >
+
+                <LinearLayout
+                     android:id="@+id/titlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/lrtbp_5"
+                    android:background="#FAF6BE">
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="@dimen/wh_50"
+                android:layout_height="@dimen/wh_50"
+                 android:layout_gravity="center"
+                android:gravity="center"
+                android:src="@drawable/logo2" />
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/wh_2">
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="5dp"
+                android:text="Rate Now.!"
+                android:textColor="#000"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                 />
+    <android.support.v7.widget.AppCompatRatingBar
+        android:id="@+id/ratingBar"
+        style="?android:attr/ratingBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="5dp"
+        android:rating="4.5"
+        android:layout_below="@+id/app_name"
+        android:progressBackgroundTint="#B2DFDB"
+        android:progressTint="#5A5755"
+        android:secondaryProgressTint="#5A5755" />
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/app_down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="5dp"
+        android:layout_below="@+id/app_name"
+        android:layout_toRightOf="@+id/ratingBar"
+        android:text="(1,000)"
+        android:textColor="#5A5755"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textStyle="bold" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/app_free"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="5dp"
+        android:layout_below="@+id/app_name"
+        android:layout_toRightOf="@+id/app_down"
+        android:padding="@dimen/wh_2"
+        android:text="FREE"
+        android:textColor="#5A5755"
+        android:background="@drawable/bl_back"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textStyle="bold" />
+</RelativeLayout>
+            </LinearLayout>
+    <View
+        android:id="@+id/view_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/drop_shadow"
+        android:gravity="start|center_vertical" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/app_dec"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+       android:padding="@dimen/lrtbp_5"
+        android:text="If you enjoy using Tamil Provebs app, would you mind a moment to rate it.!\nThank you for your support.!!"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+    android:textColor="#000"
+    android:textStyle="bold"
+    android:autoLink="web"/>
+
+    <TextView
+            android:id="@+id/textView21"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/lrtbp_20"
+           android:padding="2dp"
+            android:textSize="@dimen/txt_16"
+        android:textColor="#000"
+        android:textStyle="bold|italic"
+         android:autoLink="web"/>
+
+        <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_gravity="center"
+           android:gravity="center"
+           android:layout_margin="@dimen/lrtbp_10"
+         
+            >
+            <ImageView
+                android:id="@+id/button2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/lrtbp_5"
+                android:src="@drawable/google_play"
+                android:layout_weight="0.33"
+                android:textSize="@dimen/txt_18"
+                android:textColor="#fff"
+                android:padding="@dimen/lrtbp_5"
+                android:textStyle="bold"
+                />
+           <android.support.v7.widget.AppCompatButton
+               android:id="@+id/button1"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:background="#5A5755"
+               android:layout_marginLeft="@dimen/lrtbp_10"
+               android:layout_marginRight="@dimen/lrtbp_10"
+          android:text="INSTALL"
+       android:layout_weight="0.33"
+        android:textSize="@dimen/txt_18"
+        android:textColor="#fff"
+        android:textStyle="bold"
+               android:padding="@dimen/lrtbp_5"
+               />
+
+           
+
+
+           
+      
+      </LinearLayout>
+
+        </LinearLayout>
+</android.support.v7.widget.CardView>
+    </FrameLayout>
+    </FrameLayout>
+
+</FrameLayout>

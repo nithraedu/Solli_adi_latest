@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:fitsSystemWindows="true"
+    tools:context=".MainActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:background="@color/intro_transparent"
+
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+            <RelativeLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:textSize="@dimen/txt_18"
+                    android:textStyle="bold"
+                    android:paddingTop="@dimen/lrtbp_10"
+                    android:paddingBottom="@dimen/lrtbp_10"
+                    android:text="kdjnjhdfgh"
+                    android:layout_toLeftOf="@+id/intros"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/name_main"
+                    android:textColor="@color/dark_green"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <Button
+                    android:id="@+id/intros"
+                    android:layout_width="@dimen/wh_35"
+                    android:layout_height="@dimen/wh_35"
+                    android:layout_centerInParent="true"
+                    android:layout_toLeftOf="@+id/refresh"
+                    android:background="@drawable/qtn"
+                    android:layout_marginRight="@dimen/lrtbp_5"/>
+                <Button
+                    android:id="@+id/refresh"
+                    android:layout_width="@dimen/wh_35"
+                    android:layout_height="@dimen/wh_35"
+                    android:layout_centerInParent="true"
+                    android:layout_toLeftOf="@+id/noti_linear"
+                    android:background="@drawable/refresh"
+                    android:layout_marginRight="@dimen/lrtbp_5"/>
+
+
+
+
+                    <TextView
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="@dimen/lrtbp_5"
+                        android:layout_centerInParent="true"
+                        android:gravity="center"
+                        android:paddingTop="@dimen/lrtbp_10"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_16"
+                        android:textStyle="bold"
+                        android:background="@drawable/dailyreminder"
+                        android:id="@+id/noti_linear"
+                        android:layout_width="@dimen/wh_35"
+                        android:layout_height="@dimen/wh_35" />
+
+
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.Toolbar>
+
+
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/content_main" />
+
+   <!-- <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end" android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_dialog_email" />-->
+
+</android.support.design.widget.CoordinatorLayout>

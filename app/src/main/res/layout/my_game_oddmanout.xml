@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/score"
+        android:text="Score"
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/lrtbp_30"
+        android:textSize="@dimen/txt_24"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:id="@+id/below"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/lrtbp_5"
+        android:layout_marginRight="@dimen/lrtbp_5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/sixcat"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_centerInParent="true"
+                android:layout_width="match_parent"
+                android:background="@color/light_yellow"
+                android:padding="@dimen/lrtbp_5"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:weightSum="3"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/croll_app_height">
+                    <TextView
+                        android:id="@+id/bt1"
+                        android:text="gfhfg"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/txt_18"
+                        android:gravity="center"
+                        android:background="@drawable/curve_for_odd_man_out"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:id="@+id/bt2"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:background="@drawable/curve_for_odd_man_out"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/txt_18"
+                        android:text="gfhfg"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:id="@+id/bt3"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:background="@drawable/curve_for_odd_man_out"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/txt_18"
+                        android:text="gfhfg"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:layout_width="match_parent"
+                    android:weightSum="3"
+                    android:layout_height="@dimen/croll_app_height">
+                    <TextView
+                        android:id="@+id/bt4"
+                        android:text="gfhfg"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/txt_18"
+                        android:gravity="center"
+                        android:background="@drawable/curve_for_odd_man_out"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:id="@+id/bt5"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:background="@drawable/curve_for_odd_man_out"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/txt_18"
+                        android:text="gfhfg"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:id="@+id/bt6"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:background="@drawable/curve_for_odd_man_out"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/txt_18"
+                        android:text="gfhfg"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+            </LinearLayout>
+        </RelativeLayout>
+        <RelativeLayout
+            android:visibility="gone"
+            android:id="@+id/fourcat"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_centerInParent="true"
+                android:layout_width="match_parent"
+                android:background="@color/light_yellow"
+                android:padding="@dimen/lrtbp_5"
+                android:orientation="vertical"
+
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:weightSum="2"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/croll_app_height">
+                    <TextView
+                        android:id="@+id/bts1"
+                        android:text="gfhfg"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/txt_18"
+                        android:gravity="center"
+                        android:background="@drawable/curve_for_odd_man_out"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:id="@+id/bts2"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:background="@drawable/curve_for_odd_man_out"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/txt_18"
+                        android:text="gfhfg"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:layout_width="match_parent"
+                    android:weightSum="2"
+                    android:layout_height="@dimen/croll_app_height">
+                    <TextView
+                        android:id="@+id/bts3"
+                        android:text="gfhfg"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/txt_18"
+                        android:gravity="center"
+                        android:background="@drawable/curve_for_odd_man_out"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:id="@+id/bts4"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:background="@drawable/curve_for_odd_man_out"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/txt_18"
+                        android:text="gfhfg"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

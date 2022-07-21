@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/new_background">
+
+    <LinearLayout
+        android:id="@+id/layout_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ac_bar"
+        android:background="@color/dark_green"
+        android:elevation="@dimen/lrtbp_10">
+
+        <TextView
+            android:id="@+id/otp_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+
+            android:padding="@dimen/lrtbp_10"
+            android:text="நீங்கள் பதிவு செய்த கைப்பேசி எண்ணிற்கு அனுப்பப்பட்டுள்ள நான்கு இலக்க OTP எண்- ஐ உள்ளீடு செய்யவும்."
+            android:textColor="#ffffff"
+            android:textSize="16dp" />
+
+    </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/ac_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:elevation="50dp"
+        android:padding="5dp"
+        app:cardBackgroundColor="#03fcfcfc">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@drawable/yellow_back"
+            android:elevation="@dimen/wh_50"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/ed_phno"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/layout_header"
+                    android:gravity="center"
+                    android:padding="@dimen/lrtbp_10"
+                    android:text="3333333333"
+                    android:textColor="#fd0a2102"
+                    android:textSize="@dimen/txt_16"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/ph_ed_ic"
+                    android:layout_width="@dimen/lrtbp_20"
+                    android:layout_height="@dimen/lrtbp_20"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/edits" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_otp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/layout_header"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/lrtbp_20"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/editTextone"
+                    android:layout_width="40dp"
+                    android:layout_height="42dp"
+                    android:background="#fdf6f6"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:nextFocusRight="@+id/editText_two"
+                    android:textColor="@color/dark_green"
+                    android:textSize="@dimen/txt_16">
+
+                    <requestFocus />
+                </EditText>
+
+                <EditText
+                    android:id="@+id/editTexttwo"
+                    android:layout_width="40dp"
+                    android:layout_height="42dp"
+                    android:layout_marginLeft="@dimen/lrtbp_10"
+                    android:background="#fdf6f6"
+                    android:gravity="center"
+                    android:inputType="number"
+
+                    android:maxLength="1"
+                    android:textColor="@color/dark_green"
+                    android:textSize="@dimen/txt_16" />
+
+                <EditText
+                    android:id="@+id/editTextthree"
+                    android:layout_width="40dp"
+                    android:layout_height="42dp"
+                    android:layout_marginLeft="@dimen/lrtbp_10"
+                    android:background="#fdf6f6"
+                    android:gravity="center"
+
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:textColor="@color/dark_green"
+                    android:textSize="@dimen/txt_16" />
+
+                <EditText
+                    android:id="@+id/editTextfour"
+                    android:layout_width="40dp"
+                    android:layout_height="42dp"
+                    android:layout_marginLeft="@dimen/lrtbp_10"
+                    android:background="#fdf6f6"
+                    android:gravity="center"
+
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:textColor="@color/dark_green"
+                    android:textSize="@dimen/txt_16" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/submits"
+                android:layout_width="@dimen/wh_120"
+                android:layout_height="@dimen/wh_50"
+                android:layout_below="@+id/layout_otp"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/lrtbp_25"
+                android:layout_marginBottom="@dimen/lrtbp_10"
+                android:background="@drawable/login_ic"
+                android:gravity="center"
+                android:text="சமர்ப்பிக்க"
+                android:textColor="@color/dark_green"
+                android:textSize="@dimen/txt_22" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/lrtbp_10"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/resend_otp"
+                    android:layout_width="@dimen/wh_120"
+                    android:layout_height="@dimen/wh_50"
+                    android:layout_below="@+id/layout_otp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/lrtbp_25"
+                    android:layout_marginBottom="@dimen/lrtbp_10"
+                    android:background="@drawable/login_ic"
+                    android:gravity="center"
+                    android:text="மீண்டும் OTP-யை பெற."
+                    android:textColor="@color/dark_green"
+                    android:textSize="@dimen/txt_12"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressDrawable="@drawable/circleshape2_timerview"
+                    android:visibility="invisible" />
+
+                <TextView
+                    android:id="@+id/time_limit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tt"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/lrtbp_5"
+                    android:layout_toRightOf="@+id/progress_bar"
+                    android:gravity="center"
+                    android:text="Time"
+                    android:textColor="#013e0f"
+                    android:textSize="@dimen/txt_18"
+                    android:visibility="invisible" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

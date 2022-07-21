@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/back_next2"
+    tools:context="nithra.tamil.word.game.solliadi.My_Multiplayer">
+
+    <RelativeLayout
+        android:id="@+id/head"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ads_lay">
+
+
+        <RelativeLayout
+            android:id="@+id/topfirst"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#f2ee01"
+            android:padding="@dimen/lrtbp_10">
+
+            <TextView
+                android:id="@+id/multi_p_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_15"
+                android:text="நிகழ்நேர போட்டி "
+                android:textColor="@color/dark_green"
+                android:textSize="@dimen/txt_18" />
+
+
+            <TextView
+                android:id="@+id/intro_multiplayer"
+                android:layout_width="@dimen/wh_35"
+                android:layout_height="@dimen/wh_35"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/multiplayerquestion" />
+
+            <TextView
+                android:id="@+id/short_cut"
+                android:layout_width="@dimen/wh_35"
+                android:layout_height="@dimen/wh_35"
+                android:layout_below="@+id/intro_multiplayer"
+                android:layout_alignParentRight="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:layout_marginTop="@dimen/lrtbp_25"
+                android:background="@drawable/short_cut"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_10"
+                android:textColor="@color/black"
+                android:textSize="@dimen/txt_12"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/score_showing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="@dimen/wh_50"
+            android:layout_marginTop="80dp"
+            android:layout_marginRight="@dimen/wh_50"
+            android:background="@drawable/background_border"
+            android:elevation="@dimen/lrtbp_10"
+            android:orientation="horizontal"
+            android:padding="@dimen/lrtbp_10">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:padding="@dimen/lrtbp_5">
+
+                <TextView
+                    android:id="@+id/coins"
+                    android:layout_width="@dimen/wh_45"
+                    android:layout_height="@dimen/wh_45"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/coins"
+                    android:padding="@dimen/lrtbp_10"
+                    android:textColor="@color/dark_green"
+                    android:textSize="@dimen/txt_25"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/m_score"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="000"
+                    android:textColor="#fff"
+                    android:textSize="@dimen/txt_22"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/topfirst">
+
+            <TextView
+                android:id="@+id/doubling"
+                android:layout_width="@dimen/wh_70"
+                android:layout_height="@dimen/wh_70"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:background="@drawable/multiplayer_tt"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_10"
+                android:textColor="@color/black"
+                android:textSize="@dimen/txt_12"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <RelativeLayout
+                android:layout_marginTop="@dimen/lrtbp_10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+              >
+
+                <RelativeLayout
+                    android:id="@+id/l_lay"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="@dimen/wh_45"
+                    android:layout_marginTop="@dimen/lrtbp_25"
+                    android:layout_marginRight="@dimen/wh_45"
+                    android:background="@drawable/miltiplayer_play"
+                    android:textColor="@color/white">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/quickgame"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:gravity="center"
+                            android:text="விளையாடு"
+                            android:textColor="@color/white"
+                            android:textSize="16dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/quickgame"
+                            android:layout_centerInParent="true"
+                            android:gravity="center"
+                            android:text="(Auto Play)"
+                            android:textColor="@color/white"
+                            android:textSize="16dp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/l_lay2"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_below="@+id/l_lay"
+                    android:layout_marginLeft="@dimen/wh_45"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:layout_marginRight="@dimen/wh_45"
+                    android:background="@drawable/multiplayer_invite_player">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/inviteplayer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/lrtbp_20"
+                            android:text="நண்பரை அழைக்க"
+                            android:textColor="@color/white"
+                            android:textSize="16dp"
+                          />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/inviteplayer"
+                            android:layout_centerInParent="true"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/lrtbp_20"
+                            android:text="(Invite Friends)"
+                            android:textColor="@color/white"
+                            android:textSize="16dp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/l_lay3"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_below="@+id/l_lay2"
+                    android:layout_marginLeft="@dimen/wh_45"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:layout_marginRight="@dimen/wh_45"
+                    android:background="@drawable/multiplayer_seeinvitation">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/see_invitations"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_centerHorizontal="true"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/lrtbp_20"
+                            android:text="அழைப்பை ஏற்க"
+                            android:textColor="@color/white"
+                            android:textSize="16dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/see_invitations"
+                            android:layout_centerInParent="true"
+                            android:layout_centerHorizontal="true"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/lrtbp_20"
+                            android:text="(Accept Invite)"
+                            android:textColor="@color/white"
+                            android:textSize="16dp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+
+        </RelativeLayout>
+    </RelativeLayout>
+    <com.facebook.ads.NativeAdLayout
+        android:visibility="gone"
+        android:id="@+id/native_banner_ad_container"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="50dp"
+        android:layout_alignParentBottom="true" />
+
+    <LinearLayout
+        android:id="@+id/ads_lay"
+        android:layout_marginBottom="@dimen/lrtbp_20"
+        android:layout_width="wrap_content"
+        android:layout_height="250dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"></LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_adplaceholder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/dark_yellow"
+        android:orientation="horizontal" />
+
+
+    <RelativeLayout
+        android:id="@+id/adsicon2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/lrtbp_5"
+        android:layout_marginTop="@dimen/lrtbp_10"
+        android:gravity="center"
+        android:visibility="invisible">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ads_logo2"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+
+        <ImageView
+            android:id="@+id/adlogo"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:src="@drawable/adbadge" />
+    </RelativeLayout>
+</RelativeLayout>

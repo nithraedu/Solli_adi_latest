@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="nithra.tamil.word.game.solliadi.Game_States">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:id="@+id/top"
+            android:background="#ffc933"
+            android:layout_width="match_parent"
+            android:layout_height="180dp">
+            <TextView
+                android:id="@+id/pic"
+                android:layout_centerInParent="true"
+                android:background="@drawable/loginscreen"
+                android:layout_width="@dimen/wh_180"
+                android:layout_height="@dimen/home_screen_topic_substatus_mraginleft2" />
+            <TextView
+                android:visibility="gone"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_marginRight="@dimen/lrtbp_20"
+                android:id="@+id/tandc"
+                android:text="T/C"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/below"
+            android:layout_below="@+id/top"
+            android:layout_width="match_parent"
+            android:background="#303032"
+            android:layout_height="match_parent"
+            >
+            <RelativeLayout
+                android:id="@+id/profile"
+                android:layout_marginLeft="@dimen/lrtbp_20"
+                android:layout_marginTop="@dimen/lrtbp_10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/img"
+                    android:background="@drawable/pf_profilepic"
+                    android:layout_width="@dimen/croll_app_height"
+                    android:layout_height="@dimen/croll_app_height" />
+                <TextView
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@+id/img"
+                    android:id="@+id/lay"
+                    android:text="சுயவிபரம்"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/txt_22"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/myreport"
+                android:layout_marginTop="@dimen/lrtbp_10"
+                android:layout_marginRight="@dimen/lrtbp_20"
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/img2"
+                    android:background="@drawable/leveld"
+                    android:layout_width="@dimen/croll_app_height"
+                    android:layout_height="@dimen/croll_app_height" />
+                <TextView
+                    android:layout_below="@+id/img2"
+                    android:id="@+id/replayout"
+                    android:layout_centerHorizontal="true"
+                    android:text="நிலை"
+                    android:textSize="@dimen/txt_22"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/result"
+                android:layout_marginLeft="@dimen/lrtbp_20"
+                android:layout_below="@+id/myreport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/img3"
+                    android:background="@drawable/result_s"
+                    android:layout_width="@dimen/croll_app_height"
+                    android:layout_height="@dimen/croll_app_height" />
+                <TextView
+                    android:layout_below="@+id/img3"
+                    android:id="@+id/belowlayout"
+                    android:layout_centerHorizontal="true"
+                    android:text="முடிவுகள்"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/txt_22"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rule"
+                android:layout_below="@+id/myreport"
+                android:layout_marginTop="@dimen/lrtbp_10"
+                android:layout_marginRight="@dimen/lrtbp_20"
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/img4"
+                    android:background="@drawable/tandc"
+                    android:layout_width="@dimen/croll_app_height"
+                    android:layout_height="@dimen/croll_app_height" />
+                <TextView
+                    android:layout_below="@+id/img4"
+                    android:id="@+id/rules"
+                    android:layout_centerHorizontal="true"
+                    android:text="விதிகள்"
+                    android:textSize="@dimen/txt_22"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+    <com.facebook.ads.NativeAdLayout
+        android:id="@+id/native_banner_ad_container"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="50dp"
+        android:layout_alignParentBottom="true" />
+
+    <LinearLayout
+
+        android:id="@+id/ads_lay"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+
+    </LinearLayout>
+
+</RelativeLayout>

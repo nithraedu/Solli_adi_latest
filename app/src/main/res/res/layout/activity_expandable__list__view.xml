@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/back_next2"
+    tools:context="nithra.tamil.word.game.solliadi.Expandable_List_View">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ExpandableListView
+        android:id="@+id/expandableListView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:groupIndicator="@drawable/expadable_arow"
+        android:layout_centerHorizontal="true" >
+    </ExpandableListView>
+
+
+    <TextView
+        android:layout_centerInParent="true"
+        android:id="@+id/nodata"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="முந்தைய தினசரி விளையாட்டுகள் பதிவுகள் இல்லை"
+        android:textColor="@color/white"
+       android:layout_margin="@dimen/lrtbp_10"
+        android:textSize="@dimen/txt_18"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</RelativeLayout>
+    <com.facebook.ads.NativeAdLayout
+        android:id="@+id/native_banner_ad_container"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="50dp"
+        android:layout_alignParentBottom="true" />
+
+    <LinearLayout
+        android:id="@+id/ads_lay"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+
+    </LinearLayout>
+</RelativeLayout>

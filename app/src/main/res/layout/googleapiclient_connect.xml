@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:layout_margin="@dimen/fab_margin"
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
+        
+        <TextView
+            android:id="@+id/google_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="Google connect"
+            android:textSize="@dimen/TitleSize"
+          android:layout_gravity="center_horizontal"
+            android:textColor="#ff0000"
+            android:layout_margin="@dimen/fab_margin"/>
+        
+        
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp" 
+            android:background="@drawable/icon_googleconnect"
+            android:layout_gravity="center_horizontal"
+            />
+
+        <TextView
+            android:id="@+id/google_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Google-ல்  sign-in செய்த பிறகு விளையாடவும்"
+            android:textSize="14dp"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:textColor="#000"
+            android:layout_margin="12dp"/>
+        <TextView
+            android:id="@+id/hint1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="(உங்களுக்கு உள்நுழைவு சிக்கல் ஏதேனும் இருந்தால்,  play games செயலியை update செய்த பிறகு மீண்டும் முயற்சிக்கவும்.)"
+            android:textSize="14dp"
+            android:layout_gravity="center_horizontal"
+            android:textColor="#e60303"
+            />
+      <LinearLayout
+          android:id="@+id/sign_in_btn"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:background="#039929"
+          android:layout_margin="10dp"
+          android:layout_gravity="center_horizontal">
+          <TextView
+              android:id="@+id/signin_logo"
+              android:background="@drawable/sigin_google_logo"
+              android:layout_width="@dimen/wh_35"
+              android:layout_height="@dimen/wh_35" />
+          <TextView
+              android:id="@+id/sign_in_txt"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="SIGN-IN"
+              android:textStyle="bold"
+              android:textColor="#ffffff"
+              android:layout_marginLeft="10dp"
+              android:layout_marginRight="10dp"
+              android:layout_gravity="center"
+              android:textSize="24dp"/>
+      </LinearLayout>
+  
+        
+    </LinearLayout>
+
+</RelativeLayout>

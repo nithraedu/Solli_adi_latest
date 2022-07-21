@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="#91CA3F"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/intros"
+        android:gravity="center"
+        android:text="புதிய வார்த்தை"
+        android:textColor="@color/white"
+        android:textSize="@dimen/txt_20"
+        android:background="#ED3237"
+        android:paddingTop="@dimen/wh_2"
+        android:paddingBottom="@dimen/lrtbp_5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/feed_close"
+        android:background="@drawable/kid_dia_cancel"
+        android:layout_alignParentRight="true"
+        android:layout_width="@dimen/wh_35"
+        android:layout_height="@dimen/wh_35" />
+    <RelativeLayout
+        android:id="@+id/u_edit"
+        android:layout_below="@+id/feed_close"
+        android:layout_marginTop="@dimen/lrtbp_15"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+<TextView
+    android:visibility="gone"
+    android:id="@+id/u_ans"
+
+    android:textSize="@dimen/txt_16"
+    android:background="#00AFEF"
+    android:gravity="center"
+    android:textColor="@color/red"
+    android:layout_marginRight="@dimen/lrtbp_10"
+    android:layout_marginLeft="@dimen/lrtbp_10"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/wh_50" />
+        <LinearLayout
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:background="@drawable/edit_text_background"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/usertxt"
+                android:cursorVisible="true"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:layout_marginLeft="@dimen/lrtbp_5"
+                android:textSize="@dimen/txt_18"
+                android:layout_width="@dimen/wh_180"
+                android:layout_height="@dimen/wh_40" />
+            <TextView
+                android:layout_alignParentRight="true"
+                android:background="@drawable/x_image"
+                android:id="@+id/clear"
+                android:paddingTop="@dimen/txt_10"
+                android:paddingLeft="@dimen/txt_10"
+                android:paddingRight="@dimen/txt_10"
+                android:paddingBottom="@dimen/txt_10"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="@dimen/txt_18"
+                android:gravity="center"
+                android:layout_width="@dimen/wh_50"
+                android:layout_height="@dimen/wh_40"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+<RelativeLayout
+    android:layout_marginTop="@dimen/lrtbp_10"
+    android:layout_marginLeft="@dimen/lrtbp_10"
+    android:layout_marginRight="@dimen/lrtbp_10"
+    android:layout_marginBottom="@dimen/lrtbp_10"
+    android:id="@+id/buttons"
+    android:layout_below="@+id/u_edit"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_centerHorizontal="true"
+        android:paddingLeft="@dimen/lrtbp_20"
+        android:paddingRight="@dimen/lrtbp_20"
+        android:layout_marginTop="@dimen/wh_2"
+        android:id="@+id/buttonlist1_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:background="@drawable/game_buttons"
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_18"
+            android:paddingRight="@dimen/lrtbp_5"
+            android:id="@+id/button1"
+            android:gravity="center"
+            android:layout_width="@dimen/wh_50"
+            android:layout_height="@dimen/wh_40" />
+        <TextView
+            android:background="@drawable/game_buttons"
+            android:id="@+id/button2"
+            android:gravity="center"
+
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_18"
+            android:layout_marginLeft="@dimen/lrtbp_5"
+            android:layout_width="@dimen/wh_50"
+            android:layout_height="@dimen/wh_40" />
+        <TextView
+            android:paddingLeft="@dimen/lrtbp_5"
+            android:background="@drawable/game_buttons"
+            android:id="@+id/button3"
+            android:gravity="center"
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_18"
+            android:layout_marginLeft="@dimen/lrtbp_5"
+            android:layout_width="@dimen/wh_50"
+            android:layout_height="@dimen/wh_40" />
+        <TextView
+            android:background="@drawable/game_button_background"
+            android:id="@+id/button4"
+            android:gravity="center"
+            android:visibility="gone"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_18"
+            android:layout_marginLeft="@dimen/list_view_marig_left"
+            android:layout_width="@dimen/wh_50"
+            android:layout_height="@dimen/wh_40" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/lrtbp_5"
+        android:id="@+id/buttonlist2_layout"
+        android:layout_below="@+id/buttonlist1_layout"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/lrtbp_20"
+        android:paddingRight="@dimen/lrtbp_20"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:background="@drawable/game_buttons"
+            android:id="@+id/button5"
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_18"
+            android:gravity="center"
+            android:layout_width="@dimen/wh_50"
+            android:layout_height="@dimen/wh_40"/>
+        <TextView
+            android:background="@drawable/game_buttons"
+            android:id="@+id/button6"
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_18"
+            android:layout_marginLeft="@dimen/lrtbp_5"
+            android:gravity="center"
+            android:layout_width="@dimen/wh_50"
+            android:layout_height="@dimen/wh_40" />
+        <TextView
+            android:background="@drawable/game_buttons"
+            android:id="@+id/button7"
+            android:paddingLeft="@dimen/lrtbp_5"
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_18"
+            android:layout_marginLeft="@dimen/lrtbp_5"
+            android:gravity="center"
+            android:layout_width="@dimen/wh_50"
+            android:layout_height="@dimen/wh_40" />
+        <TextView
+            android:background="@drawable/game_button_background"
+            android:id="@+id/button8"
+            android:textColor="@color/black"
+            android:textSize="@dimen/txt_18"
+            android:layout_marginLeft="@dimen/list_view_marig_left"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_width="@dimen/wh_50"
+            android:layout_height="@dimen/wh_40"/>
+    </LinearLayout>
+    <TextView
+        android:visibility="gone"
+        android:layout_below="@+id/clear"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/lrtbp_10"
+        android:background="@drawable/game_buttons"
+        android:id="@+id/nextspace"
+        android:paddingTop="@dimen/lrtbp_5"
+        android:paddingLeft="@dimen/txt_10"
+        android:paddingRight="@dimen/txt_10"
+        android:paddingBottom="@dimen/txt_10"
+        android:text=","
+        android:textColor="@color/black"
+        android:textSize="@dimen/txt_18"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_width="@dimen/wh_35"
+        android:layout_height="@dimen/wh_40"  />
+    <LinearLayout
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/lrtbp_5"
+        android:id="@+id/buttonlist3_layout"
+        android:layout_below="@+id/buttonlist2_layout"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/lrtbp_20"
+        android:paddingRight="@dimen/lrtbp_20"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:background="@drawable/game_buttons"
+            android:id="@+id/button9"
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_18"
+            android:gravity="center"
+            android:layout_width="@dimen/wh_50"
+            android:layout_height="@dimen/wh_40" />
+        <TextView
+            android:background="@drawable/game_buttons"
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_18"
+            android:layout_marginLeft="@dimen/lrtbp_5"
+            android:id="@+id/button10"
+            android:gravity="center"
+            android:layout_width="@dimen/wh_50"
+            android:layout_height="@dimen/wh_40" />
+        <TextView
+            android:background="@drawable/game_buttons"
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_18"
+            android:paddingLeft="@dimen/lrtbp_5"
+            android:layout_marginLeft="@dimen/lrtbp_5"
+            android:id="@+id/button11"
+            android:gravity="center"
+            android:layout_width="@dimen/wh_50"
+            android:layout_height="@dimen/wh_40" />
+        <TextView
+            android:background="@drawable/game_button_background"
+            android:id="@+id/button12"
+            android:paddingTop="@dimen/txt_10"
+            android:paddingLeft="@dimen/txt_20"
+            android:paddingRight="@dimen/txt_20"
+            android:paddingBottom="@dimen/txt_10"
+            android:textColor="@color/black"
+            android:textSize="@dimen/txt_18"
+            android:layout_marginLeft="@dimen/list_view_marig_left"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_width="@dimen/wh_50"
+            android:layout_height="@dimen/wh_40" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_marginTop="@dimen/lrtbp_10"
+        android:id="@+id/buttonlist4_layout"
+        android:layout_below="@+id/buttonlist3_layout"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:background="@drawable/game_button_background"
+            android:id="@+id/button14"
+            android:paddingTop="@dimen/txt_10"
+            android:paddingLeft="@dimen/txt_20"
+            android:paddingRight="@dimen/txt_20"
+            android:paddingBottom="@dimen/txt_10"
+
+            android:textColor="@color/black"
+            android:textSize="@dimen/txt_18"
+            android:layout_marginLeft="@dimen/list_view_marig_left"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_width="@dimen/wh_50"
+            android:layout_height="@dimen/wh_40" />
+
+        <TextView
+            android:id="@+id/sends"
+            android:paddingTop="@dimen/txt_10"
+            android:paddingLeft="@dimen/txt_10"
+            android:paddingRight="@dimen/txt_10"
+            android:paddingBottom="@dimen/txt_10"
+            android:text="அனுப்புக"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:background="@color/dark_green"
+            android:textSize="@dimen/txt_18"
+            android:layout_marginLeft="@dimen/lrtbp_10"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/wh_40"/>
+    </LinearLayout>
+
+
+</RelativeLayout>
+<TextView
+    android:layout_below="@+id/buttons"
+    android:paddingTop="@dimen/lrtbp_5"
+    android:paddingBottom="@dimen/lrtbp_5"
+    android:paddingLeft="@dimen/lrtbp_10"
+    android:textColor="@color/black"
+    android:paddingRight="@dimen/lrtbp_5"
+    android:text="குறிப்பு: நீங்கள் சரியென நினைக்கும் வார்த்தை எங்களது தொகுப்பில் இல்லையெனில் அதை மேற்கண்ட பகுதியில் ஒவ்வென்றாக தட்டச்சு செய்து அனுப்பவும். (எ. கா) அணில்."
+    android:textSize="@dimen/txt_16"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"/>
+
+
+</RelativeLayout>

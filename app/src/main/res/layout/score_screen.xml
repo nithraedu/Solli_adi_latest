@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/back_next2"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/scoresscreen_background">
+
+        <TextView
+
+            android:id="@+id/sri"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/lrtbp_15"
+            android:text="Arputham"
+            android:textColor="@color/red"
+            android:textSize="@dimen/txt_25"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/arputham"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/sri"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/lrtbp_25"
+            android:text="Arputham"
+            android:textColor="@color/red"
+            android:textSize="@dimen/txt_25"
+            android:textStyle="bold" />
+
+        <LinearLayout
+
+            android:id="@+id/vid_earn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/arputham"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/lrtbp_20"
+
+            android:layout_marginBottom="@dimen/lrtbp_10"
+            android:background="@drawable/game_button_background"
+            android:elevation="@dimen/lrtbp_10"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:src="@drawable/coins" />
+
+            <TextView
+                android:id="@+id/video_earn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_centerHorizontal="true"
+                android:padding="@dimen/lrtbp_5"
+                android:text="20+ நாணயங்கள்"
+                android:textColor="#ffff"
+                android:textSize="@dimen/txt_18" />
+        </LinearLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/adsicon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/tts_score"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/lrtbp_10">
+
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/ads_logo"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginTop="15dp" />
+
+            <ImageView
+                android:id="@+id/adlogo"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/adbadge"
+                android:visibility="invisible" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/extracoin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tts_score"
+            android:layout_centerHorizontal="true"
+            android:text="Extra Coins"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_18"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tts_score"
+            android:layout_width="@dimen/wh_180"
+            android:layout_height="@dimen/wh_40"
+            android:layout_below="@+id/vid_earn"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/lrtbp_10"
+            android:background="@drawable/scorecoin1"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_24"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/prize_logo"
+            android:layout_width="@dimen/croll_insbut_height"
+            android:layout_height="@dimen/croll_insbut_height"
+            android:layout_below="@+id/vid_earn"
+            android:layout_marginLeft="@dimen/lrtbp_15"
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:layout_toRightOf="@id/tts_score"
+            android:gravity="center"
+            android:src="@drawable/gift"
+            android:visibility="invisible" />
+
+
+        <TextView
+            android:id="@+id/tts_score_txt"
+            android:layout_width="@dimen/wh_40"
+            android:layout_height="@dimen/wh_40"
+            android:layout_above="@+id/extracoin"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/lrtbp_5"
+            android:layout_toLeftOf="@+id/bs_score"
+            android:background="@drawable/coins"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_20"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/bs_score"
+            android:layout_width="@dimen/wh_180"
+            android:layout_height="@dimen/wh_40"
+            android:layout_below="@+id/extracoin"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:background="@drawable/scorecoin2"
+            android:gravity="center"
+            android:text="0"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_24"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/cnse1"
+            android:layout_width="@dimen/wh_35"
+            android:layout_height="@dimen/wh_35"
+            android:layout_below="@+id/bs_score"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:background="@drawable/coin"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/cnse2"
+            android:layout_width="@dimen/wh_35"
+            android:layout_height="@dimen/wh_35"
+            android:layout_below="@+id/bs_score"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:layout_toRightOf="@+id/cnse1"
+            android:background="@drawable/coin"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/cnse3"
+            android:layout_width="@dimen/wh_35"
+            android:layout_height="@dimen/wh_35"
+            android:layout_below="@+id/bs_score"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:layout_toLeftOf="@+id/cnse1"
+            android:background="@drawable/coin"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/cnse4"
+            android:layout_width="@dimen/wh_35"
+            android:layout_height="@dimen/wh_35"
+            android:layout_below="@+id/bs_score"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:layout_toLeftOf="@+id/cnse3"
+            android:background="@drawable/coin"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/cnse5"
+            android:layout_width="@dimen/wh_35"
+            android:layout_height="@dimen/wh_35"
+            android:layout_below="@+id/bs_score"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:layout_toRightOf="@+id/cnse2"
+            android:background="@drawable/coin"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/cnse6"
+            android:layout_width="@dimen/wh_35"
+            android:layout_height="@dimen/wh_35"
+            android:layout_below="@+id/bs_score"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:layout_toLeftOf="@+id/cnse4"
+            android:background="@drawable/coin"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/cnse7"
+            android:layout_width="@dimen/wh_35"
+            android:layout_height="@dimen/wh_35"
+            android:layout_below="@+id/bs_score"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:layout_toRightOf="@+id/cnse5"
+            android:background="@drawable/coin"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/bs_score_dum"
+            android:layout_width="@dimen/wh_40"
+            android:layout_height="@dimen/wh_40"
+            android:layout_above="@+id/extracoin"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/lrtbp_10"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_20" />
+
+        <TextView
+            android:id="@+id/continues"
+            android:layout_width="@dimen/wh_120"
+            android:layout_height="@dimen/wh_50"
+            android:layout_below="@+id/bs_score"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/lrtbp_15"
+            android:background="@drawable/cnt1"
+            android:gravity="center"
+            android:text=" தொடர்க"
+            android:textColor="@color/white"
+            android:textSize="@dimen/info_company_name_font_size"
+            android:textStyle="bold"
+            android:visibility="visible" />
+
+        <TextView
+            android:visibility="invisible"
+            android:id="@+id/definition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/continues"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:background="@drawable/curve_back_multipalyer"
+            android:elevation="@dimen/lrtbp_5"
+            android:gravity="center"
+            android:padding="@dimen/lrtbp_5"
+            android:text=" பொருத்திய சொற்கள்"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_16"
+            android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/bs_score_name"
+            android:layout_width="@dimen/wh_40"
+            android:layout_height="@dimen/wh_40"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_toLeftOf="@+id/bs_score"
+            android:background="@drawable/coin"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_20"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/rewardvideo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/tt2"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/lrtbp_5"
+            android:background="@color/transparent2"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="@dimen/wh_20"
+                android:layout_height="@dimen/wh_20"
+                android:layout_above="@+id/tt22"
+                android:background="@drawable/vid_bones" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/wh_2"
+                android:text="புள்ளிகளை அதிகரித்துக்கொள்ள"
+                android:textColor="#00257c"
+                android:textSize="@dimen/txt_12"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tt2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/wtp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/lrtbp_10"
+            android:textColor="@color/red"
+            android:textSize="@dimen/txt_20"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/wtp"
+            android:layout_width="@dimen/wh_40"
+            android:layout_height="@dimen/wh_40"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/lrtbp_25"
+            android:background="@drawable/watsapp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/fbp"
+            android:layout_width="@dimen/wh_40"
+            android:layout_height="@dimen/wh_40"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="@dimen/lrtbp_10"
+            android:layout_marginBottom="@dimen/lrtbp_25"
+            android:layout_toRightOf="@+id/wtp"
+            android:background="@drawable/fb"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/gplus"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/wh_40"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginRight="@dimen/lrtbp_10"
+            android:layout_marginBottom="@dimen/lrtbp_25"
+            android:layout_toLeftOf="@+id/wtp"
+            android:background="@drawable/gplues"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/fl_adplaceholder"
+            android:minHeight="250dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal" />
+    </RelativeLayout>
+
+</RelativeLayout>

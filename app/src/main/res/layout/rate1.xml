@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:customfontdemo="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/FrameLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/sharemainlayy"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#cc98a42d"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/lrtbp_5"
+            android:layout_marginRight="@dimen/lrtbp_5"
+            android:background="@drawable/setting_back"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/lrtbp_15">
+
+            <TextView
+                android:id="@+id/logo_img"
+                android:layout_width="@dimen/wh_80"
+                android:layout_height="@dimen/wh_80"
+                android:background="@drawable/logo2" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/lrtbp_10"
+                    android:gravity="center"
+                    android:text=" சொல்லிஅடி இலவச ஆன்ட்ராய்டு மென்பொருள் தங்களுக்கு பிடித்திருந்தால் எங்களுக்கு 5  நட்சத்திர குறியீடு பிளே ஸ்டோரில் வழங்க அன்புடன் கேட்டுக் கொள்கிறோம்."
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/txt_18" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/lrtbp_15"
+                    android:layout_marginRight="@dimen/lrtbp_15"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/wh_35"
+                        android:src="@drawable/rate_img" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/lrtbp_10"
+                    android:gravity="center"
+                    android:text="Rate 5 star"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/txt_22"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/lrtbp_5">
+
+                <Button
+                    android:id="@+id/button2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.33"
+                    android:background="@drawable/solukulsol"
+                    android:clickable="true"
+                    android:paddingLeft="@dimen/lrtbp_5"
+                    android:paddingTop="@dimen/lrtbp_20"
+                    android:paddingRight="@dimen/lrtbp_5"
+                    android:paddingBottom="@dimen/lrtbp_20"
+                    android:text="மதிப்பிடவும்"
+                    android:textColor="#fff"
+                    android:textSize="@dimen/txt_16"
+                     />
+
+                <Button
+                    android:id="@+id/button1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/lrtbp_5"
+                    android:layout_weight="0.33"
+                    android:background="@drawable/solukulsol"
+                    android:clickable="true"
+                    android:paddingLeft="@dimen/lrtbp_5"
+                    android:paddingTop="@dimen/lrtbp_20"
+                    android:paddingRight="@dimen/lrtbp_5"
+                    android:paddingBottom="@dimen/lrtbp_20"
+                    android:text="கருத்துக்கள்"
+                    android:textColor="#fff"
+                    android:textSize="@dimen/txt_16"
+                    />
+
+
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>

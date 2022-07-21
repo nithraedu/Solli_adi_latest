@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="#cceef990"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<RelativeLayout
+    android:background="@drawable/back_dialog"
+    android:paddingTop="@dimen/lrtbp_10"
+    android:layout_marginRight="@dimen/lrtbp_25"
+    android:layout_marginLeft="@dimen/lrtbp_25"
+    android:paddingBottom="@dimen/lrtbp_20"
+    android:layout_marginTop="@dimen/lrtbp_10"
+    android:layout_marginBottom="@dimen/lrtbp_10"
+    android:layout_centerInParent="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/lrtbp_10"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/asd"
+        android:orientation="vertical"
+        android:layout_marginLeft="@dimen/lrtbp_10"
+        android:layout_marginRight="@dimen/lrtbp_10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text=""
+            android:textSize="@dimen/txt_16"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:id="@+id/next_game"
+            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            />
+        <TextView
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:background="@drawable/bt1"
+            android:layout_width="match_parent"
+            android:id="@+id/picgame"
+            android:text="படம் பார்த்து கண்டுபிடி"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="@dimen/txt_16"
+            android:textColor="@color/white"
+            android:layout_height="@dimen/lrtbp_30"
+            android:layout_centerInParent="true"
+
+            />
+
+        <TextView
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:background="@drawable/bt2"
+            android:text="குறிப்புகள் மூலம் கண்டுபிடி"
+            android:id="@+id/hintgame"
+            android:textSize="@dimen/txt_16"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/lrtbp_30"
+            android:layout_centerInParent="true"
+
+            />
+        <TextView
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:background="@drawable/bt3"
+            android:id="@+id/solgame"
+            android:text="சொல்லுக்குள் சொல்"
+            android:textSize="@dimen/txt_16"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/lrtbp_30"
+            android:layout_centerInParent="true"
+
+            />
+        <TextView
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:background="@drawable/bt4"
+            android:id="@+id/wordgame"
+            android:text="சொல் விளையாட்டு"
+            android:textSize="@dimen/txt_16"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/lrtbp_30"
+            android:layout_centerInParent="true"
+
+            />
+
+        <TextView
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:background="@color/red"
+            android:id="@+id/exit"
+            android:text="வெளியேறு "
+            android:paddingLeft="@dimen/lrtbp_10"
+            android:paddingRight="@dimen/lrtbp_10"
+            android:paddingTop="@dimen/lrtbp_10"
+            android:paddingBottom="@dimen/lrtbp_10"
+            android:layout_gravity="center"
+            android:textSize="@dimen/txt_16"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+
+            />
+    </LinearLayout>
+
+
+
+</RelativeLayout>
+
+</RelativeLayout>

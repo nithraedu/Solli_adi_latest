@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<TextView
+    android:id="@+id/tops"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/wh_40" />
+    <RelativeLayout
+        android:layout_centerInParent="true"
+        android:background="@drawable/bones_reward"
+        android:layout_width="@dimen/wh_240"
+        android:layout_height="@dimen/wh_300">
+<TextView
+    android:id="@+id/b_scores"
+    android:text=""
+    android:layout_alignParentRight="true"
+android:layout_centerInParent="true"
+    android:layout_marginRight="@dimen/lrtbp_20"
+   android:layout_width="wrap_content"
+    android:textStyle="bold"
+    android:textColor="#ffc933"
+    android:textSize="@dimen/wh_35"
+    android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_alignParentBottom="true"
+            android:id="@+id/ok_y"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/lrtbp_25"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_16"
+            android:background="@drawable/ok_button"
+            android:layout_width="@dimen/croll_app_height"
+            android:layout_height="wrap_content" />
+
+</RelativeLayout>
+
+</RelativeLayout>

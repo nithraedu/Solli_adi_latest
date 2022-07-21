@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="#82636463"
+
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_marginTop="@dimen/wh_120"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <RelativeLayout
+            android:background="@drawable/multiplayer_chat_background"
+            android:id="@+id/parent_lay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/bottem">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/kk"
+                    android:layout_marginTop="@dimen/lrtbp_10"
+                    android:background="#860f0f"
+                    android:padding="@dimen/lrtbp_5"
+                    android:text="நீங்கள்"
+                    android:textColor="#ffffff"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/names"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/kk"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="@dimen/lrtbp_10"
+                    android:background="#860f0f"
+                    android:padding="@dimen/lrtbp_5"
+                    android:text="எதிராளி"
+                    android:textColor="#ffffff"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <LinearLayout
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ListView
+                        android:layout_margin="@dimen/lrtbp_10"
+                        android:id="@+id/list_l"
+                        android:divider="@null"
+                        android:dividerHeight="0dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/bottem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/lrtbp_10"
+                android:layout_alignParentBottom="true"
+                android:orientation="vertical">
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:id="@+id/tool_lay"
+        android:background="#ca030c"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        >
+        <ImageView
+            android:id="@+id/msg_dismiss"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_margin="5dp"
+            android:background="@drawable/close_mul" />
+
+        <TextView
+            android:layout_toLeftOf="@id/msg_dismiss"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:text="Chat(English alphabets only)"
+            android:textColor="#fff"
+            android:textSize="@dimen/txt_18" />
+
+        <ImageView
+            android:id="@+id/msg_sender"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="5dp"
+            android:visibility="gone" />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/edit_lay"
+        android:background="#efeae9"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp">
+
+        <EditText
+            android:background="#fff"
+            android:id="@+id/msg_txt"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/wh_45"
+            android:layout_centerInParent="true"
+            android:layout_margin="5dp"
+            android:layout_marginTop="@dimen/lrtbp_15"
+            android:layout_toLeftOf="@+id/send_msg"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 "
+            android:textColor="#000"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/send_msg"
+            android:layout_centerInParent="true"
+            android:layout_width="@dimen/wh_50"
+            android:layout_height="@dimen/wh_50"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/send_multiplayer"
+            android:padding="@dimen/lrtbp_10"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/SCROLLER_ID"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_margin="@dimen/lrtbp_5"
+        android:fadeScrollbars="false"
+        android:fillViewport="true"
+        android:scrollbarThumbVertical="@drawable/scrollicon"
+        android:scrollbars="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/parent_lay">
+
+            <TextView
+                android:id="@+id/msg1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/wh_2"
+                android:background="@drawable/multiplayer_msg_button"
+                android:focusable="true"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_5"
+                android:text="Hi"
+                android:textColor="@color/black"
+                android:textSize="@dimen/txt_18"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/msg2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/msg1"
+                android:layout_margin="@dimen/wh_2"
+                android:background="@drawable/multiplayer_msg_button"
+                android:focusable="true"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_5"
+                android:text="Well Played"
+                android:textColor="@color/black"
+                android:textSize="@dimen/txt_18"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/msg3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/msg2"
+                android:layout_margin="@dimen/wh_2"
+                android:background="@drawable/multiplayer_msg_button"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_5"
+                android:text="Play Fast"
+                android:textColor="@color/black"
+                android:textSize="@dimen/txt_18"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/msg4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/msg3"
+                android:layout_margin="@dimen/wh_2"
+                android:background="@drawable/multiplayer_msg_button"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_5"
+                android:text="Answer please"
+                android:textColor="@color/black"
+                android:textSize="@dimen/txt_18"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/msg5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/msg4"
+                android:layout_margin="@dimen/wh_2"
+                android:background="@drawable/multiplayer_msg_button"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_5"
+                android:text="Congrats"
+                android:textColor="@color/black"
+                android:textSize="@dimen/txt_18"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/msg6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/msg5"
+                android:layout_margin="@dimen/wh_2"
+                android:background="@drawable/multiplayer_msg_button"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_5"
+                android:text="Do Hard"
+                android:textColor="@color/black"
+                android:textSize="@dimen/txt_18"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/msg7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/msg6"
+                android:layout_margin="@dimen/wh_2"
+                android:background="@drawable/multiplayer_msg_button"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_5"
+                android:text="Learn More"
+                android:textColor="@color/black"
+                android:textSize="@dimen/txt_18"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/msg8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/msg7"
+                android:layout_margin="@dimen/wh_2"
+                android:background="@drawable/multiplayer_msg_button"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_5"
+                android:text="Awesome"
+                android:textColor="@color/black"
+                android:textSize="@dimen/txt_18"
+                android:textStyle="bold" />
+        </RelativeLayout>
+    </ScrollView>
+</LinearLayout>
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+</RelativeLayout>

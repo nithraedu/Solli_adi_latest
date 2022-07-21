@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+   <item android:drawable="@drawable/yellow_question"
+         android:state_empty="true" />
+   <item android:drawable="@drawable/tick_background"
+         android:state_expanded="false" />
+</selector>

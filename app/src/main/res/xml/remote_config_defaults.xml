@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- START xml_defaults -->
+<defaultsMap>
+    <entry>
+        <key>app_sort_order</key>
+        <value>1</value>
+    </entry>
+    <entry>
+        <key>SolliadiPrize</key>
+        <value>1</value>
+    </entry>
+
+</defaultsMap>

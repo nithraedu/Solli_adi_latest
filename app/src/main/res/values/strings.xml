@@ -1,0 +1,179 @@
+<resources>
+    <string name="app_name">சொல்லிஅடி</string>
+    <string name="multiplayer">நிகழ்நேர போட்டி </string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="word_game">சொல்லிஅடி</string>
+    <string name="appid">1746769098928603</string><!-- facebook id-->
+
+
+    <string name="app_id">816281760196</string><!--leader board id-->
+    <string name="package_name">nithra.tamil.word.game.solliadi</string>
+    <string name="achievement___1">CgkIxOO88eAXEAIQAg</string><!---->
+    <string name="achievement___2">CgkIxOO88eAXEAIQAw</string>
+    <string name="achievement___3">CgkIxOO88eAXEAIQBA</string>
+    <string name="achievement__4">CgkIxOO88eAXEAIQBQ</string>
+    <string name="achievement___5">CgkIxOO88eAXEAIQBg</string>
+    <string name="achievement__6">CgkIxOO88eAXEAIQBw</string>
+    <string name="achievement__7">CgkIxOO88eAXEAIQCA</string>
+    <string name="achievement___8">CgkIxOO88eAXEAIQCQ</string>
+    <string name="achievement_._.__9">CgkIxOO88eAXEAIQCg</string>
+    <string name="achievement__10">CgkIxOO88eAXEAIQCw</string>
+    <string name="achievement___11">CgkIxOO88eAXEAIQDA</string>
+    <string name="achievement___12">CgkIxOO88eAXEAIQDQ</string>
+    <string name="achievement___13">CgkIxOO88eAXEAIQDg</string>
+    <string name="achievement___14">CgkIxOO88eAXEAIQDw</string>
+    <string name="achievement___15">CgkIxOO88eAXEAIQEA</string>
+    <string name="achievement__16">CgkIxOO88eAXEAIQEQ</string>
+    <string name="achievement__17">CgkIxOO88eAXEAIQEg</string>
+    <string name="achievement____18">CgkIxOO88eAXEAIQEw</string>
+    <string name="achievement___19">CgkIxOO88eAXEAIQFA</string>
+    <string name="achievement__20">CgkIxOO88eAXEAIQFQ</string>
+    <string name="leaderboard">CgkIxOO88eAXEAIQAA</string>
+    <string name="your_string_here"> <u>*தனியுரிமை கொள்கை (Privacy Policy)</u></string>
+
+    <string name="update">Update</string>
+    <string name="em">நிகழ்நேர போட்டி</string>
+    <string name="load">Load</string>
+    <string name="migrate">Migrate</string>
+    <string name="select">Select</string>
+    <string name="signin_other_error">There was an error during sign in.</string>
+    <string name="message_sign_in">Sign-in to begin.</string>
+    <string name="message_signed_in">Signed in.</string>
+    <string name="saved_games_load_success">Loaded from Saved Games.</string>
+    <string name="saved_games_load_failure">Failed to load from Saved Games.</string>
+    <string name="saved_games_update_success">Saved to Saved Games.</string>
+    <string name="saved_games_update_failure">Failed to save to Saved Games</string>
+    <string name="saved_games_select_failure">Failed to select from Saved Games.</string>
+    <string name="saved_games_select_cancel">No Saved Game selected.</string>
+    <string name="cloud_save_load_success">Loaded from Cloud Save.</string>
+    <string name="cloud_save_load_failure">Failed to load from Cloud Save.</string>
+    <string name="cloud_save_update_success">Saved to Cloud Save.</string>
+    <string name="cloud_save_update_failure">Failed to save to Cloud Save.</string>
+    <string name="cloud_save_migrate_success">Migrated to Saved Games.</string>
+    <string name="cloud_save_migrate_failure">Failed to migrate to Saved Games.</string>
+    <string name="label_game_data">Game Data:</string>
+    <string name="label_metadata">Metadata:</string>
+    <string name="label_cloud_save">Cloud Save Actions:</string>
+    <string name="label_saved_games">Saved Game Actions:</string>
+    <string name="hint_save_data">save data</string>
+    <string name="sign_in_failed">Failed to sign in. Please check your network connection and try again.</string>
+    <string name="app_misconfigured">The application is incorrectly configured. Check that the package name and signing certificate match the client ID created in Developer Console. Also, if the application is not yet published, check that the account you are trying to sign in with is listed as a tester account. See logs for more information.</string>
+    <string name="license_failed">License check failed.</string>
+    <string name="unknown_error">Unknown error.</string>
+
+
+    <string name="game_title">Solli_Adi</string>
+    <string name="game_blurb">A sample game that tests your ability to click a button. Can you click faster than your friends? Only one way to find out! To play this game with friends, you must sign in with Google.</string>
+    <string name="single_player">Single Player</string>
+    <string name="single_player_explanation">Get some practice!</string>
+    <string name="quick_game">Quick game</string>
+    <string name="invite_players">Invite friends</string>
+    <string name="see_invitations">See invitations</string>
+    <string name="quick_game_explanation">Challenge a random opponent.</string>
+    <string name="invite_players_explanation">Invite friends to play a game.</string>
+    <string name="see_invitations_explanation">See who is inviting you right now.</string>
+    <string name="inv_popup_text">Incoming invitation!</string>
+    <string name="accept_popup_invite">Accept!</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="please_wait">Please wait&#8230;</string>
+    <string name="instructions">Click the button as fast as you can!</string>
+    <string name="game_problem">An error occurred while starting the game. Please try again.</string>
+    <string name="click_me">Click me!</string>
+    <string name="is_inviting_you">is challenging you to a game!</string>
+
+    <string name="remove_ad">விளம்பரத்தை நீக்க</string>
+    <string name="purchase">Purchase செய்ய</string>
+    <string name="customer_care">சேவை மையம்</string>
+
+    <string name="error_no_skus">We didn\'t find any SKUs to display&#8230; Check your internet
+        connection and make sure your Google Developer Console was setup correctly.</string>
+    <string name="error_billing_unavailable">Billing unavailable. Make sure your Google Play app
+        is setup correctly</string>
+    <string name="error_billing_default">Billing unavailable. Please check your device.</string>
+    <string name="button_purchase">Purchase</string>
+    <string name="header_inapp">One-time deals</string>
+    <string name="header_subscriptions">Subscriptions</string>
+    <string name="alert_already_purchased">Item is already purchased</string>
+    <string name="alert_error_consuming">Error while consuming: %1$s</string>
+    <string name="base64_key">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwvB2PRbiaHt07CB1JWpQgitJoe+wCEw65Qb+sPyhVBVALCjgC4jSg8CITqrV+w/73cEAD/BR2PfhjvnHKDmfS0vsdvez0jJ8xihSaSGapnuIvgYvTP5J4OdoG/ZSGXw3qi5Mc5LtA803vMqaHPsZLoJX35lEb6ApGkD0qOZwQOms/FfikuD8b08AYBNAsDaCLiI14N2mcyatWyKupPJvyroflApCaCH7c0uBCj9mHP5inFyWgTEdWILxV8OUJjfIs2NmzVImNGTeqSmYc4BkA+gpKiz8vcrP4GSJSs557drJot1Kkq8iU8jy2SOsZJBCA2zUld5zEkHdukQ1CFtMHwIDAQAB</string>
+
+
+    <!--
+    <string name="industrial_between">ca-app-pub-4267540560263635/9762927501</string>
+-->
+
+
+    <!--
+            <string name="main_banner_ori">ca-app-pub-4267540560263635/4365146301</string>
+            <string name="main_exit_backpress">ca-app-pub-4267540560263635/7191422719</string>
+            <string name="multiplayer_banner">ca-app-pub-4267540560263635/4561389942</string>
+            <string name="back_press_rectangle">ca-app-pub-4267540560263635/7925919880</string>
+            <string name="multiplayer_rectangle">ca-app-pub-4267540560263635/4561389942</string>
+
+            <string name="exit_interstrial">ca-app-pub-4267540560263635/7597135106</string>
+            <string name="exit_categery">ca-app-pub-4267540560263635/9073868303</string>
+            <string name="exit_notification">ca-app-pub-4267540560263635/3211865902</string>
+            <string name="rewarded">ca-app-pub-4267540560263635/8204444300</string>
+    -->
+
+
+    <!--
+        <string name="main_banner_ori">ca-app-pub-3940256099942544/6300978111</string>
+        <string name="main_exit_backpress">ca-app-pub-3940256099942544/6300978111</string>
+        <string name="multiplayer_banner">ca-app-pub-3940256099942544/6300978111</string>
+        <string name="back_press_rectangle">ca-app-pub-3940256099942544/6300978111</string>
+        <string name="multiplayer_rectangle">ca-app-pub-3940256099942544/6300978111</string>
+
+        <string name="exit_interstrial">ca-app-pub-3940256099942544/1033173712</string>
+        <string name="exit_categery">ca-app-pub-3940256099942544/1033173712</string>
+        <string name="exit_notification">ca-app-pub-3940256099942544/1033173712</string>
+        <string name="rewarded">ca-app-pub-3940256099942544/5224354917 </string>
+    -->
+
+
+    <string name="fb_exit_dia">1746769098928603_2532947946977377</string>
+    <string name="fb_score_rec">1746769098928603_2532948420310663</string>
+    <string name="fb_multiplayer_rec">1746769098928603_2532948576977314</string>
+    <string name="fb_rewarded_ins">1746769098928603_2532948850310620</string>
+
+    <string name="fb_noti_banner">1746769098928603_2536275049978000</string>
+    <string name="fb_noti_industrial">1746769098928603_1849279258677586</string>
+
+    <string name="industrial_between">1746769098928603_2532949073643931</string>
+    <string name="Puthayal_Sorkal_Ins">1746769098928603_2542216169383888</string>
+    <string name="Senthamil_Thedal_Ins">1746769098928603_2542216412717197</string>
+    <string name="Ragasiya_sorgal_Ins">1746769098928603_2542216602717178</string>
+
+    <string name="fb_native_banner">1746769098928603_2532949333643905</string>
+    <string name="Puthayal_Sorkal_Native_Banner">1746769098928603_2542217409383764</string>
+    <string name="Senthamil_Thedal_Native_Banner">1746769098928603_2542217632717075</string>
+    <string name="Ragasiya_sorgal_Native_Banner">1746769098928603_2542218286050343</string>
+
+
+    <!--applovin-->
+    <string name="Noti_Banner">2d8dc94d4a113f25</string>
+    <string name="Noti_Exit_INS">e5187e79f6180517</string>
+
+    <string name="Viliyodu_Vilaiyadu_Ins">5e11d3d404441478</string>
+    <string name="Viliyodu_Vilaiyadu_Native_Banner_new">b426fdb889827cea</string>
+
+
+    <string name="Puthayal_Sorkal_Ins_new">489542293b12c52d</string>
+    <string name="Puthayal_Sorkal_Native_Banner_new">dd3fe3a5697468f8</string>
+
+    <string name="Senthamil_Thedal_Ins_new">3115a52bb21a9f6d</string>
+    <string name="Senthamil_Thedal_Native_Banner_new">67496545534bae5e</string>
+
+    <string name="Ragasiya_sorgal_ins">cc5177a5d9d8697c</string>
+    <string name="Ragasiya_sorgal_Native_Banner_new">e470391d057cdc9f</string>
+
+
+    <string name="Reward_Ins">4035191e86eb48ed</string>
+    <string name="App_Exit_Ins">3131a2b2c46d46b0</string>
+    <string name="Game_Exit_Rec">9aa81d9b09537904</string>
+    <string name="Cat_Exit_Ins">29757919cd348ccb</string>
+</resources>
