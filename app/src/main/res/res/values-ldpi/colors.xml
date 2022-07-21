@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="red">#c93006</color>
+    <color name="sky_blue">#05dae9</color>
+    <color name="black">#050e0e</color>
+    <color name="ylet">#46279e</color>
+    <color name="dark_blue">#0634c9</color>
+    <color name="light_green">#85fc8d</color>
+    <color name="dark_green">#0c380f</color>
+    <color name="light_yellow">#e2fc85</color>
+    <color name="dark_yellow">#c1be03</color>
+    <color name="rose">#be03c1</color>
+    <color name="orange">#ca7104</color>
+    <color name="white">#f4eadf</color>
+    <color name="transparent">#cc027eb7</color>
+    <color name="transparent2">#cc98a42d</color>
+    <color name="intro_transparent">#cc081c6e</color>
+<color name="blueicon">#00AFEF</color>
+
+    <color name="rippelColor1">#ea1b1b</color>
+    <color name="rippelColor2">#99bf10</color>
+    <color name="rippelColor3">#be03c1</color>
+</resources>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#e2616455"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/lrtbp_5"
+        android:layout_marginRight="@dimen/lrtbp_5"
+        android:background="@drawable/back_dialog_mainact"
+        android:paddingTop="@dimen/lrtbp_5"
+        android:paddingBottom="@dimen/lrtbp_10">
+
+        <LinearLayout
+            android:id="@+id/asd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true">
+
+            <ImageView
+                android:layout_width="@dimen/txt_25"
+                android:layout_height="@dimen/txt_25"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:layout_marginTop="@dimen/lrtbp_20"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/txt_ex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/lrtbp_10"
+                android:gravity="center"
+                android:paddingTop="@dimen/lrtbp_10"
+                android:paddingBottom="@dimen/lrtbp_10"
+                android:text="நீங்கள் வெளியேற வேண்டுமா?"
+                android:textColor="@color/dark_green"
+                android:textSize="@dimen/txt_16"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+        <!--   <FrameLayout
+               android:id="@+id/fl_adplaceholder"
+               android:layout_below="@+id/asd"
+               android:layout_marginLeft="@dimen/lrtbp_5"
+               android:layout_marginRight="@dimen/lrtbp_5"
+               android:layout_marginBottom="@dimen/lrtbp_15"
+               android:orientation="horizontal"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:background="#22dae7d6"
+               />-->
+
+        <LinearLayout
+            android:id="@+id/ads_lay"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/asd"
+            android:minHeight="250dp"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ads_lay">
+
+            <CheckBox
+                android:id="@+id/checkbox_back"
+                android:layout_width="@dimen/wh_35"
+                android:layout_height="@dimen/wh_35"
+                android:layout_below="@+id/txt_ex2"
+                android:layout_marginLeft="@dimen/lrtbp_25"
+                android:textSize="@dimen/txt_10" />
+
+            <TextView
+                android:id="@+id/noask"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txt_ex2"
+                android:layout_toRightOf="@+id/checkbox_ans"
+                android:text="மீண்டும் கேட்க வேண்டாம்."
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lir"
+            android:layout_marginLeft="@dimen/lrtbp_10"
+            android:layout_marginTop="@dimen/lrtbp_15"
+            android:layout_marginRight="@dimen/lrtbp_10"
+            android:layout_marginBottom="@dimen/lrtbp_10">
+
+            <TextView
+                android:id="@+id/yes"
+                android:layout_width="@dimen/croll_app_height"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/lrtbp_20"
+                android:background="@drawable/b_go"
+                android:gravity="center"
+                android:paddingTop="@dimen/lrtbp_10"
+                android:paddingBottom="@dimen/lrtbp_10"
+                android:text="வேண்டும்"
+                android:textColor="@color/white"
+                android:textSize="@dimen/txt_16" />
+
+            <TextView
+                android:id="@+id/no"
+                android:layout_width="@dimen/croll_app_height"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+
+                android:layout_marginRight="@dimen/lrtbp_20"
+                android:background="@drawable/b_no"
+                android:gravity="center"
+                android:paddingLeft="@dimen/lrtbp_15"
+                android:paddingTop="@dimen/lrtbp_10"
+                android:paddingRight="@dimen/lrtbp_15"
+                android:paddingBottom="@dimen/lrtbp_10"
+                android:text="இல்லை"
+                android:textColor="@color/white"
+                android:textSize="@dimen/txt_16" />
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="#cc3b692b"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<RelativeLayout
+    android:background="@drawable/back_dialog"
+    android:paddingTop="@dimen/lrtbp_20"
+    android:layout_marginRight="@dimen/lrtbp_5"
+    android:layout_marginLeft="@dimen/lrtbp_5"
+    android:paddingBottom="@dimen/lrtbp_20"
+  android:layout_centerInParent="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/txt_ex"
+        android:textSize="@dimen/txt_16"
+        android:textColor="@color/white"
+        android:paddingLeft="@dimen/lrtbp_10"
+        android:paddingRight="@dimen/lrtbp_20"
+
+        android:layout_centerHorizontal="true"
+        android:text="விடைகளை பார்க்க வேண்டுமா ?"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/txt_ex2"
+        android:textSize="@dimen/txt_12"
+        android:textColor="@color/white"
+
+        android:paddingLeft="@dimen/lrtbp_10"
+        android:paddingRight="@dimen/lrtbp_20"
+android:layout_below="@id/txt_ex"
+        android:layout_centerHorizontal="true"
+        android:text="மொத்த நாணயங்களில் 20 குறைக்கப்படும்"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+<LinearLayout
+    android:id="@+id/lir"
+
+    android:layout_below="@+id/txt_ex2"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <CheckBox
+        android:id="@+id/checkbox_ans"
+        android:layout_below="@+id/txt_ex2"
+        android:layout_marginLeft="@dimen/lrtbp_25"
+        android:textSize="@dimen/txt_10"
+        android:layout_width="@dimen/wh_35"
+        android:layout_height="@dimen/wh_35"/>
+    <TextView
+        android:text="மீண்டும் கேட்க வேண்டாம்."
+        android:layout_below="@+id/txt_ex2"
+        android:layout_toRightOf="@+id/checkbox_ans"
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
+
+    <RelativeLayout
+        android:layout_marginTop="@dimen/lrtbp_10"
+        android:layout_below="@+id/lir"
+        android:layout_marginLeft="@dimen/lrtbp_10"
+        android:layout_marginRight="@dimen/lrtbp_10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/yes"
+            android:text="பார்க்க"
+            android:layout_marginLeft="@dimen/lrtbp_20"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:textSize="@dimen/txt_16"
+            android:paddingTop="@dimen/lrtbp_10"
+            android:paddingBottom="@dimen/lrtbp_10"
+            android:background="@drawable/b_go"
+            android:layout_width="@dimen/croll_app_height"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/no"
+            android:layout_marginRight="@dimen/lrtbp_20"
+            android:text="வேண்டாம்"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:layout_alignParentRight="true"
+            android:textSize="@dimen/txt_16"
+            android:paddingTop="@dimen/lrtbp_10"
+            android:paddingBottom="@dimen/lrtbp_10"
+            android:background="@drawable/b_no"
+            android:layout_width="@dimen/croll_app_height"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="#b8b976"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+       android:layout_marginRight="@dimen/lrtbp_10"
+        android:layout_marginLeft="@dimen/lrtbp_10"
+        android:layout_marginTop="@dimen/lrtbp_10"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <WebView
+                android:layout_marginBottom="@dimen/lrtbp_10"
+                android:layout_above="@+id/done_exit"
+                android:id="@+id/web_introscreen"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </WebView>
+            <TextView
+                android:id="@+id/done_exit"
+                android:layout_width="140dp"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/bt3"
+                android:gravity="center"
+                android:text=" சரி"
+                android:textColor="#fff"
+                android:textSize="15dp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/ok"
+            android:background="@drawable/kid_dia_cancel"
+            android:layout_alignParentRight="true"
+            android:layout_width="@dimen/wh_35"
+            android:layout_height="@dimen/wh_35" />
+    </RelativeLayout>
+</RelativeLayout>

@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="#FFc933"
+    android:layout_height="match_parent"
+    tools:context="nithra.tamil.word.game.solliadi.States_Activity">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="#FFc933"
+        android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/refreshlayout"
+                android:layout_width="match_parent"
+                android:background="#ccb2b3ac"
+                android:backgroundTint="@color/dark_green"
+                android:orientation="horizontal"
+                android:layout_height="@dimen/lrtbp_30">
+                <TextView
+                    android:id="@+id/weekly"
+                    android:text="வாரம்"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:paddingLeft="@dimen/lrtbp_10"
+                    android:background="#ffc933"
+                    android:paddingRight="@dimen/lrtbp_10"
+                    android:textSize="@dimen/txt_20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />.
+                <TextView
+                    android:id="@+id/asd"
+                    android:layout_toRightOf="@+id/weekly"
+                    android:background="#cce7e7e2"
+                    android:layout_width="@dimen/wh_2"
+                    android:layout_marginTop="@dimen/wh_2"
+                    android:layout_marginBottom="@dimen/wh_2"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:layout_toRightOf="@+id/asd"
+                    android:id="@+id/month"
+                    android:paddingLeft="@dimen/lrtbp_10"
+                    android:paddingRight="@dimen/lrtbp_10"
+                    android:text="மாதம்"
+                    android:background="#20418c"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/txt_20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/rew"
+                    android:layout_toRightOf="@+id/month"
+                    android:background="#cce7e7e2"
+                    android:layout_width="@dimen/wh_2"
+                    android:layout_marginTop="@dimen/wh_2"
+                    android:layout_marginBottom="@dimen/wh_2"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:layout_toRightOf="@+id/rew"
+                    android:id="@+id/share"
+                    android:text="பகிர்"
+                    android:gravity="center"
+                    android:background="#5c047e"
+                    android:paddingLeft="@dimen/lrtbp_10"
+                    android:paddingRight="@dimen/lrtbp_10"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/txt_20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:layout_toRightOf="@+id/share"
+                    android:background="#cce7e7e2"
+                    android:layout_width="@dimen/wh_2"
+                    android:layout_marginTop="@dimen/wh_2"
+                    android:layout_marginBottom="@dimen/wh_2"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/refresh"
+                    android:background="@drawable/ref"
+                    android:layout_width="@dimen/wh_50"
+                    android:layout_height="@dimen/wh_50" />
+            </RelativeLayout>
+
+<RelativeLayout
+    android:id="@+id/middle"
+    android:layout_below="@+id/refreshlayout"
+    android:layout_above="@+id/below"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/title"
+        android:text="இந்த வாரம் முன்னிலையில் உள்ளவர்கள். "
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textColor="@color/red"
+        android:textSize="@dimen/txt_16"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <RelativeLayout
+        android:layout_below="@+id/title"
+        android:id="@+id/namelayout"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:background="#666159"
+        android:layout_height="@dimen/wh_45">
+        <TextView
+            android:layout_marginLeft="@dimen/lrtbp_5"
+            android:id="@+id/number"
+            android:visibility="gone"
+            android:text="no"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_22"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:layout_toRightOf="@+id/number"
+android:layout_marginLeft="@dimen/lrtbp_5"
+            android:id="@+id/name"
+            android:text="பெயர்"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_18"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:id="@+id/score"
+            android:text="புள்ளிகள்"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_18"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:layout_centerHorizontal="true"
+            android:layout_marginRight="@dimen/lrtbp_10"
+            android:id="@+id/city"
+            android:text="ஊர்"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_18"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_below="@+id/namelayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/list"
+            android:background="@drawable/yellow_back"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </ListView>
+<TextView
+android:id="@+id/nodates"
+    android:visibility="invisible"
+    android:textColor="@color/black"
+    android:textSize="@dimen/txt_18"
+    android:layout_centerInParent="true"
+    android:text="தகவல் இல்லை பிறகு முயற்சிக்கவும்."
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" />
+    </RelativeLayout>
+</RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/below"
+            android:background="#303032"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/wh_180">
+<TextView
+    android:id="@+id/yourposition"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="@dimen/lrtbp_25"
+    android:text="உங்களின் நிலை"
+    android:textColor="@color/white"
+    android:textSize="@dimen/txt_20"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_below="@+id/yourposition"
+                android:id="@+id/yourscore"
+                android:layout_marginTop="@dimen/lrtbp_20"
+                android:layout_centerHorizontal="true"
+                android:text="உங்களின் மதிப்பெண்"
+                android:padding="@dimen/lrtbp_10"
+                android:background="@drawable/yellow_back"
+                android:textColor="@color/black"
+                android:textSize="@dimen/txt_20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_marginTop="@dimen/lrtbp_10"
+                android:layout_below="@+id/yourscore"
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/wh_2" />
+        </RelativeLayout>
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="@dimen/lrtbp_5"
+        android:padding="@dimen/lrtbp_5"
+        android:layout_marginLeft="@dimen/lrtbp_5"
+        android:layout_above="@+id/tt2"
+        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:background="@drawable/yellow_back"
+
+        android:id="@+id/rewardvideo"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_above="@+id/tt22"
+            android:background="@drawable/vid_bones"
+            android:layout_width="@dimen/wh_20"
+            android:layout_height="@dimen/wh_20" />
+        <TextView
+            android:textColor="#00257c"
+            android:textSize="@dimen/txt_12"
+            android:text="காணொளியை பார்த்து புள்ளிகளை அதிகரித்துக்கொள்ள "
+            android:textStyle="bold"
+            android:layout_marginBottom="@dimen/wh_2"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</RelativeLayout>

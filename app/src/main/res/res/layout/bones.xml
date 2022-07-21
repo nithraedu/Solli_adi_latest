@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<RelativeLayout
+    android:background="#be7a04"
+    android:paddingTop="@dimen/lrtbp_10"
+    android:layout_marginRight="@dimen/lrtbp_5"
+    android:layout_marginLeft="@dimen/lrtbp_5"
+    android:paddingBottom="@dimen/lrtbp_20"
+    android:layout_centerInParent="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_centerHorizontal="true"
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/logo_img"
+            android:background="@drawable/logo2"
+            android:layout_width="@dimen/wh_80"
+            android:layout_height="@dimen/wh_80" />
+    </LinearLayout>
+    <LinearLayout
+      android:orientation="horizontal"
+        android:id="@+id/asd"
+        android:layout_below="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/txt_ex"
+            android:textStyle="bold"
+            android:paddingBottom="@dimen/lrtbp_10"
+            android:paddingTop="@dimen/lrtbp_10"
+            android:textSize="@dimen/txt_22"
+            android:textColor="@color/white"
+            android:layout_marginLeft="@dimen/lrtbp_5"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="கூடுதல் நாணயங்கள் "
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/hf"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/asd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/img_con"
+            android:layout_below="@+id/asd"
+            android:src="@drawable/coins"
+            android:layout_width="@dimen/wh_40"
+            android:layout_height="@dimen/wh_40" />
+        <TextView
+            android:id="@+id/b_score"
+
+            android:paddingBottom="@dimen/lrtbp_10"
+            android:paddingTop="@dimen/lrtbp_10"
+            android:paddingLeft="@dimen/lrtbp_10"
+            android:paddingRight="@dimen/lrtbp_10"
+            android:textSize="@dimen/txt_24"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:text="100"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/lrtbp_10"
+        android:layout_below="@+id/hf"
+        android:layout_marginLeft="@dimen/lrtbp_10"
+        android:layout_marginRight="@dimen/lrtbp_10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/ok_y"
+            android:text="சரி"
+            android:layout_marginLeft="@dimen/lrtbp_20"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_16"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="@dimen/lrtbp_10"
+            android:paddingBottom="@dimen/lrtbp_10"
+            android:background="@drawable/b_go"
+            android:layout_width="@dimen/croll_app_height"
+            android:layout_height="wrap_content" />
+
+
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>
+
+</RelativeLayout>

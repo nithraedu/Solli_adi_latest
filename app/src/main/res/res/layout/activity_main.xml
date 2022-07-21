@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/lib/com.google.android.gms.plus"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            layout="@layout/app_bar_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/nav_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@color/dark_green"
+        android:fitsSystemWindows="true">
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/img"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/nav_header_height"
+            android:background="@drawable/header"
+            android:gravity="bottom"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingBottom="@dimen/activity_vertical_margin">
+
+            <TextView
+                android:id="@+id/version_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true" />
+
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/im_below"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/img"
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:layout_marginBottom="@dimen/lrtbp_5"
+            android:orientation="horizontal">
+
+            <com.facebook.widget.LikeView
+                android:id="@+id/likebutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/plus_one_button"
+                android:layout_marginRight="@dimen/lrtbp_10" />
+
+            <com.google.android.gms.plus.PlusOneButton
+                xmlns:plus="http://schemas.android.com/apk/lib/com.google.android.gms.plus"
+                android:id="@+id/plus_one_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                app:annotation="bubble"
+                plus:size="home_icon" />
+
+
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/im_below">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/home"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/home_img"
+                        android:layout_width="@dimen/txt_25"
+                        android:layout_height="@dimen/txt_25"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:background="@drawable/home_icon" />
+
+                    <TextView
+                        android:id="@+id/home_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:text="முகப்பு"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_18" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/frs"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/home"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:background="@color/white" />
+
+                <LinearLayout
+                    android:id="@+id/notifications"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/frs">
+
+                    <ImageView
+                        android:id="@+id/noti_img"
+                        android:layout_width="@dimen/txt_25"
+                        android:layout_height="@dimen/txt_25"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:background="@drawable/notification1" />
+
+                    <TextView
+                        android:id="@+id/noti_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:text="அறிவிப்புகள்"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_18" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/fts"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/notifications"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:background="@color/white" />
+
+                <LinearLayout
+                    android:id="@+id/karuthu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/fts">
+
+                    <ImageView
+                        android:id="@+id/karuthu_img"
+                        android:layout_width="@dimen/txt_25"
+                        android:layout_height="@dimen/txt_25"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:background="@drawable/feedback1" />
+
+                    <TextView
+                        android:id="@+id/karuthu_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:text="கருத்துக்கள்"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_18" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tds"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/karuthu"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:background="@color/white" />
+
+                <LinearLayout
+                    android:id="@+id/rating"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tds">
+
+                    <ImageView
+                        android:id="@+id/rating_img"
+                        android:layout_width="@dimen/txt_25"
+                        android:layout_height="@dimen/txt_25"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:background="@drawable/rateus1" />
+
+                    <TextView
+                        android:id="@+id/rating_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:text="மதிப்பிடவும்"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_18" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/eds"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/rating"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:background="@color/white" />
+
+                <LinearLayout
+                    android:id="@+id/nithra"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/eds">
+
+                    <ImageView
+                        android:id="@+id/nithra_img"
+                        android:layout_width="@dimen/txt_25"
+                        android:layout_height="@dimen/txt_25"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:background="@drawable/moreapps1" />
+
+                    <TextView
+                        android:id="@+id/nithra_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:text="நித்ரா செயலிகள்"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_18" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/weq"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/nithra"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:background="@color/white" />
+
+                <LinearLayout
+                    android:id="@+id/share"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/weq">
+
+                    <ImageView
+                        android:id="@+id/share_img"
+                        android:layout_width="@dimen/txt_25"
+                        android:layout_height="@dimen/txt_25"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:background="@drawable/share1" />
+
+                    <TextView
+                        android:id="@+id/share_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:text="பகிரவும்"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_20" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/exw"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/share"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:background="@color/white"
+                    android:visibility="gone" />
+                <!-- <LinearLayout
+                     android:id="@+id/exit"
+                     android:layout_below="@+id/exw"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content">
+                     <ImageView
+                         android:id="@+id/exit_img"
+                         android:background="@drawable/exits4"
+                         android:layout_width="@dimen/txt_25"
+                         android:layout_height="@dimen/txt_25" />
+                     <TextView
+                         android:layout_marginLeft="@dimen/lrtbp_5"
+                         android:layout_marginTop="@dimen/wh_2"
+                         android:id="@+id/exit_txt"
+                         android:text="வெளியேற"
+                         android:textColor="@color/white"
+                         android:textSize="@dimen/txt_20"
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content" />
+
+                 </LinearLayout>-->
+                <TextView
+                    android:id="@+id/dre"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/exw"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:background="@color/white" />
+
+
+                <LinearLayout
+                    android:id="@+id/daily"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/dre"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/daily_notiimage"
+                        android:layout_width="@dimen/txt_25"
+                        android:layout_height="@dimen/txt_25"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:background="@drawable/daily_icon" />
+
+                    <TextView
+                        android:id="@+id/daily_txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:text=" அறிவிப்புகள் "
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_18" />
+
+                    <ToggleButton
+                        android:id="@+id/daily_noti"
+                        android:layout_width="@dimen/lrtbp_30"
+                        android:layout_height="@dimen/lrtbp_25"
+                        android:layout_marginLeft="@dimen/lrtbp_20"
+                        android:layout_marginRight="@dimen/lrtbp_10"
+                        android:background="@drawable/switch_on_off2"
+                        android:checked="true"
+                        android:textOff=""
+                        android:textOn="" />
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/tri"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/daily"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:background="@color/white"
+                    android:visibility="gone" />
+
+
+                <LinearLayout
+                    android:id="@+id/dailytestlist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tri"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/dailytest_img"
+                        android:layout_width="@dimen/txt_25"
+                        android:layout_height="@dimen/txt_25"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:background="@drawable/daily_icon" />
+
+                    <TextView
+                        android:id="@+id/dailytest_img_txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:text="தினசரி விளையாட்டுகள் "
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_18" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/wqe"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/dailytestlist"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:background="@color/white" />
+
+
+                <LinearLayout
+                    android:id="@+id/saved_game"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/wqe"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/saved_game_img"
+                        android:layout_width="@dimen/txt_25"
+                        android:layout_height="@dimen/txt_25"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:background="@drawable/saved_game_icon" />
+
+                    <TextView
+                        android:id="@+id/saved_txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:text="சேமித்த தரவு "
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_18" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/sdw"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/saved_game"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:background="@color/white" />
+
+                <LinearLayout
+                    android:id="@+id/free_roll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/sdw"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/free_img"
+                        android:layout_width="@dimen/txt_25"
+                        android:layout_height="@dimen/txt_25"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:background="@drawable/exits4" />
+
+                    <TextView
+                        android:id="@+id/free"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:text="FREE ROLL"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_20" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/exww"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/free_roll"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:background="@color/white"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:id="@+id/exit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/exww">
+
+                    <ImageView
+                        android:id="@+id/exit_img"
+                        android:layout_width="@dimen/txt_25"
+                        android:layout_height="@dimen/txt_25"
+                        android:background="@drawable/exits4" />
+
+                    <TextView
+                        android:id="@+id/exit_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:text="வெளியேற"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_18" />
+
+                </LinearLayout>
+            </RelativeLayout>
+
+
+        </ScrollView>
+    </RelativeLayout>
+
+    <!-- <android.support.design.widget.NavigationView android:id="@+id/nav_view"
+         android:layout_width="wrap_content"
+         android:layout_height="match_parent"
+         android:layout_gravity="start"
+         android:fitsSystemWindows="true"
+
+         app:menu="@menu/activity_main_drawer"
+         app:itemIconTint="@color/blueicon"/>-->
+
+</android.support.v4.widget.DrawerLayout>

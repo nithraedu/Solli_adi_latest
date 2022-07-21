@@ -1,0 +1,53 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/version2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center"
+        android:background="#666666"
+        android:enabled="false"
+        android:gravity="center"
+        android:text="Title"
+        android:textColor="#fff"
+        android:textSize="20dp"
+        android:textStyle="bold|italic"
+        android:typeface="serif" />
+
+
+    <com.nithra.tamilsms.Nested_WebView.NestedWebView
+        android:id="@+id/common_web"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/addview"
+        android:layout_below="@+id/version2"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/web_share"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="60dp"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_above="@+id/addview"
+        android:src="@drawable/share1" />
+
+    <LinearLayout
+        android:id="@+id/addview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+    </LinearLayout>
+
+</RelativeLayout>

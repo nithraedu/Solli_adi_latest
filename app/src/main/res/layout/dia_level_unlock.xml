@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_centerInParent="true"
+        android:layout_margin="10dp"
+        android:background="@drawable/ans_background">
+
+        <TextView
+            android:id="@+id/unlock_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="35dp"
+            android:text="நிலையை விடுவிக்க"
+            android:textColor="#fff"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/close_unlock"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/ic_close" />
+
+        <RelativeLayout
+            android:background="@color/colorPrimaryDark"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/unlock_yes"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/unlock_title">
+
+            <TextView
+                android:id="@+id/unlock_content_txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_margin="15dp"
+                android:gravity="center"
+                android:text="இந்த நிலையை விடுவிக்க 2000 நாணயங்கள் உங்களிடம் இருந்து பெறப்படும் .விடுவிக்க வேண்டுமெனில் சரி பொத்தானை அமுக்கவும் "
+                android:textColor="@color/dark_green"
+                android:textSize="16dp" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:id="@+id/unlock_yes"
+            android:layout_width="140dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/bt1"
+            android:gravity="center"
+            android:text="சரி"
+            android:textColor="#ffffff"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

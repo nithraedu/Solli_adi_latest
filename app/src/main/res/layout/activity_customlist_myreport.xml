@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<RelativeLayout
+    android:id="@+id/list1"
+     android:padding="@dimen/lrtbp_10"
+    android:background="@drawable/reward_name_back"
+    android:layout_marginLeft="@dimen/wh_2"
+    android:layout_marginRight="@dimen/wh_2"
+    android:layout_marginTop="@dimen/lrtbp_5"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/no"
+            android:text="1"
+            android:textSize="@dimen/txt_16"
+            android:textColor="@color/red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/name"
+            android:textColor="@color/dark_green"
+            android:layout_marginLeft="@dimen/wh_2"
+            android:layout_toRightOf="@+id/no"
+            android:textSize="@dimen/txt_16"
+            android:text="Sivasakthivel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/score"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_16"
+            android:text="1000"
+            android:layout_marginLeft="@dimen/lrtbp_20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/city"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_16"
+            android:text="namakkal"
+            android:layout_marginLeft="@dimen/lrtbp_20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+
+</RelativeLayout>
+
+</RelativeLayout>
+
+
+

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/top"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/frame_layout2"
+        android:background="#d7444536"
+        android:padding="@dimen/lrtbp_5">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@drawable/background_border"
+            android:padding="@dimen/lrtbp_5">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_centerHorizontal="true"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/questions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@drawable/outline"
+                        android:padding="@dimen/lrtbp_5"
+                        android:text="வார்த்தைகள்"
+                        android:textColor="@color/dark_green"
+                        android:textSize="@dimen/txt_18"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/word1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/lrtbp_15"
+                        android:layout_marginBottom="@dimen/lrtbp_15"
+                        android:padding="@dimen/lrtbp_5"
+                        android:text="wd1"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_16" />
+
+                    <TextView
+                        android:id="@+id/word2"
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/lrtbp_5"
+                        android:text="wd2"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_16"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/word3"
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/lrtbp_5"
+                        android:text="wd3"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_16"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/word4"
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/lrtbp_5"
+                        android:text="wd4"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_16"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/word5"
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/lrtbp_5"
+                        android:text="wd5"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_16"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/word6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/lrtbp_5"
+                        android:text="wd6"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_16"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/answer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/outline"
+                        android:padding="@dimen/lrtbp_5"
+                        android:text="வேறுபட்ட வார்த்தை "
+                        android:textColor="@color/dark_green"
+                        android:textSize="@dimen/txt_18"
+                        android:textStyle="bold" />
+
+                    <TextView
+
+                        android:id="@+id/ans"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/lrtbp_10"
+                        android:layout_marginTop="@dimen/lrtbp_15"
+                        android:layout_marginRight="@dimen/lrtbp_10"
+                        android:layout_marginBottom="@dimen/lrtbp_15"
+                        android:background="@drawable/ans_definition"
+                        android:gravity="center"
+                        android:padding="@dimen/lrtbp_5"
+                        android:text="ans"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_18" />
+
+                    <TextView
+                        android:id="@+id/dis"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/outline"
+                        android:padding="@dimen/lrtbp_5"
+                        android:text="விளக்கம்"
+                        android:textColor="@color/dark_green"
+                        android:textSize="@dimen/txt_18"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/discription"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="@dimen/lrtbp_5"
+                        android:text="discription"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_18"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/close"
+                android:layout_width="@dimen/wh_35"
+                android:layout_height="@dimen/wh_35"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/kid_dia_cancel"
+                android:padding="@dimen/lrtbp_10" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+    <FrameLayout
+        android:id="@+id/frame_layout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"></FrameLayout>
+
+</RelativeLayout>

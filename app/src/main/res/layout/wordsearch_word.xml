@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nithra.tamil.word.game.solliadi.word_search_game.Models.extra.MyTextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lbl_word"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Testwordcase"
+    android:textAllCaps="true"
+    android:textColor="#fff"
+    android:padding="5dp"
+    android:textSize="14sp" />

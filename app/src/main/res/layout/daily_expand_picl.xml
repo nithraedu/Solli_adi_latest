@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<RelativeLayout
+    android:background="@drawable/pic_expand"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/wh_80">
+    <TextView
+        android:layout_marginTop="@dimen/lrtbp_5"
+        android:layout_gravity="center"
+        android:id="@+id/pic_gametxt"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:padding="@dimen/lrtbp_5"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:text="படங்களோடு போட்டியிட்டு வார்த்தையை வெல்லுங்கள் !"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/pic_gametxt"
+        android:id="@+id/p_image_layout"
+        android:orientation="horizontal"
+        android:background="@drawable/imageback"
+        android:layout_width="wrap_content"
+      android:paddingBottom="@dimen/wh_2"
+        android:layout_height="@dimen/wh_80">
+        <ImageView
+
+            android:id="@+id/im_1"
+            android:layout_marginLeft="@dimen/lrtbp_5"
+            android:layout_marginRight="@dimen/lrtbp_5"
+            android:visibility="gone"
+            android:layout_width="@dimen/wh_60"
+            android:layout_height="@dimen/wh_60" />
+        <ImageView
+            android:id="@+id/im_2"
+            android:layout_marginRight="@dimen/lrtbp_5"
+            android:visibility="gone"
+            android:layout_width="@dimen/wh_60"
+            android:layout_height="@dimen/wh_60" />
+        <ImageView
+            android:id="@+id/im_3"
+            android:layout_marginRight="@dimen/lrtbp_5"
+            android:visibility="gone"
+            android:layout_width="@dimen/wh_60"
+            android:layout_height="@dimen/wh_60" />
+        <ImageView
+            android:id="@+id/im_4"
+            android:layout_marginRight="@dimen/lrtbp_5"
+            android:visibility="gone"
+            android:layout_width="@dimen/wh_60"
+            android:layout_height="@dimen/wh_60" />
+
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>
+
+
+</RelativeLayout>

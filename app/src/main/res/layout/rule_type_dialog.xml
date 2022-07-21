@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#dca99090"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:padding="@dimen/lrtbp_10"
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_centerInParent="true"
+            android:id="@+id/cen"
+            android:orientation="vertical"
+            android:padding="@dimen/lrtbp_25"
+            android:background="@drawable/curve_back_multipalyer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/game_rule"
+                android:background="@drawable/bt1"
+                android:gravity="center"
+                android:textColor="#ffff"
+                android:text="விளையாட்டு விதிமுறைகள்"
+                android:textSize="@dimen/txt_16"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/wh_50"/>
+            <TextView
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:id="@+id/prize_rule"
+                android:background="@drawable/bt1"
+                android:text="பரிசு விதிமுறைகள்"
+                android:gravity="center"
+                android:textSize="@dimen/txt_16"
+                android:textColor="#ffff"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/wh_50"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/close"
+            android:layout_alignParentRight="true"
+            android:layout_width="@dimen/lrtbp_25"
+            android:layout_height="@dimen/lrtbp_25"
+            android:background="@drawable/close_mul" />
+
+    </RelativeLayout>
+</RelativeLayout>

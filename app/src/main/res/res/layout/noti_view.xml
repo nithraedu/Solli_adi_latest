@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+     android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+   >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+android:layout_above="@+id/ads_lay"
+  >
+
+        <RelativeLayout
+            android:id="@+id/tit_txt1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tit_txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="@dimen/txt_22"
+                android:layout_centerInParent="true"
+                android:padding="@dimen/lrtbp_5"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+            <Button
+                android:id="@+id/noti_delete"
+                android:layout_width="@dimen/wh_20"
+                android:layout_height="@dimen/wh_20"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_marginRight="@dimen/lrtbp_5"
+                android:background="@drawable/delete_all"/>
+        </RelativeLayout>
+        <TextView
+            android:id="@+id/del_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#12110f"
+            android:textStyle="bold"
+            android:text="Long press to delete"
+            android:layout_below="@id/tit_txt1"
+            android:padding="@dimen/wh_2"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
+     <TextView
+         android:id="@+id/view1"
+         android:layout_width="match_parent"
+         android:layout_height="@dimen/wh_1"
+         android:background="@color/colorPrimary"
+         android:layout_marginTop="@dimen/lrtbp_5"
+         android:layout_below="@+id/del_txt"/>
+
+        <TextView
+            android:id="@+id/txtNoNotification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view1"
+            android:layout_centerInParent="true"
+
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:gravity="center"
+            android:text="அறிவிப்புகள் ஏதும் இல்லை"
+            android:textColor="@color/black"
+            android:textSize="@dimen/txt_22"
+            android:typeface="serif"
+            android:visibility="gone"/>
+
+        <ListView
+            android:id="@+id/listView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view1"
+            android:dividerHeight="@dimen/wh_1"
+            android:divider="@color/black"
+            android:layout_marginTop="@dimen/info_margin_top"
+            android:layout_marginBottom="@dimen/info_margin_top"
+            android:layout_marginLeft="@dimen/info_margin_left"
+            android:layout_marginRight="@dimen/info_margin_right"
+             >
+        </ListView>
+
+
+
+
+    </RelativeLayout>
+
+    <com.facebook.ads.NativeAdLayout
+        android:id="@+id/native_banner_ad_container"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="50dp"
+        android:layout_alignParentBottom="true" />
+
+    <LinearLayout
+        android:id="@+id/ads_lay"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+    </LinearLayout>
+</RelativeLayout>

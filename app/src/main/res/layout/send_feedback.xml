@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:customfontdemo="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="#cc98a42d"
+    android:orientation="vertical" >
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/setting_back" >
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/rep_heading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:layout_marginLeft="@dimen/lrtbp_5"
+                android:layout_marginRight="@dimen/lrtbp_5"
+                android:paddingTop="@dimen/lrtbp_5"
+                android:text="சொல்லிஅடி செயலியை  மேலும்  மேம்படுத்திக்கொள்ள உங்களது கருத்துக்களை பதிவு செய்யவும் "
+                android:textColor="@color/white"
+                android:textSize="@dimen/txt_16"
+                android:textStyle="bold"
+                android:typeface="serif" />
+            <EditText
+                android:id="@+id/emails"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/wh_45"
+                android:gravity="left|top"
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:layout_marginRight="@dimen/lrtbp_10"
+                android:background="@color/white"
+                android:hint="மின்னஞ்சலை பதிவிடவும்"
+                android:minLines="6"
+                android:textColor="#000"
+                android:textSize="@dimen/txt_18" > </EditText>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:gravity="left|top"
+                android:background="@color/white"
+                android:layout_marginTop="@dimen/lrtbp_10"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:layout_marginRight="@dimen/lrtbp_10"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/editText1"
+                    android:hint=" கருத்துக்களை பதிவு செய்ய"
+                    android:textColorHint="@color/red"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minLines="6"
+                    android:textColor="#000"
+                    android:textSize="@dimen/txt_18" >
+                </EditText>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:visibility="gone"
+                android:background="@drawable/ans_background"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:layout_marginRight="@dimen/lrtbp_10"
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:paddingBottom="@dimen/lrtbp_10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                >
+                <TextView
+                    android:textColor="@color/white"
+                    android:text="கட்டாயமற்றது"
+                    android:textSize="@dimen/txt_16"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginLeft="@dimen/lrtbp_10"
+                    android:layout_marginRight="@dimen/lrtbp_10"
+                    android:layout_height="wrap_content">
+                    <EditText
+                        android:id="@+id/name"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/wh_45"
+                        android:gravity="left|top"
+                        android:background="@color/white"
+                        android:textColorHint="@color/red"
+                        android:hint="பெயர்"
+                        android:minLines="6"
+                        android:textColor="#000"
+                        android:textSize="@dimen/txt_18" > </EditText>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginLeft="@dimen/lrtbp_10"
+                    android:layout_marginRight="@dimen/lrtbp_10"
+                    android:layout_height="wrap_content">
+                    <EditText
+                        android:id="@+id/ph_no"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/wh_45"
+                        android:gravity="left|top"
+                        android:background="@color/white"
+                        android:textColorHint="@color/red"
+                        android:hint=" அழைபேசி எண்"
+                        android:inputType="number"
+                        android:minLines="6"
+                        android:textColor="#000"
+                        android:textSize="@dimen/txt_18" >
+                    </EditText>
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+
+            </LinearLayout>
+            <TextView
+                android:layout_marginTop="@dimen/lrtbp_10"
+                android:id="@+id/privacy_policy"
+                android:text="@string/your_string_here"
+                android:textColor="@color/white"
+                android:textSize="13dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <Button
+                android:id="@+id/btnSend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/lrtbp_10"
+                android:layout_marginTop="@dimen/lrtbp_10"
+                android:textStyle="bold"
+                android:paddingLeft="@dimen/lrtbp_10"
+                android:paddingRight="@dimen/lrtbp_10"
+                android:paddingBottom="@dimen/lrtbp_10"
+                android:paddingTop="@dimen/lrtbp_10"
+                android:clickable="true"
+                android:background="@drawable/solukulsol"
+                android:text=" சமர்ப்பிக்க "
+                android:textColor="#fff"
+                android:textSize="@dimen/txt_16" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

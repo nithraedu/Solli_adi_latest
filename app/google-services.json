@@ -1,0 +1,1406 @@
+{
+  "project_info": {
+    "project_number": "22073589686",
+    "firebase_url": "https://api-project-22073589686.firebaseio.com",
+    "project_id": "api-project-22073589686",
+    "storage_bucket": "api-project-22073589686.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:0518a47730733312",
+        "android_client_info": {
+          "package_name": "com.nithra.bestenglishgrammar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:d1d6d0ec2746fbde",
+        "android_client_info": {
+          "package_name": "com.nithra.learnwords"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:977e184c38ee1c72",
+        "android_client_info": {
+          "package_name": "com.nithra.onepiconeword"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:949fe0ac62925541",
+        "android_client_info": {
+          "package_name": "com.nithra.resume"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:4c4c6d88b9b84a83",
+        "android_client_info": {
+          "package_name": "com.nithra.riddles"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:8200c67d3fd4014a",
+        "android_client_info": {
+          "package_name": "com.nithra.tamilsms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:73aa2951d52e6092",
+        "android_client_info": {
+          "package_name": "nithra.abbreviations"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:50c931747c726847",
+        "android_client_info": {
+          "package_name": "nithra.bank.code.ifsc.micr.std.isd.pin.rto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:41b0a6404c1cab80",
+        "android_client_info": {
+          "package_name": "nithra.blood.donate.search"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:2c56786f55ed6ab1",
+        "android_client_info": {
+          "package_name": "nithra.current.affairs.gk.govt.exam"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:d1b3b1b376b989cf",
+        "android_client_info": {
+          "package_name": "nithra.education.guidance.jobs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:859b17e26e70dbe1",
+        "android_client_info": {
+          "package_name": "nithra.expensemanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:038621eda123827a",
+        "android_client_info": {
+          "package_name": "nithra.game.stone.paper.scissor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:866f8d3f433a5d2a",
+        "android_client_info": {
+          "package_name": "nithra.hindi.calendar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:d1675a8bcf0b1a44",
+        "android_client_info": {
+          "package_name": "nithra.inventions_inventors"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:23dba47d254f8dd2",
+        "android_client_info": {
+          "package_name": "nithra.jobs.career.placement"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:4cce92721490a9b7",
+        "android_client_info": {
+          "package_name": "nithra.letter.word.search"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:4b8e4dab1232edb5",
+        "android_client_info": {
+          "package_name": "nithra.logoquiz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:0c405e042975c9eb",
+        "android_client_info": {
+          "package_name": "nithra.math.aptitude"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:757e2be8fc333db3",
+        "android_client_info": {
+          "package_name": "nithra.math.logicalreasoning"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:e7bbcbdcafa1b732",
+        "android_client_info": {
+          "package_name": "nithra.milkmanagement"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:453c0dd2b3aa8884",
+        "android_client_info": {
+          "package_name": "nithra.numberreasoningpuzzle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:bbd367eb8a678d11",
+        "android_client_info": {
+          "package_name": "nithra.offline.personal.official.letter.templates"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:2efee07faf5ea906",
+        "android_client_info": {
+          "package_name": "nithra.quiz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:cf13addb371ea748",
+        "android_client_info": {
+          "package_name": "nithra.reminder.tasks.alarm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:41dc371036db21b1",
+        "android_client_info": {
+          "package_name": "nithra.resume.interview.jobs.tips"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:db2734d53d26af24",
+        "android_client_info": {
+          "package_name": "nithra.samayalkurippu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:70f373edb47d54c2",
+        "android_client_info": {
+          "package_name": "nithra.sms.status.shortwords"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:331f0792af322c8f",
+        "android_client_info": {
+          "package_name": "nithra.tamil.beauty.tips"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:38a5e0dad4e0da3d",
+        "android_client_info": {
+          "package_name": "nithra.tamil.marriage.matrimony.thirumanaporutham"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:f16d02d914967c27",
+        "android_client_info": {
+          "package_name": "nithra.tamil.quotes.ponmozhigal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:a61d30bd913dacdd",
+        "android_client_info": {
+          "package_name": "nithra.tamil.rasipalan.horoscope"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:c5e45e88f9f15d3c",
+        "android_client_info": {
+          "package_name": "nithra.tamil.story"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:6e863da15c811396",
+        "android_client_info": {
+          "package_name": "nithra.tamil.tet.exam"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:f6302513cdefc5c8",
+        "android_client_info": {
+          "package_name": "nithra.tamil.thagavalkalanjiyam"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:b165c3afa13e6190",
+        "android_client_info": {
+          "package_name": "nithra.tamil.vivasayam.agriculture.market"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:adbdbdf1d26785e2",
+        "android_client_info": {
+          "package_name": "nithra.tamil.word.game.solliadi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:954791d96d02217c",
+        "android_client_info": {
+          "package_name": "nithra.tamilcalender"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:86c96bbf45153aa1",
+        "android_client_info": {
+          "package_name": "nithra.tamilkarka"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:93d8836adc90d1ca",
+        "android_client_info": {
+          "package_name": "nithra.tamilnadu.market.rates"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:d98cd51182ac2ee9",
+        "android_client_info": {
+          "package_name": "nithra.tamilnadu.tour.places"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:702c58417d345550",
+        "android_client_info": {
+          "package_name": "nithra.thirukkural"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:532811184add4394",
+        "android_client_info": {
+          "package_name": "nithra.tnpsc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:d7604f9377862577",
+        "android_client_info": {
+          "package_name": "nithra.unitconverter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22073589686:android:cac3c9c130a482a6",
+        "android_client_info": {
+          "package_name": "nithra.vschool.cbse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22073589686-0ien8kathp0qgn1stvo9mdcko9mrrldv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ciOj9PC5-SMyQie3m-2ToQUeRkxNdQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

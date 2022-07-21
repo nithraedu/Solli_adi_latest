@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<RelativeLayout
+    android:id="@+id/list1"
+ android:padding="@dimen/lrtbp_10"
+    android:background="@drawable/button2"
+android:layout_marginLeft="@dimen/wh_2"
+    android:layout_marginRight="@dimen/wh_2"
+    android:layout_marginTop="@dimen/lrtbp_5"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/date"
+        android:text="31.12.2016"
+        android:textSize="@dimen/txt_16"
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_toRightOf="@+id/date"
+        android:layout_marginLeft="@dimen/home_screen_margin_top"
+        android:id="@+id/gamename"
+        android:textColor="@color/white"
+        android:textSize="@dimen/txt_16"
+        android:text="குறிப்பு மூலம் கண்டுபிடி"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/play"
+        android:layout_alignParentRight="true"
+        android:textSize="@dimen/txt_16"
+        android:textColor="@color/white"
+
+        android:layout_width="@dimen/txt_24"
+        android:layout_height="@dimen/txt_24"/>
+
+</RelativeLayout>
+
+</RelativeLayout>
+
+
+

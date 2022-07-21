@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/new_background">
+
+    <RelativeLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/ads_lay">
+
+            <RelativeLayout
+                android:id="@+id/top"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/bottem"
+                android:background="@color/colorPrimary"
+                android:elevation="@dimen/lrtbp_20">
+
+                <TextView
+                    android:id="@+id/pic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    android:padding="@dimen/lrtbp_10"
+                    android:text="சொல்லிஅடி செயலியின் பரிசுத்திட்டம் !!"
+                    android:textColor="#1b4901"
+                    android:textSize="@dimen/txt_18" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_margin="@dimen/lrtbp_10"
+                android:background="@drawable/yellow_back"
+                android:elevation="@dimen/lrtbp_10"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/lrtbp_10">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/lrtbp_20"
+                        android:background="@drawable/whiteback"
+                        android:gravity="left|top">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/phone_no"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/wh_50"
+                            android:layout_marginTop="@dimen/lrtbp_25"
+                            android:gravity="center"
+                            android:hint="தொலைபேசி எண்*"
+                            android:inputType="number"
+                            android:maxLength="10"
+                            android:textColor="#000000"
+                            android:textColorHint="#000000"
+                            android:textSize="@dimen/txt_20"
+                            app:backgroundTint="#c2b301" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:visibility="gone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:gravity="end"
+                        android:text="*"
+                        android:textColor="#DF0915"
+                        android:textSize="@dimen/txt_24"
+                        android:textStyle="bold" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/pry_intros"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@drawable/single_line_black"
+                        android:gravity="center"
+                        android:text="தனியுரிமை கொள்கை(Privacy policy)"
+                        android:textSize="@dimen/txt_16" />
+
+                    <TextView
+                        android:layout_marginTop="@dimen/lrtbp_5"
+                        android:layout_gravity="center"
+                        android:id="@+id/and_sy"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/intros"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@drawable/single_line_black"
+                        android:gravity="center"
+                        android:text="விதிமுறைகள் மற்றும் நிபந்தனைகள்"
+                        android:textSize="@dimen/txt_16" />
+
+                </LinearLayout>
+                <TextView
+                    android:id="@+id/signin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/phlayout"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/lrtbp_25"
+                    android:layout_marginBottom="@dimen/lrtbp_5"
+                    android:background="@drawable/button2"
+                    android:elevation="@dimen/lrtbp_10"
+                    android:gravity="center"
+                    android:padding="@dimen/lrtbp_15"
+                    android:text="உள்நுழைய"
+                    android:textColor="#043d04"
+                    android:textSize="@dimen/txt_20" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+        <com.facebook.ads.NativeAdLayout
+            android:visibility="gone"
+        android:id="@+id/native_banner_ad_container"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="50dp"
+        android:layout_alignParentBottom="true" />
+
+        <LinearLayout
+
+            android:id="@+id/ads_lay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

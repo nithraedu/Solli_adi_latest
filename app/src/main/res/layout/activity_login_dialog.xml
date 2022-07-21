@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context="nithra.tamil.word.game.solliadi.LoginActivity">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/top"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/wh_70">
+        <TextView
+            android:id="@+id/login_txt"
+            android:layout_centerInParent="true"
+            android:text="Register Form"
+            android:textStyle="bold"
+            android:textSize="@dimen/txt_20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/register"
+        android:layout_marginTop="@dimen/lrtbp_5"
+        android:layout_below="@+id/top"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/name_layout"
+        android:orientation="horizontal"
+            android:layout_marginLeft="@dimen/lrtbp_10"
+            android:layout_marginRight="@dimen/lrtbp_10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/name_image"
+                android:text="Name"
+                android:gravity="center"
+                android:layout_width="@dimen/wh_40"
+                android:layout_height="match_parent" />
+            <EditText
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:layout_below="@+id/name_layout"
+            android:id="@+id/email_layout"
+            android:orientation="horizontal"
+            android:layout_marginLeft="@dimen/lrtbp_10"
+            android:layout_marginRight="@dimen/lrtbp_10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/email_image"
+                android:text="Email"
+                android:gravity="center"
+                android:layout_width="@dimen/wh_40"
+                android:layout_height="match_parent" />
+            <EditText
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:layout_below="@+id/email_layout"
+            android:id="@+id/phno_layout"
+            android:orientation="horizontal"
+            android:layout_marginLeft="@dimen/lrtbp_10"
+            android:layout_marginRight="@dimen/lrtbp_10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/phno_image"
+                android:text="Phno"
+                android:gravity="center"
+                android:layout_width="@dimen/wh_40"
+                android:layout_height="match_parent" />
+            <EditText
+                android:id="@+id/phno"
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:layout_below="@+id/phno_layout"
+            android:id="@+id/address_layout"
+            android:orientation="horizontal"
+            android:layout_marginLeft="@dimen/lrtbp_10"
+            android:layout_marginRight="@dimen/lrtbp_10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/address_image"
+                android:text="Address"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+            <EditText
+                android:id="@+id/address"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/wh_60" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:layout_below="@+id/address_layout"
+            android:id="@+id/city"
+            android:orientation="horizontal"
+            android:layout_marginLeft="@dimen/lrtbp_10"
+            android:layout_marginRight="@dimen/lrtbp_10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/city_name"
+                android:text="City"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <Spinner
+                android:id="@+id/spdist"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_toRightOf="@+id/im4"
+                android:background="#dbdbdc"
+                android:layout_centerInParent="true"
+                android:textColor="#000"
+                android:layout_marginLeft="@dimen/txt_20"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                >
+
+            </Spinner>
+
+        </LinearLayout>
+
+
+        <CheckBox
+            android:id="@+id/terms"
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:text="Terms And Conditions"
+            android:textSize="@dimen/txt_16"
+            android:layout_below="@+id/city"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/login"
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/terms"
+            android:text="Login"
+            android:textStyle="bold"
+            android:background="@color/black"
+            android:textSize="@dimen/txt_20"
+            android:textColor="@color/white"
+            android:padding="@dimen/lrtbp_15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+</RelativeLayout>
+</RelativeLayout>

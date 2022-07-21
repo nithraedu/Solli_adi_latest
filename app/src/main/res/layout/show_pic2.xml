@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rts"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/img_background"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/wq1"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/wh_70"
+        android:layout_marginTop="@dimen/lrtbp_25">
+
+    </TextView>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_centerInParent="true"
+
+        android:layout_marginLeft="@dimen/lrtbp_10"
+        android:layout_marginRight="@dimen/lrtbp_10"
+        android:background="@color/white">
+
+        <Button
+            android:id="@+id/p_cancel"
+            android:layout_width="@dimen/wh_35"
+            android:layout_height="@dimen/wh_35"
+            android:layout_alignParentRight="true"
+            android:visibility="gone" />
+
+
+        <!--    <ImageView
+                android:id="@+id/pic_show"
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:layout_marginRight="@dimen/lrtbp_10"
+                android:gravity="center"
+
+                android:textColor="@color/white"
+                android:textSize="@dimen/txt_16" />-->
+
+        <nithra.tamil.word.game.solliadi.TouchImageView
+            android:id="@+id/pic_show"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginLeft="@dimen/lrtbp_10"
+            android:layout_marginTop="@dimen/lrtbp_10"
+
+            android:layout_marginRight="@dimen/lrtbp_10"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_16" />
+
+        <nithra.tamil.word.game.solliadi.TouchImageView
+            android:id="@+id/pic_show2"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_below="@+id/pic_show"
+            android:layout_marginLeft="@dimen/lrtbp_10"
+            android:layout_marginTop="@dimen/lrtbp_15"
+            android:layout_marginRight="@dimen/lrtbp_10"
+            android:layout_marginBottom="@dimen/lrtbp_10"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_16"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/wq2"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/wh_70"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/lrtbp_25">
+
+    </TextView>
+</RelativeLayout>

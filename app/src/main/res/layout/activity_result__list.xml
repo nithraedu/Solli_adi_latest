@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="nithra.tamil.word.game.solliadi.Result_List">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:background="#46433d"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:background="#ffc933"
+        android:id="@+id/top"
+
+        android:padding="@dimen/lrtbp_5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/pic"
+            android:layout_centerInParent="true"
+            android:background="@drawable/loginscreen"
+            android:layout_width="@dimen/wh_150"
+            android:layout_height="@dimen/wh_150" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_marginTop="@dimen/lrtbp_20"
+        android:layout_below="@+id/top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/daily_result"
+            android:text="தினசரி முடிவுகள்"
+            android:textSize="@dimen/txt_22"
+            android:layout_marginRight="@dimen/lrtbp_20"
+            android:layout_marginLeft="@dimen/lrtbp_20"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:background="@drawable/yellow_back"
+            android:padding="@dimen/lrtbp_10"
+            android:layout_centerHorizontal="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/weekly_result"
+            android:layout_marginTop="@dimen/lrtbp_25"
+            android:layout_below="@+id/daily_result"
+            android:text="வாராந்திர முடிவுகள் "
+            android:textSize="@dimen/txt_22"
+            android:layout_marginRight="@dimen/lrtbp_20"
+            android:layout_marginLeft="@dimen/lrtbp_20"
+            android:gravity="center"
+            android:background="@drawable/yellow_back"
+            android:padding="@dimen/lrtbp_10"
+            android:textColor="@color/black"
+            android:layout_centerHorizontal="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/monthly_result"
+            android:layout_marginTop="@dimen/lrtbp_25"
+            android:layout_below="@+id/weekly_result"
+            android:text="மாதாந்திர முடிவுகள்"
+            android:textSize="@dimen/txt_22"
+            android:layout_marginRight="@dimen/lrtbp_20"
+            android:layout_marginLeft="@dimen/lrtbp_20"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:background="@drawable/yellow_back"
+            android:padding="@dimen/lrtbp_10"
+            android:layout_centerHorizontal="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/share_result"
+            android:layout_marginTop="@dimen/lrtbp_25"
+            android:layout_below="@+id/monthly_result"
+            android:text="மாதாந்திர பகிர்  முடிவுகள் "
+            android:textSize="@dimen/txt_22"
+            android:layout_marginRight="@dimen/lrtbp_20"
+            android:layout_marginLeft="@dimen/lrtbp_20"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:background="@drawable/yellow_back"
+            android:padding="@dimen/lrtbp_10"
+            android:layout_centerHorizontal="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+</RelativeLayout>
+    <LinearLayout
+
+        android:id="@+id/ads_lay"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+
+    </LinearLayout>
+</RelativeLayout>

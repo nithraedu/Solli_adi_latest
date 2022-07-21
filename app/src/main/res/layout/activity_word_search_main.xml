@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/new_background"
+    tools:context=".word_search_game.Models.Word_search_main">
+    <RelativeLayout
+        android:layout_above="@+id/native_banner_ad_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true">
+        <RelativeLayout
+            android:elevation="@dimen/lrtbp_5"
+            android:background="@color/colorPrimary"
+            android:id="@+id/top"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/wh_50">
+            <TextView
+                android:id="@+id/back"
+                android:layout_marginTop="@dimen/lrtbp_10"
+                android:background="@drawable/back_arrow_green"
+                android:layout_width="@dimen/wh_35"
+                android:layout_height="@dimen/wh_35" />
+           <TextView
+               android:gravity="center"
+               android:textStyle="bold"
+               android:textSize="@dimen/txt_18"
+               android:text="வார்த்தை தேடல்"
+               android:textColor="#06430a"
+               android:layout_toRightOf="@+id/back"
+               android:layout_toLeftOf="@+id/intro"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent" />
+            <TextView
+                android:id="@+id/intro"
+                android:layout_toLeftOf="@+id/intro_gif"
+                android:layout_marginTop="@dimen/lrtbp_10"
+                android:layout_marginRight="@dimen/lrtbp_5"
+                android:background="@drawable/qtn"
+                android:layout_width="@dimen/wh_35"
+                android:layout_height="@dimen/wh_35" />
+            <TextView
+                android:id="@+id/intro_gif"
+                android:layout_marginTop="@dimen/lrtbp_10"
+                android:layout_marginRight="@dimen/lrtbp_10"
+                android:text="i"
+                android:textSize="@dimen/txt_22"
+                android:textColor="#fff"
+                android:background="@drawable/new_background"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_alignParentRight="true"
+                android:layout_width="@dimen/wh_35"
+                android:layout_height="@dimen/wh_35" />
+
+        </RelativeLayout>
+        <TextView
+            android:id="@+id/txt"
+            android:layout_below="@+id/top"
+            android:layout_marginTop="@dimen/lrtbp_20"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"
+            android:text="தேடுவோம்...\n தமிழ் வார்த்தைகளை!.."
+            android:textColor="#ffff"
+            android:textSize="22dp" />
+        <RelativeLayout
+            android:layout_below="@+id/txt"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_marginTop="@dimen/lrtbp_30"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/general_play"
+                    android:layout_width="240dp"
+                    android:layout_height="@dimen/wh_60"
+                    android:text="பொதுப்பிரிவு"
+                    android:textSize="@dimen/txt_16"
+                    android:gravity="center"
+                    android:textColor="#fff"
+                    android:textStyle="bold"
+                    android:background="@drawable/but4"
+                    />
+                <TextView
+                    android:layout_marginTop="@dimen/lrtbp_20"
+                    android:id="@+id/category_play"
+                    android:layout_width="240dp"
+                    android:layout_height="@dimen/wh_60"
+                    android:text="வகைகள்"
+                    android:textSize="@dimen/txt_16"
+                    android:gravity="center"
+                    android:textColor="#fff"
+                    android:textStyle="bold"
+                    android:background="@drawable/but5"
+                    />
+                <TextView
+                    android:layout_marginTop="@dimen/lrtbp_20"
+                    android:id="@+id/challenge_play"
+                    android:layout_width="240dp"
+                    android:layout_height="@dimen/wh_60"
+                    android:textSize="@dimen/txt_16"
+                    android:text="சவால் விளையாட்டு"
+                    android:gravity="center"
+                    android:textColor="#fff"
+                    android:textStyle="bold"
+                    android:background="@drawable/but3"
+                    />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+    <com.facebook.ads.NativeAdLayout
+        android:id="@+id/native_banner_ad_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        android:background="@color/white"
+        android:minHeight="50dp" />
+
+    <LinearLayout
+        android:id="@+id/ads_lay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:background="@color/white"
+        android:minHeight="50dp" />
+</RelativeLayout>

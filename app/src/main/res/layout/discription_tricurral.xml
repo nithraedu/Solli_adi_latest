@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffef5b"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/close"
+        android:layout_width="@dimen/wh_35"
+        android:layout_height="@dimen/wh_35"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/kid_dia_cancel"
+        android:padding="@dimen/lrtbp_10" />
+
+    <RelativeLayout
+        android:id="@+id/top"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ads_lay"
+        android:layout_below="@+id/close"
+        android:padding="@dimen/lrtbp_5">
+
+        <LinearLayout
+            android:id="@+id/one"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tittle"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_marginLeft="@dimen/wh_2"
+                    android:background="@drawable/tirkural_red"
+                    android:padding="@dimen/lrtbp_5"
+                    android:textSize="15dp"
+                    android:text="குறள் பால் "
+                    android:textColor="#ffff" />
+
+                <TextView
+                    android:id="@+id/tittle1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginLeft="@dimen/lrtbp_10"
+                    android:background="@drawable/tirkural_red"
+                    android:padding="@dimen/lrtbp_5"
+                    android:textSize="15dp"
+                    android:text="shdgjdkghjkasg[pdjg"
+                    android:textColor="#ffff" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/lrtbp_5">
+
+                <TextView
+                    android:id="@+id/tittle2"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/wh_2"
+                    android:background="@drawable/tirkural_red"
+                    android:padding="@dimen/lrtbp_5"
+                    android:textSize="15dp"
+                    android:gravity="center"
+                    android:text="குறள் இயல் "
+                    android:textColor="#ffff" />
+
+                <TextView
+                    android:id="@+id/tittle3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:textSize="15dp"
+
+                    android:layout_marginLeft="@dimen/lrtbp_10"
+                    android:background="@drawable/tirkural_red"
+                    android:padding="@dimen/lrtbp_5"
+                    android:text="shdgjdkghjkasg[pdjg"
+                    android:textColor="#ffff" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/lrtbp_5">
+
+                <TextView
+                    android:id="@+id/tittle4"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/wh_2"
+                    android:background="@drawable/tirkural_red"
+                    android:padding="@dimen/lrtbp_5"
+                    android:text="அதிகாரம் "
+                    android:textSize="15dp"
+                    android:gravity="center"
+                    android:textColor="#ffff" />
+
+                <TextView
+                    android:id="@+id/tittle5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginLeft="@dimen/lrtbp_10"
+                    android:textSize="15dp"
+                    android:background="@drawable/tirkural_red"
+                    android:padding="@dimen/lrtbp_5"
+                    android:text="shdgjdkghjkasg"
+                    android:textColor="#ffff" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/lrtbp_5">
+
+                <TextView
+                    android:id="@+id/kural_no"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/wh_2"
+                    android:background="@drawable/tirkural_red"
+                    android:padding="@dimen/lrtbp_5"
+                    android:text="குறள் எண் "
+                    android:textSize="15dp"
+                    android:gravity="center"
+                    android:textColor="#ffff" />
+
+                <TextView
+                    android:id="@+id/kural_no_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginLeft="@dimen/lrtbp_10"
+                    android:textSize="15dp"
+                    android:background="@drawable/tirkural_red"
+                    android:padding="@dimen/lrtbp_5"
+                    android:text="shdgjdkghjkasg"
+                    android:textColor="#ffff" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/two"
+            android:layout_marginTop="@dimen/lrtbp_15">
+            <TextView
+                android:id="@+id/ti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/tirkural_orange"
+                android:elevation="@dimen/lrtbp_10"
+                android:paddingLeft="@dimen/lrtbp_15"
+                android:paddingRight="@dimen/lrtbp_15"
+                android:text="குறள் விளக்கம்"
+                android:textColor="#ffffff"
+                android:textSize="22dp" />
+
+            <TextView
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:id="@+id/dis"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ti"
+                android:background="@drawable/tirkural_orange"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="sadufufjkgfgfgfhj"
+                android:textColor="#ffffff"
+                android:textSize="18dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/two"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/one"
+            android:layout_marginTop="@dimen/lrtbp_15">
+
+            <TextView
+                android:id="@+id/tir"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/tirkural_green"
+                android:elevation="@dimen/lrtbp_10"
+                android:paddingLeft="@dimen/lrtbp_15"
+                android:paddingRight="@dimen/lrtbp_15"
+                android:text="திருக்குறள்"
+                android:textColor="#ffffff"
+                android:textSize="22dp" />
+
+            <TextView
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:id="@+id/trikural"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tir"
+                android:background="@drawable/tirkural_green"
+                android:padding="10dp"
+                android:text="sadufufjkgfgfgfhj"
+                android:textColor="#ffffff"
+                android:textSize="16dp" />
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+    <com.facebook.ads.NativeAdLayout
+        android:visibility="gone"
+        android:id="@+id/native_banner_ad_container"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="50dp"
+        android:layout_alignParentBottom="true" />
+
+
+    <LinearLayout
+        android:id="@+id/ads_lay"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+
+android:layout_marginLeft="@dimen/wh_40"
+        android:layout_marginRight="@dimen/wh_40"
+        android:layout_marginTop="@dimen/wh_60"
+        android:layout_marginBottom="@dimen/wh_60"
+        android:background="@drawable/coin_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <TextView
+            android:layout_alignParentBottom="true"
+            android:id="@+id/ok_y"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/wh_35"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_16"
+            android:background="@drawable/ok_button"
+            android:layout_width="@dimen/croll_app_height"
+            android:layout_height="wrap_content" />
+
+</RelativeLayout>
+
+</RelativeLayout>
