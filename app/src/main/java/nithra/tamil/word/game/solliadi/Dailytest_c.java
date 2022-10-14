@@ -147,7 +147,7 @@ public class Dailytest_c extends BroadcastReceiver {
         intent.putExtra(ONE_TIME, Boolean.FALSE);
 
 
-        PendingIntent pi = PendingIntent.getBroadcast(context, 4, intent, 4);
+        PendingIntent pi = PendingIntent.getBroadcast(context, 4, intent, Utils.getPendingIntent());//4
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, 13);
@@ -188,7 +188,7 @@ public class Dailytest_c extends BroadcastReceiver {
 
     public void CancelAlarm(Context context) {
         Intent intent = new Intent(context, Dailytest_c.class);
-        PendingIntent sender = PendingIntent.getBroadcast(context, 4, intent, 4);
+        PendingIntent sender = PendingIntent.getBroadcast(context, 4, intent, Utils.getPendingIntent());//4
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(sender);
         sender.cancel();

@@ -222,9 +222,10 @@ import nit_app.Apps_Utils;
 import nit_app.DataBaseHelper1;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
-import nithra.tamil.word.game.solliadi.biling_code.Billing_Activity;
-import nithra.tamil.word.game.solliadi.biling_code.row.GasDelegate;
+
 import nithra.tamil.word.game.solliadi.billing.BillingManager;
+import nithra.tamil.word.game.solliadi.billing.BillingUpdateListener;
+import nithra.tamil.word.game.solliadi.billing.Billing_Activity;
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.DataBaseHelper_wordsearch;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.Word_search_main;
@@ -935,7 +936,7 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
 
         if (sps.getString(New_Main_Activity.this, "dts").equals("")) {
             Intent intent = new Intent(this, New_Main_Activity.class);
-            PendingIntent sender = PendingIntent.getBroadcast(this, 0, intent, 0);
+            PendingIntent sender = PendingIntent.getBroadcast(this, 0, intent, Utils.getPendingIntent());//0
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
             alarmManager.cancel(sender);
 
@@ -8448,30 +8449,16 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
         startActivity(callIntent);
     }
 
-    private class UpdateListener implements BillingManager.BillingUpdatesListener {
-        public UpdateListener() {
+    private class UpdateListener implements BillingUpdateListener {
 
-            System.out.println("purchase status : ");
-        }
-
-        @Override
-        public void onBillingClientSetupFinished() {
-            // New_Main_Activity.this.onBillingManagerSetupFinished();
-        }
-
-        @Override
-        public void onConsumeFinished(String token, int result) {
-
-        }
 
         @Override
         public void onPurchasesUpdated(List<Purchase> purchaseList) {
 
             for (Purchase purchase : purchaseList) {
-                switch (purchase.getSku()) {
+                if (BillingManager.SKU_ID.equals(purchase.getProducts().get(0))) {
 
-                    case GasDelegate.SKU_ID:
-                        spa.putInt(New_Main_Activity.this, "purchase_ads", 1);
+                    spa.putInt(New_Main_Activity.this, "purchase_ads", 1);
 
                         System.out.println("purchase status : inside" + spa.getInt(New_Main_Activity.this, "purchase_ads"));
                         // Log.d(TAG, "We have gas. Consuming it.");
@@ -8481,7 +8468,6 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
                         //sharedPreference.putInt(New_Main_Activity.this, "pur_type", 2);
                         // sharedPreference.putBoolean(New_Main_Activity.this, "purchase", true);
 
-                        break;
 
                 }
             }

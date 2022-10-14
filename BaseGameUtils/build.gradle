@@ -28,9 +28,9 @@ android {
     }
 
     compileSdkVersion android_compile_version
-    buildToolsVersion '28.0.3'
     defaultConfig {
         minSdkVersion = 16
     }
+    namespace 'com.google.example.games.basegameutils'
 }
 

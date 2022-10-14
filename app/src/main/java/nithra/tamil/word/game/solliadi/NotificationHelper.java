@@ -263,27 +263,47 @@ class NotificationHelper extends ContextWrapper {
                 contentView.setTextViewText(R.id.title, bm);
                 Notification.Builder mBuilder = null;
                 if (style.equals("bt")) {
-                    mBuilder = new Notification.Builder(context, PRIMARY_CHANNEL)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+
+                        mBuilder = new Notification.Builder(context, PRIMARY_CHANNEL)
                             .setSmallIcon(getSmallIcon())
                             .setColor(Color.parseColor("#6460AA"))
                             .setGroup("" + titlee)
                             .setCustomContentView(contentView);
+                    }else {
+                        mBuilder = new Notification.Builder(context, PRIMARY_CHANNEL)
+                                .setSmallIcon(getSmallIcon())
+                                .setColor(Color.parseColor("#6460AA"))
+                                .setGroup(bm)
+                                .setCustomContentView(contentView);
+                    }
                 } else {
                     RemoteViews expandView = new RemoteViews(getPackageName(), R.layout.notification_shown_bi);
                     expandView.setImageViewResource(R.id.image, getlogo());
                     expandView.setTextViewText(R.id.title, bm);
                     expandView.setImageViewBitmap(R.id.imgg, LargeIcon(imgg));
-                    mBuilder = new Notification.Builder(context, PRIMARY_CHANNEL)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+
+                        mBuilder = new Notification.Builder(context, PRIMARY_CHANNEL)
                             .setSmallIcon(getSmallIcon())
                             .setGroup("" + titlee)
                             .setColor(Color.parseColor("#6460AA"))
                             .setCustomContentView(contentView)
                             .setCustomBigContentView(expandView);
+                    }else{
+                        mBuilder = new Notification.Builder(context, PRIMARY_CHANNEL)
+                                .setSmallIcon(getSmallIcon())
+                                .setColor(Color.parseColor("#6460AA"))
+                                .setCustomContentView(contentView)
+                                .setGroup(bm)
+                                .setCustomBigContentView(expandView);
+                    }
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    mBuilder.setStyle(new Notification.DecoratedCustomViewStyle());
                 }
                 Notification notification = mBuilder.build();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    notification.priority |= Notification.PRIORITY_MAX;
-                }
                 notification.flags |= Notification.FLAG_AUTO_CANCEL;
                 notification.flags |= Notification.FLAG_SHOW_LIGHTS;
                 notification.contentIntent = resultPendingIntent(bm, body, id, activity);
@@ -312,14 +332,16 @@ class NotificationHelper extends ContextWrapper {
                             .setContent(contentView)
                             .setCustomBigContentView(expandView);
                 }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    mBuilder.setStyle(new NotificationCompat.DecoratedCustomViewStyle());
+                }
+
                 Notification notification = mBuilder.build();
                 if (sund_chk1 == 0) {
                     notification.defaults |= Notification.DEFAULT_SOUND;
                 } else {
                     notification.sound = mUri;
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    notification.priority |= Notification.PRIORITY_MAX;
                 }
                 notification.flags |= Notification.FLAG_AUTO_CANCEL;
                 notification.flags |= Notification.FLAG_SHOW_LIGHTS;
@@ -357,10 +379,12 @@ class NotificationHelper extends ContextWrapper {
                             .setCustomContentView(contentView)
                             .setCustomBigContentView(expandView);
                 }
-                Notification notification = mBuilder.build();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    notification.priority |= Notification.PRIORITY_MAX;
+
+                if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.S){
+                    mBuilder.setStyle(new Notification.DecoratedCustomViewStyle());
                 }
+                Notification notification = mBuilder.build();
+
                 notification.defaults |= Notification.DEFAULT_SOUND;
 
                 notification.flags |= Notification.FLAG_AUTO_CANCEL;
@@ -487,8 +511,13 @@ class NotificationHelper extends ContextWrapper {
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(activity);
         stackBuilder.addNextIntent(intent);
-        return stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
-    }
+        int i;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            i = PendingIntent.FLAG_MUTABLE;
+        } else {
+            i = PendingIntent.FLAG_UPDATE_CURRENT;
+        }
+        return stackBuilder.getPendingIntent((int) System.currentTimeMillis(), i);    }
 
     public PendingIntent resultPendingIntent2(String type, String titt, String msgg, int idd, Class activity) {
 
@@ -496,15 +525,25 @@ class NotificationHelper extends ContextWrapper {
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(activity);
         stackBuilder.addNextIntent(intent);
-        return stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
-    }
+        int i;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            i = PendingIntent.FLAG_MUTABLE;
+        } else {
+            i = PendingIntent.FLAG_UPDATE_CURRENT;
+        }
+        return stackBuilder.getPendingIntent((int) System.currentTimeMillis(), i);     }
 
     public PendingIntent resultPendingIntent1(String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addNextIntent(intent);
-        return stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
-    }
+        int i;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            i = PendingIntent.FLAG_MUTABLE;
+        } else {
+            i = PendingIntent.FLAG_UPDATE_CURRENT;
+        }
+        return stackBuilder.getPendingIntent((int) System.currentTimeMillis(), i);    }
 
     public Intent set_intent(Context context, int iddd, String titt, String msgg, Class activity) {
         Intent intent;
