@@ -282,7 +282,13 @@ class NotificationHelper extends ContextWrapper {
                     expandView.setImageViewResource(R.id.image, getlogo());
                     expandView.setTextViewText(R.id.title, bm);
                     expandView.setImageViewBitmap(R.id.imgg, LargeIcon(imgg));
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    mBuilder = new Notification.Builder(context, PRIMARY_CHANNEL)
+                            .setSmallIcon(getSmallIcon())
+                            .setColor(Color.parseColor("#6460AA"))
+                            .setCustomContentView(contentView)
+                            .setGroup(bm)
+                            .setCustomBigContentView(expandView);
+                   /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
 
                         mBuilder = new Notification.Builder(context, PRIMARY_CHANNEL)
                             .setSmallIcon(getSmallIcon())
@@ -297,7 +303,7 @@ class NotificationHelper extends ContextWrapper {
                                 .setCustomContentView(contentView)
                                 .setGroup(bm)
                                 .setCustomBigContentView(expandView);
-                    }
+                    }*/
                 }
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

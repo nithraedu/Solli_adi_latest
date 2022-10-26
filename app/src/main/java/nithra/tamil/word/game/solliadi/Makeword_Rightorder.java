@@ -372,6 +372,20 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
         newhelper3 = new Newgame_DataBaseHelper3(context);
         newhelper4 = new Newgame_DataBaseHelper4(context);
 
+
+        /*String gid = "9";
+        String qid = "";
+        for (int i = 1; i<=2499; i++){
+            if (qid.equals("")){
+                qid = "" +i;
+            } else {
+                qid = qid + "," + i;
+            }
+        }
+        newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='9'");
+*/
+
+
      /*   exdb = myDbHelper.getReadableDatabase();
         dbs = newhelper.getReadableDatabase();
         dbn = newhelper2.getReadableDatabase();

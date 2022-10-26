@@ -336,6 +336,24 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
         newhelper3 = new Newgame_DataBaseHelper3(context);
         newhelper4 = new Newgame_DataBaseHelper4(context);
 
+
+
+
+        /*String gid = "6";
+        String qid = "";
+        for (int i = 0; i<=499; i++){
+            if (qid.equals("")){
+                qid = "" +i;
+            } else {
+                qid = qid + "," + i;
+            }
+        }
+        System.out.println("---qid : " +qid);
+        System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
+        newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='6'");
+*/
+
+
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
         find();
 

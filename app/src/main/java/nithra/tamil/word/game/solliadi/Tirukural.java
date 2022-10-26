@@ -246,6 +246,23 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         dbn2 = newhelper3.getReadableDatabase();*/
 
 
+
+        /*String gid = "12";
+        String qid = "";
+        for (int i = 0; i<=1329; i++){
+            if (qid.equals("")){
+                qid = "" +i;
+            } else {
+                qid = qid + "," + i;
+            }
+        }
+        System.out.println("---qid : " +qid);
+        System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='17'");
+        newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='12'");
+*/
+
+
+
         //Sound Pool Sounds
         click = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
         soundId1 = click.load(Tirukural.this, R.raw.click, 1);

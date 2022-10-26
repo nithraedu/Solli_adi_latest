@@ -113,7 +113,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         i.putExtra("datee", str_date);
 
-        PendingIntent intent = PendingIntent.getActivity(context, 4, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent intent = PendingIntent.getActivity(context, 4, i, Utils.getPendingIntent());
         builder.setContentIntent(intent);
         builder.setTicker(context.getResources().getString(R.string.app_name));
         builder.setSmallIcon(R.drawable.noti_backicon);
@@ -548,7 +548,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         i.putExtra("datee", str_date);
 
-        PendingIntent intent = PendingIntent.getActivity(context, 3, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent intent = PendingIntent.getActivity(context, 3, i, Utils.getPendingIntent());
         builder.setContentIntent(intent);
         builder.setTicker(context.getResources().getString(R.string.app_name));
         builder.setSmallIcon(R.drawable.noti_backicon);
@@ -772,7 +772,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         i.putExtra("datee", str_date);
 
-        PendingIntent intent = PendingIntent.getActivity(context, 2, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent intent = PendingIntent.getActivity(context, 2, i, Utils.getPendingIntent());
         builder.setContentIntent(intent);
         builder.setTicker(context.getResources().getString(R.string.app_name));
         builder.setSmallIcon(R.drawable.noti_backicon);
@@ -1033,7 +1033,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         i.putExtra("datee", str_date);
 
-        PendingIntent intent = PendingIntent.getActivity(context, 1, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent intent = PendingIntent.getActivity(context, 1, i, Utils.getPendingIntent());
         builder.setContentIntent(intent);
         builder.setTicker(context.getResources().getString(R.string.app_name));
         builder.setSmallIcon(R.drawable.noti_backicon);
@@ -1167,7 +1167,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         sps.putString(context, "date", "" + str_date);
 
-        PendingIntent intent = PendingIntent.getActivity(context, 5, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent intent = PendingIntent.getActivity(context, 5, i, Utils.getPendingIntent());
         builder.setContentIntent(intent);
         builder.setTicker(context.getResources().getString(R.string.app_name));
         builder.setSmallIcon(R.drawable.noti_backicon);
@@ -1275,7 +1275,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         sps.putString(context, "date", "" + str_date);
 
-        PendingIntent intent = PendingIntent.getActivity(context, 6, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent intent = PendingIntent.getActivity(context, 6, i, Utils.getPendingIntent());
         builder.setContentIntent(intent);
         builder.setTicker(context.getResources().getString(R.string.app_name));
         builder.setSmallIcon(R.drawable.noti_backicon);
@@ -1383,7 +1383,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         sps.putString(context, "date", "" + str_date);
 
-        PendingIntent intent = PendingIntent.getActivity(context, 7, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent intent = PendingIntent.getActivity(context, 7, i, Utils.getPendingIntent());
         builder.setContentIntent(intent);
         builder.setTicker(context.getResources().getString(R.string.app_name));
         builder.setSmallIcon(R.drawable.noti_backicon);
@@ -1492,7 +1492,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         sps.putString(context, "date", "" + str_date);
 
-        PendingIntent intent = PendingIntent.getActivity(context, 8, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent intent = PendingIntent.getActivity(context, 8, i, Utils.getPendingIntent());
         builder.setContentIntent(intent);
         builder.setTicker(context.getResources().getString(R.string.app_name));
         builder.setSmallIcon(R.drawable.noti_backicon);
@@ -1601,7 +1601,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         sps.putString(context, "date", "" + str_date);
 
-        PendingIntent intent = PendingIntent.getActivity(context, 9, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent intent = PendingIntent.getActivity(context, 9, i, Utils.getPendingIntent());
         builder.setContentIntent(intent);
         builder.setTicker(context.getResources().getString(R.string.app_name));
         builder.setSmallIcon(R.drawable.noti_backicon);
@@ -1710,7 +1710,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         sps.putString(context, "date", "" + str_date);
 
-        PendingIntent intent = PendingIntent.getActivity(context, 10, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent intent = PendingIntent.getActivity(context, 10, i, Utils.getPendingIntent());
         builder.setContentIntent(intent);
         builder.setTicker(context.getResources().getString(R.string.app_name));
         builder.setSmallIcon(R.drawable.noti_backicon);
@@ -1819,7 +1819,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         sps.putString(context, "date", "" + str_date);
 
-        PendingIntent intent = PendingIntent.getActivity(context, 11, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent intent = PendingIntent.getActivity(context, 11, i, Utils.getPendingIntent());
         builder.setContentIntent(intent);
         builder.setTicker(context.getResources().getString(R.string.app_name));
         builder.setSmallIcon(R.drawable.noti_backicon);
@@ -1928,7 +1928,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         sps.putString(context, "date", "" + str_date);
 
-        PendingIntent intent = PendingIntent.getActivity(context, 12, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent intent = PendingIntent.getActivity(context, 12, i, Utils.getPendingIntent());
         builder.setContentIntent(intent);
         builder.setTicker(context.getResources().getString(R.string.app_name));
         builder.setSmallIcon(R.drawable.noti_backicon);

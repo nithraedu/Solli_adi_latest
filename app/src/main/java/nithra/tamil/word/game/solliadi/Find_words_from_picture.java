@@ -319,7 +319,7 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
                 .addScope(Drive.SCOPE_APPFOLDER) // SavedGames
                 .build();
 
-       /* String gid = "16";
+        /*String gid = "16";
         String qid = "";
         for (int i = 1; i<=29; i++){
             if (qid.equals("")){
@@ -331,9 +331,8 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         System.out.println("---qid : " +qid);
         System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
        // newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid='" + qid + "'and gameid='" + gid + "'");
-        newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");*/
-
-
+        newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
+*/
         soundset();
         find();
         click();

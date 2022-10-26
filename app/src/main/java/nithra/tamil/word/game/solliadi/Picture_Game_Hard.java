@@ -466,8 +466,8 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
         }
         System.out.println("---qid : " +qid);
         System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
-        myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='1'");*/
-
+        myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='1'");
+*/
         email = sps.getString(Picture_Game_Hard.this, "email");
 
         System.out.println("mail======pic==" + email);

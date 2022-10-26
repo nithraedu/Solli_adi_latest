@@ -279,8 +279,8 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
 
 
 
-
-        /*String qid = "";
+        /*String gid = "20";
+        String qid = "";
         for (int i = 1; i<=29; i++){
             if (qid.equals("")){
                 qid = "" +i;
@@ -288,8 +288,8 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                 qid = qid + "," + i;
             }
         }
-        newhelper6.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='20'");*/
-
+        newhelper6.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='20'");
+*/
 
         if (sps.getString(Find_difference_between_pictures.this, "new_user_db").equals("")) {
 

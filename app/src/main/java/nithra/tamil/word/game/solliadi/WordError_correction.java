@@ -341,6 +341,23 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
         newhelper3 = new Newgame_DataBaseHelper3(context);
         newhelper4 = new Newgame_DataBaseHelper4(context);
 
+
+
+
+        /*String gid = "11";
+        String qid = "";
+        for (int i = 1; i<=999; i++){
+            if (qid.equals("")){
+                qid = "" +i;
+            } else {
+                qid = qid + "," + i;
+            }
+        }
+        newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='11'");
+*/
+
+
+
      /*   exdb = myDbHelper.getReadableDatabase();
         dbs = newhelper.getReadableDatabase();
         dbn = newhelper2.getReadableDatabase();

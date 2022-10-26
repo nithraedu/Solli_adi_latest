@@ -365,8 +365,8 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                 qid = qid + "," + i;
             }
         }
-        myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='2'");*/
-
+        myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='2'");
+*/
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)

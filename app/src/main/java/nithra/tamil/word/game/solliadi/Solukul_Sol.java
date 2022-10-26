@@ -444,8 +444,8 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                 qid = qid + "," + i;
             }
         }
-        myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='3'");*/
-
+        myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='3'");
+*/
 
 
         //loadRewardedVideoAd();

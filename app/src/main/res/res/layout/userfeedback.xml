@@ -300,7 +300,7 @@
     android:paddingLeft="@dimen/lrtbp_10"
     android:textColor="@color/black"
     android:paddingRight="@dimen/lrtbp_5"
-    android:text="குறிப்பு: நீங்கள் சரியென நினைக்கும் வார்த்தை எங்களது தொகுப்பில் இல்லையெனில் அதை மேற்கண்ட பகுதியில் ஒவ்வென்றாக தட்டச்சு செய்து அனுப்பவும். (எ. கா) அணில்."
+    android:text="குறிப்பு: நீங்கள் சரியென நினைக்கும் வார்த்தை எங்களது தொகுப்பில் இல்லையெனில் அதை மேற்கண்ட பகுதியில் ஒவ்வொன்றாக தட்டச்சு செய்து அனுப்பவும். (எ. கா) அணில்."
     android:textSize="@dimen/txt_16"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"/>

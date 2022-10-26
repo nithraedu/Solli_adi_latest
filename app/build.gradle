@@ -84,8 +84,8 @@ dependencies {
 
 
     //applovin
-    implementation 'com.applovin:applovin-sdk:11.3.3'
-    implementation 'com.applovin.mediation:facebook-adapter:6.8.0.12'
+    implementation 'com.applovin:applovin-sdk:11.4.4'
+    implementation 'com.applovin.mediation:facebook-adapter:6.11.0.4'
 
 }
 

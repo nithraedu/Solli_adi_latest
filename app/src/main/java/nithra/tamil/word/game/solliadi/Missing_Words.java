@@ -206,6 +206,22 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
         ch_facebook = (TextView) findViewById(R.id.ch_facebook);
         qwt = (LinearLayout) findViewById(R.id.qwt);
 
+
+        /*String gid = "19";
+        String qid = "";
+        for (int i = 0; i<=299; i++){
+            if (qid.equals("")){
+                qid = "" +i;
+            } else {
+                qid = qid + "," + i;
+            }
+        }
+        System.out.println("---qid : " +qid);
+        System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
+        newhelper6.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='19'");
+*/
+
+
         //Sound Pool Sounds
         spz1 = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
         soundId1 = spz1.load(Missing_Words.this, R.raw.click, 1);

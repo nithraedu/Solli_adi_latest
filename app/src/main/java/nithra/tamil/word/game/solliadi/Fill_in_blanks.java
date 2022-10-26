@@ -220,6 +220,24 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         newhelper4 = new Newgame_DataBaseHelper4(Fill_in_blanks.this);
         myDbHelper = new DataBaseHelper(Fill_in_blanks.this);
 
+
+
+
+        /*String gid = "13";
+        String qid = "";
+        for (int i = 0; i<=999; i++){
+            if (qid.equals("")){
+                qid = "" +i;
+            } else {
+                qid = qid + "," + i;
+            }
+        }
+        System.out.println("---qid : " +qid);
+        System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
+        newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='13'");
+*/
+
+
         //Sound Pool Sounds
         click = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
         soundId1 = click.load(Fill_in_blanks.this, R.raw.click, 1);

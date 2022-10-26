@@ -364,6 +364,23 @@ public class Odd_man_out extends BaseGameActivity implements GoogleApiClient.Con
         myDbHelper = new DataBaseHelper(context);
         newhelper4 = new Newgame_DataBaseHelper4(context);
 
+
+
+        /*String gid = "5";
+        String qid = "";
+        for (int i = 0; i<=999; i++){
+            if (qid.equals("")){
+                qid = "" +i;
+            } else {
+                qid = qid + "," + i;
+            }
+        }
+        System.out.println("---qid : " +qid);
+        System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
+        newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='5'");
+*/
+
+
       /* exdb=myDbHelper.getReadableDatabase();
         dbs=newhelper.getReadableDatabase();
         dbn=newhelper2.getReadableDatabase();

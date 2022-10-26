@@ -130,7 +130,7 @@ public class Clue_Levels extends AppCompatActivity {
         intro.append(four);
 
 
-        Spannable six = new SpannableString( "\n\n5) கேள்விக்குறியை அழுத்தி விடையைக் காணலாம். அவ்வாறு பார்க்கும்பொழுது 100 நாணயங்கள் குறைக்கப்படும்.");
+        Spannable six = new SpannableString( "\n\n4) கேள்விக்குறியை அழுத்தி விடையைக் காணலாம். அவ்வாறு பார்க்கும்பொழுது 100 நாணயங்கள் குறைக்கப்படும்.");
 
         six.setSpan(new ForegroundColorSpan(Color.parseColor("#ff6633")), 0, six.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         intro.append(six);

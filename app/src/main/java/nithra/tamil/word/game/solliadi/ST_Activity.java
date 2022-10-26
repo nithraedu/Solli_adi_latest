@@ -94,7 +94,7 @@ public class ST_Activity extends Activity {
         myDB.execSQL("CREATE TABLE IF NOT EXISTS share_noti (id integer NOT NULL PRIMARY KEY AUTOINCREMENT,title VARCHAR,sahre_msg VARCHAR,date VARCHAR,time VARCHAR);");
 
             sharedPreference.putInt(context,"Content_ads_shown_neww",2);
-            if (spa.getInt(context, "purchase_ads") == 0) {
+           // if (spa.getInt(context, "purchase_ads") == 0) {
                 // Make sure to set the mediation provider value to "max" to ensure proper functionality
                 AppLovinSdk.getInstance(context).setMediationProvider("max");
                 AppLovinSdk.initializeSdk(context, new AppLovinSdk.SdkInitializationListener() {
@@ -112,7 +112,7 @@ public class ST_Activity extends Activity {
                         }
                     }
                 });
-            }
+          //  }
 
         //industrial();
 
@@ -320,6 +320,8 @@ public class ST_Activity extends Activity {
 
 
     public void loads_ads_banner() {
+        System.out.println("print_Ad");
+
         if (sharedPreference.getInt(ST_Activity.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
             ads_lay.setVisibility(View.GONE);

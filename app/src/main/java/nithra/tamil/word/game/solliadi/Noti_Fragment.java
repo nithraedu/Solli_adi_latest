@@ -294,7 +294,7 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del{
                 urls[i] = c.getString(c.getColumnIndex("url"));
             }
 
-            notify_adapter adapter = new notify_adapter(Noti_Fragment.this, isclose, title, urls,Id);
+            notify_adapter adapter = new notify_adapter(Noti_Fragment.this, isclose, title, urls,Id,msgDate,msgTime);
             listView.setAdapter(adapter);
 
             if (Utils.isNetworkAvailable(Noti_Fragment.this)) {

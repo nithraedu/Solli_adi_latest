@@ -370,6 +370,19 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         newhelper4 = new Newgame_DataBaseHelper4(context);
 
 
+        /*String gid = "10";
+        String qid = "";
+        for (int i = 1; i<=699; i++){
+            if (qid.equals("")){
+                qid = "" +i;
+            } else {
+                qid = qid + "," + i;
+            }
+        }
+        newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='10'");
+*/
+
+
         //Sound Pool Sounds
         click = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
         soundId1 = click.load(Riddle_game.this, R.raw.click, 1);

@@ -192,7 +192,7 @@ android:layout_marginTop="@dimen/wh_2"
         <TextView
             android:textSize="@dimen/txt_24"
             android:paddingBottom="@dimen/lrtbp_5"
-            android:paddingTop="@dimen/lrtbp_5"
+            android:paddingTop="40dp"
             android:paddingLeft="@dimen/lrtbp_5"
             android:paddingRight="@dimen/lrtbp_5"
             android:textColor="@color/dark_green"

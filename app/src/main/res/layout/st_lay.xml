@@ -34,6 +34,8 @@
                     android:layout_toLeftOf="@+id/noti_cancel"
                     android:padding="@dimen/lrtbp_5"
                     android:text="American Pickers"
+                    android:maxLines="2"
+                    android:ellipsize="end"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@color/dark_green" />
 

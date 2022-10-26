@@ -121,6 +121,11 @@ public class SolukulSol_levels extends AppCompatActivity {
         six.setSpan(new ForegroundColorSpan(Color.parseColor("#ff6633")), 0, six.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         intro.append(six);
 
+        Spannable new_nxt = new SpannableString( "\n\n5)  இந்த விளையாட்டில் கொடுக்கப்பட்டுள்ள அனைத்து வார்த்தைகளுக்கும் 2 நிமிடத்தில் விடையளிக்கும் பட்சத்தில் கூடுதலாக 30 நாணயங்கள் வழங்கப்படும்.");
+
+        new_nxt.setSpan(new ForegroundColorSpan(Color.parseColor("#ff6633")), 0, new_nxt.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        intro.append(new_nxt);
+
 
 
 

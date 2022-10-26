@@ -310,6 +310,22 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
 
 
 
+       /* String gid = "15";
+        String qid = "";
+        for (int i = 1; i<=99; i++){
+            if (qid.equals("")){
+                qid = "" +i;
+            } else {
+                qid = qid + "," + i;
+            }
+        }
+        System.out.println("---qid : " +qid);
+        System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
+        // newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid='" + qid + "'and gameid='" + gid + "'");
+        newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='15'");
+*/
+
+
         if (sps.getString(Match_tha_fallows_game.this, "new_user_db").equals("")) {
 
         } else {

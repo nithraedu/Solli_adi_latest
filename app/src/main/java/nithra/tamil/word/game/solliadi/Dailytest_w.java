@@ -156,7 +156,7 @@ public class Dailytest_w extends BroadcastReceiver {
 			calendar.add(Calendar.DAY_OF_MONTH, 1);
 				
 		}
-		am.setExact(AlarmManager.RTC, calendar.getTimeInMillis(), pi);
+		am.set(AlarmManager.RTC, calendar.getTimeInMillis(), pi);
 		//am.setAlarmClock(new AlarmManager.AlarmClockInfo(calendar.getTimeInMillis(),pi),pi);
 		
 	}
