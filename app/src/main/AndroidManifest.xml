@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:installLocation="auto">
 
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <!--<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>-->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" /> <!-- Keeps the processor from sleeping when a message is received. -->
@@ -307,7 +307,7 @@
             android:name=".billing.Billing_Activity"
             android:theme="@style/Theme.AppCompat.Translucent" />
 
-        <receiver android:name=".Dailytest_w"
+        <!--<receiver android:name=".Dailytest_w"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -335,7 +335,7 @@
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
-
+-->
        <!-- <receiver
             android:name=".referrer"
             android:exported="true">

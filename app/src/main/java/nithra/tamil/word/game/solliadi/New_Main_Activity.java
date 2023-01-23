@@ -934,7 +934,7 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
             }
         });
 
-        if (sps.getString(New_Main_Activity.this, "dts").equals("")) {
+        /*if (sps.getString(New_Main_Activity.this, "dts").equals("")) {
             Intent intent = new Intent(this, New_Main_Activity.class);
             PendingIntent sender = PendingIntent.getBroadcast(this, 0, intent, Utils.getPendingIntent());//0
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -989,7 +989,7 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
                 }
             }
 
-        }
+        }*/
 
         File SDCardRoot = getFilesDir();
         File fol = new File(SDCardRoot + "/Nithra/solliadi/");

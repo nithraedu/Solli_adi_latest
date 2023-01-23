@@ -1138,7 +1138,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             }*/
 
 
-        if (sps.getString(MainActivity.this, "dts").equals("")) {
+        /*if (sps.getString(MainActivity.this, "dts").equals("")) {
             Intent intent = new Intent(this, MainActivity.class);
             PendingIntent sender = PendingIntent.getBroadcast(this, 0, intent, Utils.getPendingIntent());//0
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -1193,7 +1193,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                 }
             }
 
-        }
+        }*/
           /*  if (sps.getString(MainActivity.this,"dailytest_set").equals(""))
             {
                 sps.putString(MainActivity.this,"dailytest_set","yes");
