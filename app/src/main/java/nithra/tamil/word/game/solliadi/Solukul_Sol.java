@@ -435,7 +435,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                 .build();
 
 
-        /*String gid = "3";
+        String gid = "3";
         String qid = "";
         for (int i = 0; i<=198; i++){
             if (qid.equals("")){
@@ -445,7 +445,6 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             }
         }
         myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='3'");
-*/
 
 
         //loadRewardedVideoAd();

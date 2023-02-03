@@ -55,8 +55,6 @@ public class Dailytest_listview extends AppCompatActivity {
                 finish();
                 Intent intent = new Intent(Dailytest_listview.this, MainActivity.class);
                 startActivity(intent);
-
-
             }
         });
 
@@ -88,7 +86,6 @@ public class Dailytest_listview extends AppCompatActivity {
                 gameid[i] = c.getString(c.getColumnIndex("gameid"));
                 fin[i] = c.getString(c.getColumnIndex("isfinish"));
                 //Toast.makeText(aathichudi.this, ""+pro[i], Toast.LENGTH_SHORT).show();
-
             }
 
         } else {

@@ -344,7 +344,7 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
 
 
 
-        /*String gid = "11";
+        String gid = "11";
         String qid = "";
         for (int i = 1; i<=999; i++){
             if (qid.equals("")){
@@ -354,7 +354,6 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
             }
         }
         newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='11'");
-*/
 
 
 

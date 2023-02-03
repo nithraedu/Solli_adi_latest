@@ -223,7 +223,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
 
 
 
-        /*String gid = "13";
+        String gid = "13";
         String qid = "";
         for (int i = 0; i<=999; i++){
             if (qid.equals("")){
@@ -235,7 +235,6 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         System.out.println("---qid : " +qid);
         System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
         newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='13'");
-*/
 
 
         //Sound Pool Sounds

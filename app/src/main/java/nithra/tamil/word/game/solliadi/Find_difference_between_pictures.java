@@ -279,7 +279,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
 
 
 
-        /*String gid = "20";
+        String gid = "20";
         String qid = "";
         for (int i = 1; i<=29; i++){
             if (qid.equals("")){
@@ -289,7 +289,6 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
             }
         }
         newhelper6.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='20'");
-*/
 
         if (sps.getString(Find_difference_between_pictures.this, "new_user_db").equals("")) {
 

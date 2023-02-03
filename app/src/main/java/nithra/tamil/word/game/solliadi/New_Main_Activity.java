@@ -667,6 +667,26 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
         }
 
 
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && sp.getInt(this, "permission") == 0) {
+
+            sp.putInt(this, "permission", 1);
+
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 113);
+
+
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && sp.getInt(this, "permission") == 10) {
+
+            sp.putInt(this, "permission", 1);
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 113);
+
+        } else {
+            System.out.println("_____________print  con't apply check value  :" + sp.getInt(this, "permission"));
+            sp.putInt(this, "permission",
+                    sp.getInt(this, "permission") + 1);
+        }
+
+
 //in_app message(Nithra ad)
         if (sp.getInt(New_Main_Activity.this,"inappmessage")==0) {
             sp.putInt(New_Main_Activity.this,"inappmessage",1);
@@ -3510,7 +3530,7 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
                 "சொல்லிஅடி");
         i.putExtra(Intent.EXTRA_TEXT,
                 "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                        "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                        "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh \n"+Utils.android_id(context));
         startActivity(Intent.createChooser(i, "Share via"));
     }
 
@@ -5804,7 +5824,8 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     sps.putInt(New_Main_Activity.this, "permission", 1);
                     set_photo();
-                } else if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                }
+                else if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                         // user rejected the permission
 
@@ -5846,6 +5867,32 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
                         }
                     }
 
+                }
+
+
+            case 113: {
+                    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        System.out.println("jaasim==3");
+
+                        sp.putInt(getApplicationContext(), "permission", 1);
+
+                    } else {
+                        if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                            System.out.println("jaasim==4");
+
+                   /* @SuppressLint({"NewApi", "LocalSuppress"}) boolean showRationale = shouldShowRequestPermissionRationale(permissions[0]);
+                    if (!showRationale) {
+                        System.out.println("jaasim==5");
+
+                        // sp.putInt(getApplicationContext(), "permission", 2);
+                    } else if (Manifest.permission.POST_NOTIFICATIONS.equals(permissions[0])) {
+                        System.out.println("jaasim==6");
+
+                        sp.putInt(getApplicationContext(), "permission", 0);
+                    }*/
+                        }
+
+                    }
                 }
         }
     }

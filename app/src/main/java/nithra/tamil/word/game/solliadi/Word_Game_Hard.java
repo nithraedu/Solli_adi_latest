@@ -448,7 +448,7 @@ public class Word_Game_Hard extends
 
 
 
-        /* String gid = "4";
+         String gid = "4";
         String qid = "";
         for (int i =0 ; i<=199; i++){
             if (qid.equals("")){
@@ -459,7 +459,6 @@ public class Word_Game_Hard extends
         }
        // newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='4'");
         myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid  in (" + qid + ") and gameid='4'");
-*/
 
 
 
