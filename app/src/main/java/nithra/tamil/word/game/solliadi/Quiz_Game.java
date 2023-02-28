@@ -205,7 +205,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
 
 
 
-        String gid = "17";
+        /*String gid = "17";
         String qid = "";
         for (int i = 0; i<=499; i++){
             if (qid.equals("")){
@@ -217,7 +217,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         System.out.println("---qid : " +qid);
         System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='17'");
         newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='17'");
-
+*/
 
 
         if (sps.getString(Quiz_Game.this, "new_user_db").equals("")) {

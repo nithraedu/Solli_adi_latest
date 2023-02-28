@@ -237,7 +237,8 @@
                     android:id="@+id/center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/lrtbp_20">
+                    android:layout_marginTop="@dimen/lrtbp_20"
+                    android:visibility="gone">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -250,7 +251,8 @@
                             android:layout_alignParentRight="true"
                             android:layout_centerInParent="true"
                             android:layout_marginRight="@dimen/lrtbp_25"
-                            android:background="@drawable/new_back_round2">
+                            android:background="@drawable/new_back_round2"
+                            android:visibility="gone">
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -283,7 +285,8 @@
                             android:layout_alignParentLeft="true"
                             android:layout_centerInParent="true"
                             android:layout_marginLeft="@dimen/lrtbp_25"
-                            android:background="@drawable/new_back_round2">
+                            android:background="@drawable/new_back_round2"
+                            android:visibility="gone">
 
                             <LinearLayout
                                 android:layout_width="wrap_content"

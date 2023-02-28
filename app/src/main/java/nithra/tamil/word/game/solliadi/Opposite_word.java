@@ -344,7 +344,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         newhelper4 = new Newgame_DataBaseHelper4(context);
 
 
-        String gid = "7";
+        /*String gid = "7";
         String qid = "";
         for (int i = 0; i<=999; i++){
             if (qid.equals("")){
@@ -356,7 +356,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         System.out.println("---qid : " +qid);
         System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
         newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='7'");
-
+*/
     /*    exdb = myDbHelper.getReadableDatabase();
         dbn = newhelper.getReadableDatabase();
         dbs = newhelper2.getReadableDatabase();

@@ -379,7 +379,7 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
         newhelper4 = new Newgame_DataBaseHelper4(context);
 
 
-        String gid = "8";
+        /*String gid = "8";
         String qid = "";
         for (int i = 0; i<=999; i++){
             if (qid.equals("")){
@@ -391,7 +391,7 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
         System.out.println("---qid : " +qid);
         System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
         newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='8'");
-
+*/
 
      /*   exdb = myDbHelper.getReadableDatabase();
         dbs = newhelper.getReadableDatabase();

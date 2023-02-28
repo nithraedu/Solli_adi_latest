@@ -278,13 +278,15 @@
                     android:layout_height="1dp"
                     android:layout_below="@+id/rating"
                     android:layout_marginTop="@dimen/lrtbp_5"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:visibility="gone"/>
 
                 <LinearLayout
                     android:id="@+id/leader_bd"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/tdss">
+                    android:layout_below="@+id/tdss"
+                    android:visibility="gone">
 
                     <ImageView
                         android:id="@+id/leader_bd_img"
@@ -311,13 +313,15 @@
                     android:layout_height="1dp"
                     android:layout_below="@+id/leader_bd"
                     android:layout_marginTop="@dimen/lrtbp_5"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:visibility="gone"/>
 
                 <LinearLayout
                     android:id="@+id/achivements_d"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/tdssddi">
+                    android:layout_below="@+id/tdssddi"
+                    android:visibility="gone">
 
                     <ImageView
                         android:id="@+id/achivements_d_img"

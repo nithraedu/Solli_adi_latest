@@ -455,7 +455,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
         dbn2=newhelper3.getReadableDatabase();*/
 
 
-        String gid = "1";
+        /*String gid = "1";
         String qid = "";
         for (int i = 0; i<=199; i++){
             if (qid.equals("")){
@@ -467,7 +467,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
         System.out.println("---qid : " +qid);
         System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
         myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='1'");
-
+*/
         email = sps.getString(Picture_Game_Hard.this, "email");
 
         System.out.println("mail======pic==" + email);

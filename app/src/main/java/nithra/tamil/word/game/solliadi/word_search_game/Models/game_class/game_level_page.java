@@ -42,6 +42,11 @@ import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.FacebookDialog;
 import com.facebook.widget.WebDialog;*/
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxRewardedAd;
 import com.facebook.ads.Ad;
 import com.facebook.ads.AdError;
 import com.facebook.ads.NativeAdLayout;
@@ -77,7 +82,13 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
     ImageView go_back_lecvel, view_lecvel;
     ListView level_list_view;
     int gride = 5;
-
+    int onresume_start = 0;
+    int extra_coin_s = 0;
+    int reward_play_count = 0;
+    int ea = 0;
+    TextView coin_value,nl_coins_show;
+    int setval_vid;
+    private MaxRewardedAd rewardedAd;
 
     ArrayList<String> listview_category = new ArrayList<>();
     ArrayList<String> Ad_loaded = new ArrayList<>();
@@ -116,7 +127,7 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
     private static final long COUNTER_TIME = 10;
     private static final int GAME_OVER_REWARD = 1;
 
-    static private int mCoinCount = 0, coinearn = 1;
+    static private int mCoinCount = 20, coinearn = 1;
     private boolean mGameOver;
     private boolean mGamePaused;
     private RewardedVideoAd mRewardedVideoAd;
@@ -272,7 +283,7 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
             coin_cursor = myDbHelper.getQry("select * from score");
             if (coin_cursor.getCount() != 0) {
                 coin_cursor.moveToFirst();
-                coin_point = coin_cursor.getInt(coin_cursor.getColumnIndex("coins"));
+                coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coins"));
                 coin_txt.setText("" + coin_point);
             }
         }
@@ -288,9 +299,9 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
             if (cursor.getCount() > 0) {
                 for (int i = 0; i < cursor.getCount(); i++) {
                     cursor.moveToPosition(i);
-                    listview_category.add(cursor.getString(cursor.getColumnIndex("Category")));
+                    listview_category.add(cursor.getString(cursor.getColumnIndexOrThrow("Category")));
                     System.out.println("#########################listview_category" + listview_category);
-                    Ad_loaded.add(cursor.getString(cursor.getColumnIndex("Category")));
+                    Ad_loaded.add(cursor.getString(cursor.getColumnIndexOrThrow("Category")));
                 }
             }
             cursor.close();
@@ -340,7 +351,7 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
                     for (int i=0;i<cursor.getCount();i++)
                     {
                         cursor.moveToPosition(i);
-                        listview_category.add(cursor.getString(cursor.getColumnIndex("Category")));
+                        listview_category.add(cursor.getString(cursor.getColumnIndexOrThrow()("Category")));
                     }
 
                 }
@@ -617,7 +628,7 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
                     coin_cursor = myDbHelper.getQry("select * from score");
                     if (coin_cursor.getCount() != 0) {
                         coin_cursor.moveToFirst();
-                        coin_point = coin_cursor.getInt(coin_cursor.getColumnIndex("coins"));
+                        coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coins"));
 
                         if (coin_point > 2000) {
                             //  myDialog_class.media_player(getApplicationContext(), R.raw.level_unlock, "normal");
@@ -736,7 +747,7 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
             coin_cursor = myDbHelper.getQry("select * from score");
             if (coin_cursor.getCount() != 0) {
                 coin_cursor.moveToFirst();
-                coin_point = coin_cursor.getInt(coin_cursor.getColumnIndex("coins"));
+                coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coins"));
             }
         } finally {
             if (coin_cursor != null)
@@ -987,6 +998,36 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
             @Override
             public void onClick(View v) {
 
+                extra_coin_s = 0;
+                if (isNetworkAvailable()) {
+                    final ProgressDialog reward_progressBar = ProgressDialog.show(game_level_page.this, "" + "Reward video", "Loading...");
+                    if (fb_reward == 1) {
+                        reward_progressBar.dismiss();
+                        rewardedAd.showAd();
+
+                        openDialog_earncoin.dismiss();
+                    } else {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                reward_progressBar.dismiss();
+                                if (fb_reward == 1) {
+                                    rewardedAd.showAd();
+                                    // mShowVideoButton.setVisibility(View.VISIBLE);
+                                } else {
+                                    //reward(context);
+                                    rewarded_ad();
+                                    Toast.makeText(game_level_page.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }, 2000);
+
+
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                }
+
 
 
             }
@@ -1089,6 +1130,130 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
         });
         openDialog_earncoin.show();
     }
+
+
+
+    public void rewarded_ad() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
+        rewardedAd.setListener(new MaxRewardedAdListener() {
+            @Override
+            public void onRewardedVideoStarted(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onRewardedVideoCompleted(MaxAd ad) {
+                reward_status = 1;
+            }
+
+            @Override
+            public void onUserRewarded(MaxAd ad, MaxReward reward) {
+
+            }
+
+            @Override
+            public void onAdLoaded(MaxAd ad) {
+
+                System.out.println("adchecked--");
+                fb_reward = 1;
+            }
+
+            @Override
+            public void onAdDisplayed(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdHidden(MaxAd ad) {
+                rewarded_ad();
+                if (reward_status == 1) {
+                    if (extra_coin_s == 0) {
+                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                        cfx.moveToFirst();
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                        int spx = skx + mCoinCount;
+                        String aStringx = Integer.toString(spx);
+                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                    }
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            vidcoinearn();
+
+                        }
+                    }, 500);
+                } else {
+                    Toast.makeText(game_level_page.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                }
+
+                fb_reward = 0;
+                rewardedAd.loadAd();
+            }
+
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+                System.out.println("==adtest==" + adUnitId);
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                System.out.println("==adtest_display==" + error);
+                rewardedAd.loadAd();
+            }
+        });
+        rewardedAd.loadAd();
+    }
+
+
+
+    public void vidcoinearn() {
+        onresume_start = 0;
+        if (extra_coin_s == 1) {
+            extra_coin_s = 0;
+            reward_play_count = reward_play_count + 1;
+            //daily_bones();
+            ea = ea + setval_vid;
+            coin_value.setText("" + ea);
+            //mCoinCount = 0;
+        } else {
+            final Dialog openDialog = new Dialog(game_level_page.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+            openDialog.setContentView(R.layout.share_dialog2);
+            openDialog.setCancelable(false);
+            // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
+            TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
+            TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+            // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            int spx = skx + mCoinCount;
+            final String aStringx = Integer.toString(spx);
+            b_scores.setText("" + mCoinCount);
+            ok_y.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                    cfx.moveToFirst();
+                    if (cfx.getCount() != 0) {
+                        int kks = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+//                        nl_coins_show.setText("" + kks);
+                    }
+                    openDialog.dismiss();
+                    //mCoinCount = 0;
+                }
+            });
+            openDialog.show();
+        }
+    }
+
 
 /*    public boolean isLoggedIn() {
         Session session = Session.getActiveSession();
@@ -1217,7 +1382,7 @@ public void reward(final Context context) {
                 if (extra_coin_s == 0) {
                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow()("coins"));
                     int spx = skx + mCoinCount;
                     String aStringx = Integer.toString(spx);
                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");

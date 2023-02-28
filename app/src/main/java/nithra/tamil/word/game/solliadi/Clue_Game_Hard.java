@@ -356,7 +356,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         newhelper4 = new Newgame_DataBaseHelper4(context);
 
 
-        String gid = "2";
+       /* String gid = "2";
         String qid = "";
         for (int i = 0; i<=198; i++){
             if (qid.equals("")){
@@ -366,7 +366,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
             }
         }
         myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='2'");
-
+*/
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)

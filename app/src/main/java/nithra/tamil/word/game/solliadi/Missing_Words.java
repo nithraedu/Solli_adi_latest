@@ -207,7 +207,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
         qwt = (LinearLayout) findViewById(R.id.qwt);
 
 
-        String gid = "19";
+        /*String gid = "19";
         String qid = "";
         for (int i = 0; i<=299; i++){
             if (qid.equals("")){
@@ -219,7 +219,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
         System.out.println("---qid : " +qid);
         System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
         newhelper6.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='19'");
-
+*/
 
         //Sound Pool Sounds
         spz1 = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);

@@ -803,7 +803,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         re_ads.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                multiplayer_game_start();
+                //multiplayer_game_start();
             }
         });
 
@@ -952,7 +952,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             }
         });
 
-        inapp_messaging();
+        //inapp_messaging();
         word_search_main = (RippleView) findViewById(R.id.word_search_main);
         leader_bd = (LinearLayout) findViewById(R.id.leader_bd);
         achivements_d = (LinearLayout) findViewById(R.id.achivements_d);
@@ -1013,7 +1013,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         multi_d.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                multiplayer_game_start();
+                //multiplayer_game_start();
             }
         });
 

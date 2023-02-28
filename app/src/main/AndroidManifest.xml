@@ -403,12 +403,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity android:name=".My_Multiplayer" />
-        <activity
+     <!--   <activity
             android:name=".Solli_adi_multiplayer"
             android:exported="true"
             android:label="@string/word_game"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" /> <!-- Firebase Notifications -->
+            android:theme="@style/AppTheme.NoActionBar" />-->
+        <!-- Firebase Notifications -->
         <service android:name=".MyFirebaseMessagingService"
             android:exported="true">
             <intent-filter>

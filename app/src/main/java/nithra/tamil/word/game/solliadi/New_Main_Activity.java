@@ -847,13 +847,13 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
         leader_bd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                leader_bd();
+                //leader_bd();
             }
         });
         achivements_d.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                achivemnt_st();
+                //achivemnt_st();
             }
         });
         word_search_d.setOnClickListener(new View.OnClickListener() {
@@ -940,7 +940,7 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
         leader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                leader_bd();
+                //leader_bd();
             }
         });
 
@@ -949,7 +949,7 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
             @Override
             public void onClick(View v) {
 
-                achivemnt_st();
+                //achivemnt_st();
 
             }
         });
@@ -3530,7 +3530,7 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
                 "சொல்லிஅடி");
         i.putExtra(Intent.EXTRA_TEXT,
                 "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                        "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh \n"+Utils.android_id(context));
+                        "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh \n");
         startActivity(Intent.createChooser(i, "Share via"));
     }
 
@@ -3804,8 +3804,6 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
                         rk = 2;
                     }
                 }
-
-
             }
         }, 3000);
 
@@ -9222,13 +9220,13 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
         user_achivements.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                achivemnt_st();
+                //achivemnt_st();
             }
         });
         user_order_leaderboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                leader_bd();
+                //leader_bd();
             }
         });
         play_game.setOnClickListener(new View.OnClickListener() {

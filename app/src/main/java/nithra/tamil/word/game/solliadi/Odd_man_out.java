@@ -366,7 +366,7 @@ public class Odd_man_out extends BaseGameActivity implements GoogleApiClient.Con
 
 
 
-        String gid = "5";
+        /*String gid = "5";
         String qid = "";
         for (int i = 0; i<=999; i++){
             if (qid.equals("")){
@@ -378,7 +378,7 @@ public class Odd_man_out extends BaseGameActivity implements GoogleApiClient.Con
         System.out.println("---qid : " +qid);
         System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
         newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='5'");
-
+*/
 
       /* exdb=myDbHelper.getReadableDatabase();
         dbs=newhelper.getReadableDatabase();

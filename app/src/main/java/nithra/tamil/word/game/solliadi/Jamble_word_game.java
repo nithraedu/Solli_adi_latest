@@ -227,7 +227,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
 
 
 
-        String gid = "18";
+        /*String gid = "18";
         String qid = "";
         for (int i = 0; i<=499; i++){
             if (qid.equals("")){
@@ -239,7 +239,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
         System.out.println("---qid : " +qid);
         System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
         newhelper6.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='18'");
-
+*/
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)

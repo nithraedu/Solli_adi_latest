@@ -1,5 +1,8 @@
 package nithra.tamil.word.game.solliadi.word_search_game.Models.general;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Senthamil_Thedal_Native_Banner;
+
 import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -22,12 +25,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.os.Vibrator;
-
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
@@ -46,25 +43,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/*import com.facebook.FacebookException;
-import com.facebook.FacebookOperationCanceledException;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
-import com.facebook.widget.FacebookDialog;
-import com.facebook.widget.WebDialog;*/
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
 import com.applovin.mediation.ads.MaxRewardedAd;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
 import com.facebook.ads.NativeAdLayout;
-
-
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.File;
@@ -80,8 +69,6 @@ import java.util.Set;
 
 import nithra.tamil.word.game.solliadi.DataBaseHelper;
 import nithra.tamil.word.game.solliadi.LoginActivity;
-import nithra.tamil.word.game.solliadi.New_Main_Activity;
-import nithra.tamil.word.game.solliadi.New_Main_Gamelist;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper2;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper3;
@@ -89,7 +76,6 @@ import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
-import nithra.tamil.word.game.solliadi.Solukul_Sol;
 import nithra.tamil.word.game.solliadi.Utils;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
@@ -103,11 +89,6 @@ import nithra.tamil.word.game.solliadi.word_search_game.Models.helpclass.my_dial
 import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.LikeButton;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.OnAnimationEndListener;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.OnLikeListener;
-
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Senthamil_Thedal_Native_Banner;
 
 
 public class WordsearchGridFragment extends Fragment implements WordsearchGridView.OnWordSelectedListener, OnLikeListener, OnAnimationEndListener {
@@ -528,9 +509,10 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
         level_category = sp.getString(getActivity(), "level_category");
         level_id = sp.getString(getActivity(), "sub_level_category");
 
+        System.out.println("===========" + sp.getString(getActivity(), "" + level_category + "_" + level_id));
 
         System.out.println("333333333 : " + level_category);
-
+//-47029
 
         DisplayMetrics metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -736,7 +718,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        System.out.println("me");
         context = getActivity();
 
         lay_wordsearch = (RelativeLayout) view.findViewById(R.id.lay_wordsearch);
@@ -818,10 +800,10 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             }
             //  sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(getActivity())
-                    .setTarget(recyclerView)
-                    .setDismissText("சரி")
-                    .setContentText(data)
-                    .build())
+                            .setTarget(recyclerView)
+                            .setDismissText("சரி")
+                            .setContentText(data)
+                            .build())
                     .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                         @Override
                         public void onDismiss(MaterialShowcaseView itemView, int position) {
@@ -949,6 +931,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
         timeWhenStopped = 0;
 
         if (!sp.getString(getActivity(), "" + level_category + "_" + level_id).equals("")) {
+            System.out.println("===========" + sp.getString(getActivity(), "" + level_category + "_" + level_id));
             timeWhenStopped = Long.parseLong(sp.getString(getActivity(), "" + level_category + "_" + level_id));
 
             if (!onstop) {
@@ -1131,6 +1114,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
 
     private void onPuzzleComplete() {
+        System.out.println("generate== ");
         resetBoard();
         generateBoard();
         initBoard();
@@ -1221,6 +1205,14 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
         resetBoard();
 
+        System.out.println("----fff start ");
+
+        try {
+            System.out.println("----fff start1 " + tinyDB.getListObject("found" + level_category + level_id, Word.class).size());
+        } catch (Exception e) {
+            System.out.println("catch_print== " + e.getMessage());
+        }
+
         if (tinyDB.getListObject("found" + level_category + level_id, Word.class).size() == 0) {
             System.out.println("----fff sp======if generateBoard() ");
             generateBoard();
@@ -1240,6 +1232,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             mFoundWords = new HashSet<Word>(words);
             wordsearchGridView.wordMaintain(mFoundWords);
         }
+
 
         wordsearchGridView.setOnWordSelectedListener(this);
 
@@ -1348,14 +1341,15 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
 
         System.out.println("333333333 : " + "select * from category where Category='" + level_category + "' and Catid='" + level_id + "'");
+        System.out.println("cur_cnt== " + cursor.getCount());
 
         if (cursor.getCount() != 0) {
-
+            System.out.println("aaaa###");
             mSolution.clear();
             my_solution.clear();
 
             cursor.moveToFirst();
-            String value = cursor.getString(cursor.getColumnIndex("Words"));
+            String value = cursor.getString(cursor.getColumnIndexOrThrow("Words"));
 
             elephantList = Arrays.asList(value.split(","));
 
@@ -3464,10 +3458,8 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
     */
 
 
-
-
-    public void rewarded_ad(){
-        rewardedAd = MaxRewardedAd.getInstance( getResources().getString(R.string.Reward_Ins), getActivity() );
+    public void rewarded_ad() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), getActivity());
         rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
             public void onRewardedVideoStarted(MaxAd ad) {
@@ -3486,7 +3478,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
             @Override
             public void onAdLoaded(MaxAd ad) {
-                fb_reward=1;
+                fb_reward = 1;
             }
 
             @Override
@@ -3586,7 +3578,8 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             public void onRewardedVideoClosed() {
                 reward();
                 if (reward_status == 1) {
-                 *//*   if (extra_coin_s == 0) {
+                 */
+    /*   if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
                         int skx = cfx.getInt(cfx.getColumnIndex("coins"));
@@ -3594,7 +3587,8 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
-                    }*//*
+                    }*/
+    /*
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -3617,7 +3611,8 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                 rewardedVideoAd.buildLoadAdConfig()
                         .withAdListener(rewardedVideoAdListener)
                         .build());
-*//*    rewardedVideoAd.setAdListener(new RewardedVideoAdListener() {
+*/
+    /*    rewardedVideoAd.setAdListener(new RewardedVideoAdListener() {
 
         @Override
         public void onRewardedVideoCompleted() {

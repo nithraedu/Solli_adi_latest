@@ -348,13 +348,13 @@ public class New_Main_Gamelist extends BaseGameActivity implements View.OnClickL
         prize_lay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                prize_game_start();
+                //prize_game_start();
             }
         });
         et_2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                multiplayer_games_start();
+                //multiplayer_games_start();
             }
         });
 
@@ -528,10 +528,10 @@ public class New_Main_Gamelist extends BaseGameActivity implements View.OnClickL
                 g20_6differences_start();
                 break;
             case R.id.prize_game:
-                prize_game_start();
+                //prize_game_start();
                 break;
             case R.id.multiplayer_games:
-                multiplayer_games_start();
+                //multiplayer_games_start();
                 break;
             case R.id.down_arrow:
                 //scroll_view.scrollTo(0, scroll_view.getBottom());

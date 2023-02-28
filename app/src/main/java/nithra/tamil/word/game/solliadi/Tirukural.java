@@ -247,7 +247,7 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
 
 
 
-        String gid = "12";
+        /*String gid = "12";
         String qid = "";
         for (int i = 0; i<=1329; i++){
             if (qid.equals("")){
@@ -259,7 +259,7 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         System.out.println("---qid : " +qid);
         System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='17'");
         newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='12'");
-
+*/
 
 
         //Sound Pool Sounds
