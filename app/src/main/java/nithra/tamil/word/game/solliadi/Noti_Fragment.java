@@ -155,8 +155,8 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del{
                 Cursor cv = myDB.rawQuery("select * from noti_cal where id='" + Id[position] + "'", null);
                 cv.moveToFirst();
 
-                String type = cv.getString(cv.getColumnIndex("type"));
-                String urls = cv.getString(cv.getColumnIndex("url"));
+                String type = cv.getString(cv.getColumnIndexOrThrow("type"));
+                String urls = cv.getString(cv.getColumnIndexOrThrow("url"));
 
                 if (type.equals("s")) {
 
@@ -284,14 +284,14 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del{
             urls = new String[c.getCount()];
             for (int i = 0; i < c.getCount(); i++) {
                 c.moveToPosition(i);
-                Id[i] = c.getInt(c.getColumnIndex("id"));
-                title[i] = c.getString(c.getColumnIndex("bm"));
-                message[i] = c.getString(c.getColumnIndex("message"));
-                msgType[i] = c.getString(c.getColumnIndex("type"));
-                isclose[i] = c.getInt(c.getColumnIndex("isclose"));
-                msgDate[i] = c.getString(c.getColumnIndex("date"));
-                msgTime[i] = c.getString(c.getColumnIndex("time"));
-                urls[i] = c.getString(c.getColumnIndex("url"));
+                Id[i] = c.getInt(c.getColumnIndexOrThrow("id"));
+                title[i] = c.getString(c.getColumnIndexOrThrow("bm"));
+                message[i] = c.getString(c.getColumnIndexOrThrow("message"));
+                msgType[i] = c.getString(c.getColumnIndexOrThrow("type"));
+                isclose[i] = c.getInt(c.getColumnIndexOrThrow("isclose"));
+                msgDate[i] = c.getString(c.getColumnIndexOrThrow("date"));
+                msgTime[i] = c.getString(c.getColumnIndexOrThrow("time"));
+                urls[i] = c.getString(c.getColumnIndexOrThrow("url"));
             }
 
             notify_adapter adapter = new notify_adapter(Noti_Fragment.this, isclose, title, urls,Id,msgDate,msgTime);
@@ -739,13 +739,13 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del{
 
                 do {
                     NotifyItem item = new NotifyItem();
-                    item.setTitle(cv1.getString(cv1.getColumnIndex("title")));
-                    item.setMessage(cv1.getString(cv1.getColumnIndex("message")));
-                    item.setType(cv1.getString(cv1.getColumnIndex("type")));
-                    item.setId(cv1.getInt(cv1.getColumnIndex("id")));
-                    item.setDate(cv1.getString(cv1.getColumnIndex("date")));
-                    item.setTime(cv1.getString(cv1.getColumnIndex("time")));
-                    item.setIsclose(cv1.getInt(cv1.getColumnIndex("isclose")));
+                    item.setTitle(cv1.getString(cv1.getColumnIndexOrThrow("title")));
+                    item.setMessage(cv1.getString(cv1.getColumnIndexOrThrow("message")));
+                    item.setType(cv1.getString(cv1.getColumnIndexOrThrow("type")));
+                    item.setId(cv1.getInt(cv1.getColumnIndexOrThrow("id")));
+                    item.setDate(cv1.getString(cv1.getColumnIndexOrThrow("date")));
+                    item.setTime(cv1.getString(cv1.getColumnIndexOrThrow("time")));
+                    item.setIsclose(cv1.getInt(cv1.getColumnIndexOrThrow("isclose")));
                     notes.add(item);
 
                 } while (cv1.moveToNext());

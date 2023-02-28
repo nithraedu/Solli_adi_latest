@@ -394,14 +394,14 @@ public class Game_Status extends AppCompatActivity {
         ol.moveToFirst();
         System.out.println("#################PS_count" + ol.getCount());
         if (ol.getCount() != 0) {
-            old_score_ed = ol.getInt(ol.getColumnIndex("score"));
+            old_score_ed = ol.getInt(ol.getColumnIndexOrThrow("score"));
         }
 
         Cursor up = myDbHelper.getQry("select * from prize_data where date ='" + price_date_d + "'");
         up.moveToFirst();
         System.out.println("#################PS_count" + up.getCount());
         if (up.getCount() != 0) {
-            score_ed = up.getInt(up.getColumnIndex("score"));
+            score_ed = up.getInt(up.getColumnIndexOrThrow("score"));
         }
         prize_u_id = sp.getString(Game_Status.this, "p_user_id");
         System.out.println("#################PS" + score_ed);

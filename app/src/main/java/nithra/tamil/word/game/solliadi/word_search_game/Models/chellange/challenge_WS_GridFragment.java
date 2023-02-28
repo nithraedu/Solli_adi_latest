@@ -384,8 +384,8 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             coin_cursor = myDbHelper.getQry("select * from score");
             if (coin_cursor.getCount() != 0) {
                 coin_cursor.moveToFirst();
-                coin_point = coin_cursor.getInt(coin_cursor.getColumnIndex("coins"));
-                leader_point = coin_cursor.getInt(coin_cursor.getColumnIndex("l_points"));
+                coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coins"));
+                leader_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("l_points"));
                 coin_txt.setText("" + coin_point);
 //                coin_txt.startAnimation(bounce_anim);
             }
@@ -408,7 +408,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                 for (int i = 0; i < cursor.getCount(); i++) {
                     cursor.moveToPosition(i);
 
-                    String value = cursor.getString(cursor.getColumnIndex("ch_words"));
+                    String value = cursor.getString(cursor.getColumnIndexOrThrow("ch_words"));
                     elephantList.add(value);
 
                 }
@@ -1198,7 +1198,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                             if (cursor.getCount() != 0) {
                                 cursor.moveToFirst();
 
-                                int id = cursor.getInt(cursor.getColumnIndex("id"));
+                                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
                                 if (Dailytest_ok.equals("")) {
                                     mydb.execSQL("UPDATE '" + table_name + "' SET is_finish='" + 1 + "' where id='" + id + "'");
                                 }
@@ -1274,7 +1274,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                     for (int i = 0; i < cursor.getCount(); i++) {
                         cursor.moveToPosition(i);
 
-                        String value = cursor.getString(cursor.getColumnIndex("ch_words"));
+                        String value = cursor.getString(cursor.getColumnIndexOrThrow("ch_words"));
                         elephantList.add(value);
 
                     }
@@ -1473,7 +1473,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             coin_cursor = myDbHelper.getQry("select * from score");
             if (coin_cursor.getCount() != 0) {
                 coin_cursor.moveToFirst();
-                leader_point = coin_cursor.getInt(coin_cursor.getColumnIndex("l_points"));
+                leader_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("l_points"));
             }
         } finally {
             if (coin_cursor != null)
@@ -1529,8 +1529,8 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                     coin_cursor = myDbHelper.getQry("select * from score");
                     if (coin_cursor.getCount() != 0) {
                         coin_cursor.moveToFirst();
-                        coin_point = coin_cursor.getInt(coin_cursor.getColumnIndex("coins"));
-                        leader_point = coin_cursor.getInt(coin_cursor.getColumnIndex("l_points"));
+                        coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coins"));
+                        leader_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("l_points"));
                         coin_txt.setText("" + coin_point);
 //                coin_txt.startAnimation(bounce_anim);
                     }
@@ -1693,8 +1693,8 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                 if (cursor.getCount() != 0) {
                     cursor.moveToFirst();
                     option_array.add(question_list.get(mFoundWords.size()));
-                    option_array.add(cursor.getString(cursor.getColumnIndex("opt_word")));
-                    option_array.add(cursor.getString(cursor.getColumnIndex("qus_word")));
+                    option_array.add(cursor.getString(cursor.getColumnIndexOrThrow("opt_word")));
+                    option_array.add(cursor.getString(cursor.getColumnIndexOrThrow("qus_word")));
 
                 }
             } finally {
@@ -1722,7 +1722,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
                     if (cursor.getCount() != 0) {
                         cursor.moveToFirst();
-                        missing_content = cursor.getString(cursor.getColumnIndex("content"));
+                        missing_content = cursor.getString(cursor.getColumnIndexOrThrow("content"));
 
                     }
                 } finally {
@@ -2514,7 +2514,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ", null);
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 20;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -2915,7 +2915,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             coin_cursor = myDbHelper.getQry("select * from score");
             if (coin_cursor.getCount() != 0) {
                 coin_cursor.moveToFirst();
-                coin_point = coin_cursor.getInt(coin_cursor.getColumnIndex("coins"));
+                coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coins"));
             }
         } finally {
             if (coin_cursor != null)
@@ -3063,7 +3063,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -3128,7 +3128,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -3216,7 +3216,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                   /*  if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -3257,7 +3257,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
         /*   Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         int spx = skx + a;
         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");*/
 
@@ -3290,7 +3290,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             final int spx = skx + mCoinCount;
             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
             final String aStringx = Integer.toString(spx);

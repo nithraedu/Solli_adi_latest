@@ -312,7 +312,7 @@ public class Dailytest_s extends BroadcastReceiver {
 			c.moveToFirst();
 			if (c.getCount() != 0)
 			{
-				letters = c.getString(c.getColumnIndex("letters"));
+				letters = c.getString(c.getColumnIndexOrThrow("letters"));
 
 				String tfoption = letters;
 				String[] first=tfoption.split(",");

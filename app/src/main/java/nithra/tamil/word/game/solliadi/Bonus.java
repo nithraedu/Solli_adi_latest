@@ -37,7 +37,7 @@ public class Bonus extends BroadcastReceiver {
 		Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
 		cfx.moveToFirst();
 		if (cfx.getCount()!=0){
-			int k1=cfx.getInt(cfx.getColumnIndex("coins"));
+			int k1=cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 			if(k1<=100) {
 
 				if (!isBooted) {

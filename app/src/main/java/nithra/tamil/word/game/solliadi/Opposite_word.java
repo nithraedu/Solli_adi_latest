@@ -85,8 +85,7 @@ import com.facebook.ads.RewardedVideoAdListener;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.games.Games;
+
 import com.google.example.games.basegameutils.BaseGameActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -364,12 +363,6 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
         //uiHelper = new UiLifecycleHelper(this, callback);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
-                .addScope(Drive.SCOPE_APPFOLDER) // SavedGames
-                .build();
 
 
 
@@ -601,7 +594,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                     cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     if (sk > 50) {
                         bt1.startAnimation(clickzoom);
                         String ts = bt1.getText().toString();
@@ -626,7 +619,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                     cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     if (sk > 50) {
                         bt2.startAnimation(clickzoom);
                         String ts = bt2.getText().toString();
@@ -649,7 +642,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                     cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     if (sk > 50) {
                         bt3.startAnimation(clickzoom);
                         String ts = bt3.getText().toString();
@@ -674,7 +667,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                     cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     if (sk > 50) {
                         bt4.startAnimation(clickzoom);
                         String ts = bt4.getText().toString();
@@ -699,7 +692,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                     cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     if (sk > 50) {
                         bt5.startAnimation(clickzoom);
                         String ts = bt5.getText().toString();
@@ -724,7 +717,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                     cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     if (sk > 50) {
                         bt6.startAnimation(clickzoom);
                         String ts = bt6.getText().toString();
@@ -749,7 +742,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                     cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     if (sk > 50) {
                         bts1.startAnimation(clickzoom);
                         String ts = bts1.getText().toString();
@@ -774,7 +767,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                     cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     if (sk > 50) {
                         bts2.startAnimation(clickzoom);
                         String ts = bts2.getText().toString();
@@ -799,7 +792,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                     cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     if (sk > 50) {
                         bts3.startAnimation(clickzoom);
                         String ts = bts3.getText().toString();
@@ -824,7 +817,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                     cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     if (sk > 50) {
                         bts4.startAnimation(clickzoom);
                         String ts = bts4.getText().toString();
@@ -897,12 +890,12 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx - 50;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -945,7 +938,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                             public void onClick(View v) {
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -1168,13 +1161,13 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 }
             }
             head.setVisibility(View.VISIBLE);
-            u_id = c1.getInt(c1.getColumnIndex("id"));
-            questionid = c1.getInt(c1.getColumnIndex("questionid"));
-            question = c1.getString(c1.getColumnIndex("question"));
-            answer = c1.getString(c1.getColumnIndex("answer"));
-            int clue = c1.getInt(c1.getColumnIndex("clue"));
-            String question_tt = c1.getString(c1.getColumnIndex("sf_words"));
-            int playtime = c1.getInt(c1.getColumnIndex("playtime"));
+            u_id = c1.getInt(c1.getColumnIndexOrThrow("id"));
+            questionid = c1.getInt(c1.getColumnIndexOrThrow("questionid"));
+            question = c1.getString(c1.getColumnIndexOrThrow("question"));
+            answer = c1.getString(c1.getColumnIndexOrThrow("answer"));
+            int clue = c1.getInt(c1.getColumnIndexOrThrow("clue"));
+            String question_tt = c1.getString(c1.getColumnIndexOrThrow("sf_words"));
+            int playtime = c1.getInt(c1.getColumnIndexOrThrow("playtime"));
             question_txt.setText(question_tt);
             String tfoption = question;
             String[] first = tfoption.split(",");
@@ -1189,7 +1182,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + questionid + "'");
             cs.moveToFirst();
             if(cs.getCount()!=0) {
-                clue=cs.getInt(cs.getColumnIndex("clue"));
+                clue=cs.getInt(cs.getColumnIndexOrThrow("clue"));
             }
             if (clue!=0){
                 random=clue;
@@ -1381,7 +1374,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         s_score_edit.setText(tr);
         // focus.start();
@@ -1397,7 +1390,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         }
         cs.moveToFirst();
         if (cs.getCount() != 0) {
-            String dis = cs.getString(cs.getColumnIndex("sf_words"));
+            String dis = cs.getString(cs.getColumnIndexOrThrow("sf_words"));
            /* discription.setVisibility(View.VISIBLE);
             discription.setText(dis);*/
             coinanim();
@@ -1437,9 +1430,9 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             }
             c1.moveToFirst();
             if (c1.getCount() != 0) {
-                String answer = c1.getString(c1.getColumnIndex("answer"));
+                String answer = c1.getString(c1.getColumnIndexOrThrow("answer"));
                 show_answer(answer);
-                String dis = c1.getString(c1.getColumnIndex("sf_words"));
+                String dis = c1.getString(c1.getColumnIndexOrThrow("sf_words"));
               /*  discription.setVisibility(View.VISIBLE);
                 discription.setText(dis);*/
             }
@@ -1664,16 +1657,16 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + questionid + "'");
             cs.moveToFirst();
             if (cs.getCount() != 0) {
-                dscore = cs.getInt(cs.getColumnIndex("playtime"));
-                clue = cs.getInt(cs.getColumnIndex("clue"));
+                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+                clue = cs.getInt(cs.getColumnIndexOrThrow("clue"));
             }
         } else {
             pos = 2;
             cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + questionid + "'");
             cs.moveToFirst();
             if (cs.getCount() != 0) {
-                dscore = cs.getInt(cs.getColumnIndex("playtime"));
-                clue = cs.getInt(cs.getColumnIndex("clue"));
+                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+                clue = cs.getInt(cs.getColumnIndexOrThrow("clue"));
             }
         }
 
@@ -1682,8 +1675,8 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + questionid + "'");
         cs.moveToFirst();
         if (cs.getCount() != 0) {
-            ptime = cs.getInt(cs.getColumnIndex("playtime"));
-            clue = cs.getInt(cs.getColumnIndex("clue"));
+            ptime = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+            clue = cs.getInt(cs.getColumnIndexOrThrow("clue"));
         }*/
 
         // Toast.makeText(Odd_man_out.this, "random"+clue, Toast.LENGTH_SHORT).show();
@@ -2527,7 +2520,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         s_score_edit.setText(tr);
         //
@@ -2634,7 +2627,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 if (cfx.getCount()!=0){
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + 20;
                     String aStringx = Integer.toString(spx);
                     s_score_edit.setText(aStringx);
@@ -2645,7 +2638,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                 ch.moveToFirst();
                 if (ch.getCount()!=0){
-                    int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                    int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                     int shh = sh + 50;
                     myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
@@ -2668,7 +2661,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         cfq.moveToFirst();
         int skq=0;
         if (cfq.getCount()!=0){
-            skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
         }
 
@@ -2776,7 +2769,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             public void run() {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx - 50;
                 String aStringx = Integer.toString(spx);
                 s_score_edit.setText(aStringx);
@@ -3062,7 +3055,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 20;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -3219,7 +3212,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 10;
                                 String aStringx = Integer.toString(spx);
                                 //score.setText(aStringx);
@@ -3247,7 +3240,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                                 if (sps.getString(Opposite_word.this, "complite_reg").equals("yes")) {
                                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                                     cn.moveToFirst();
-                                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                                     int gm1s = gm1 + 1;
                                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                                 }
@@ -3287,7 +3280,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
      /*   int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -3334,7 +3327,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = (values.size() - 1) * 10;
                                 String aStringx = Integer.toString(spx + skx);
                                 // score.setText(aStringx);
@@ -3366,7 +3359,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                                 if (sps.getString(Opposite_word.this, "complite_reg").equals("yes")) {
                                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                                     cn.moveToFirst();
-                                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                                     int spxx = (values.size() - 1);
                                     int gm1s = gm1 + spxx;
                                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
@@ -3409,7 +3402,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
      /*   int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -3475,7 +3468,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx + mCoinCount;
             final String aStringx = Integer.toString(spx);
 
@@ -3531,7 +3524,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 if (cfx.getCount() != 0) {
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + ea;
                     String aStringx = Integer.toString(spx);
                     s_score_edit.setText(aStringx);
@@ -3688,7 +3681,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -3718,7 +3711,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 if (sps.getString(Opposite_word.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -3731,7 +3724,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -3759,7 +3752,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -3774,7 +3767,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -3802,7 +3795,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -3815,7 +3808,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 // score.setText(aStringx);
@@ -3844,7 +3837,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                 if (sps.getString(Opposite_word.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -3963,7 +3956,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         }
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         String aStringx = Integer.toString(skx);
         ttscores.setText(aStringx);
 
@@ -4100,7 +4093,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 20;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -4250,9 +4243,9 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                             Cursor sc2 = myDbHelper.getQry("select * from score ");
                             sc2.moveToFirst();
                             if (sc2.getCount() != 0) {
-                                k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                             }
-                            Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
+                            //Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                         }
                     }
                 }
@@ -4684,9 +4677,9 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + questionid + "'");
         cs.moveToFirst();
         if (cs.getCount() != 0) {
-            String question = cs.getString(cs.getColumnIndex("question"));
-            String answer = cs.getString(cs.getColumnIndex("answer"));
-            String discription = cs.getString(cs.getColumnIndex("sf_words"));
+            String question = cs.getString(cs.getColumnIndexOrThrow("question"));
+            String answer = cs.getString(cs.getColumnIndexOrThrow("answer"));
+            String discription = cs.getString(cs.getColumnIndexOrThrow("sf_words"));
 
             if (q_type == 4) {
                 StringTokenizer tokenizerw = new StringTokenizer(question, ",");
@@ -5281,14 +5274,14 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                                                 cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + questionid + "'");
                                                 cs.moveToFirst();
                                                 if (cs.getCount() != 0) {
-                                                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                                                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                                                 }
                                             } else {
                                                 pos = 2;
                                                 cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + questionid + "'");
                                                 cs.moveToFirst();
                                                 if (cs.getCount() != 0) {
-                                                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                                                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                                                 }
                                             }
                                             if (sps.getString(Opposite_word.this, "odd_time_start").equals("")) {
@@ -5787,7 +5780,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         String questionid_d="";
         cz.moveToFirst();
         if (cz.getCount()!=0){
-            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndex("questionid")));
+            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndexOrThrow("questionid")));
         }
         System.out.println("----------------------Download_server");
         Download_data_server download_data_server = new Download_data_server(Opposite_word.this,questionid_d,gameid);
@@ -5831,7 +5824,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -5897,7 +5890,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -5985,7 +5978,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");

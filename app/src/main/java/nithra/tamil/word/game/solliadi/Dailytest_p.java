@@ -314,7 +314,7 @@ public class Dailytest_p extends BroadcastReceiver {
 			c.moveToFirst();
 		    if (c.getCount() != 0) {
 
-				imid = c.getString(c.getColumnIndex("imagename"));
+				imid = c.getString(c.getColumnIndexOrThrow("imagename"));
 				String tfoptiona = imid;
 				String[] firsta = tfoptiona.split(",");
 				int i_type = firsta.length;

@@ -95,8 +95,6 @@ import com.facebook.widget.WebDialog;*/
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.games.Games;
 
 
 import com.google.example.games.basegameutils.BaseGameActivity;
@@ -509,12 +507,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
 
        // uiHelper = new UiLifecycleHelper(this, callback);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
-                .addScope(Drive.SCOPE_APPFOLDER) // SavedGames
-                .build();
+
 
 
         String snd = sps.getString(Makeword_Rightorder.this, "snd");
@@ -809,7 +802,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
                 if (cfw.getCount() != 0) {
-                    int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     r = 0;
                     if (sk >= 50) {
                         if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
@@ -823,13 +816,13 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                                 cd.moveToFirst();
                             }
 
-                            String sa = cd.getString(cd.getColumnIndex("answer"));
+                            String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                             //Toast.makeText(Clue_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
                             //Score Adding
                             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                             cfx.moveToFirst();
                             if (cfx.getCount() != 0) {
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -910,14 +903,14 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                                     }
                                     String sas = null;
                                     if (cd.getCount() != 0) {
-                                        sas = cd.getString(cd.getColumnIndex("answer"));
+                                        sas = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                     }
                                     //Toast.makeText(Clue_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
                                     if (cfx.getCount() != 0) {
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -1192,11 +1185,11 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
         }
 
         if (c.getCount() != 0) {
-            questionid = c.getString(c.getColumnIndex("questionid"));
-            question = c.getString(c.getColumnIndex("question"));
-            answer = c.getString(c.getColumnIndex("answer"));
-            split_word = c.getString(c.getColumnIndex("splitword"));
-            int playtime = c.getInt(c.getColumnIndex("playtime"));
+            questionid = c.getString(c.getColumnIndexOrThrow("questionid"));
+            question = c.getString(c.getColumnIndexOrThrow("question"));
+            answer = c.getString(c.getColumnIndexOrThrow("answer"));
+            split_word = c.getString(c.getColumnIndexOrThrow("splitword"));
+            int playtime = c.getInt(c.getColumnIndexOrThrow("playtime"));
 
             question_txt.setText(question);
             ans_high.setText(answer);
@@ -1289,7 +1282,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
             public void onClick(View v) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + ea;
                 String aStringx = Integer.toString(spx);
                 score.setText(aStringx);
@@ -2930,7 +2923,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
         if (cfq.getCount() != 0) {
-            int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
             score.setText(tr);
         }
@@ -2950,7 +2943,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
 
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         score.setText(tr);
         //
@@ -3057,7 +3050,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                 //Score Setting
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 score.setText(aStringx);
@@ -3065,7 +3058,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
 
                 Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                 ch.moveToFirst();
-                int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                 int shh = sh + 50;
                 myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
@@ -3174,7 +3167,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         if (cfx.getCount() != 0) {
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             String aStringx = Integer.toString(skx);
             ttscores.setText(aStringx);
         }
@@ -3330,7 +3323,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 20;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -3895,7 +3888,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx + mCoinCount;
             final String aStringx = Integer.toString(spx);
 
@@ -3994,7 +3987,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
 
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 50;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -4047,7 +4040,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 20;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -4231,14 +4224,14 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                 cs = newhelper3.getQry("select * from right_order where gameid='" + gameid + "' and questionid='" + questionid + "'");
                 cs.moveToFirst();
                 if (cs.getCount() != 0) {
-                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                 }
             } else {
                 pos = 2;
                 cs = newhelper3.getQry("select * from right_order where gameid='" + gameid + "' and questionid='" + questionid + "'  and daily='0'");
                 cs.moveToFirst();
                 if(cs.getCount()!=0) {
-                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                 }
             }
             focus.setBase(SystemClock.elapsedRealtime() + dscore);
@@ -4424,14 +4417,14 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                                                     cs = newhelper3.getQry("select * from right_order where gameid='" + gameid + "' and questionid='" + questionid + "'");
                                                     cs.moveToFirst();
                                                     if (cs.getCount() != 0) {
-                                                        dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                                                        dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                                                     }
                                                 } else {
                                                     pos = 2;
                                                     cs = newhelper3.getQry("select * from right_order where gameid='" + gameid + "' and questionid='" + questionid + "'  and daily='0'");
                                                     cs.moveToFirst();
                                                     if(cs.getCount()!=0) {
-                                                        dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                                                        dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                                                     }
                                                 }
                                                 focus.setBase(SystemClock.elapsedRealtime() + dscore);
@@ -4589,7 +4582,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 //  score.setText(aStringx);
@@ -4618,7 +4611,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                 if (sps.getString(Makeword_Rightorder.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -4632,7 +4625,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -4661,7 +4654,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -4676,7 +4669,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -4705,7 +4698,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -4722,7 +4715,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                 }*/
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -4750,7 +4743,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                 if (sps.getString(Makeword_Rightorder.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -4809,7 +4802,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 /*        int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -4837,7 +4830,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 /*        int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -4890,7 +4883,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
 
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = (values.size() - 1) * 10;
                                 String aStringx = Integer.toString(spx + skx);
                                 // score.setText(aStringx);
@@ -4919,7 +4912,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                                 if (sps.getString(Makeword_Rightorder.this, "complite_reg").equals("yes")) {
                                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                                     cn.moveToFirst();
-                                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                                     int spxx = (values.size() - 1);
                                     int gm1s = gm1 + spxx;
                                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
@@ -5010,7 +5003,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
 
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 10;
                                 String aStringx = Integer.toString(spx);
                                 // score.setText(aStringx);
@@ -5038,7 +5031,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                                 if (sps.getString(Makeword_Rightorder.this, "complite_reg").equals("yes")) {
                                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                                     cn.moveToFirst();
-                                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                                     int gm1s = gm1 + 1;
                                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                                 }
@@ -5648,7 +5641,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
         String questionid_d = "";
         cz.moveToFirst();
         if (cz.getCount() != 0) {
-            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndex("questionid")));
+            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndexOrThrow("questionid")));
         }
         System.out.println("----------------------Download_server");
         Download_data_server download_data_server = new Download_data_server(Makeword_Rightorder.this, questionid_d, "" + gameid);
@@ -5692,7 +5685,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -5769,7 +5762,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -5857,7 +5850,7 @@ public class Makeword_Rightorder extends BaseGameActivity implements GoogleApiCl
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");

@@ -1024,7 +1024,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         s_score.setText(tr);
         //
@@ -1239,14 +1239,14 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid=" + letterid + " and gameid='" + gameid + "' and rd='" + rdvalu + "' order by random() limit 1");
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= answer_type) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "' and levelid='" + letterid + "' and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -1254,7 +1254,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 s_score.setText(aStringx);
@@ -1338,7 +1338,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= answer_type) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "' and levelid='" + letterid + "' and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -1346,7 +1346,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         s_score.setText(aStringx);
@@ -1429,14 +1429,14 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid=" + letterid + " and gameid='" + gameid + "'and rd='" + rdvalu + "' order by random() limit 1");
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= answer_type) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "' and levelid='" + letterid + "' and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -1444,7 +1444,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 s_score.setText(aStringx);
@@ -1530,7 +1530,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= answer_type) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "' and levelid='" + letterid + "' and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -1538,7 +1538,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         s_score.setText(aStringx);
@@ -1623,7 +1623,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
 
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
@@ -1631,7 +1631,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= answer_type) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "' and levelid='" + letterid + "' and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -1639,7 +1639,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 s_score.setText(aStringx);
@@ -1721,7 +1721,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= answer_type) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "' and levelid='" + letterid + "' and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -1729,7 +1729,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         s_score.setText(aStringx);
@@ -1811,7 +1811,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
 
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
@@ -1819,7 +1819,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= answer_type) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "' and levelid='" + letterid + "' and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -1827,7 +1827,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 s_score.setText(aStringx);
@@ -1910,7 +1910,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= answer_type) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "' and levelid='" + letterid + "' and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -1918,7 +1918,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         s_score.setText(aStringx);
@@ -2001,7 +2001,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
 
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
@@ -2009,7 +2009,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= answer_type) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "' and levelid='" + letterid + "' and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -2017,7 +2017,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 s_score.setText(aStringx);
@@ -2098,7 +2098,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= answer_type) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "' and levelid='" + letterid + "' and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -2106,7 +2106,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         s_score.setText(aStringx);
@@ -2190,14 +2190,14 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid=" + letterid + " and gameid='" + gameid + "'and rd='" + rdvalu + "' order by random() limit 1");
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= answer_type) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "' and levelid='" + letterid + "' and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -2205,7 +2205,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 s_score.setText(aStringx);
@@ -2284,7 +2284,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= answer_type) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "' and levelid='" + letterid + "' and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -2292,7 +2292,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         s_score.setText(aStringx);
@@ -2372,7 +2372,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
 
 
@@ -2381,7 +2381,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= answer_type) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "' and levelid='" + letterid + "' and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -2389,7 +2389,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 s_score.setText(aStringx);
@@ -2466,7 +2466,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= answer_type) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "' and levelid='" + letterid + "' and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -2474,7 +2474,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         s_score.setText(aStringx);
@@ -2731,7 +2731,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                     if (cd.getCount() != 0) {
                         if (x <= answer_type) {
                             y = y + 1;
-                            String sa = cd.getString(cd.getColumnIndex("answer"));
+                            String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                             myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                             myDbHelper.executeSql("UPDATE answertable SET useranswer=0 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                             bones_ans(sa);
@@ -2995,7 +2995,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
         if (c.getCount() != 0) {
             if (c.getCount() != 0) {
-                String sa = c.getString(c.getColumnIndex("letters"));
+                String sa = c.getString(c.getColumnIndexOrThrow("letters"));
                 String tfoption = letters;
                 String[] first = tfoption.split(",");
                 int letter_type = first.length;
@@ -3641,7 +3641,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         s_score.setText(tr);
 
@@ -3783,10 +3783,10 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
         }
 
         if (c.getCount() != 0) {
-            u_id = c.getInt(c.getColumnIndex("id"));
-            letters = c.getString(c.getColumnIndex("letters"));
-            letterid = Integer.parseInt(c.getString(c.getColumnIndex("levelid")));
-            answertype = c.getString(c.getColumnIndex("answer"));
+            u_id = c.getInt(c.getColumnIndexOrThrow("id"));
+            letters = c.getString(c.getColumnIndexOrThrow("letters"));
+            letterid = Integer.parseInt(c.getString(c.getColumnIndexOrThrow("levelid")));
+            answertype = c.getString(c.getColumnIndexOrThrow("answer"));
 
             String tfoption = letters;
             String[] first = tfoption.split(",");
@@ -3847,7 +3847,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                 csk.moveToFirst();
                 for (int i = 0; i < csk.getCount(); i++) {
                     csk.moveToPosition(i);
-                    String ansn = csk.getString(csk.getColumnIndex("answer"));
+                    String ansn = csk.getString(csk.getColumnIndexOrThrow("answer"));
                     if (vl1.length() == 0) {
                         vl1.setText(ansn);
                         im1.setBackgroundResource(R.drawable.tick_background);
@@ -3893,7 +3893,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                 y = csk.getCount() - csk1.getCount();
                 for (int i = 0; i < csk1.getCount(); i++) {
                     csk1.moveToPosition(i);
-                    String ansn = csk1.getString(csk1.getColumnIndex("answer"));
+                    String ansn = csk1.getString(csk1.getColumnIndexOrThrow("answer"));
                     if (vl1.length() == 0) {
                         vl1.setText(ansn);
                         vl1.setTextColor(getResources().getColor(R.color.rippelColor1));
@@ -4473,7 +4473,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ", null);
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 20;
                                     String aStringx = Integer.toString(spx);
                                     s_score.setText(aStringx);
@@ -4899,7 +4899,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 20;
                                     String aStringx = Integer.toString(spx);
                                     s_score.setText(aStringx);
@@ -5126,7 +5126,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            tt_case2 = cfx.getInt(cfx.getColumnIndex("coins"));
+            tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             tt_tot2 = tt_case2 + 30;
             String aStringx = Integer.toString(tt_case2);
             ttscores.setText(aStringx);
@@ -5244,7 +5244,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 Cursor sc2 = myDbHelper.getQry("select * from score ");
                                 sc2.moveToFirst();
                                 if (sc2.getCount() != 0) {
-                                    k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                    k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                                 }
                                 Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                             }
@@ -5474,7 +5474,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             }
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            tt_case2 = cfx.getInt(cfx.getColumnIndex("coins"));
+            tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             tt_tot2 = tt_case2;
             String aStringx = Integer.toString(tt_case2);
             ttscores.setText(aStringx);
@@ -5870,7 +5870,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         //
         e2 = skq;
@@ -5920,7 +5920,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
         Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
         ch.moveToFirst();
-        int sh = ch.getInt(ch.getColumnIndex("l_points"));
+        int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
         int shh = sh + 10;
         myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
@@ -6000,7 +6000,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             long dtimee = 0;
             if (cs.getCount() != 0) {
                 try {
-                    dtimee = cs.getInt(cs.getColumnIndex("playtime"));
+                    dtimee = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                 } catch (Exception e) {
 
                 }
@@ -6054,7 +6054,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
     /*
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 10;
                                 String aStringx = Integer.toString(spx);
                                 // s_score.setText(aStringx);
@@ -6082,7 +6082,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 if (sps.getString(Solukul_Sol.this, "complite_reg").equals("yes")) {
                                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                                     cn.moveToFirst();
-                                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                                     int gm1s = gm1 + 1;
                                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                                 }
@@ -6138,7 +6138,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 //setcoin(values.size() - 1);
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = (values.size() - 1) * 10;
                                 String aStringx = Integer.toString(spx + skx);
                                 // s_score.setText(aStringx);
@@ -6168,7 +6168,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                 if (sps.getString(Solukul_Sol.this, "complite_reg").equals("yes")) {
                                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                                     cn.moveToFirst();
-                                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                                     int spxx = (values.size() - 1);
                                     int gm1s = gm1 + spxx;
                                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
@@ -6246,11 +6246,11 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                     if (c1.getCount() != 0) {
 
 
-                        //c1.getString(c1.getColumnIndex("id"));
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
 
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                        downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "ord");
+                        downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
 
                     } else {
                         downloadcheck("0", "ord");
@@ -6266,11 +6266,11 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                     if (c1.getCount() != 0) {
 
 
-                        //c1.getString(c1.getColumnIndex("id"));
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
 
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                        downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "daily");
+                        downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "daily");
 
                     } else {
                         System.out.print("else====");
@@ -6328,7 +6328,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 // s_score.setText(aStringx);
@@ -6356,7 +6356,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                 if (sps.getString(Solukul_Sol.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -6369,7 +6369,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 // s_score.setText(aStringx);
@@ -6396,7 +6396,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -6409,7 +6409,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 // s_score.setText(aStringx);
@@ -6436,7 +6436,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -6455,7 +6455,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 // s_score.setText(aStringx);
@@ -6483,7 +6483,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                 if (sps.getString(Solukul_Sol.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -7496,26 +7496,26 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             //  a2=00;
             b2 = "no";
         } else {
-            //   a2 = g2.getInt(g2.getColumnIndex("levelid"));
-            b2 = String.valueOf(g2.getInt(g2.getColumnIndex("levelid")));
+            //   a2 = g2.getInt(g2.getColumnIndexOrThrow("levelid"));
+            b2 = String.valueOf(g2.getInt(g2.getColumnIndexOrThrow("levelid")));
         }
         if (g3.getCount() == 0) {
             //  a3=00;
             b3 = "no";
         } else {
-            //  a3 = g3.getInt(g3.getColumnIndex("levelid"));
-            b3 = String.valueOf(g3.getInt(g3.getColumnIndex("levelid")));
+            //  a3 = g3.getInt(g3.getColumnIndexOrThrow("levelid"));
+            b3 = String.valueOf(g3.getInt(g3.getColumnIndexOrThrow("levelid")));
         }
         if (g4.getCount() == 0) {
             //  a4=00;
             b4 = "no";
         } else {
-            //  a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b4 = String.valueOf(g4.getInt(g4.getColumnIndex("levelid")));
+            //  a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b4 = String.valueOf(g4.getInt(g4.getColumnIndexOrThrow("levelid")));
         }
 
 
-        String upload = String.valueOf(b2) + "#" + String.valueOf(b3) + "#" + String.valueOf(letterid) + "#" + String.valueOf(b4) + "#" + String.valueOf(c1.getInt(c1.getColumnIndex("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndex("l_points"))));
+        String upload = String.valueOf(b2) + "#" + String.valueOf(b3) + "#" + String.valueOf(letterid) + "#" + String.valueOf(b4) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("l_points"))));
 
         return upload;
     }
@@ -8076,7 +8076,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             Cursor sc3 = myDbHelper.getQry("select * from userdetail");
             sc3.moveToFirst();
             if (sc3.getCount() != 0) {
-                mobileno = sc3.getString(sc3.getColumnIndex("phno"));
+                mobileno = sc3.getString(sc3.getColumnIndexOrThrow("phno"));
 
             }
 
@@ -8170,9 +8170,9 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             if (sps.getString(Solukul_Sol.this, "complite_reg").equals("yes")) {
                 Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                 cn.moveToFirst();
-                int cns = cn.getInt(cn.getColumnIndex("score"));
-                int time = cn.getInt(cn.getColumnIndex("playtime"));
-                int gm1 = cn.getInt(cn.getColumnIndex("gm3"));
+                int cns = cn.getInt(cn.getColumnIndexOrThrow("score"));
+                int time = cn.getInt(cn.getColumnIndexOrThrow("playtime"));
+                int gm1 = cn.getInt(cn.getColumnIndexOrThrow("gm3"));
                 int cnse = 0;
                 long ptime;
 
@@ -8210,7 +8210,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             if (sps.getString(Solukul_Sol.this, "complite_reg").equals("yes")) {
                 Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                 cn.moveToFirst();
-                int gm1 = cn.getInt(cn.getColumnIndex("gm3"));
+                int gm1 = cn.getInt(cn.getColumnIndexOrThrow("gm3"));
                 int gm1s = gm1 + 1;
                 myDbHelper.executeSql("UPDATE userdata_r SET gm3='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
             }
@@ -8222,9 +8222,9 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                     System.out.println("=====date1" + dates + "date2" + str_date1);
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + dates + "'");
                     cn.moveToFirst();
-                    int cns = cn.getInt(cn.getColumnIndex("score"));
-                    int time = cn.getInt(cn.getColumnIndex("playtime"));
-                    int gm1 = cn.getInt(cn.getColumnIndex("gm3"));
+                    int cns = cn.getInt(cn.getColumnIndexOrThrow("score"));
+                    int time = cn.getInt(cn.getColumnIndexOrThrow("playtime"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("gm3"));
                     int cnse = 0;
                     long ptime;
 
@@ -8260,7 +8260,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                     if (sps.getString(Solukul_Sol.this, "complite_reg").equals("yes")) {
                         Cursor cnw = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + dates + "'");
                         cnw.moveToFirst();
-                        int gm1w = cnw.getInt(cnw.getColumnIndex("gm3"));
+                        int gm1w = cnw.getInt(cnw.getColumnIndexOrThrow("gm3"));
                         int gm1sw = gm1w + 1;
                         myDbHelper.executeSql("UPDATE userdata_r SET gm3='" + gm1sw + "' where type ='" + retype + "'and date='" + dates + "'");
 
@@ -8306,7 +8306,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx + mCoinCount;
             final String aStringx = Integer.toString(spx);
 
@@ -8336,7 +8336,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 /*        int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -8364,7 +8364,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 /*        int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -8396,11 +8396,11 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             if (c1.getCount() != 0) {
 
 
-                //c1.getString(c1.getColumnIndex("id"));
+                //c1.getString(c1.getColumnIndexOrThrow("id"));
 
-                System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
+                System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "daily");
+                downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "daily");
 
             } else {
                 System.out.print("else====");
@@ -8475,11 +8475,11 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                     if (c1.getCount() != 0) {
 
 
-                        //c1.getString(c1.getColumnIndex("id"));
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
 
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                        downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "ord");
+                        downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
 
                     } else {
                         downloadcheck("0", "ord");
@@ -8605,7 +8605,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                             long dtimee = 0;
                                             if (cs.getCount() != 0) {
 
-                                                dtimee = cs.getInt(cs.getColumnIndex("playtime"));
+                                                dtimee = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                                             }
                                             //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
                                             focus.setBase(SystemClock.elapsedRealtime() + dtimee);
@@ -8953,7 +8953,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             public void onClick(View v) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + ea;
                 String aStringx = Integer.toString(spx);
                 s_score.setText(aStringx);
@@ -9156,7 +9156,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");

@@ -38,7 +38,7 @@ public class Jamble_word_game_functions {
         myDbHelper = new DataBaseHelper(context);
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         val=skq+val;
         myDbHelper.executeSql("UPDATE score SET coins='" + val + "'");
         return val;
@@ -126,7 +126,7 @@ public class Jamble_word_game_functions {
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         if (cfx.getCount() != 0) {
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             String aStringx = Integer.toString(skx);
             ttscores.setText(aStringx);
         }
@@ -358,7 +358,7 @@ public class Jamble_word_game_functions {
                             Cursor sc2 = myDbHelper.getQry("select * from score ");
                             sc2.moveToFirst();
                             if (sc2.getCount() != 0) {
-                                k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                             }
                             Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                         }

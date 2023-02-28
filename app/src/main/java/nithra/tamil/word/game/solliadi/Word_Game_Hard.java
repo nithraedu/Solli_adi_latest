@@ -1340,7 +1340,7 @@ public class Word_Game_Hard extends
 
 
        /* while(!cd.isAfterLast()) {
-            test.add(cd.getString(cd.getColumnIndex("answer")));
+            test.add(cd.getString(cd.getColumnIndexOrThrow("answer")));
             cd.moveToNext();
         } cd.close();
 */
@@ -1403,7 +1403,7 @@ public class Word_Game_Hard extends
                                 b_score = b_score + 10;
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 10;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -1411,7 +1411,7 @@ public class Word_Game_Hard extends
 
                                 Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                                 ch.moveToFirst();
-                                int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                                int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                                 int shh = sh + 10;
                                 myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
@@ -1432,7 +1432,7 @@ public class Word_Game_Hard extends
                                             Cursor sc2 = myDbHelper.getQry("select * from score ");
                                             sc2.moveToFirst();
                                             if (sc2.getCount() != 0) {
-                                                k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                                k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                                             }
                                             Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                                         }
@@ -1571,9 +1571,9 @@ public class Word_Game_Hard extends
                                     if(sps.getString(Word_Game_Hard.this,"complite_reg").equals("yes")) {
                                         Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                                         cn.moveToFirst();
-                                        int cns = cn.getInt(cn.getColumnIndex("score"));
-                                        int time = cn.getInt(cn.getColumnIndex("playtime"));
-                                        int gm1 = cn.getInt(cn.getColumnIndex("gm4"));
+                                        int cns = cn.getInt(cn.getColumnIndexOrThrow("score"));
+                                        int time = cn.getInt(cn.getColumnIndexOrThrow("playtime"));
+                                        int gm1 = cn.getInt(cn.getColumnIndexOrThrow("gm4"));
                                         int cnse=0;
                                         long ptime;
 
@@ -1641,7 +1641,7 @@ public class Word_Game_Hard extends
                                     if(sps.getString(Word_Game_Hard.this,"complite_reg").equals("yes")) {
                                         Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                                         cn.moveToFirst();
-                                        int gm1 = cn.getInt(cn.getColumnIndex("gm4"));
+                                        int gm1 = cn.getInt(cn.getColumnIndexOrThrow("gm4"));
                                         int gm1s=gm1+1;
                                         myDbHelper.executeSql("UPDATE userdata_r SET gm4='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                                     }*/
@@ -1717,7 +1717,7 @@ public class Word_Game_Hard extends
             public void onClick(View v) {
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
 
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
@@ -1726,14 +1726,14 @@ public class Word_Game_Hard extends
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= tans) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -1812,14 +1812,14 @@ public class Word_Game_Hard extends
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= tans) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "' and rd='" + rdvalu + "' ");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -1887,7 +1887,7 @@ public class Word_Game_Hard extends
             public void onClick(View v) {
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
 
 
@@ -1896,14 +1896,14 @@ public class Word_Game_Hard extends
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= tans) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -1980,14 +1980,14 @@ public class Word_Game_Hard extends
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= tans) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -2063,21 +2063,21 @@ public class Word_Game_Hard extends
 
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' order by random() limit 1");
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= tans) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -2155,14 +2155,14 @@ public class Word_Game_Hard extends
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= tans) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -2238,21 +2238,21 @@ public class Word_Game_Hard extends
             public void onClick(View v) {
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "' and rd='" + rdvalu + "' order by random() limit 1");
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= tans) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "' and rd='" + rdvalu + "'");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -2327,14 +2327,14 @@ public class Word_Game_Hard extends
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= tans) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -2407,21 +2407,21 @@ public class Word_Game_Hard extends
             public void onClick(View v) {
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' order by random() limit 1");
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= tans) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -2498,14 +2498,14 @@ public class Word_Game_Hard extends
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= tans) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -2580,21 +2580,21 @@ public class Word_Game_Hard extends
             public void onClick(View v) {
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "' and rd='" + rdvalu + "' order by random() limit 1");
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= tans) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -2671,14 +2671,14 @@ public class Word_Game_Hard extends
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= tans) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -2754,21 +2754,21 @@ public class Word_Game_Hard extends
 
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' order by random() limit 1");
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= tans) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -2850,14 +2850,14 @@ public class Word_Game_Hard extends
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= tans) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -2938,21 +2938,21 @@ public class Word_Game_Hard extends
             public void onClick(View v) {
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' order by random() limit 1");
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= tans) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -3030,14 +3030,14 @@ public class Word_Game_Hard extends
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= tans) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -3115,24 +3115,24 @@ public class Word_Game_Hard extends
             public void onClick(View v) {
                /* Cursor cfw = myDbHelper.getQry("SELECT score FROM wordgame where levelid ='" + level + "' limit 1 ");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("score"));*/
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("score"));*/
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "' and rd='" + rdvalu + "' order by random() limit 1");
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= tans) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -3211,14 +3211,14 @@ public class Word_Game_Hard extends
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= tans) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -3297,21 +3297,21 @@ public class Word_Game_Hard extends
 
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' order by random() limit 1");
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= tans) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -3392,14 +3392,14 @@ public class Word_Game_Hard extends
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= tans) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -3478,21 +3478,21 @@ public class Word_Game_Hard extends
 
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "' and rd='" + rdvalu + "' order by random() limit 1");
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= tans) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -3573,14 +3573,14 @@ public class Word_Game_Hard extends
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= tans) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -3656,21 +3656,21 @@ public class Word_Game_Hard extends
             public void onClick(View v) {
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' order by random() limit 1");
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= tans) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -3747,14 +3747,14 @@ public class Word_Game_Hard extends
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= tans) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -3829,7 +3829,7 @@ public class Word_Game_Hard extends
 
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
 
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
@@ -3837,14 +3837,14 @@ public class Word_Game_Hard extends
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= tans) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -3922,14 +3922,14 @@ public class Word_Game_Hard extends
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= tans) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -4005,21 +4005,21 @@ public class Word_Game_Hard extends
             public void onClick(View v) {
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' order by random() limit 1");
                         cd.moveToFirst();
                         if (cd.getCount() != 0) {
                             if (x <= tans) {
-                                String sa = cd.getString(cd.getColumnIndex("answer"));
+                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 50;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -4093,14 +4093,14 @@ public class Word_Game_Hard extends
                                 cd.moveToFirst();
                                 if (cd.getCount() != 0) {
                                     if (x <= tans) {
-                                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                                         //Score Adding
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 50;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -4183,7 +4183,7 @@ public class Word_Game_Hard extends
                     if (cd.getCount() != 0) {
 
                         if (x <= tans) {
-                            String sa = cd.getString(cd.getColumnIndex("answer"));
+                            String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                             myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                             myDbHelper.executeSql("UPDATE answertable SET useranswer=0 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                             bones_ans(sa);
@@ -4539,7 +4539,7 @@ public class Word_Game_Hard extends
         }
 
         if (c.getCount() != 0) {
-            String sa = c.getString(c.getColumnIndex("letters"));
+            String sa = c.getString(c.getColumnIndexOrThrow("letters"));
             if (c.getCount() != 0) {
 
                 StringTokenizer tokenizer = new StringTokenizer(sa, ",");
@@ -5407,10 +5407,10 @@ public class Word_Game_Hard extends
         }
 
         if (c.getCount() != 0) {
-            u_id = c.getInt(c.getColumnIndex("id"));
-            String sa = c.getString(c.getColumnIndex("letters"));
-            letterid = c.getString(c.getColumnIndex("levelid"));
-            answers = c.getString(c.getColumnIndex("answer"));
+            u_id = c.getInt(c.getColumnIndexOrThrow("id"));
+            String sa = c.getString(c.getColumnIndexOrThrow("letters"));
+            letterid = c.getString(c.getColumnIndexOrThrow("levelid"));
+            answers = c.getString(c.getColumnIndexOrThrow("answer"));
 
             //splitting answer from main table and inserting into answer table
 
@@ -5465,7 +5465,7 @@ public class Word_Game_Hard extends
             cs.moveToFirst();
             if (cs.getCount() != 0) {
 
-                int dscore = cs.getInt(cs.getColumnIndex("levelscore"));
+                int dscore = cs.getInt(cs.getColumnIndexOrThrow("levelscore"));
                 x = 1 + cs.getCount();
                 //  b_score=sps.getInt(Word_Game_Hard.this,"old_score_continue");
                 b_score = dscore;
@@ -5475,7 +5475,7 @@ public class Word_Game_Hard extends
                 csk.moveToFirst();
                 for (int i = 0; i < csk.getCount(); i++) {
                     csk.moveToPosition(i);
-                    String ansn = csk.getString(csk.getColumnIndex("answer"));
+                    String ansn = csk.getString(csk.getColumnIndexOrThrow("answer"));
 
                     if (vl1.length() == 0) {
                         vl1.setText(ansn);
@@ -5567,7 +5567,7 @@ public class Word_Game_Hard extends
                 csk1.moveToFirst();
                 for (int i = 0; i < csk1.getCount(); i++) {
                     csk1.moveToPosition(i);
-                    String ansn = csk1.getString(csk1.getColumnIndex("answer"));
+                    String ansn = csk1.getString(csk1.getColumnIndexOrThrow("answer"));
 
                     if (vl1.length() == 0) {
                         vl1.setText(ansn);
@@ -5773,7 +5773,7 @@ public class Word_Game_Hard extends
                 }
                 Cursor ces = myDbHelper.getQry("SELECT * FROM score");
                 ces.moveToFirst();
-                sk = ces.getInt(ces.getColumnIndex("coins"));
+                sk = ces.getInt(ces.getColumnIndexOrThrow("coins"));
                 score.setText(Integer.toString(sk));
             }
             System.out.println("#######################xxx"+x);
@@ -5973,7 +5973,7 @@ public class Word_Game_Hard extends
             public void onClick(View v) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + ea;
                 String aStringx = Integer.toString(spx);
                 score.setText(aStringx);
@@ -6322,7 +6322,7 @@ public class Word_Game_Hard extends
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ", null);
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 20;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -6684,7 +6684,7 @@ public class Word_Game_Hard extends
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 20;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -7061,7 +7061,7 @@ public class Word_Game_Hard extends
 
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            current_sc = cfx.getInt(cfx.getColumnIndex("coins"));
+            current_sc = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             total_sc = current_sc + 70;
             String aStringx = Integer.toString(current_sc);
             ttscores.setText(aStringx);
@@ -7186,7 +7186,7 @@ public class Word_Game_Hard extends
                                 Cursor sc2 = myDbHelper.getQry("select * from score ");
                                 sc2.moveToFirst();
                                 if (sc2.getCount() != 0) {
-                                    k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                    k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                                 }
                                 Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                             }
@@ -7633,7 +7633,7 @@ public class Word_Game_Hard extends
 
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            tt_case2 = cfx.getInt(cfx.getColumnIndex("coins"));
+            tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             tt_tot2 = tt_case2 + 50;
             String aStringx = Integer.toString(tt_case2);
             ttscores.setText(aStringx);
@@ -7765,7 +7765,7 @@ public class Word_Game_Hard extends
                                 Cursor sc2 = myDbHelper.getQry("select * from score ");
                                 sc2.moveToFirst();
                                 if (sc2.getCount() != 0) {
-                                    k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                    k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                                 }
                                 Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                             }
@@ -8002,7 +8002,7 @@ public class Word_Game_Hard extends
             }
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            tt_case2 = cfx.getInt(cfx.getColumnIndex("coins"));
+            tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             tt_tot2 = tt_case2;
             String aStringx = Integer.toString(tt_case2);
             ttscores.setText(aStringx);
@@ -8089,7 +8089,7 @@ public class Word_Game_Hard extends
                                 Cursor sc2 = myDbHelper.getQry("select * from score ");
                                 sc2.moveToFirst();
                                 if (sc2.getCount() != 0) {
-                                    k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                    k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                                 }
                                 Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                             }
@@ -8574,7 +8574,7 @@ public class Word_Game_Hard extends
             long dscore = 0;
             if (cs.getCount() != 0) {
 
-                dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
             }
             //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
             focus.setBase(SystemClock.elapsedRealtime() + dscore);
@@ -8623,7 +8623,7 @@ public class Word_Game_Hard extends
                                 }*//*
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 10;
                                 String aStringx = Integer.toString(spx);
                                 //score.setText(aStringx);
@@ -8651,7 +8651,7 @@ public class Word_Game_Hard extends
                                 if (sps.getString(Word_Game_Hard.this, "complite_reg").equals("yes")) {
                                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                                     cn.moveToFirst();
-                                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                                     int gm1s = gm1 + 1;
                                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                                 }
@@ -8709,7 +8709,7 @@ public class Word_Game_Hard extends
 
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = (values.size() - 1) * 10;
                                 String aStringx = Integer.toString(spx + skx);
                                 // score.setText(aStringx);
@@ -8739,7 +8739,7 @@ public class Word_Game_Hard extends
                                 if (sps.getString(Word_Game_Hard.this, "complite_reg").equals("yes")) {
                                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                                     cn.moveToFirst();
-                                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                                     int spxx = (values.size() - 1);
                                     int gm1s = gm1 + spxx;
                                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
@@ -8822,11 +8822,11 @@ public class Word_Game_Hard extends
                     if (c1.getCount() != 0) {
 
 
-                        //c1.getString(c1.getColumnIndex("id"));
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
 
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                        downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "ord");
+                        downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
 
                     } else {
                         downloadcheck("0", "ord");
@@ -8840,9 +8840,9 @@ public class Word_Game_Hard extends
 
 
                     if (c1.getCount() != 0) {
-                        //c1.getString(c1.getColumnIndex("id"));
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
-                        downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "daily");
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
+                        downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "daily");
 
 
                     } else {
@@ -8901,7 +8901,7 @@ public class Word_Game_Hard extends
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 // score.setText(aStringx);
@@ -8931,7 +8931,7 @@ public class Word_Game_Hard extends
                 if (sps.getString(Word_Game_Hard.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -8947,7 +8947,7 @@ public class Word_Game_Hard extends
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 // score.setText(aStringx);
@@ -8976,7 +8976,7 @@ public class Word_Game_Hard extends
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -8990,7 +8990,7 @@ public class Word_Game_Hard extends
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 // score.setText(aStringx);
@@ -9019,7 +9019,7 @@ public class Word_Game_Hard extends
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -9038,7 +9038,7 @@ public class Word_Game_Hard extends
                 }*/
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 // score.setText(aStringx);
@@ -9066,7 +9066,7 @@ public class Word_Game_Hard extends
                 if (sps.getString(Word_Game_Hard.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -10097,27 +10097,27 @@ if(downok.equals("")){
             // a2=00;
             b2 = "no";
         } else {
-            //   a2 = g2.getInt(g2.getColumnIndex("levelid"));
-            b2 = "" + String.valueOf(g2.getInt(g2.getColumnIndex("levelid")));
+            //   a2 = g2.getInt(g2.getColumnIndexOrThrow("levelid"));
+            b2 = "" + String.valueOf(g2.getInt(g2.getColumnIndexOrThrow("levelid")));
         }
         if (g3.getCount() == 0) {
             //  a3=00;
             b3 = "no";
         } else {
-            // a3 = g3.getInt(g3.getColumnIndex("levelid"));
-            b3 = "" + String.valueOf(g3.getInt(g3.getColumnIndex("levelid")));
+            // a3 = g3.getInt(g3.getColumnIndexOrThrow("levelid"));
+            b3 = "" + String.valueOf(g3.getInt(g3.getColumnIndexOrThrow("levelid")));
         }
         if (g4.getCount() == 0) {
             // a4=00;
             b4 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b4 = "" + String.valueOf(g4.getInt(g4.getColumnIndex("levelid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b4 = "" + String.valueOf(g4.getInt(g4.getColumnIndexOrThrow("levelid")));
 
         }
 
 
-        String upload = String.valueOf(b2) + "#" + String.valueOf(b3) + "#" + String.valueOf(b4) + "#" + String.valueOf(letterid) + "#" + String.valueOf(c1.getInt(c1.getColumnIndex("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndex("l_points"))));
+        String upload = String.valueOf(b2) + "#" + String.valueOf(b3) + "#" + String.valueOf(b4) + "#" + String.valueOf(letterid) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("l_points"))));
 
 
         return upload;
@@ -10682,7 +10682,7 @@ if(downok.equals("")){
             Cursor sc3 = myDbHelper.getQry("select * from userdetail");
             sc3.moveToFirst();
             if (sc3.getCount() != 0) {
-                mobileno = sc3.getString(sc3.getColumnIndex("phno"));
+                mobileno = sc3.getString(sc3.getColumnIndexOrThrow("phno"));
 
             }
 
@@ -10773,9 +10773,9 @@ if(downok.equals("")){
             if (sps.getString(Word_Game_Hard.this, "complite_reg").equals("yes")) {
                 Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                 cn.moveToFirst();
-                int cns = cn.getInt(cn.getColumnIndex("score"));
-                int time = cn.getInt(cn.getColumnIndex("playtime"));
-                int gm1 = cn.getInt(cn.getColumnIndex("gm4"));
+                int cns = cn.getInt(cn.getColumnIndexOrThrow("score"));
+                int time = cn.getInt(cn.getColumnIndexOrThrow("playtime"));
+                int gm1 = cn.getInt(cn.getColumnIndexOrThrow("gm4"));
                 int cnse = 0;
                 long ptime;
 
@@ -10813,7 +10813,7 @@ if(downok.equals("")){
             if (sps.getString(Word_Game_Hard.this, "complite_reg").equals("yes")) {
                 Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                 cn.moveToFirst();
-                int gm1 = cn.getInt(cn.getColumnIndex("gm4"));
+                int gm1 = cn.getInt(cn.getColumnIndexOrThrow("gm4"));
                 int gm1s = gm1 + 1;
                 myDbHelper.executeSql("UPDATE userdata_r SET gm4='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
             }
@@ -10827,9 +10827,9 @@ if(downok.equals("")){
                     System.out.println("=====print ok");
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + dates + "'");
                     cn.moveToFirst();
-                    int cns = cn.getInt(cn.getColumnIndex("score"));
-                    int time = cn.getInt(cn.getColumnIndex("playtime"));
-                    int gm1 = cn.getInt(cn.getColumnIndex("gm4"));
+                    int cns = cn.getInt(cn.getColumnIndexOrThrow("score"));
+                    int time = cn.getInt(cn.getColumnIndexOrThrow("playtime"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("gm4"));
                     int cnse = 0;
                     long ptime;
 
@@ -10865,7 +10865,7 @@ if(downok.equals("")){
                     if (sps.getString(Word_Game_Hard.this, "complite_reg").equals("yes")) {
                         Cursor cnw = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + dates + "'");
                         cnw.moveToFirst();
-                        int gm1w = cnw.getInt(cnw.getColumnIndex("gm4"));
+                        int gm1w = cnw.getInt(cnw.getColumnIndexOrThrow("gm4"));
                         int gm1sw = gm1w + 1;
                         myDbHelper.executeSql("UPDATE userdata_r SET gm4='" + gm1sw + "' where type ='" + retype + "'and date='" + dates + "'");
                     }
@@ -10923,7 +10923,7 @@ if(downok.equals("")){
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx + mCoinCount;
             final String aStringx = Integer.toString(spx);
 
@@ -10953,7 +10953,7 @@ if(downok.equals("")){
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
    /*     int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -10981,7 +10981,7 @@ if(downok.equals("")){
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
    /*     int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -11013,9 +11013,9 @@ if(downok.equals("")){
 
 
             if (c1.getCount() != 0) {
-                //c1.getString(c1.getColumnIndex("id"));
-                System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
-                downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "daily");
+                //c1.getString(c1.getColumnIndexOrThrow("id"));
+                System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
+                downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "daily");
 
 
             } else {
@@ -11095,11 +11095,11 @@ if(downok.equals("")){
                     if (c1.getCount() != 0) {
 
 
-                        //c1.getString(c1.getColumnIndex("id"));
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
 
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                        downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "ord");
+                        downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
 
                     } else {
                         downloadcheck("0", "ord");
@@ -11227,7 +11227,7 @@ if(downok.equals("")){
                                             long dscore = 0;
                                             if (cs.getCount() != 0) {
 
-                                                dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                                                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                                             }
                                             //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
                                             focus.setBase(SystemClock.elapsedRealtime() + dscore);
@@ -11678,7 +11678,7 @@ if(downok.equals("")){
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -11784,7 +11784,7 @@ if(downok.equals("")){
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -11831,7 +11831,7 @@ if(downok.equals("")){
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");

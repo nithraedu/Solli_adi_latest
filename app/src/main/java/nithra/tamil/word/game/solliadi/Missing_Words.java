@@ -73,8 +73,7 @@ import com.facebook.ads.RewardedVideoAdListener;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.games.Games;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
@@ -251,12 +250,6 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
         //New_Main_Activity.fb_addload(Missing_Words.this);
 
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
-                .addScope(Drive.SCOPE_APPFOLDER) // SavedGames
-                .build();
 
         //reward(Missing_Words.this);
         rewarded_ad();
@@ -440,7 +433,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
     public void validate(String ans, String dtn_name) {
         Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
         cfw.moveToFirst();
-        int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+        int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
         if (sk > 50) {
             String dates = sps.getString(Missing_Words.this, "date");
             Cursor cs = null;
@@ -602,7 +595,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
         cfx.moveToFirst();
         int skx = 0;
         if (cfx.getCount() != 0) {
-            skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         }
         c_score_edit.setText("" + skx);
         reset();
@@ -635,12 +628,12 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
         }
 
         if (c.getCount() != 0) {
-            u_id = c.getInt(c.getColumnIndex("id"));
-            question = c.getString(c.getColumnIndex("question"));
-            question_id = c.getString(c.getColumnIndex("questionid"));
-            answer = c.getString(c.getColumnIndex("answer"));
-            sf_word = c.getString(c.getColumnIndex("sf_word"));
-            isdown = c.getString(c.getColumnIndex("isdown"));
+            u_id = c.getInt(c.getColumnIndexOrThrow("id"));
+            question = c.getString(c.getColumnIndexOrThrow("question"));
+            question_id = c.getString(c.getColumnIndexOrThrow("questionid"));
+            answer = c.getString(c.getColumnIndexOrThrow("answer"));
+            sf_word = c.getString(c.getColumnIndexOrThrow("sf_word"));
+            isdown = c.getString(c.getColumnIndexOrThrow("isdown"));
             //question_txt.setText(question);
             String tfoption = sf_word;
             String[] first = tfoption.split(",");
@@ -653,7 +646,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
             }
             set_question_new(question);
 
-            int playtime = c.getInt(c.getColumnIndex("playtime"));
+            int playtime = c.getInt(c.getColumnIndexOrThrow("playtime"));
             if (playtime == 0) {
                 if (sps.getString(Missing_Words.this, "resume_mwa").equals("")) {
                     sps.putString(Missing_Words.this, "resume_mwa", "yes");
@@ -873,7 +866,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
         //score intial
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         c_score_edit.setText(tr);
         //
@@ -980,7 +973,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 if (cfx.getCount() != 0) {
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + 20;
                     String aStringx = Integer.toString(spx);
                     c_score_edit.setText(aStringx);
@@ -991,7 +984,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
                 Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                 ch.moveToFirst();
                 if (ch.getCount() != 0) {
-                    int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                    int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                     int shh = sh + 50;
                     myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
@@ -1093,7 +1086,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
         }
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         String aStringx = Integer.toString(skx);
         ttscores.setText(aStringx);
 
@@ -1330,9 +1323,9 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
                             Cursor sc2 = myDbHelper.getQry("select * from score ");
                             sc2.moveToFirst();
                             if (sc2.getCount() != 0) {
-                                k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                             }
-                            Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
+                            //Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                         }
                     }
                 }
@@ -1478,7 +1471,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
      /*   int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -1515,7 +1508,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx + mCoinCount;
             final String aStringx = Integer.toString(spx);
 
@@ -1577,7 +1570,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
         int skq = 0;
         if (cfq.getCount() != 0) {
             cfq.moveToFirst();
-            skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
         }
 
@@ -1685,7 +1678,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
             public void run() {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx - 50;
                 String aStringx = Integer.toString(spx);
                 c_score_edit.setText(aStringx);
@@ -2192,7 +2185,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
             cs.moveToFirst();
             long dscore = 0;
             if (cs.getCount() != 0) {
-                dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
             }
             focus.setBase(SystemClock.elapsedRealtime() + dscore);
             focus.start();
@@ -2515,7 +2508,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
                                                     cs = newhelper6.getQry("select * from newgames5 where gameid='" + gameid + "' and questionid='" + question_id + "'");
                                                     cs.moveToFirst();
                                                     if (cs.getCount() != 0) {
-                                                        dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                                                        dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                                                     }
                                                 } else {
                                                     pos = 2;
@@ -2523,7 +2516,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
                                                     cs.moveToFirst();
                                                     if (cs.getCount() != 0) {
 
-                                                        dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                                                        dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                                                     }
                                                 }
                                                 focus.setBase(SystemClock.elapsedRealtime() + dscore);
@@ -2580,7 +2573,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
     private void user_verify() {
         Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
         cfw.moveToFirst();
-        int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+        int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
         if (sk > 50) {
             if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                 ans_checked();
@@ -2652,7 +2645,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
 
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx - 50;
             String aStringx = Integer.toString(spx);
             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -2803,7 +2796,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
         String questionid_d = "";
         cz.moveToFirst();
         if (cz.getCount() != 0) {
-            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndex("questionid")));
+            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndexOrThrow("questionid")));
         }
         System.out.println("----------------------Download_server");
         Download_data_server download_data_server = new Download_data_server(Missing_Words.this, questionid_d, "" + gameid);
@@ -2968,8 +2961,8 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
         cs = newhelper6.getQry("select * from newgames5 where gameid='" + gameid + "' and questionid='" + question_id + "'");
         cs.moveToFirst();
         if (cs.getCount() != 0) {
-            String question = cs.getString(cs.getColumnIndex("question"));
-            String answera = cs.getString(cs.getColumnIndex("answer"));
+            String question = cs.getString(cs.getColumnIndexOrThrow("question"));
+            String answera = cs.getString(cs.getColumnIndexOrThrow("answer"));
 
             questions.setText("கேள்வி");
             answer.setText("பதில்");
@@ -3005,11 +2998,11 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
                     if (c1.getCount() != 0) {
 
 
-                        //c1.getString(c1.getColumnIndex("id"));
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
 
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                        //downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "ord");
+                        //downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
 
                     } else {
                         //downloadcheck("0", "ord");
@@ -3019,9 +3012,9 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
                     c1.moveToFirst();
                     System.out.print("Count====" + c1.getCount());
                     if (c1.getCount() != 0) {
-                        //c1.getString(c1.getColumnIndex("id"));
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
-                        //downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "daily");
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
+                        //downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "daily");
 
                     } else {
                         System.out.print("else====");
@@ -3067,7 +3060,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 //  score.setText(aStringx);
@@ -3096,7 +3089,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
                 if (sps.getString(Missing_Words.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -3110,7 +3103,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -3139,7 +3132,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -3154,7 +3147,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -3183,7 +3176,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -3200,7 +3193,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
                 }*/
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -3228,7 +3221,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
                 if (sps.getString(Missing_Words.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -3250,7 +3243,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 /*        int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -3436,7 +3429,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -3540,7 +3533,7 @@ public class Missing_Words extends BaseGameActivity implements View.OnClickListe
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");

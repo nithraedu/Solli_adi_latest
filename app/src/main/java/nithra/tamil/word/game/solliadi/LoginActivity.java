@@ -180,14 +180,14 @@ public class LoginActivity extends AppCompatActivity {
             login.setVisibility(View.GONE);
             pfedit.setVisibility(View.VISIBLE);
 
-            int id = c.getInt(c.getColumnIndex("id"));
-            String sa = c.getString(c.getColumnIndex("name"));
-            String phnos = c.getString(c.getColumnIndex("phno"));
-            String email = c.getString(c.getColumnIndex("email"));
-            String addresss = c.getString(c.getColumnIndex("address"));
-            reg_id = c.getString(c.getColumnIndex("regid"));
-            citys = c.getString(c.getColumnIndex("city"));
-            myimg = c.getString(c.getColumnIndex("upic"));
+            int id = c.getInt(c.getColumnIndexOrThrow("id"));
+            String sa = c.getString(c.getColumnIndexOrThrow("name"));
+            String phnos = c.getString(c.getColumnIndexOrThrow("phno"));
+            String email = c.getString(c.getColumnIndexOrThrow("email"));
+            String addresss = c.getString(c.getColumnIndexOrThrow("address"));
+            reg_id = c.getString(c.getColumnIndexOrThrow("regid"));
+            citys = c.getString(c.getColumnIndexOrThrow("city"));
+            myimg = c.getString(c.getColumnIndexOrThrow("upic"));
 
             String disticts[] = {"மாவட்டம் ", "அரியலூர்", "சென்னை",
                     "கோயம்புத்தூர்", "கடலூர்", "தர்மபுரி", "திண்டுக்கல்",

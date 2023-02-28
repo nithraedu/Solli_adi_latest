@@ -72,10 +72,10 @@ Notify_del notifyDel;
 
                 Cursor cv = myDB.rawQuery("select * from noti_cal where id='" + idd[position] + "'", null);
                 cv.moveToFirst();
-                String type = cv.getString(cv.getColumnIndex("type"));
-                String message = cv.getString(cv.getColumnIndex("message"));
-                String title_txt = cv.getString(cv.getColumnIndex("title"));
-                int iddd = cv.getInt(cv.getColumnIndex("id"));
+                String type = cv.getString(cv.getColumnIndexOrThrow("type"));
+                String message = cv.getString(cv.getColumnIndexOrThrow("message"));
+                String title_txt = cv.getString(cv.getColumnIndexOrThrow("title"));
+                int iddd = cv.getInt(cv.getColumnIndexOrThrow("id"));
                 if (type.equals("s")) {
 
                     Intent intent = new Intent(context, ST_Activity.class);

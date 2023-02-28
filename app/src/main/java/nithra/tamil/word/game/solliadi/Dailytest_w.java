@@ -306,7 +306,7 @@ public class Dailytest_w extends BroadcastReceiver {
 			c.moveToFirst();
 			if (c.getCount() != 0)
 			{
-				String sa = c.getString(c.getColumnIndex("letters"));
+				String sa = c.getString(c.getColumnIndexOrThrow("letters"));
 				StringTokenizer tokenizer = new StringTokenizer(sa, ",");
 				final String letter1 = tokenizer.nextToken();
 				String letter2 = tokenizer.nextToken().trim();

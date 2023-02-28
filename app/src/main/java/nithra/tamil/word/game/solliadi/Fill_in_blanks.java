@@ -81,8 +81,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.games.Games;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
 import java.io.File;
@@ -298,12 +296,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         }
 
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
-                .addScope(Drive.SCOPE_APPFOLDER) // SavedGames
-                .build();
+
 
         find();
         click();
@@ -833,7 +826,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         //score intial
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         score.setText(tr);
         //
@@ -936,7 +929,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                 //Score Setting
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 score.setText(aStringx);
@@ -944,7 +937,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
 
                 Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                 ch.moveToFirst();
-                int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                 int shh = sh + 50;
                 myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
@@ -974,7 +967,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         if (cfx.getCount() != 0) {
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             score.setText("" + skx);
         }
         Calendar calendar3 = Calendar.getInstance();
@@ -1017,10 +1010,10 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         c.moveToFirst();
         if (c.getCount() != 0) {
             reset_values();
-            levelid = c.getInt(c.getColumnIndex("levelid"));
-            letters = c.getString(c.getColumnIndex("letters"));
-            answers = c.getString(c.getColumnIndex("answer"));
-            int playtime = c.getInt(c.getColumnIndex("playtime"));
+            levelid = c.getInt(c.getColumnIndexOrThrow("levelid"));
+            letters = c.getString(c.getColumnIndexOrThrow("letters"));
+            answers = c.getString(c.getColumnIndexOrThrow("answer"));
+            int playtime = c.getInt(c.getColumnIndexOrThrow("playtime"));
             if (sps.getString(Fill_in_blanks.this, "fill_intro_time_start").equals("yes")) {
 
                 focus.setBase(SystemClock.elapsedRealtime() + playtime);
@@ -1515,7 +1508,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
 
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk >= 50) {
                     c_ans.setEnabled(false);
                     r = 1;
@@ -1532,13 +1525,13 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                             cd.moveToFirst();
                         }
 
-                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                         //Toast.makeText(Clue_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
                         //Score Adding
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
                         if (cfx.getCount() != 0) {
-                            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                             int spx = skx - 50;
                             String aStringx = Integer.toString(spx);
                             score.setText(aStringx);
@@ -1635,14 +1628,14 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                                 }
                                 String sas = null;
                                 if (cd.getCount() != 0) {
-                                    sas = cd.getString(cd.getColumnIndex("answer"));
+                                    sas = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 }
                                 //Toast.makeText(Clue_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
                                 if (cfx.getCount() != 0) {
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx - 50;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -3594,7 +3587,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         if (cfx.getCount() != 0) {
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             String aStringx = Integer.toString(skx);
             ttscores.setText(aStringx);
         }
@@ -3711,7 +3704,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 20;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -3880,7 +3873,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                             Cursor sc2 = myDbHelper.getQry("select * from score ");
                             sc2.moveToFirst();
                             if (sc2.getCount() != 0) {
-                                k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                             }
                             Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                         }
@@ -4081,7 +4074,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 /*        int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -4118,7 +4111,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx + mCoinCount;
             final String aStringx = Integer.toString(spx);
 
@@ -4238,7 +4231,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                                                     cs = newhelper4.getQry("select * from newgamesdb4 where gameid='" + gameid + "' and levelid='" + levelid + "'");
                                                     cs.moveToFirst();
                                                     if (cs.getCount() != 0) {
-                                                        dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                                                        dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                                                     }
                                                 } else {
                                                     pos = 2;
@@ -4448,14 +4441,14 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                 cs = newhelper4.getQry("select * from newgamesdb4 where gameid='" + gameid + "' and levelid='" + levelid + "'");
                 cs.moveToFirst();
                 if (cs.getCount() != 0) {
-                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                 }
             } else {
                 pos = 2;
                /* cs = newhelper3.getQry("select * from right_order where gameid='" + gameid + "' and questionid='" + questionid + "'");
                 cs.moveToFirst();
                 if (cs.getCount() != 0) {
-                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                 }*/
             }
             focus.setBase(SystemClock.elapsedRealtime() + dscore);
@@ -4719,7 +4712,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
 
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 50;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -4772,7 +4765,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 20;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -5338,7 +5331,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -5361,7 +5354,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
      /*   int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -5415,7 +5408,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 if (cfx.getCount() != 0) {
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + ea;
                     String aStringx = Integer.toString(spx);
                     score.setText(aStringx);
@@ -5638,7 +5631,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         String questionid_d = "";
         cz.moveToFirst();
         if (cz.getCount() != 0) {
-            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndex("levelid")));
+            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndexOrThrow("levelid")));
         }
         System.out.println("----------------------Download_server");
         Download_data_server download_data_server = new Download_data_server(Fill_in_blanks.this, questionid_d, "" + gameid);
@@ -5681,7 +5674,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -5757,7 +5750,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -5845,7 +5838,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");

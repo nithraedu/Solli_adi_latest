@@ -1199,8 +1199,8 @@ public class New_Main_Gamelist extends BaseGameActivity implements View.OnClickL
                             Cursor c1 = myDbHelper.getQry("select id from maintable order by id DESC");
                             c1.moveToFirst();
                             if (c1.getCount() != 0) {
-                                System.out.print("Last ID===ord=" + c1.getString(c1.getColumnIndex("id")));
-                                downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "ord");
+                                System.out.print("Last ID===ord=" + c1.getString(c1.getColumnIndexOrThrow("id")));
+                                downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
                                 dialog.dismiss();
                             } else {
                                 downloadcheck("0", "ord");
@@ -1343,9 +1343,9 @@ public class New_Main_Gamelist extends BaseGameActivity implements View.OnClickL
                 c1.moveToFirst();
                 System.out.print("Count====" + c1.getCount());
                 if (c1.getCount() != 0) {
-                    //c1.getString(c1.getColumnIndex("id"));
-                    System.out.print("Last ID===ord=" + c1.getString(c1.getColumnIndex("id")));
-                    downloadcheck1("" + c1.getString(c1.getColumnIndex("id")), "daily");
+                    //c1.getString(c1.getColumnIndexOrThrow("id"));
+                    System.out.print("Last ID===ord=" + c1.getString(c1.getColumnIndexOrThrow("id")));
+                    downloadcheck1("" + c1.getString(c1.getColumnIndexOrThrow("id")), "daily");
                 } else {
                     System.out.print("else====");
                     downloadcheck1("0", "daily");

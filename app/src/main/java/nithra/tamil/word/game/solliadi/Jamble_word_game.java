@@ -497,7 +497,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
         Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
         cfw.moveToFirst();
         if (cfw.getCount() != 0) {
-            int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+            int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
             if (sk >= 50) {
                 if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                     showanswer(first);
@@ -563,11 +563,11 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
         }
         resetvalues();
         if (c.getCount() != 0) {
-            questionid = c.getString(c.getColumnIndex("questionid"));
-            question = c.getString(c.getColumnIndex("question"));
-            answer = c.getString(c.getColumnIndex("answer"));
-            split_word = c.getString(c.getColumnIndex("sf_word"));
-            int playtime = c.getInt(c.getColumnIndex("playtime"));
+            questionid = c.getString(c.getColumnIndexOrThrow("questionid"));
+            question = c.getString(c.getColumnIndexOrThrow("question"));
+            answer = c.getString(c.getColumnIndexOrThrow("answer"));
+            split_word = c.getString(c.getColumnIndexOrThrow("sf_word"));
+            int playtime = c.getInt(c.getColumnIndexOrThrow("playtime"));
             String tfoption = answer;
             first = tfoption.split(",");
             System.out.println("###################fl" + first.length);
@@ -953,7 +953,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
     /*    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         if (cfx.getCount() != 0) {
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx - 50;
             String aStringx = Integer.toString(spx);
             c_score_edit.setText(aStringx);
@@ -1302,7 +1302,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         if (cfx.getCount() != 0) {
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             String aStringx = Integer.toString(skx);
             ttscores.setText(aStringx);
         }
@@ -1548,7 +1548,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                             Cursor sc2 = myDbHelper.getQry("select * from score ");
                             sc2.moveToFirst();
                             if (sc2.getCount() != 0) {
-                                k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                             }
                             Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                         }
@@ -1896,7 +1896,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 /*        int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -1930,7 +1930,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx + mCoinCount;
             final String aStringx = Integer.toString(spx);
 
@@ -2033,7 +2033,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
     public void coinanim() {
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         c_score_edit.setText(tr);
         //
@@ -2136,7 +2136,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                 //Score Setting
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 c_score_edit.setText(aStringx);
@@ -2144,7 +2144,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
 
                 Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                 ch.moveToFirst();
-                int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                 int shh = sh + 50;
                 myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
@@ -2244,7 +2244,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
             cs.moveToFirst();
             long dscore = 0;
             if (cs.getCount() != 0) {
-                dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
             }
             focus.setBase(SystemClock.elapsedRealtime() + dscore);
             focus.start();
@@ -2266,8 +2266,8 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                 cs = newhelper6.getQry("select * from newgames5 where gameid='" + gameid + "' and questionid='" + questionid + "'");
                 cs.moveToFirst();
                 if (cs.getCount() != 0) {
-                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
-                    //                  noofclue = cs.getInt(cs.getColumnIndex("noclue"));
+                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+                    //                  noofclue = cs.getInt(cs.getColumnIndexOrThrow("noclue"));
                 }
             } else {
                 pos = 2;
@@ -2275,8 +2275,8 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                 cs.moveToFirst();
                 if (cs.getCount() != 0) {
 
-                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
-//                    noofclue = cs.getInt(cs.getColumnIndex("noclue"));
+                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+//                    noofclue = cs.getInt(cs.getColumnIndexOrThrow("noclue"));
                 }
             }
             //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
@@ -2337,7 +2337,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
         int skq = 0;
         if (cfq.getCount() != 0) {
             cfq.moveToFirst();
-            skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
         }
 
@@ -2445,7 +2445,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
             public void run() {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx - 50;
                 String aStringx = Integer.toString(spx);
                 c_score_edit.setText(aStringx);
@@ -2898,7 +2898,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                                                 cs = newhelper6.getQry("select * from newgames5 where gameid='" + gameid + "' and questionid='" + questionid + "'");
                                                 cs.moveToFirst();
                                                 if (cs.getCount() != 0) {
-                                                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                                                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                                                 }
                                             } else {
                                                 pos = 2;
@@ -2906,7 +2906,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                                                 cs.moveToFirst();
                                                 if (cs.getCount() != 0) {
 
-                                                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                                                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                                                 }
                                             }
                                             focus.setBase(SystemClock.elapsedRealtime() + dscore);
@@ -3033,11 +3033,11 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                     if (c1.getCount() != 0) {
 
 
-                        //c1.getString(c1.getColumnIndex("id"));
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
 
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                        //downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "ord");
+                        //downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
 
                     } else {
                         //downloadcheck("0", "ord");
@@ -3047,9 +3047,9 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                     c1.moveToFirst();
                     System.out.print("Count====" + c1.getCount());
                     if (c1.getCount() != 0) {
-                        //c1.getString(c1.getColumnIndex("id"));
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
-                        //downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "daily");
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
+                        //downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "daily");
 
                     } else {
                         System.out.print("else====");
@@ -3105,7 +3105,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 //  score.setText(aStringx);
@@ -3134,7 +3134,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                 if (sps.getString(Jamble_word_game.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -3148,7 +3148,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -3177,7 +3177,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -3192,7 +3192,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -3221,7 +3221,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -3238,7 +3238,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                 }*/
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -3266,7 +3266,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                 if (sps.getString(Jamble_word_game.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -3288,7 +3288,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 /*        int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -3479,7 +3479,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
         String questionid_d = "";
         cz.moveToFirst();
         if (cz.getCount() != 0) {
-            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndex("questionid")));
+            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndexOrThrow("questionid")));
         }
         System.out.println("----------------------Download_server");
         Download_data_server download_data_server = new Download_data_server(Jamble_word_game.this, questionid_d, "" + gameid);
@@ -3770,7 +3770,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -3847,7 +3847,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -3935,7 +3935,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");

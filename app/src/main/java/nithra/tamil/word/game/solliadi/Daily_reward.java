@@ -52,16 +52,16 @@ View v;
         if (c.getCount() != 0) {
             for (int i=0; i<c.getCount();i++) {
                 c.moveToPosition(i);
-                date[i] = c.getString(c.getColumnIndex("date"));
-                int gm1=c.getInt(c.getColumnIndex("gm1"));
-                int gm2=c.getInt(c.getColumnIndex("gm1"));
-                int gm3=c.getInt(c.getColumnIndex("gm1"));
-                int gm4=c.getInt(c.getColumnIndex("gm1"));
+                date[i] = c.getString(c.getColumnIndexOrThrow("date"));
+                int gm1=c.getInt(c.getColumnIndexOrThrow("gm1"));
+                int gm2=c.getInt(c.getColumnIndexOrThrow("gm1"));
+                int gm3=c.getInt(c.getColumnIndexOrThrow("gm1"));
+                int gm4=c.getInt(c.getColumnIndexOrThrow("gm1"));
                 int count=gm1+gm2+gm3+gm4;
                 String gmcount= String.valueOf(count);
                 gamecount[i]= gmcount;
-                score[i]=c.getString(c.getColumnIndex("score"));
-                time[i]=c.getString(c.getColumnIndex("playtime"));
+                score[i]=c.getString(c.getColumnIndexOrThrow("score"));
+                time[i]=c.getString(c.getColumnIndexOrThrow("playtime"));
                 //Toast.makeText(aathichudi.this, ""+pro[i], Toast.LENGTH_SHORT).show();
 
             }

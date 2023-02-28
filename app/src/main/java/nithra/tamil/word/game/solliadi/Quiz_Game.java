@@ -79,8 +79,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.games.Games;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
 import java.io.File;
@@ -250,12 +248,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
 
 
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
-                .addScope(Drive.SCOPE_APPFOLDER) // SavedGames
-                .build();
+
 
         //reward(Quiz_Game.this);
         rewarded_ad();
@@ -361,7 +354,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         cfx.moveToFirst();
         int skx = 0;
         if (cfx.getCount() != 0) {
-            skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         }
         score.setText("" + skx);
         c_button1.setOnClickListener(Quiz_Game.this);
@@ -448,12 +441,12 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             c.moveToFirst();
         }
         if (c.getCount() != 0) {
-            u_id = c.getInt(c.getColumnIndex("id"));
-            question = c.getString(c.getColumnIndex("question"));
-            question_id = c.getString(c.getColumnIndex("questionid"));
-            answer = c.getString(c.getColumnIndex("answer"));
-            sf_word = c.getString(c.getColumnIndex("sf_word"));
-            isdown = c.getString(c.getColumnIndex("isdown"));
+            u_id = c.getInt(c.getColumnIndexOrThrow("id"));
+            question = c.getString(c.getColumnIndexOrThrow("question"));
+            question_id = c.getString(c.getColumnIndexOrThrow("questionid"));
+            answer = c.getString(c.getColumnIndexOrThrow("answer"));
+            sf_word = c.getString(c.getColumnIndexOrThrow("sf_word"));
+            isdown = c.getString(c.getColumnIndexOrThrow("isdown"));
             question_txt.setText(question);
             String tfoption = sf_word;
             String[] first = tfoption.split(",");
@@ -465,7 +458,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
                 c_button4.setText("" + first[3]);
             }
 
-            int playtime = c.getInt(c.getColumnIndex("playtime"));
+            int playtime = c.getInt(c.getColumnIndexOrThrow("playtime"));
             if (playtime == 0) {
                 if (sps.getString(Quiz_Game.this, "resume_qza").equals("")) {
                     sps.putString(Quiz_Game.this, "resume_qza", "yes");
@@ -563,7 +556,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     private void user_verify() {
         Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
         cfw.moveToFirst();
-        int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+        int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
         if (sk > 50) {
             if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                 ans_checked();
@@ -635,7 +628,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
 
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx - 50;
             String aStringx = Integer.toString(spx);
             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -682,7 +675,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     public void verify(String ans, String b_val) {
         Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
         cfw.moveToFirst();
-        int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+        int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
         if (sk > 50) {
             String dates = sps.getString(Quiz_Game.this, "date");
             Cursor cs = null;
@@ -743,7 +736,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
 
               /*  Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx - 50;
                 String aStringx = Integer.toString(spx);
                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -923,7 +916,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         }
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         String aStringx = Integer.toString(skx);
         ttscores.setText(aStringx);
 
@@ -1157,9 +1150,9 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
                             Cursor sc2 = myDbHelper.getQry("select * from score ");
                             sc2.moveToFirst();
                             if (sc2.getCount() != 0) {
-                                k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                             }
-                            Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
+                            //Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                         }
                     }
                 }
@@ -1359,7 +1352,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
      /*   int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -1396,7 +1389,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx + mCoinCount;
             final String aStringx = Integer.toString(spx);
 
@@ -1456,7 +1449,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             cs.moveToFirst();
             long dscore = 0;
             if (cs.getCount() != 0) {
-                dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
             }
             focus.setBase(SystemClock.elapsedRealtime() + dscore);
             focus.start();
@@ -1671,7 +1664,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
                                             cs.moveToFirst();
                                             long dscore = 0;
                                             if (cs.getCount() != 0) {
-                                                dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                                                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                                             }
                                             focus.setBase(SystemClock.elapsedRealtime() + dscore);
                                             focus.start();
@@ -1998,7 +1991,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         //score intial
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         score.setText(tr);
         //
@@ -2105,7 +2098,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 if (cfx.getCount() != 0) {
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + 20;
                     String aStringx = Integer.toString(spx);
                     score.setText(aStringx);
@@ -2116,7 +2109,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
                 Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                 ch.moveToFirst();
                 if (ch.getCount() != 0) {
-                    int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                    int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                     int shh = sh + 50;
                     myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
@@ -2662,7 +2655,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         String questionid_d = "";
         cz.moveToFirst();
         if (cz.getCount() != 0) {
-            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndex("questionid")));
+            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndexOrThrow("questionid")));
         }
         System.out.println("----------------------Download_server");
         Download_data_server download_data_server = new Download_data_server(Quiz_Game.this, questionid_d, "" + gameid);
@@ -2705,7 +2698,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -2730,7 +2723,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
      /*   int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -2793,8 +2786,8 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         cs = newhelper5.getQry("select * from newgames5 where gameid='" + gameid + "' and questionid='" + question_id + "'");
         cs.moveToFirst();
         if (cs.getCount() != 0) {
-            String question = cs.getString(cs.getColumnIndex("question"));
-            String answera = cs.getString(cs.getColumnIndex("answer"));
+            String question = cs.getString(cs.getColumnIndexOrThrow("question"));
+            String answera = cs.getString(cs.getColumnIndexOrThrow("answer"));
 
             questions.setText("கேள்வி");
             answer.setText("பதில்");
@@ -2822,7 +2815,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         int skq = 0;
         if (cfq.getCount() != 0) {
             cfq.moveToFirst();
-            skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
         }
 
@@ -2930,7 +2923,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             public void run() {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx - 50;
                 String aStringx = Integer.toString(spx);
                 score.setText(aStringx);
@@ -3036,7 +3029,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -3140,7 +3133,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");

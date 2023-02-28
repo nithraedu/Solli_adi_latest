@@ -84,8 +84,6 @@ import com.facebook.ads.RewardedVideoAdListener;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.games.Games;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.example.games.basegameutils.BaseGameActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -401,12 +399,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
             }
 
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
-                .addScope(Drive.SCOPE_APPFOLDER) // SavedGames
-                .build();
+
 
 
         LayoutInflater layoutInflater
@@ -566,7 +559,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                     cfw.moveToFirst();
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button1.startAnimation(clickzoom);
@@ -592,7 +585,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfw.moveToFirst();
                     int sk = 0;
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button2.startAnimation(clickzoom);
@@ -618,7 +611,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfw.moveToFirst();
                     int sk = 0;
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button3.startAnimation(clickzoom);
@@ -644,7 +637,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfw.moveToFirst();
                     int sk = 0;
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button4.startAnimation(clickzoom);
@@ -672,7 +665,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfw.moveToFirst();
                     int sk = 0;
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button5.startAnimation(clickzoom);
@@ -699,7 +692,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfw.moveToFirst();
                     int sk = 0;
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button6.startAnimation(clickzoom);
@@ -726,7 +719,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfw.moveToFirst();
                     int sk = 0;
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button7.startAnimation(clickzoom);
@@ -753,7 +746,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfw.moveToFirst();
                     int sk = 0;
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button8.startAnimation(clickzoom);
@@ -780,7 +773,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfw.moveToFirst();
                     int sk = 0;
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button9.startAnimation(clickzoom);
@@ -807,7 +800,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfw.moveToFirst();
                     int sk = 0;
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button10.startAnimation(clickzoom);
@@ -833,7 +826,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfw.moveToFirst();
                     int sk = 0;
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button11.startAnimation(clickzoom);
@@ -859,7 +852,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfw.moveToFirst();
                     int sk = 0;
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button12.startAnimation(clickzoom);
@@ -886,7 +879,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfw.moveToFirst();
                     int sk = 0;
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button13.startAnimation(clickzoom);
@@ -913,7 +906,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfw.moveToFirst();
                     int sk = 0;
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button14.startAnimation(clickzoom);
@@ -940,7 +933,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfw.moveToFirst();
                     int sk = 0;
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button15.startAnimation(clickzoom);
@@ -966,7 +959,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfw.moveToFirst();
                     int sk = 0;
                     if (cfw.getCount() != 0) {
-                        sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                        sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     }
                     if (sk > 50) {
                         button16.startAnimation(clickzoom);
@@ -1160,7 +1153,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
         cfw.moveToFirst();
         int sk = 0;
         if (cfw.getCount() != 0) {
-            sk = cfw.getInt(cfw.getColumnIndex("coins"));
+            sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
         }
 
         if (sk > 50) {
@@ -1172,7 +1165,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     if (x <= answerlength) {
                         x++;
 
-                        String ts = cd.getString(cd.getColumnIndex("answer"));
+                        String ts = cd.getString(cd.getColumnIndexOrThrow("answer"));
                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + ts + "'and levelid='" + questionid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                         myDbHelper.executeSql("UPDATE answertable SET useranswer=0 WHERE answer='" + ts + "'and levelid='" + questionid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -1316,7 +1309,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                             if (x <= answerlength) {
                                 x++;
 
-                                String ts = cd.getString(cd.getColumnIndex("answer"));
+                                String ts = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + ts + "'and levelid='" + questionid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
                                 myDbHelper.executeSql("UPDATE answertable SET useranswer=0 WHERE answer='" + ts + "'and levelid='" + questionid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
@@ -1550,7 +1543,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
         if (cfq.getCount() != 0) {
-            int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
             s_score_edit.setText(tr);
         }
@@ -1564,7 +1557,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
         if (cfq.getCount() != 0) {
-            int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
             s_score_edit.setText(tr);
         }
@@ -1680,13 +1673,13 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
 
 
             head.setVisibility(View.VISIBLE);
-            u_id = c1.getInt(c1.getColumnIndex("id"));
-            questionid = c1.getInt(c1.getColumnIndex("questionid"));
-            question = c1.getString(c1.getColumnIndex("question"));
-            answer = c1.getString(c1.getColumnIndex("answer"));
-            suff_words = c1.getString(c1.getColumnIndex("sf_words"));
-            int clue = c1.getInt(c1.getColumnIndex("clue"));
-            int playtime = c1.getInt(c1.getColumnIndex("playtime"));
+            u_id = c1.getInt(c1.getColumnIndexOrThrow("id"));
+            questionid = c1.getInt(c1.getColumnIndexOrThrow("questionid"));
+            question = c1.getString(c1.getColumnIndexOrThrow("question"));
+            answer = c1.getString(c1.getColumnIndexOrThrow("answer"));
+            suff_words = c1.getString(c1.getColumnIndexOrThrow("sf_words"));
+            int clue = c1.getInt(c1.getColumnIndexOrThrow("clue"));
+            int playtime = c1.getInt(c1.getColumnIndexOrThrow("playtime"));
 
             String tfoption = answer;
             String[] first = tfoption.split(",");
@@ -1766,7 +1759,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                 x = csk.getCount();
                 for (int i = 0; i < csk.getCount(); i++) {
                     csk.moveToPosition(i);
-                    String ts = csk.getString(csk.getColumnIndex("answer"));
+                    String ts = csk.getString(csk.getColumnIndexOrThrow("answer"));
                     if (ans1.length() == 0) {
                         ans1.setText(ts);
                         value_ans1.setBackgroundResource(R.drawable.tick_background);
@@ -1907,7 +1900,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 if (cfx.getCount() != 0) {
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + ea;
                     String aStringx = Integer.toString(spx);
                     s_score_edit.setText(aStringx);
@@ -2646,7 +2639,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
         cs.moveToFirst();
         long dscore = 0;
         if (cs.getCount() != 0) {
-            dscore = cs.getInt(cs.getColumnIndex("playtime"));
+            dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
         }
         //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
 
@@ -4072,7 +4065,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         if (cfx.getCount() != 0) {
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx + 10;
             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
         }
@@ -4105,7 +4098,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
 
        /* Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         s_score_edit.setText(tr);
         //
@@ -4185,14 +4178,14 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
                     if (cfx.getCount() != 0) {
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         String aStringx = Integer.toString(skx);
                         s_score_edit.setText(aStringx);
                     }
                     ch = myDbHelper.getQry("SELECT * FROM score ");
                     ch.moveToFirst();
                     if (ch.getCount() != 0) {
-                        int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                        int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                         int shh = sh + 50;
                         myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
                     }
@@ -4224,7 +4217,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
             cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
             if (cfx.getCount() != 0) {
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx - 20;
                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
             }
@@ -4242,7 +4235,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
         if (cfq.getCount() != 0) {
-            int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
         }*/
 
@@ -4290,7 +4283,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
                     if (cfx.getCount() != 0) {
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         String aStringx = Integer.toString(skx);
                         s_score_edit.setText(aStringx);
                     }
@@ -4749,7 +4742,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                 cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 if (cfx.getCount() != 0) {
-                    tt_case2 = cfx.getInt(cfx.getColumnIndex("coins"));
+                    tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     tt_tot2 = tt_case2 + 30;
                     String aStringx = Integer.toString(tt_case2);
                     ttscores.setText(aStringx);
@@ -4870,7 +4863,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                                     sc2 = myDbHelper.getQry("select * from score ");
                                     sc2.moveToFirst();
                                     if (sc2.getCount() != 0) {
-                                        k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                        k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                                     }
                                 } catch (Exception e) {
                                     // exception handling
@@ -4881,7 +4874,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                                 }
 
 
-                                Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
+                               // Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                             }
                         }
                     }
@@ -4922,7 +4915,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                 cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 if (cfx.getCount() != 0) {
-                    tt_case2 = cfx.getInt(cfx.getColumnIndex("coins"));
+                    tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     tt_tot2 = tt_case2;
                     String aStringx = Integer.toString(tt_case2);
                     ttscores.setText(aStringx);
@@ -5118,7 +5111,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                 cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 if (cfx.getCount() != 0) {
-                    final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     spxdr = skx;
 
                 }
@@ -5160,7 +5153,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
             cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
             if (cfx.getCount() != 0) {
-                skxw = cfx.getInt(cfx.getColumnIndex("coins"));
+                skxw = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 
             }
         } catch (Exception e) {
@@ -5204,7 +5197,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
             cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
             if (cfx.getCount() != 0) {
-                skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 /*        int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
                 b_scores.setText("" + a);
@@ -5358,7 +5351,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
                                 if (cfx.getCount() != 0) {
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 10;
                                     aStringx = Integer.toString(spx);
                                     ttscores.setText(aStringx);
@@ -5390,7 +5383,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                                     cn.moveToFirst();
                                     if (cn.getCount() != 0) {
-                                        int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                                        int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                                         int gm1s = gm1 + 1;
                                         myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                                     }
@@ -5477,7 +5470,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
                                 if (cfx.getCount() != 0) {
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     spx = (values.size() - 1) * 10;
                                     String aStringx = Integer.toString(spx + skx);
                                     // s_score.setText(aStringx);
@@ -5510,7 +5503,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                                     cn.moveToFirst();
                                     if (cn.getCount() != 0) {
-                                        int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                                        int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                                         int spxx = (values.size() - 1);
                                         int gm1s = gm1 + spxx;
                                         myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
@@ -5581,7 +5574,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
                     if (cfx.getCount() != 0) {
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + 10;
                         String aStringx = Integer.toString(spx);
                         // s_score.setText(aStringx);
@@ -5622,7 +5615,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                         cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                         cn.moveToFirst();
                         if (cn.getCount() != 0) {
-                            int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                            int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                             int gm1s = gm1 + 1;
                             myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
 
@@ -5649,7 +5642,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
                     if (cfx.getCount() != 0) {
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + 20;
                         String aStringx = Integer.toString(spx);
                         // s_score.setText(aStringx);
@@ -5689,7 +5682,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                         cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                         cn.moveToFirst();
                         if (cn.getCount() != 0) {
-                            int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                            int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                             int gm1s = gm1 + 1;
                             myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                             ///Reward Share
@@ -5715,7 +5708,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
                     if (cfx.getCount() != 0) {
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + 20;
                         String aStringx = Integer.toString(spx);
                         // s_score.setText(aStringx);
@@ -5755,7 +5748,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                         cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                         cn.moveToFirst();
                         if (cn.getCount() != 0) {
-                            int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                            int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                             int gm1s = gm1 + 1;
                             myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                             ///Reward Share
@@ -5786,7 +5779,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
                     if (cfx.getCount() != 0) {
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + 10;
                         String aStringx = Integer.toString(spx);
                         // s_score.setText(aStringx);
@@ -5827,7 +5820,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                         cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                         cn.moveToFirst();
                         if (cn.getCount() != 0) {
-                            int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                            int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                             int gm1s = gm1 + 1;
                             myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                         }
@@ -6012,7 +6005,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 20;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -6266,7 +6259,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                                             cs.moveToFirst();
                                             long dscore = 0;
                                             if (cs.getCount() != 0) {
-                                                dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                                                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                                             }
                                             //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
 
@@ -7071,7 +7064,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
         String questionid_d = "";
         cz.moveToFirst();
         if (cz.getCount() != 0) {
-            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndex("questionid")));
+            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndexOrThrow("questionid")));
         }
 
         System.out.println("----------------------Download_server");
@@ -7205,7 +7198,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -7282,7 +7275,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -7370,7 +7363,7 @@ public class Match_Word extends BaseGameActivity implements GoogleApiClient.Conn
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");

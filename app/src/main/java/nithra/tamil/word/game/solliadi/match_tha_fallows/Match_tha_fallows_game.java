@@ -85,8 +85,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.games.Games;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
 import java.io.File;
@@ -498,19 +496,14 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
 
         //loadRewardedVideoAd();
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
-                .addScope(Drive.SCOPE_APPFOLDER) // SavedGames
-                .build();
+
       /*  Cursor cursor = null;
         try {
             cursor = database.rawQuery("select * from match_game where gameid='15' and isfinish='1'", null);
             for (int i = 0; i < cursor.getCount(); i++) {
                 cursor.moveToPosition(i);
-                String question = cursor.getString(cursor.getColumnIndex("question"));
-                String Answer = cursor.getString(cursor.getColumnIndex("Answer"));
+                String question = cursor.getString(cursor.getColumnIndexOrThrow("question"));
+                String Answer = cursor.getString(cursor.getColumnIndexOrThrow("Answer"));
 
                 String[] split_question=question.split(",");
                 String[] split_Answer=Answer.split(",");
@@ -595,7 +588,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
         cfx.moveToFirst();
         int skx = 0;
         if (cfx.getCount() != 0) {
-            skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         }
         score.setText("" + skx);
         //reward(Match_tha_fallows_game.this);
@@ -644,7 +637,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
         cfx.moveToFirst();
         int skx = 0;
         if (cfx.getCount() != 0) {
-            skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         }
         score.setText("" + skx);
 
@@ -700,11 +693,11 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
             nodata_txt.setVisibility(View.GONE);
 
 
-            questionid = cursor.getString(cursor.getColumnIndex("questionid")).trim();
-            question = cursor.getString(cursor.getColumnIndex("question"));
-            sf_word = cursor.getString(cursor.getColumnIndex("sf_word"));
-            Answer = cursor.getString(cursor.getColumnIndex("answer"));
-            String my_maintain = cursor.getString(cursor.getColumnIndex("my_maintain"));
+            questionid = cursor.getString(cursor.getColumnIndexOrThrow("questionid")).trim();
+            question = cursor.getString(cursor.getColumnIndexOrThrow("question"));
+            sf_word = cursor.getString(cursor.getColumnIndexOrThrow("sf_word"));
+            Answer = cursor.getString(cursor.getColumnIndexOrThrow("answer"));
+            String my_maintain = cursor.getString(cursor.getColumnIndexOrThrow("my_maintain"));
 
             if (my_maintain.equals("0")) {
                 sp.putString(Match_tha_fallows_game.this, "mt_hint", "");
@@ -720,7 +713,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
 
                 data_list.add(myData);
             }
-            int playtime = cursor.getInt(cursor.getColumnIndex("playtime"));
+            int playtime = cursor.getInt(cursor.getColumnIndexOrThrow("playtime"));
             if (playtime == 0) {
                 if (sps.getString(Match_tha_fallows_game.this, "resume_mtf").equals("")) {
                     sps.putString(Match_tha_fallows_game.this, "resume_mtf", "yes");
@@ -1328,7 +1321,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
 
         Cursor cf = myDbHelper.getQry("SELECT * FROM score ");
         cf.moveToFirst();
-        int sk = cf.getInt(cf.getColumnIndex("coins"));
+        int sk = cf.getInt(cf.getColumnIndexOrThrow("coins"));
         if (sk > 50) {
             if (vali_handler != null) {
                 vali_handler.removeCallbacksAndMessages(null);
@@ -1381,7 +1374,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                             if (!hint_act) {
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 20;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -1453,7 +1446,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
 
                               /*  Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 20;
                                 String aStringx = Integer.toString(spx);
                                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -1711,7 +1704,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
         if (FROMVIEW != null) {
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
-            int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+            int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
             if (sk >= 50) {
                 if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                     int hint_count = sp.getInt(Match_tha_fallows_game.this, "mt_hint_count");
@@ -1752,7 +1745,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                     scroll_act = false;
                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx - 50;
                     String aStringx = Integer.toString(spx);
                     score.setText(aStringx);
@@ -1823,7 +1816,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                             scroll_act = false;
                             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                             cfx.moveToFirst();
-                            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                             int spx = skx - 50;
                             String aStringx = Integer.toString(spx);
                             score.setText(aStringx);
@@ -2370,7 +2363,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 if (cfx.getCount() != 0) {
-                    tt_case2 = cfx.getInt(cfx.getColumnIndex("coins"));
+                    tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     tt_tot2 = tt_case2 + 30;
                     String aStringx = Integer.toString(tt_case2);
                     ttscores.setText(aStringx);
@@ -2541,9 +2534,9 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                                     Cursor sc2 = myDbHelper.getQry("select * from score ");
                                     sc2.moveToFirst();
                                     if (sc2.getCount() != 0) {
-                                        k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                        k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                                     }
-                                    Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
+                                    //Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                                 }
                             }
                         }
@@ -2579,7 +2572,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 if (cfx.getCount() != 0) {
-                    tt_case2 = cfx.getInt(cfx.getColumnIndex("coins"));
+                    tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     tt_tot2 = tt_case2;
                     String aStringx = Integer.toString(tt_case2);
                     ttscores.setText(aStringx);
@@ -2719,7 +2712,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
             if (cfx.getCount() != 0) {
-                tt_case2 = cfx.getInt(cfx.getColumnIndex("coins"));
+                tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 tt_tot2 = tt_case2;
                 String aStringx = Integer.toString(tt_case2);
                 ttscores.setText(aStringx);
@@ -2911,7 +2904,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         if (cfx.getCount() != 0) {
-            skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 /*        int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
             b_scores.setText("" + a);
@@ -2955,7 +2948,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
             if (cfx.getCount() != 0) {
-                final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 spxdr = skx;
 
             }
@@ -3097,7 +3090,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
             cs.moveToFirst();
             long dscore = 0;
             if (cs.getCount() != 0) {
-                dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
             }
             focus.setBase(SystemClock.elapsedRealtime() + dscore);
             focus.start();
@@ -3338,7 +3331,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                                             cs.moveToFirst();
                                             long dscore = 0;
                                             if (cs.getCount() != 0) {
-                                                dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                                                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                                             }
                                             focus.setBase(SystemClock.elapsedRealtime() + dscore);
                                             focus.start();
@@ -4145,7 +4138,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
     public void coinanim() {
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         score.setText(tr);
         //
@@ -4250,7 +4243,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                 //Score Setting
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 score.setText(aStringx);
@@ -4258,7 +4251,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
 
                 Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                 ch.moveToFirst();
-                int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                 int shh = sh + 50;
                 myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
@@ -4270,7 +4263,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
     public void coinanim_reds() {
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         score.setText(tr);
         //
@@ -4375,7 +4368,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                 //Score Setting
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx - 20;
                 String aStringx = Integer.toString(spx);
                 score.setText(aStringx);
@@ -4456,7 +4449,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
         String questionid_d = "";
         cz.moveToFirst();
         if (cz.getCount() != 0) {
-            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndex("questionid")));
+            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndexOrThrow("questionid")));
         }
         System.out.println("----------------------Download_server");
         Download_data_server download_data_server = new Download_data_server(Match_tha_fallows_game.this, questionid_d, "" + gameid);
@@ -4503,7 +4496,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -4526,7 +4519,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
      /*   int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -4551,7 +4544,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
         int skq = 0;
         if (cfq.getCount() != 0) {
             cfq.moveToFirst();
-            skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
         }
 
@@ -4659,7 +4652,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
             public void run() {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx - 20;
                 String aStringx = Integer.toString(spx);
                 score.setText(aStringx);
@@ -4765,7 +4758,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -4842,7 +4835,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -4930,7 +4923,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");

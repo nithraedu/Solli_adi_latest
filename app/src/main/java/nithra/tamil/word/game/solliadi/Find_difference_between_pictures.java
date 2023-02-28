@@ -77,8 +77,7 @@ import com.facebook.ads.RewardedVideoAdListener;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.games.Games;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
@@ -321,12 +320,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
 
         //loadRewardedVideoAd();
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
-                .addScope(Drive.SCOPE_APPFOLDER) // SavedGames
-                .build();
+
 
 
         soundset();
@@ -436,7 +430,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
         cfx.moveToFirst();
         int skx = 0;
         if (cfx.getCount() != 0) {
-            skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         }
         score.setText("" + skx);
         reset();
@@ -476,11 +470,11 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
             c.moveToFirst();
         }
         if (c.getCount() != 0) {
-            u_id = c.getInt(c.getColumnIndex("id"));
-            question = c.getString(c.getColumnIndex("question"));
-            question_id = c.getString(c.getColumnIndex("questionid"));
-            answer = c.getString(c.getColumnIndex("answer"));
-            isdown = c.getString(c.getColumnIndex("isdown"));
+            u_id = c.getInt(c.getColumnIndexOrThrow("id"));
+            question = c.getString(c.getColumnIndexOrThrow("question"));
+            question_id = c.getString(c.getColumnIndexOrThrow("questionid"));
+            answer = c.getString(c.getColumnIndexOrThrow("answer"));
+            isdown = c.getString(c.getColumnIndexOrThrow("isdown"));
             String tfoption = answer;
             String[] first = tfoption.split(",");
             int optlen = first.length;
@@ -624,8 +618,8 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                 System.out.println("######################" + csk.getCount());
                 for (int i = 0; i < csk.getCount(); i++) {
                     csk.moveToPosition(i);
-                    String ansn = csk.getString(csk.getColumnIndex("answer"));
-                    int dscore = csk.getInt(csk.getColumnIndex("levelscore"));
+                    String ansn = csk.getString(csk.getColumnIndexOrThrow("answer"));
+                    int dscore = csk.getInt(csk.getColumnIndexOrThrow("levelscore"));
                     b_score = dscore;
                     if (ans1.length() == 0) {
                         ans1.setText(ansn);
@@ -675,7 +669,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                 csk1.moveToFirst();
                 for (int i = 0; i < csk1.getCount(); i++) {
                     csk1.moveToPosition(i);
-                    String ansn = csk1.getString(csk1.getColumnIndex("answer"));
+                    String ansn = csk1.getString(csk1.getColumnIndexOrThrow("answer"));
                     if (ans1.length() == 0) {
                         ans1.setText(ansn);
                         ans1.setTextColor(getResources().getColor(R.color.rippelColor1));
@@ -898,7 +892,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
         // Toast.makeText(this, "set_val"+val, Toast.LENGTH_SHORT).show();
         Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
         cfw.moveToFirst();
-        int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+        int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
 
         if (sk > 50) {
 
@@ -907,14 +901,14 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                 cd.moveToFirst();
                 if (cd.getCount() != 0) {
                     if (ans_count <= final_ans_count) {
-                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + question_id + "'and gameid='" + gameid + "' and rd='" + rdvalu + "' ");
                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + question_id + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                         //Score Adding
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx - 50;
                         String aStringx = Integer.toString(spx);
                         score.setText(aStringx);
@@ -1040,14 +1034,14 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                 cd.moveToFirst();
                 if (cd.getCount() != 0) {
                     if (ans_count <= final_ans_count) {
-                        String sa = cd.getString(cd.getColumnIndex("answer"));
+                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                         myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + question_id + "'and gameid='" + gameid + "' and rd='" + rdvalu + "' ");
                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + question_id + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
 
                         //Score Adding
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx - 50;
                         String aStringx = Integer.toString(spx);
                         score.setText(aStringx);
@@ -1333,7 +1327,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
 
                    /*     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + 10;
                         String aStringx = Integer.toString(spx);
                         score.setText(aStringx);
@@ -1341,7 +1335,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                         coinanim();
                         Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                         ch.moveToFirst();
-                        int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                        int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                         int shh = sh + 10;
                         myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
                         setans(ans);
@@ -1514,7 +1508,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
         cfx.moveToFirst();
         int skx = 0;
         if (cfx.getCount() != 0) {
-            skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         }
         score.setText("" + skx);
 
@@ -2174,7 +2168,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
             if (cfx.getCount() != 0) {
-                tt_case2 = cfx.getInt(cfx.getColumnIndex("coins"));
+                tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 tt_tot2 = tt_case2 + 30;
                 String aStringx = Integer.toString(tt_case2);
                 ttscores.setText(aStringx);
@@ -2307,9 +2301,9 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                                 Cursor sc2 = myDbHelper.getQry("select * from score ");
                                 sc2.moveToFirst();
                                 if (sc2.getCount() != 0) {
-                                    k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                    k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                                 }
-                                Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
+                                //Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                             }
                         }
                     }
@@ -2348,7 +2342,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
             if (cfx.getCount() != 0) {
-                tt_case2 = cfx.getInt(cfx.getColumnIndex("coins"));
+                tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 tt_tot2 = tt_case2;
                 String aStringx = Integer.toString(tt_case2);
                 ttscores.setText(aStringx);
@@ -2508,7 +2502,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         if (cfx.getCount() != 0) {
-            skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 /*        int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
             b_scores.setText("" + a);
@@ -2552,7 +2546,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
             if (cfx.getCount() != 0) {
-                final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 spxdr = skx;
 
             }
@@ -2615,7 +2609,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 if (cfx.getCount() != 0) {
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + ea;
                     String aStringx = Integer.toString(spx);
                     score.setText(aStringx);
@@ -2896,7 +2890,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
             cs.moveToFirst();
             long dscore = 0;
             if (cs.getCount() != 0) {
-                dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
             }
             focus.setBase(SystemClock.elapsedRealtime() + dscore);
             focus.start();
@@ -3136,7 +3130,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                                             cs.moveToFirst();
                                             long dscore = 0;
                                             if (cs.getCount() != 0) {
-                                                dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                                                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                                             }
                                             focus.setBase(SystemClock.elapsedRealtime() + dscore);
                                             focus.start();
@@ -3886,7 +3880,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
         String questionid_d = "";
         cz.moveToFirst();
         if (cz.getCount() != 0) {
-            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndex("questionid")));
+            questionid_d = String.valueOf(cz.getInt(cz.getColumnIndexOrThrow("questionid")));
         }
         System.out.println("----------------------Download_server");
         Download_data_server download_data_server = new Download_data_server(Find_difference_between_pictures.this, questionid_d, "" + gameid);
@@ -3911,7 +3905,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                                 cursor1.moveToFirst();
                                 String lastid = null;
                                 if (cursor1.getCount() != 0) {
-                                    lastid = String.valueOf(cursor1.getInt(cursor1.getColumnIndex("questionid")));
+                                    lastid = String.valueOf(cursor1.getInt(cursor1.getColumnIndexOrThrow("questionid")));
                                 }*/
                                 System.out.println("--last q id : " + lastid);
                                 downpic(question_id, lastid);
@@ -4325,7 +4319,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -4349,7 +4343,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
      /*   int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -4373,7 +4367,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
         //score intial
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         score.setText(tr);
         //
@@ -4450,7 +4444,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 if (cfx.getCount() != 0) {
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + 10;
                     String aStringx = Integer.toString(spx);
                     score.setText(aStringx);
@@ -4545,7 +4539,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -4649,7 +4643,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -4696,7 +4690,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");

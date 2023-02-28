@@ -571,7 +571,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             coin_cursor = Inner_mydb.rawQuery("select * from coin_table", null);
             if (coin_cursor.getCount() != 0) {
                 coin_cursor.moveToFirst();
-                coin_point = coin_cursor.getInt(coin_cursor.getColumnIndex("coin_point"));
+                coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coin_point"));
                 coin_txt.setText("" + coin_point);
 //                coin_txt.startAnimation(bounce_anim);
             }
@@ -585,7 +585,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             coin_cursor = myDbHelper.getQry("select * from score");
             if (coin_cursor.getCount() != 0) {
                 coin_cursor.moveToFirst();
-                coin_point = coin_cursor.getInt(coin_cursor.getColumnIndex("coins"));
+                coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coins"));
                 coin_txt.setText("" + coin_point);
 //                coin_txt.startAnimation(bounce_anim);
             }
@@ -1766,7 +1766,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                                 cursor = mydb.rawQuery("select * from general_meaning where Word='" + my_hint + "'", null);
                                 if (cursor.getCount() != 0) {
                                     cursor.moveToFirst();
-                                    String meaning = cursor.getString(cursor.getColumnIndex("Sentence"));
+                                    String meaning = cursor.getString(cursor.getColumnIndexOrThrow("Sentence"));
 
                                     word_title.setText("" + (hint_word.getWord().replace(".", "")));
 
@@ -2009,8 +2009,8 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                     if (meanning_word_cur.getCount() != 0) {
                         meanning_word_cur.moveToFirst();
 
-                        // String sentence=my_solution.get(i)+" - " +meanning_word_cur.getString(meanning_word_cur.getColumnIndex("Sentence"));
-                        String sentence = "" + (i + 1) + ". " + meanning_word_cur.getString(meanning_word_cur.getColumnIndex("Sentence"));
+                        // String sentence=my_solution.get(i)+" - " +meanning_word_cur.getString(meanning_word_cur.getColumnIndexOrThrow("Sentence"));
+                        String sentence = "" + (i + 1) + ". " + meanning_word_cur.getString(meanning_word_cur.getColumnIndexOrThrow("Sentence"));
 
                         sentence = sentence.replace(my_solution.get(i), "<font color='#ffea00'>" + my_solution.get(i) + "</font>") + "<br><br>";
 
@@ -2072,7 +2072,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                     coin_cursor = myDbHelper.getQry("select * from score");
                     if (coin_cursor.getCount() != 0) {
                         coin_cursor.moveToFirst();
-                        coin_point = coin_cursor.getInt(coin_cursor.getColumnIndex("coins"));
+                        coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coins"));
                         coin_txt.setText("" + coin_point);
 //                coin_txt.startAnimation(bounce_anim);
                     }
@@ -2157,7 +2157,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             coin_cursor = Inner_mydb.rawQuery("select * from coin_table", null);
             if (coin_cursor.getCount() != 0) {
                 coin_cursor.moveToFirst();
-                leader_point = coin_cursor.getInt(coin_cursor.getColumnIndex("leader_point"));
+                leader_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("leader_point"));
             }
         } finally {
             if (coin_cursor != null)
@@ -2167,7 +2167,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             coin_cursor = myDbHelper.getQry("select * from score");
             if (coin_cursor.getCount() != 0) {
                 coin_cursor.moveToFirst();
-                leader_point = coin_cursor.getInt(coin_cursor.getColumnIndex("l_points"));
+                leader_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("l_points"));
             }
         } finally {
             if (coin_cursor != null)
@@ -2185,103 +2185,103 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                 if (game_time <= 30) {
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time1"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time1"));
                     System.out.println("-------------------------Time1 : " + credits_coin);
                 } else if (game_time <= 60) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time2"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time2"));
                     System.out.println("-------------------------Time2 : " + credits_coin);
                 } else if (game_time <= 90) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time3"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time3"));
                     System.out.println("-------------------------Time3 : " + credits_coin);
                 } else if (game_time <= 120) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time4"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time4"));
                     System.out.println("-------------------------Time4 : " + credits_coin);
                 } else if (game_time <= 150) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time5"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time5"));
                     System.out.println("-------------------------Time5 : " + credits_coin);
                 } else if (game_time <= 180) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time6"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time6"));
                     System.out.println("-------------------------Time6 : " + credits_coin);
                 } else if (game_time <= 210) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time7"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time7"));
                     System.out.println("-------------------------Time7 : " + credits_coin);
                 } else if (game_time <= 240) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time8"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time8"));
                     System.out.println("-------------------------Time8 : " + credits_coin);
                 } else if (game_time <= 270) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time9"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time9"));
                     System.out.println("-------------------------Time9 : " + credits_coin);
                 } else if (game_time <= 300) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time10"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time10"));
                     System.out.println("-------------------------Time10 : " + credits_coin);
                 } else if (game_time <= 330) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time11"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time11"));
                     System.out.println("-------------------------Time11 : " + credits_coin);
                 } else if (game_time <= 360) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time12"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time12"));
                     System.out.println("-------------------------Time12 : " + credits_coin);
                 } else if (game_time <= 390) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time13"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time13"));
                     System.out.println("-------------------------Time13 : " + credits_coin);
                 } else if (game_time <= 420) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time14"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time14"));
                     System.out.println("-------------------------Time14 : " + credits_coin);
                 } else if (game_time <= 450) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time15"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time15"));
                     System.out.println("-------------------------Time15 : " + credits_coin);
                 } else if (game_time <= 480) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time16"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time16"));
                     System.out.println("-------------------------Time16 : " + credits_coin);
                 } else if (game_time <= 510) {
 
                     credit_cursor = mydb.rawQuery("select * from credit where words='" + mWordAdapter.getItemCount() + "'", null);
                     credit_cursor.moveToFirst();
-                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndex("Time17"));
+                    credits_coin = credit_cursor.getInt(credit_cursor.getColumnIndexOrThrow("Time17"));
                     System.out.println("-------------------------Time17 : " + credits_coin);
                 }
 
@@ -2325,7 +2325,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
                 if (win_cursor.getCount() != 0) {
                     win_cursor.moveToFirst();
-                    best_score_value = win_cursor.getInt(win_cursor.getColumnIndex("best_score"));
+                    best_score_value = win_cursor.getInt(win_cursor.getColumnIndexOrThrow("best_score"));
                 }
                 System.out.println("-------------------------best_score_value : " + best_score_value);
 
@@ -2672,7 +2672,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ", null);
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 20;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -3059,7 +3059,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                 cursor = mydb.rawQuery("select * from general_meaning where Word='" + my_hint + "'", null);
                 if (cursor.getCount() != 0) {
                     cursor.moveToFirst();
-                    String meaning = cursor.getString(cursor.getColumnIndex("Sentence"));
+                    String meaning = cursor.getString(cursor.getColumnIndexOrThrow("Sentence"));
 
                     word_txt.setText("" + (hint_word.getWord().replace(".", "")));
 
@@ -3205,7 +3205,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             coin_cursor = myDbHelper.getQry("select * from score");
             if (coin_cursor.getCount() != 0) {
                 coin_cursor.moveToFirst();
-                coin_point = coin_cursor.getInt(coin_cursor.getColumnIndex("coins"));
+                coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coins"));
             }
         } finally {
             if (coin_cursor != null)
@@ -3413,7 +3413,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                         if (extra_coin_s == 0) {
                             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                             cfx.moveToFirst();
-                            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                             int spx = skx + mCoinCount;
                             String aStringx = Integer.toString(spx);
                             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -3582,7 +3582,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
     /*   if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -3631,7 +3631,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                 if (extra_coin_s == 0) {
                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + mCoinCount;
                     String aStringx = Integer.toString(spx);
                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -3684,7 +3684,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
        /* Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         int spx = skx + a;
         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");*/
 /*
@@ -3716,7 +3716,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             final int spx = skx + mCoinCount;
             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
             final String aStringx = Integer.toString(spx);

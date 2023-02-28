@@ -572,7 +572,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         if (cfx.getCount() != 0) {
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             m_score.setText("" + skx);
         }
         switchToScreen(R.layout.activity_my__multiplayer);
@@ -1036,7 +1036,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                         int get_coins=real_points/2;
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + get_coins;
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                         sp.putInt(Solli_adi_multiplayer.this, "muliplay_score", 100);
@@ -1208,7 +1208,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
         chat_history.clear();
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         //int curr_score=sp.getInt(Solli_adi_multiplayer.this, "muliplay_score");
         if (skx > 100) {
             final Dialog openDialog_p = new Dialog(Solli_adi_multiplayer.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -1309,7 +1309,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                     sp.putString(Solli_adi_multiplayer.this, "initialstarting", "");
                    /* Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx - 100;
                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                     m_score.setText(""+spx);*/
@@ -1343,7 +1343,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         //int curr_score=sp.getInt(Solli_adi_multiplayer.this, "muliplay_score");
         if (skx > 100) {
             if (sp.getInt(Solli_adi_multiplayer.this, "purchase_ads") == 1) {
@@ -1432,7 +1432,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
             sp.putString(Solli_adi_multiplayer.this, "initialstarting", "");
                    /* Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx - 100;
                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                     m_score.setText(""+spx);*/
@@ -1453,7 +1453,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         //int curr_score=sp.getInt(Solli_adi_multiplayer.this, "muliplay_score");
         if (skx > 100) {
             final Dialog openDialog_p = new Dialog(Solli_adi_multiplayer.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -1507,7 +1507,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         //int curr_score=sp.getInt(Solli_adi_multiplayer.this, "muliplay_score");
         if (skx > 100) {
             final Dialog openDialog_p = new Dialog(Solli_adi_multiplayer.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -1561,7 +1561,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
         chat_history.clear();
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         //int curr_score=sp.getInt(Solli_adi_multiplayer.this, "muliplay_score");
         if (skx > 100) {
 
@@ -1588,7 +1588,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
         chat_history.clear();
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         //int curr_score=sp.getInt(Solli_adi_multiplayer.this, "muliplay_score");
         if (skx > 100) {
             if (sp.getInt(Solli_adi_multiplayer.this, "purchase_ads") == 1) {
@@ -1784,7 +1784,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                 share_earn(20);
@@ -1801,7 +1801,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                 sp.putInt(Solli_adi_multiplayer.this, "muliplay_score", a);*/
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                 share_earn(20);
@@ -1829,7 +1829,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             m_score.setText("" + skx);
             ads_logo2 = (CircleImageView) findViewById(R.id.ads_logo2);
             adsicon2 = (RelativeLayout) findViewById(R.id.adsicon2);
@@ -1912,7 +1912,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                             int get_coins=real_points/2;
                             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                             cfx.moveToFirst();
-                            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                             int spx = skx + get_coins;
                             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                             sp.putInt(Solli_adi_multiplayer.this, "muliplay_score", 100);
@@ -2443,7 +2443,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                 System.out.println("----------------------------------gameactive_you_mr3" + gameactive_you);
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 200;
                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                 finalscreen(200, "உங்கள் எதிராளி வெளியேறிவிட்டார். நீங்கள் வெற்றி அடைந்துவிட்டீர்கள் உங்களுக்கான நாணயங்கள் ");
@@ -3319,7 +3319,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 200;
                                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                     finalscreen(200, "நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");
@@ -3446,11 +3446,11 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
         c.moveToFirst();
 
         if (c.getCount() != 0) {
-            sa = c.getString(c.getColumnIndex("letters"));
-            imid = c.getString(c.getColumnIndex("imagename"));
-            wordid = Integer.parseInt(c.getString(c.getColumnIndex("levelid")));
-            id = c.getString(c.getColumnIndex("id"));
-            isdown = c.getString(c.getColumnIndex("isdownload"));
+            sa = c.getString(c.getColumnIndexOrThrow("letters"));
+            imid = c.getString(c.getColumnIndexOrThrow("imagename"));
+            wordid = Integer.parseInt(c.getString(c.getColumnIndexOrThrow("levelid")));
+            id = c.getString(c.getColumnIndexOrThrow("id"));
+            isdown = c.getString(c.getColumnIndexOrThrow("isdownload"));
             System.out.println("################################imid" + imid);
 
             String tfoption = sa;
@@ -5527,7 +5527,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                         public void run() {
                             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                             cfx.moveToFirst();
-                            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                             int spx = skx + 200;
                             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                             finalscreen(200,"நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");
@@ -5552,7 +5552,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                                 public void run() {
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 200;
                                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                     finalscreen(200, "நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");
@@ -5738,8 +5738,8 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
         Cursor c = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "'and levelid='" + letterid + "' and rtm='0'");
         c.moveToFirst();
         if (c.getCount() != 0) {
-            sa = c.getString(c.getColumnIndex("letters"));
-            String sb = c.getString(c.getColumnIndex("hints"));
+            sa = c.getString(c.getColumnIndexOrThrow("letters"));
+            String sb = c.getString(c.getColumnIndexOrThrow("hints"));
 
 
             StringTokenizer tok = new StringTokenizer(sb, ",");
@@ -7381,7 +7381,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                                     finalscreen(100,"நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");*//*
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 200;
                                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                     finalscreen(200,"நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");
@@ -7401,7 +7401,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                                                 public void run() {
                                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                                     cfx.moveToFirst();
-                                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                                     int spx = skx + 200;
                                                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                                     finalscreen(200, "நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");
@@ -7592,10 +7592,10 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
         Cursor c = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "'and levelid='" + letterid + "' and rtm='0'");
         c.moveToFirst();
         if (c.getCount() != 0) {
-            u_id = c.getInt(c.getColumnIndex("id"));
-            letters = c.getString(c.getColumnIndex("letters"));
-            letterid = Integer.parseInt(c.getString(c.getColumnIndex("levelid")));
-            answertype = c.getString(c.getColumnIndex("answer"));
+            u_id = c.getInt(c.getColumnIndexOrThrow("id"));
+            letters = c.getString(c.getColumnIndexOrThrow("letters"));
+            letterid = Integer.parseInt(c.getString(c.getColumnIndexOrThrow("levelid")));
+            answertype = c.getString(c.getColumnIndexOrThrow("answer"));
         }
 
         StringTokenizer tokenizer = new StringTokenizer(letters, ",");
@@ -8071,7 +8071,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                                         if (play_after == 0) {
                                             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                             cfx.moveToFirst();
-                                            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                             int spx = skx + 200;
                                             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                             finalscreen(200, "நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");
@@ -8126,7 +8126,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 *//*
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 200;
                                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                     finalscreen(100,"நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");
@@ -8285,10 +8285,10 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
         Cursor c = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "'and levelid='" + letterid + "' and rtm='0'");
         c.moveToFirst();
         if (c.getCount() != 0) {
-            u_id = c.getInt(c.getColumnIndex("id"));
-            letters = c.getString(c.getColumnIndex("letters"));
-            letterid = Integer.parseInt(c.getString(c.getColumnIndex("levelid")));
-            answertype = c.getString(c.getColumnIndex("answer"));
+            u_id = c.getInt(c.getColumnIndexOrThrow("id"));
+            letters = c.getString(c.getColumnIndexOrThrow("letters"));
+            letterid = Integer.parseInt(c.getString(c.getColumnIndexOrThrow("levelid")));
+            answertype = c.getString(c.getColumnIndexOrThrow("answer"));
         }
 
 ///////////////////////////////////////////////////////   LETTER TYPE ///////////////////////////////////////////////////////////////
@@ -9501,7 +9501,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                         Cursor c = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "'and levelid='" + letterid + "' and rtm='0'");
                         c.moveToFirst();
                         if (c.getCount() != 0) {
-                            String ans = c.getString(c.getColumnIndex("answer"));
+                            String ans = c.getString(c.getColumnIndexOrThrow("answer"));
                             ans_highlite.setText(ans);
                             ans_highlite.setVisibility(View.VISIBLE);
                             list4.setVisibility(View.INVISIBLE);
@@ -9523,7 +9523,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                         Cursor c = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "'and levelid='" + letterid + "' and rtm='0'");
                         c.moveToFirst();
                         if (c.getCount() != 0) {
-                            String ans = c.getString(c.getColumnIndex("answer"));
+                            String ans = c.getString(c.getColumnIndexOrThrow("answer"));
                             ans_highlite.setText(ans);
                             ans_highlite.setVisibility(View.VISIBLE);
                             list4.setVisibility(View.INVISIBLE);
@@ -9545,7 +9545,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                         if (opp_comp_count < score_s) {
                             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                             cfx.moveToFirst();
-                            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                             int spx = skx + 200;
                             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                             Handler handler8 = new Handler();
@@ -9563,7 +9563,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                         } else if (opp_comp_count > score_s) {
                            /* Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                             cfx.moveToFirst();
-                            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                             int spx = skx - 200;
                             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");*/
                             Handler handler8 = new Handler();
@@ -9581,7 +9581,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                         } else if (opp_comp_count == score_s) {
                             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                             cfx.moveToFirst();
-                            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                             int spx = skx + 100;
                             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                             Handler handler8 = new Handler();
@@ -9603,7 +9603,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                         if (opp_comp_count < score_s) {
                             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                             cfx.moveToFirst();
-                            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                             int spx = skx + 200;
                             System.out.println("@@@@@@@@@@@@@@@@@@@@@@@spx" + spx);
                             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -9622,7 +9622,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                         } else if (opp_comp_count > score_s) {
                         /*    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                             cfx.moveToFirst();
-                            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                             System.out.println("@@@@@@@@@@@@@@@@@@@@@@@skx"+skx);
                             int spx = skx - 200;
                             System.out.println("@@@@@@@@@@@@@@@@@@@@@@@spx"+spx);
@@ -9641,7 +9641,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                         } else if (opp_comp_count == score_s) {
                             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                             cfx.moveToFirst();
-                            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                             int spx = skx + 100;
                             System.out.println("@@@@@@@@@@@@@@@@@@@@@@@spx" + spx);
                             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -9715,7 +9715,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
         System.out.println("===============================onConnected: " + bundle);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         //int curr_score=sp.getInt(Solli_adi_multiplayer.this, "muliplay_score");
         if (skx > 100) {
             if (bundle != null) {
@@ -9869,7 +9869,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 
                    /* Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int ===============================onConnectedBundlespx = skx - 100;
                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                     m_score.setText(""+spx);*/
@@ -9942,7 +9942,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
             mRoomId = null;
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx + 200;
             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
             finalscreen(200, "உங்கள் எதிராளி வெளியேறிவிட்டார். நீங்கள் வெற்றி அடைந்துவிட்டீர்கள் உங்களுக்கான நாணயங்கள் ");
@@ -9980,7 +9980,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
         if (st == 0) {
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx - 100;
             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
             m_score.setText("" + spx);
@@ -10259,7 +10259,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 */
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 m_score.setText("" + skx);
 
                 openDialog.dismiss();
@@ -10287,7 +10287,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 100;
                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                 m_score.setText("" + spx);
@@ -10942,7 +10942,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                                 cursor1.moveToFirst();
                                 String lastid = null;
                                 if (cursor1.getCount() != 0) {
-                                    lastid = cursor1.getString(cursor1.getColumnIndex("id"));
+                                    lastid = cursor1.getString(cursor1.getColumnIndexOrThrow("id"));
                                 }
                                 int idf = Integer.parseInt(id);
                                 idf = idf + 20;
@@ -10953,7 +10953,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                                 String lastid = null;
 
                                 if (cursor1.getCount() != 0) {
-                                    lastid = cursor1.getString(cursor1.getColumnIndex("id"));
+                                    lastid = cursor1.getString(cursor1.getColumnIndexOrThrow("id"));
                                 }
                                 int idf = Integer.parseInt(id);
                                 idf = idf + 20;
@@ -11892,21 +11892,21 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                             if (opp_comp_count < score_s) {
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 200;
                                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                 finalscreen(200, "நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");
                             } else if (opp_comp_count > score_s) {
                                /* Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 200;
                                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");*/
                                 finalscreen(0, "ஆட்டம் முடிந்தது.உங்கள் எதிராளி வெற்றிபெற்றுவிட்டார்.");
                             } else if (opp_comp_count == score_s) {
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 100;
                                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                 finalscreen(100, "ஆட்டம் சமமாக முடிந்தது.இருவரும் சமமான புள்ளிகளை எடுத்துஉள்ளிர்கள்.");
@@ -11965,21 +11965,21 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                             if (opp_comp_count < score_s) {
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 200;
                                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                 finalscreen(200, "நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");
                             } else if (opp_comp_count > score_s) {
                                /* Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 200;
                                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");*/
                                 finalscreen(0, "ஆட்டம் முடிந்தது.உங்கள் எதிராளி வெற்றிபெற்றுவிட்டார்.");
                             } else if (opp_comp_count == score_s) {
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 100;
                                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                 finalscreen(100, "ஆட்டம் சமமாக முடிந்தது.இருவரும் சமமான புள்ளிகளை எடுத்துஉள்ளிர்கள்.");
@@ -12038,21 +12038,21 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                             if (opp_comp_count < score_s) {
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 200;
                                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                 finalscreen(200, "நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");
                             } else if (opp_comp_count > score_s) {
                                /* Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 200;
                                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");*/
                                 finalscreen(0, "ஆட்டம் முடிந்தது.உங்கள் எதிராளி வெற்றிபெற்றுவிட்டார்.");
                             } else if (opp_comp_count == score_s) {
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 100;
                                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                 finalscreen(100, "ஆட்டம் சமமாக முடிந்தது.இருவரும் சமமான புள்ளிகளை எடுத்துஉள்ளிர்கள்.");
@@ -12111,21 +12111,21 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
                             if (opp_comp_count < score_s) {
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 200;
                                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                 finalscreen(200, "நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");
                             } else if (opp_comp_count > score_s) {
                                /* Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 200;
                                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");*/
                                 finalscreen(0, "ஆட்டம் முடிந்தது.உங்கள் எதிராளி வெற்றிபெற்றுவிட்டார்.");
                             } else if (opp_comp_count == score_s) {
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 100;
                                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                 finalscreen(100, "ஆட்டம் சமமாக முடிந்தது.இருவரும் சமமான புள்ளிகளை எடுத்துஉள்ளிர்கள்.");
@@ -12216,12 +12216,12 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
         c1 = newhelper.getQry("select * from newmaintable where gameid='" + gameid + "'and questionid='" + letterid + "'");
         c1.moveToFirst();
         if (c1.getCount() != 0) {
-            u_id = c1.getInt(c1.getColumnIndex("id"));
-            o_questionid = c1.getInt(c1.getColumnIndex("questionid"));
-            o_question = c1.getString(c1.getColumnIndex("question"));
-            o_answer = c1.getString(c1.getColumnIndex("answer"));
-            int clue = c1.getInt(c1.getColumnIndex("clue"));
-            int playtime = c1.getInt(c1.getColumnIndex("playtime"));
+            u_id = c1.getInt(c1.getColumnIndexOrThrow("id"));
+            o_questionid = c1.getInt(c1.getColumnIndexOrThrow("questionid"));
+            o_question = c1.getString(c1.getColumnIndexOrThrow("question"));
+            o_answer = c1.getString(c1.getColumnIndexOrThrow("answer"));
+            int clue = c1.getInt(c1.getColumnIndexOrThrow("clue"));
+            int playtime = c1.getInt(c1.getColumnIndexOrThrow("playtime"));
             String tfoption = o_question;
             String[] first = tfoption.split(",");
             int letter_type = first.length;
@@ -12789,13 +12789,13 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 
         c1.moveToFirst();
         if (c1.getCount() != 0) {
-            u_id = c1.getInt(c1.getColumnIndex("id"));
-            o_questionid = c1.getInt(c1.getColumnIndex("questionid"));
-            o_question = c1.getString(c1.getColumnIndex("question"));
-            o_answer = c1.getString(c1.getColumnIndex("answer"));
-            int clue = c1.getInt(c1.getColumnIndex("clue"));
-            String question_tt = c1.getString(c1.getColumnIndex("sf_words"));
-            int playtime = c1.getInt(c1.getColumnIndex("playtime"));
+            u_id = c1.getInt(c1.getColumnIndexOrThrow("id"));
+            o_questionid = c1.getInt(c1.getColumnIndexOrThrow("questionid"));
+            o_question = c1.getString(c1.getColumnIndexOrThrow("question"));
+            o_answer = c1.getString(c1.getColumnIndexOrThrow("answer"));
+            int clue = c1.getInt(c1.getColumnIndexOrThrow("clue"));
+            String question_tt = c1.getString(c1.getColumnIndexOrThrow("sf_words"));
+            int playtime = c1.getInt(c1.getColumnIndexOrThrow("playtime"));
             o_question_txt.setText(question_tt);
             String tfoption = o_question;
             String[] first = tfoption.split(",");
@@ -13326,7 +13326,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 200;
                                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                     finalscreen(200, "நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");
@@ -13400,11 +13400,11 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 
 
         if (c.getCount() != 0) {
-            m_questionid = c.getString(c.getColumnIndex("questionid"));
-            m_question = c.getString(c.getColumnIndex("question"));
-            m_answer = c.getString(c.getColumnIndex("answer"));
-            m_split_word = c.getString(c.getColumnIndex("splitword"));
-            int playtime = c.getInt(c.getColumnIndex("playtime"));
+            m_questionid = c.getString(c.getColumnIndexOrThrow("questionid"));
+            m_question = c.getString(c.getColumnIndexOrThrow("question"));
+            m_answer = c.getString(c.getColumnIndexOrThrow("answer"));
+            m_split_word = c.getString(c.getColumnIndexOrThrow("splitword"));
+            int playtime = c.getInt(c.getColumnIndexOrThrow("playtime"));
 
             m_question_txt.setText(m_question);
             ans_high.setText(m_answer);
@@ -15277,7 +15277,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 200;
                                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                     finalscreen(200, "நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");
@@ -15367,10 +15367,10 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
         c = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and rtm='0' and questionid='" + letterid + "'");
         c.moveToFirst();
         if (c.getCount() != 0) {
-            sa = c.getString(c.getColumnIndex("sf_words"));
-            o_questionid = c.getInt(c.getColumnIndex("questionid"));
-            int playtime = c.getInt(c.getColumnIndex("playtime"));
-            question.setText(c.getString(c.getColumnIndex("question")));
+            sa = c.getString(c.getColumnIndexOrThrow("sf_words"));
+            o_questionid = c.getInt(c.getColumnIndexOrThrow("questionid"));
+            int playtime = c.getInt(c.getColumnIndexOrThrow("playtime"));
+            question.setText(c.getString(c.getColumnIndexOrThrow("question")));
             String tfoption = sa;
             String[] first = tfoption.split(",");
             type = first.length;
@@ -16864,7 +16864,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 200;
                                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                     finalscreen(200, "நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");
@@ -16940,11 +16940,11 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
         c.moveToFirst();
 
         if (c.getCount() != 0) {
-            r_questionid = c.getString(c.getColumnIndex("questionid"));
-            r_question = c.getString(c.getColumnIndex("question"));
-            answer = c.getString(c.getColumnIndex("answer"));
-            split_word = c.getString(c.getColumnIndex("splitword"));
-            int playtime = c.getInt(c.getColumnIndex("playtime"));
+            r_questionid = c.getString(c.getColumnIndexOrThrow("questionid"));
+            r_question = c.getString(c.getColumnIndexOrThrow("question"));
+            answer = c.getString(c.getColumnIndexOrThrow("answer"));
+            split_word = c.getString(c.getColumnIndexOrThrow("splitword"));
+            int playtime = c.getInt(c.getColumnIndexOrThrow("playtime"));
 
 
             question_txt.setText(r_question);
@@ -18810,7 +18810,7 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
 
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 200;
                                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                                     finalscreen(200, "நீங்கள் வெற்றி அடைந்துவிட்டீர்கள். உங்களுக்கான நாணயங்கள்");
@@ -18888,11 +18888,11 @@ public class Solli_adi_multiplayer extends Activity implements RoomUpdateListene
         c.moveToFirst();
 
         if (c.getCount() != 0) {
-            er_questionid = c.getString(c.getColumnIndex("questionid"));
-            String er_question = c.getString(c.getColumnIndex("question"));
-            answer = c.getString(c.getColumnIndex("answer"));
-            split_word = c.getString(c.getColumnIndex("splitword"));
-            int playtime = c.getInt(c.getColumnIndex("playtime"));
+            er_questionid = c.getString(c.getColumnIndexOrThrow("questionid"));
+            String er_question = c.getString(c.getColumnIndexOrThrow("question"));
+            answer = c.getString(c.getColumnIndexOrThrow("answer"));
+            split_word = c.getString(c.getColumnIndexOrThrow("splitword"));
+            int playtime = c.getInt(c.getColumnIndexOrThrow("playtime"));
 
 
             question_txt.setText(er_question);

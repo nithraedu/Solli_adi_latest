@@ -149,8 +149,8 @@ class NotificationHelper_offline extends ContextWrapper {
             Cursor c = myDbHelper.getQry("select * from dailytest where gameid=2 and isfinish='0' and date='" + str_date + "'");
             c.moveToFirst();
             if (c.getCount() != 0) {
-                sb = c.getString(c.getColumnIndex("hints"));
-                sa = c.getString(c.getColumnIndex("letters"));
+                sb = c.getString(c.getColumnIndexOrThrow("hints"));
+                sa = c.getString(c.getColumnIndexOrThrow("letters"));
                 StringTokenizer tok = new StringTokenizer(sb, ",");
                 String cs1 = tok.nextToken();
                 expandedView.setTextViewText(R.id.clue_noti, "1." + cs1);
@@ -587,7 +587,7 @@ class NotificationHelper_offline extends ContextWrapper {
             c.moveToFirst();
             if (c.getCount() != 0) {
 
-                imid = c.getString(c.getColumnIndex("imagename"));
+                imid = c.getString(c.getColumnIndexOrThrow("imagename"));
                 String tfoptiona = imid;
                 String[] firsta = tfoptiona.split(",");
                 int i_type = firsta.length;
@@ -810,7 +810,7 @@ class NotificationHelper_offline extends ContextWrapper {
             Cursor c = myDbHelper.getQry("select * from dailytest where gameid=3 and isfinish='0' and date='" + str_date + "'");
             c.moveToFirst();
             if (c.getCount() != 0) {
-                letters = c.getString(c.getColumnIndex("letters"));
+                letters = c.getString(c.getColumnIndexOrThrow("letters"));
 
                 String tfoption = letters;
                 String[] first = tfoption.split(",");
@@ -1065,7 +1065,7 @@ class NotificationHelper_offline extends ContextWrapper {
             Cursor c = myDbHelper.getQry("select * from dailytest where gameid=4 and isfinish='0' and date='" + str_date + "'");
             c.moveToFirst();
             if (c.getCount() != 0) {
-                String sa = c.getString(c.getColumnIndex("letters"));
+                String sa = c.getString(c.getColumnIndexOrThrow("letters"));
                 StringTokenizer tokenizer = new StringTokenizer(sa, ",");
                 final String letter1 = tokenizer.nextToken();
                 String letter2 = tokenizer.nextToken().trim();

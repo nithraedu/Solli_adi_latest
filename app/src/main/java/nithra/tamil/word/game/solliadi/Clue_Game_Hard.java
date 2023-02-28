@@ -1216,7 +1216,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
                 if (cfw.getCount() != 0) {
-                    int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                     if (sk >= 100) {
                         if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                             Cursor cd;
@@ -1230,7 +1230,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                             }
                             String sa = "";
                             if (cd.getCount() != 0) {
-                                sa = cd.getString(cd.getColumnIndex("answer"));
+                                sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
 
                             }
                             //Toast.makeText(Clue_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
@@ -1238,7 +1238,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                             cfx.moveToFirst();
                             if (cfx.getCount() != 0) {
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx - 100;
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
@@ -1325,14 +1325,14 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                                     }
                                     String sas = null;
                                     if (cd.getCount() != 0) {
-                                        sas = cd.getString(cd.getColumnIndex("answer"));
+                                        sas = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                     }
                                     //Toast.makeText(Clue_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                     cfx.moveToFirst();
                                     if (cfx.getCount() != 0) {
-                                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                         int spx = skx - 100;
                                         String aStringx = Integer.toString(spx);
                                         score.setText(aStringx);
@@ -1572,7 +1572,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         }
         c.moveToFirst();
         if (c.getCount() != 0) {
-            String sb = c.getString(c.getColumnIndex("hints"));
+            String sb = c.getString(c.getColumnIndexOrThrow("hints"));
             StringTokenizer tok = new StringTokenizer(sb, ",");
             String cs1 = tok.nextToken();
             String cs2 = tok.nextToken();
@@ -1659,7 +1659,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
         if (cfq.getCount() != 0) {
-            int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
             score.setText(tr);
         }
@@ -2763,7 +2763,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 if (cfx.getCount() != 0) {
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + ea;
                     String aStringx = Integer.toString(spx);
                     score.setText(aStringx);
@@ -3002,11 +3002,11 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         }
 
         if (c.getCount() != 0) {
-            sa = c.getString(c.getColumnIndex("letters"));
-            sb = c.getString(c.getColumnIndex("hints"));
-            w_id = c.getInt(c.getColumnIndex("levelid"));
-            int playtime = c.getInt(c.getColumnIndex("playtime"));
-            int noofclue = c.getInt(c.getColumnIndex("noclue"));
+            sa = c.getString(c.getColumnIndexOrThrow("letters"));
+            sb = c.getString(c.getColumnIndexOrThrow("hints"));
+            w_id = c.getInt(c.getColumnIndexOrThrow("levelid"));
+            int playtime = c.getInt(c.getColumnIndexOrThrow("playtime"));
+            int noofclue = c.getInt(c.getColumnIndexOrThrow("noclue"));
             // Toast.makeText(Clue_Game_Hard.this, ""+noofclue, Toast.LENGTH_SHORT).show();
             if (noofclue == 1) {
                 clue();
@@ -3329,7 +3329,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         if (cfx.getCount() != 0) {
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             String aStringx = Integer.toString(skx);
             ttscores.setText(aStringx);
         }
@@ -3552,7 +3552,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                             Cursor sc2 = myDbHelper.getQry("select * from score");
                             sc2.moveToFirst();
                             if (sc2.getCount() != 0) {
-                                k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                             }
                             sc2.close();
                             Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
@@ -3812,7 +3812,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
             Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
             cfq.moveToFirst();
-            int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
             score.setText(tr);
             //
@@ -3917,7 +3917,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                     //Score Setting
                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + 20;
                     String aStringx = Integer.toString(spx);
                     score.setText(aStringx);
@@ -3925,7 +3925,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
                     Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                     ch.moveToFirst();
-                    int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                    int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                     int shh = sh + 50;
                     myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
@@ -3938,7 +3938,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
             Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
             cfq.moveToFirst();
-            int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
             score.setText(tr);
             //
@@ -4012,7 +4012,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 //Score Setting
                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + 15;
                     String aStringx = Integer.toString(spx);
                     score.setText(aStringx);
@@ -4021,7 +4021,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
                     Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                     ch.moveToFirst();
-                    int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                    int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                     int shh = sh + 40;
                     myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
                     //
@@ -4034,7 +4034,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
             Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
             cfq.moveToFirst();
-            int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
             score.setText(tr);
             //
@@ -4107,7 +4107,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                     //Score Setting
                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + 10;
                     String aStringx = Integer.toString(spx);
                     score.setText(aStringx);
@@ -4115,7 +4115,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
                     Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                     ch.moveToFirst();
-                    int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                    int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                     int shh = sh + 30;
                     myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
@@ -4364,8 +4364,8 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                 cs = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "' and levelid='" + w_id + "'");
                 cs.moveToFirst();
                 if (cs.getCount() != 0) {
-                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
-                    noofclue = cs.getInt(cs.getColumnIndex("noclue"));
+                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+                    noofclue = cs.getInt(cs.getColumnIndexOrThrow("noclue"));
                 }
             } else {
                 pos = 2;
@@ -4373,8 +4373,8 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                 cs.moveToFirst();
                 if (cs.getCount() != 0) {
 
-                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
-                    noofclue = cs.getInt(cs.getColumnIndex("noclue"));
+                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+                    noofclue = cs.getInt(cs.getColumnIndexOrThrow("noclue"));
                 }
             }
             //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
@@ -4409,11 +4409,11 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                     if (c1.getCount() != 0) {
 
 
-                        //c1.getString(c1.getColumnIndex("id"));
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
 
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                        downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "ord");
+                        downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
 
                     } else {
                         downloadcheck("0", "ord");
@@ -4423,9 +4423,9 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                     c1.moveToFirst();
                     System.out.print("Count====" + c1.getCount());
                     if (c1.getCount() != 0) {
-                        //c1.getString(c1.getColumnIndex("id"));
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
-                        downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "daily");
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
+                        downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "daily");
 
                     } else {
                         System.out.print("else====");
@@ -4479,7 +4479,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 //  score.setText(aStringx);
@@ -4508,7 +4508,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                 if (sps.getString(Clue_Game_Hard.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -4522,7 +4522,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -4551,7 +4551,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -4566,7 +4566,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -4595,7 +4595,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -4612,7 +4612,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                 }*/
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -4640,7 +4640,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                 if (sps.getString(Clue_Game_Hard.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -5484,26 +5484,26 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
             //a2=00;
             b2 = "no";
         } else {
-            // a2 = g2.getInt(g2.getColumnIndex("levelid"));
-            b2 = String.valueOf(g2.getInt(g2.getColumnIndex("levelid")));
+            // a2 = g2.getInt(g2.getColumnIndexOrThrow("levelid"));
+            b2 = String.valueOf(g2.getInt(g2.getColumnIndexOrThrow("levelid")));
         }
         if (g3.getCount() == 0) {
             //  a3=00;
             b3 = "no";
         } else {
-            //  a3 = g3.getInt(g3.getColumnIndex("levelid"));
-            b3 = String.valueOf(g3.getInt(g3.getColumnIndex("levelid")));
+            //  a3 = g3.getInt(g3.getColumnIndexOrThrow("levelid"));
+            b3 = String.valueOf(g3.getInt(g3.getColumnIndexOrThrow("levelid")));
         }
         if (g4.getCount() == 0) {
             // a4=00;
             b4 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b4 = String.valueOf(g4.getInt(g4.getColumnIndex("levelid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b4 = String.valueOf(g4.getInt(g4.getColumnIndexOrThrow("levelid")));
         }
 
 
-        String upload = String.valueOf(b2) + "#" + String.valueOf(w_id) + "#" + String.valueOf(b3) + "#" + String.valueOf(b4) + "#" + String.valueOf(c1.getInt(c1.getColumnIndex("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndex("l_points"))));
+        String upload = String.valueOf(b2) + "#" + String.valueOf(w_id) + "#" + String.valueOf(b3) + "#" + String.valueOf(b4) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("l_points"))));
 
 
         return upload;
@@ -6019,7 +6019,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
             Cursor sc3 = myDbHelper.getQry("select * from userdetail");
             sc3.moveToFirst();
             if (sc3.getCount() != 0) {
-                mobileno = sc3.getString(sc3.getColumnIndex("phno"));
+                mobileno = sc3.getString(sc3.getColumnIndexOrThrow("phno"));
 
             }
 
@@ -6092,9 +6092,9 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
             if (sps.getString(Clue_Game_Hard.this, "complite_reg").equals("yes")) {
                 Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                 cn.moveToFirst();
-                int cns = cn.getInt(cn.getColumnIndex("score"));
-                int time = cn.getInt(cn.getColumnIndex("playtime"));
-                int gm1 = cn.getInt(cn.getColumnIndex("gm2"));
+                int cns = cn.getInt(cn.getColumnIndexOrThrow("score"));
+                int time = cn.getInt(cn.getColumnIndexOrThrow("playtime"));
+                int gm1 = cn.getInt(cn.getColumnIndexOrThrow("gm2"));
                 int cnse = 0;
                 long ptime;
                 if (ry == 1) {
@@ -6137,9 +6137,9 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                     System.out.println("================yes reward");
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + dates + "'");
                     cn.moveToFirst();
-                    int cns = cn.getInt(cn.getColumnIndex("score"));
-                    int time = cn.getInt(cn.getColumnIndex("playtime"));
-                    int gm1 = cn.getInt(cn.getColumnIndex("gm2"));
+                    int cns = cn.getInt(cn.getColumnIndexOrThrow("score"));
+                    int time = cn.getInt(cn.getColumnIndexOrThrow("playtime"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("gm2"));
                     int cnse = 0;
                     long ptime;
 
@@ -6209,7 +6209,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx + mCoinCount;
             final String aStringx = Integer.toString(spx);
 
@@ -6239,7 +6239,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 /*        int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -6268,7 +6268,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 /*        int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -6298,11 +6298,11 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
             if (c1.getCount() != 0) {
 
 
-                //c1.getString(c1.getColumnIndex("id"));
+                //c1.getString(c1.getColumnIndexOrThrow("id"));
 
-                System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
+                System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "daily");
+                downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "daily");
 
             } else {
                 System.out.print("else====");
@@ -6378,11 +6378,11 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                     if (c1.getCount() != 0) {
 
 
-                        //c1.getString(c1.getColumnIndex("id"));
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
 
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                        downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "ord");
+                        downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
 
                     } else {
                         downloadcheck("0", "ord");
@@ -6507,8 +6507,8 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                                                 cs = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "' and levelid='" + w_id + "'");
                                                 cs.moveToFirst();
                                                 if (cs.getCount() != 0) {
-                                                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
-                                                    noofclue = cs.getInt(cs.getColumnIndex("noclue"));
+                                                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+                                                    noofclue = cs.getInt(cs.getColumnIndexOrThrow("noclue"));
                                                 }
                                             } else {
                                                 pos = 2;
@@ -6516,8 +6516,8 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                                                 cs.moveToFirst();
                                                 if (cs.getCount() != 0) {
 
-                                                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
-                                                    noofclue = cs.getInt(cs.getColumnIndex("noclue"));
+                                                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+                                                    noofclue = cs.getInt(cs.getColumnIndexOrThrow("noclue"));
                                                 }
                                             }
                                             //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
@@ -6954,7 +6954,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -7048,7 +7048,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");

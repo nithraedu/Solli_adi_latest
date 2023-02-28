@@ -213,7 +213,7 @@ public class Expandable_List_View extends AppCompatActivity {
         if (c.getCount() != 0) {
             for (int i=0; i<c.getCount();i++) {
                 c.moveToPosition(i);
-                String date = c.getString(c.getColumnIndex("date"));
+                String date = c.getString(c.getColumnIndexOrThrow("date"));
                 date_n=date;
 
                 Cursor cursor1 = exdb.rawQuery("SELECT * FROM dailytest where date = '"+date+"'", null);
@@ -224,9 +224,9 @@ public class Expandable_List_View extends AppCompatActivity {
                 if (cursor1.getCount() != 0) {
                     for (int j = 0; j < cursor1.getCount(); j++) {
                         cursor1.moveToPosition(j);
-                        gameid_n = cursor1.getString(cursor1.getColumnIndex("gameid"));
-                        gameid_finish = cursor1.getString(cursor1.getColumnIndex("isfinish"));
-                        gameid_date = cursor1.getString(cursor1.getColumnIndex("date"));
+                        gameid_n = cursor1.getString(cursor1.getColumnIndexOrThrow("gameid"));
+                        gameid_finish = cursor1.getString(cursor1.getColumnIndexOrThrow("isfinish"));
+                        gameid_date = cursor1.getString(cursor1.getColumnIndexOrThrow("date"));
                         System.out.println("%%%%%gameid_n"+gameid_n+"%%%%%gameid_finish"+gameid_finish+"gameid_date"+gameid_date);
                         list.add(gameid_date+","+gameid_n+","+gameid_finish);
                     }
@@ -280,7 +280,7 @@ public class Expandable_List_View extends AppCompatActivity {
         if (c.getCount() != 0) {
             for (int i=0; i<c.getCount();i++) {
                 c.moveToPosition(i);
-                String date = c.getString(c.getColumnIndex("date"));
+                String date = c.getString(c.getColumnIndexOrThrow("date"));
                 date_n=date;
                 childList = new ArrayList<Child>();
                 Group group = new Group();
@@ -295,9 +295,9 @@ public class Expandable_List_View extends AppCompatActivity {
                     for (int j = 0; j < cursor1.getCount(); j++) {
                         cursor1.moveToPosition(j);
                         Child child = new Child();
-                        gameid_n = cursor1.getString(cursor1.getColumnIndex("gameid"));
-                        gameid_finish = cursor1.getString(cursor1.getColumnIndex("isfinish"));
-                        gameid_date = cursor1.getString(cursor1.getColumnIndex("date"));
+                        gameid_n = cursor1.getString(cursor1.getColumnIndexOrThrow("gameid"));
+                        gameid_finish = cursor1.getString(cursor1.getColumnIndexOrThrow("isfinish"));
+                        gameid_date = cursor1.getString(cursor1.getColumnIndexOrThrow("date"));
                         System.out.println("%%%%%gameid_n"+gameid_n+"%%%%%gameid_finish"+gameid_finish+"gameid_date"+gameid_date);
 
                         child.setName(gameid_date+","+gameid_n+","+gameid_finish);

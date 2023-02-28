@@ -82,9 +82,9 @@ public class Dailytest_listview extends AppCompatActivity {
         if (c.getCount() != 0) {
             for (int i = 0; i < c.getCount(); i++) {
                 c.moveToPosition(i);
-                listu[i] = c.getString(c.getColumnIndex("date"));
-                gameid[i] = c.getString(c.getColumnIndex("gameid"));
-                fin[i] = c.getString(c.getColumnIndex("isfinish"));
+                listu[i] = c.getString(c.getColumnIndexOrThrow("date"));
+                gameid[i] = c.getString(c.getColumnIndexOrThrow("gameid"));
+                fin[i] = c.getString(c.getColumnIndexOrThrow("isfinish"));
                 //Toast.makeText(aathichudi.this, ""+pro[i], Toast.LENGTH_SHORT).show();
             }
 

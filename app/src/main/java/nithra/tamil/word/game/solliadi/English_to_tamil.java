@@ -285,7 +285,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         if (cfx.getCount() != 0) {
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             score.setText("" + skx);
         }
 
@@ -293,11 +293,11 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
         c = newhelper4.getQry("select * from newgamesdb4 where gameid='" + gameid + "'and isfinish='0' order by id limit 1");
         c.moveToFirst();
         if (c.getCount() != 0) {
-            letters = c.getString(c.getColumnIndex("letters"));
-            answer = c.getString(c.getColumnIndex("answer"));
-            hints = c.getString(c.getColumnIndex("hints"));
-            levelid = c.getInt(c.getColumnIndex("levelid"));
-            int playtime = c.getInt(c.getColumnIndex("playtime"));
+            letters = c.getString(c.getColumnIndexOrThrow("letters"));
+            answer = c.getString(c.getColumnIndexOrThrow("answer"));
+            hints = c.getString(c.getColumnIndexOrThrow("hints"));
+            levelid = c.getInt(c.getColumnIndexOrThrow("levelid"));
+            int playtime = c.getInt(c.getColumnIndexOrThrow("playtime"));
             c_word_number.setText("" + levelid);
 
             if (sps.getString(English_to_tamil.this, "en_to_intro_time_start").equals("yes")) {
@@ -433,7 +433,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
             public void onClick(View v) {
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk >= 50) {
                     r = 1;
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
@@ -447,13 +447,13 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
                             cd.moveToFirst();
                         }
 
-                        String sa = cd.getString(cd.getColumnIndex("hints"));
+                        String sa = cd.getString(cd.getColumnIndexOrThrow("hints"));
                         //Toast.makeText(Clue_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
                         //Score Adding
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
                         if (cfx.getCount() != 0) {
-                            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                             int spx = skx - 50;
                             String aStringx = Integer.toString(spx);
                             score.setText(aStringx);
@@ -540,14 +540,14 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
                                 }
                                 String sas = null;
                                 if (cd.getCount() != 0) {
-                                    sas = cd.getString(cd.getColumnIndex("hints"));
+                                    sas = cd.getString(cd.getColumnIndexOrThrow("hints"));
                                 }
                                 //Toast.makeText(Clue_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
                                 if (cfx.getCount() != 0) {
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx - 50;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -1984,7 +1984,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
 
             Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
             cfq.moveToFirst();
-            int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
             score.setText(tr);
             //
@@ -2089,7 +2089,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
                     //Score Setting
                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + 20;
                     String aStringx = Integer.toString(spx);
                     score.setText(aStringx);
@@ -2097,7 +2097,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
 
                     Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                     ch.moveToFirst();
-                    int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                    int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                     int shh = sh + 50;
                     myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
                     setSc();
@@ -2107,7 +2107,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
             //score intial
             Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
             cfq.moveToFirst();
-            int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
             score.setText(tr);
             //
@@ -2176,7 +2176,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
 //Score Setting
                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + 15;
                     String aStringx = Integer.toString(spx);
                     score.setText(aStringx);
@@ -2185,7 +2185,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
 
                     Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                     ch.moveToFirst();
-                    int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                    int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                     int shh = sh + 40;
                     myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
                     //
@@ -2198,7 +2198,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
 
             Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
             cfq.moveToFirst();
-            int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
             score.setText(tr);
             //
@@ -2271,7 +2271,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
                     //Score Setting
                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + 10;
                     String aStringx = Integer.toString(spx);
                     score.setText(aStringx);
@@ -2279,7 +2279,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
 
                     Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                     ch.moveToFirst();
-                    int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                    int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                     int shh = sh + 30;
                     myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
@@ -2362,7 +2362,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         if (cfx.getCount() != 0) {
-            int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             String aStringx = Integer.toString(skx);
             ttscores.setText(aStringx);
         }
@@ -2474,7 +2474,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ", null);
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 20;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -2819,7 +2819,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         int spx = skx + mCoinCount;
         final String aStringx = Integer.toString(spx);
 
@@ -2846,7 +2846,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 /*        int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -3257,7 +3257,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
                 cs = newhelper4.getQry("select * from newgamesdb4 where gameid='" + gameid + "' and levelid='" + levelid + "'");
                 cs.moveToFirst();
                 if (cs.getCount() != 0) {
-                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
+                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                 }
             } else {
                 pos = 2;
@@ -3908,7 +3908,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
                 if (reward_status==1){
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -3995,7 +3995,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
                 if (reward_status == 1) {
                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + mCoinCount;
                     String aStringx = Integer.toString(spx);
                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");

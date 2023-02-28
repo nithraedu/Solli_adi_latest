@@ -324,7 +324,7 @@ public class My_Multiplayer extends AppCompatActivity implements RoomUpdateListe
             Cursor c1 = dbs.rawQuery("select * from newmaintable where gameid='" + gameid + "' and questionid='" + questionid + "' and isfinish='0'", null);
             c1.moveToFirst();
             if (c1.getCount() != 0) {
-                String answer = c1.getString(c1.getColumnIndex("answer"));
+                String answer = c1.getString(c1.getColumnIndexOrThrow("answer"));
                 show_answer(answer);
                 Toast.makeText(My_Multiplayer.this, "You Loose The Match and You Loss 50 Points", Toast.LENGTH_SHORT).show();
                 Handler handler = new Handler();
@@ -339,7 +339,7 @@ public class My_Multiplayer extends AppCompatActivity implements RoomUpdateListe
             Cursor c1 = dbs.rawQuery("select * from newmaintable where gameid='" + gameid + "' and questionid='" + questionid + "' and isfinish='0'", null);
             c1.moveToFirst();
             if (c1.getCount() != 0) {
-                String answer = c1.getString(c1.getColumnIndex("answer"));
+                String answer = c1.getString(c1.getColumnIndexOrThrow("answer"));
                 show_answer(answer);
                 Toast.makeText(My_Multiplayer.this, "You Won The Match and You Got 50 Points", Toast.LENGTH_SHORT).show();
                 Handler handler = new Handler();
@@ -475,7 +475,7 @@ public class My_Multiplayer extends AppCompatActivity implements RoomUpdateListe
         Cursor c1 = dbs.rawQuery("select * from newmaintable where gameid='" + gameid + "' and questionid='" + questionid + "' and isfinish='0'", null);
         c1.moveToFirst();
         if (c1.getCount() != 0) {
-            String answer = c1.getString(c1.getColumnIndex("answer"));
+            String answer = c1.getString(c1.getColumnIndexOrThrow("answer"));
             show_answer(answer);
             Toast.makeText(My_Multiplayer.this, "Your Opponent Left.... You Won The Match and You Got 50 Points", Toast.LENGTH_SHORT).show();
             Handler handler = new Handler();
@@ -806,12 +806,12 @@ public class My_Multiplayer extends AppCompatActivity implements RoomUpdateListe
         Cursor c1 = dbs.rawQuery("select * from newmaintable where gameid='" + gameid + "' and isfinish='0'", null);
         c1.moveToFirst();
         if (c1.getCount() != 0) {
-            u_id = c1.getInt(c1.getColumnIndex("id"));
-            questionid = c1.getInt(c1.getColumnIndex("questionid"));
-            question = c1.getString(c1.getColumnIndex("question"));
-            answer = c1.getString(c1.getColumnIndex("answer"));
-            int clue = c1.getInt(c1.getColumnIndex("clue"));
-            int playtime = c1.getInt(c1.getColumnIndex("playtime"));
+            u_id = c1.getInt(c1.getColumnIndexOrThrow("id"));
+            questionid = c1.getInt(c1.getColumnIndexOrThrow("questionid"));
+            question = c1.getString(c1.getColumnIndexOrThrow("question"));
+            answer = c1.getString(c1.getColumnIndexOrThrow("answer"));
+            int clue = c1.getInt(c1.getColumnIndexOrThrow("clue"));
+            int playtime = c1.getInt(c1.getColumnIndexOrThrow("playtime"));
             String tfoption = question;
             String[] first = tfoption.split(",");
             int letter_type = first.length;

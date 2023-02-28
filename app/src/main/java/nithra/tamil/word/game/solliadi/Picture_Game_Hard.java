@@ -877,7 +877,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
 
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndex("coins"));
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         score.setText(tr);
         //
@@ -1225,7 +1225,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
             public void onClick(View view) {
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 25) {
                     if (sps.getString(getApplicationContext(), "checkbox_clue").equals("yes")) {
                         clue();
@@ -1294,7 +1294,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
 
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndex("coins"));
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk >= 100) {
                     if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
                         p_edit.setText("");
@@ -1311,7 +1311,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                         }
                         String sa = "";
                         if (cd.getCount() != 0) {
-                            sa = cd.getString(cd.getColumnIndex("answer"));
+                            sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
 
                         }
                         //Toast.makeText(Picture_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
@@ -1320,7 +1320,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                         cfx.moveToFirst();
                         int skx = 0;
                         if (cfx.getCount() != 0) {
-                            skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                            skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 
                         }
                         int spx = 0;
@@ -1421,14 +1421,14 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                                 }
                                 String sa = "";
                                 if (cd.getCount() != 0) {
-                                    sa = cd.getString(cd.getColumnIndex("answer"));
+                                    sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                                 }
                                 //Toast.makeText(Picture_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
                                 //Score Adding
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                 cfx.moveToFirst();
                                 if (cfx.getCount() != 0) {
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx;
                                     if (f == 0) {
                                         spx = skx - 100;
@@ -1616,9 +1616,9 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                     if(sps.getString(Picture_Game_Hard.this,"complite_reg").equals("yes")) {
                         Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'", null);
                         cn.moveToFirst();
-                        int cns = cn.getInt(cn.getColumnIndex("score"));
-                        int time = cn.getInt(cn.getColumnIndex("playtime"));
-                        int gm1 = cn.getInt(cn.getColumnIndex("gm1"));
+                        int cns = cn.getInt(cn.getColumnIndexOrThrow("score"));
+                        int time = cn.getInt(cn.getColumnIndexOrThrow("playtime"));
+                        int gm1 = cn.getInt(cn.getColumnIndexOrThrow("gm1"));
                         int cnse=0;
                         long ptime;
                         ;
@@ -1770,7 +1770,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
             if (cfx.getCount() != 0) {
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx - 25;
                 String aStringx = Integer.toString(spx);
                 score.setText(aStringx);
@@ -3644,10 +3644,10 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
 
 
         if (c.getCount() != 0) {
-            sa = c.getString(c.getColumnIndex("letters"));
-            imid = c.getString(c.getColumnIndex("imagename"));
-            wordid = Integer.parseInt(c.getString(c.getColumnIndex("levelid")));
-            id = c.getString(c.getColumnIndex("id"));
+            sa = c.getString(c.getColumnIndexOrThrow("letters"));
+            imid = c.getString(c.getColumnIndexOrThrow("imagename"));
+            wordid = Integer.parseInt(c.getString(c.getColumnIndexOrThrow("levelid")));
+            id = c.getString(c.getColumnIndexOrThrow("id"));
 
             /*if (sps.getString(Picture_Game_Hard.this, "error_correction_dis_2").equals("")) {
                 myDbHelper.executeSql("UPDATE maintable SET isfinish=1 WHERE  id='" + id + "' and gameid='" + gameid + "'");
@@ -3686,11 +3686,11 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
             int i_type = firsta.length;
             image_type = i_type;
 
-            answer = c.getString(c.getColumnIndex("answer"));
-            clue = c.getString(c.getColumnIndex("hints"));
+            answer = c.getString(c.getColumnIndexOrThrow("answer"));
+            clue = c.getString(c.getColumnIndexOrThrow("hints"));
 
             if (date.equals("0")) {
-                isdown = c.getString(c.getColumnIndex("isdownload"));
+                isdown = c.getString(c.getColumnIndexOrThrow("isdownload"));
             } else {
                 isdown = String.valueOf(1);
             }
@@ -3889,7 +3889,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
             public void onClick(View v) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + ea;
                 String aStringx = Integer.toString(spx);
                 score.setText(aStringx);
@@ -4283,7 +4283,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
         }
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
         String aStringx = Integer.toString(skx);
         ttscores.setText(aStringx);
 
@@ -4420,7 +4420,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ", null);
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 20;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -4556,7 +4556,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                             Cursor sc2 = myDbHelper.getQry("select * from score ");
                             sc2.moveToFirst();
                             if (sc2.getCount() != 0) {
-                                k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                             }
                             Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                         }
@@ -4968,7 +4968,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                                     //Score Adding
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ", null);
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 20;
                                     String aStringx = Integer.toString(spx);
                                     score.setText(aStringx);
@@ -5249,7 +5249,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
             Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
             cfq.moveToFirst();
             if (cfq.getCount() != 0) {
-                skq = cfq.getInt(cfq.getColumnIndex("coins"));
+                skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             }
             String tr = String.valueOf(skq);
             score.setText(tr);
@@ -5358,7 +5358,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
                     if (cfx.getCount() != 0) {
-                        skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 
                     }
                     int spx = skx + 20;
@@ -5368,7 +5368,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
 
                     Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                     ch.moveToFirst();
-                    int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                    int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                     int shh = sh + 50;
                     myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
@@ -5381,7 +5381,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
             Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
             cfq.moveToFirst();
             if (cfq.getCount() != 0) {
-                skq = cfq.getInt(cfq.getColumnIndex("coins"));
+                skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
 
             }
             String tr = String.valueOf(skq);
@@ -5452,7 +5452,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
                     if (cfx.getCount() != 0) {
-                        skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 
                     }
                     int spx = skx + 15;
@@ -5463,7 +5463,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                     Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                     ch.moveToFirst();
                     if (ch.getCount() != 0) {
-                        int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                        int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                         int shh = sh + 30;
                         myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
@@ -5488,7 +5488,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
             Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
             cfq.moveToFirst();
             if (cfq.getCount() != 0) {
-                skq = cfq.getInt(cfq.getColumnIndex("coins"));
+                skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
 
             }
             String tr = String.valueOf(skq);
@@ -5566,7 +5566,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
                     if (cfx.getCount() != 0) {
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + 10;
                         String aStringx = Integer.toString(spx);
                         score.setText(aStringx);
@@ -5577,7 +5577,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                     Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                     ch.moveToFirst();
                     if (ch.getCount() != 0) {
-                        int sh = ch.getInt(ch.getColumnIndex("l_points"));
+                        int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                         int shh = sh + 10;
                         myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
@@ -5785,16 +5785,6 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
             timeehr();
         }
 
-        if (sps.getInt(Picture_Game_Hard.this, "goto_sett") == 1) {
-            sps.putInt(Picture_Game_Hard.this, "goto_sett", 0);
-
-            if (Utils.isNetworkAvailable(Picture_Game_Hard.this)) {
-               /* Cursor c4 = myDbHelper.getQry("select gameid,wordid from pic_game order by wordid", null);
-                if (c4.getCount() != 0) {
-                    c4.moveToLast();
-                }*/
-            }
-        }
 
         if (sps.getString(Picture_Game_Hard.this, "resume_p").equals("")) {
             sps.putString(Picture_Game_Hard.this, "resume_p", "yes");
@@ -5810,8 +5800,8 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                 cs = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "' and levelid='" + wordid + "'");
                 cs.moveToFirst();
                 if (cs.getCount() != 0) {
-                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
-                    noofclue = cs.getInt(cs.getColumnIndex("noclue"));
+                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+                    noofclue = cs.getInt(cs.getColumnIndexOrThrow("noclue"));
                 }
             } else {
                 pos = 2;
@@ -5819,8 +5809,8 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                 cs.moveToFirst();
                 if (cs.getCount() != 0) {
 
-                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
-                    noofclue = cs.getInt(cs.getColumnIndex("noclue"));
+                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+                    noofclue = cs.getInt(cs.getColumnIndexOrThrow("noclue"));
                 }
             }
 
@@ -5873,7 +5863,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
 
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ", null);
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = skx + 10;
                                 String aStringx = Integer.toString(spx);
                                 //score.setText(aStringx);
@@ -5901,7 +5891,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                                 if (sps.getString(Picture_Game_Hard.this, "complite_reg").equals("yes")) {
                                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'", null);
                                     cn.moveToFirst();
-                                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                                     int gm1s = gm1 + 1;
                                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                                 }
@@ -5960,7 +5950,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
 
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ", null);
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = (values.size() - 1) * 10;
                                 String aStringx = Integer.toString(spx + skx);
                                 // score.setText(aStringx);
@@ -5992,7 +5982,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                                 if (sps.getString(Picture_Game_Hard.this, "complite_reg").equals("yes")) {
                                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'", null);
                                     cn.moveToFirst();
-                                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                                     int spxx = (values.size() - 1);
                                     int gm1s = gm1 + spxx;
                                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
@@ -6069,10 +6059,10 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
 
                     if (c1.getCount() != 0) {
 
-                        //c1.getString(c1.getColumnIndex("id"));
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                        downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "ord");
+                        downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
 
                     } else {
                         downloadcheck("0", "ord");
@@ -6083,10 +6073,10 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                     c1.moveToFirst();
                     System.out.print("Count====" + c1.getCount());
                     if (c1.getCount() != 0) {
-                        //c1.getString(c1.getColumnIndex("id"));
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                        downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "daily");
+                        downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "daily");
 
                     } else {
                         System.out.print("else====");
@@ -6153,7 +6143,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                     cursor1.moveToFirst();
                     String lastid = null;
                     if (cursor1.getCount() != 0) {
-                        lastid = cursor1.getString(cursor1.getColumnIndex("id"));
+                        lastid = cursor1.getString(cursor1.getColumnIndexOrThrow("id"));
                     }
 
                     downpic(id, lastid);
@@ -6162,7 +6152,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                     cursor1.moveToFirst();
                     String lastid = null;
                     if (cursor1.getCount() != 0) {
-                        lastid = cursor1.getString(cursor1.getColumnIndex("id"));
+                        lastid = cursor1.getString(cursor1.getColumnIndexOrThrow("id"));
                     }
 
                     downpic(id, lastid);
@@ -6206,7 +6196,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 // score.setText(aStringx);
@@ -6235,7 +6225,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                 if (sps.getString(Picture_Game_Hard.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -6254,7 +6244,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -6284,7 +6274,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                 if (sps.getString(Picture_Game_Hard.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -6299,7 +6289,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -6327,7 +6317,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -6342,7 +6332,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -6370,7 +6360,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                     ///
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     ///Reward Share
@@ -7337,28 +7327,28 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
             // a2=00;
             b2 = "no";
         } else {
-            // a2 = g2.getInt(g2.getColumnIndex("levelid"));
-            b2 = "" + String.valueOf(g2.getInt(g2.getColumnIndex("levelid")));
+            // a2 = g2.getInt(g2.getColumnIndexOrThrow("levelid"));
+            b2 = "" + String.valueOf(g2.getInt(g2.getColumnIndexOrThrow("levelid")));
         }
         if (g3.getCount() == 0) {
             //  a3=00;
             b3 = "no";
         } else {
-            b3 = "" + String.valueOf(g3.getInt(g3.getColumnIndex("levelid")));
-            //  a3 = g3.getInt(g3.getColumnIndex("levelid"));
+            b3 = "" + String.valueOf(g3.getInt(g3.getColumnIndexOrThrow("levelid")));
+            //  a3 = g3.getInt(g3.getColumnIndexOrThrow("levelid"));
 
         }
         if (g4.getCount() == 0) {
             // a4=00;
             b4 = "no";
         } else {
-            b4 = "" + String.valueOf(g4.getInt(g4.getColumnIndex("levelid")));
-            //  a4 = g4.getInt(g4.getColumnIndex("levelid"));
+            b4 = "" + String.valueOf(g4.getInt(g4.getColumnIndexOrThrow("levelid")));
+            //  a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
 
         }
 
 
-        String upload = String.valueOf(wordid) + "#" + String.valueOf(b2) + "#" + String.valueOf(b3) + "#" + String.valueOf(b4) + "#" + String.valueOf(c1.getInt(c1.getColumnIndex("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndex("l_points"))));
+        String upload = String.valueOf(wordid) + "#" + String.valueOf(b2) + "#" + String.valueOf(b3) + "#" + String.valueOf(b4) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("l_points"))));
 
 
         return upload;
@@ -7805,7 +7795,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                                 cursor1.moveToFirst();
                                 String lastid = null;
                                 if (cursor1.getCount() != 0) {
-                                    lastid = cursor1.getString(cursor1.getColumnIndex("id"));
+                                    lastid = cursor1.getString(cursor1.getColumnIndexOrThrow("id"));
                                 }
 
                                 downpic(id, lastid);
@@ -7814,7 +7804,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                                 cursor1.moveToFirst();
                                 String lastid = null;
                                 if (cursor1.getCount() != 0) {
-                                    lastid = cursor1.getString(cursor1.getColumnIndex("id"));
+                                    lastid = cursor1.getString(cursor1.getColumnIndexOrThrow("id"));
                                 }
 
                                 downpic(id, lastid);
@@ -7889,7 +7879,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                                         cursor1.moveToFirst();
                                         String lastid = null;
                                         if (cursor1.getCount() != 0) {
-                                            lastid = cursor1.getString(cursor1.getColumnIndex("id"));
+                                            lastid = cursor1.getString(cursor1.getColumnIndexOrThrow("id"));
                                         }
 
                                         downpic(id,lastid);
@@ -7899,7 +7889,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                                         cursor1.moveToFirst();
                                         String lastid = null;
                                         if (cursor1.getCount() != 0) {
-                                            lastid = cursor1.getString(cursor1.getColumnIndex("id"));
+                                            lastid = cursor1.getString(cursor1.getColumnIndexOrThrow("id"));
                                         }
 
                                         downpic(id,lastid);
@@ -7967,7 +7957,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                                     cursor1.moveToFirst();
                                     String lastid = null;
                                     if (cursor1.getCount() != 0) {
-                                        lastid = cursor1.getString(cursor1.getColumnIndex("id"));
+                                        lastid = cursor1.getString(cursor1.getColumnIndexOrThrow("id"));
                                     }
 
                                     downpic(id,lastid);
@@ -7977,7 +7967,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                                     cursor1.moveToFirst();
                                     String lastid = null;
                                     if (cursor1.getCount() != 0) {
-                                        lastid = cursor1.getString(cursor1.getColumnIndex("id"));
+                                        lastid = cursor1.getString(cursor1.getColumnIndexOrThrow("id"));
                                     }
 
                                     downpic(id,lastid);
@@ -8221,7 +8211,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
             Cursor sc3 = myDbHelper.getQry("select * from userdetail");
             sc3.moveToFirst();
             if (sc3.getCount() != 0) {
-                mobileno = sc3.getString(sc3.getColumnIndex("phno"));
+                mobileno = sc3.getString(sc3.getColumnIndexOrThrow("phno"));
 
             }
 
@@ -8311,9 +8301,9 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                 System.out.println("################regular on" + retype);
                 Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                 cn.moveToFirst();
-                int cns = cn.getInt(cn.getColumnIndex("score"));
-                int time = cn.getInt(cn.getColumnIndex("playtime"));
-                int gm1 = cn.getInt(cn.getColumnIndex("gm1"));
+                int cns = cn.getInt(cn.getColumnIndexOrThrow("score"));
+                int time = cn.getInt(cn.getColumnIndexOrThrow("playtime"));
+                int gm1 = cn.getInt(cn.getColumnIndexOrThrow("gm1"));
                 int cnse = 0;
                 long ptime;
                 if (vs == 1) {
@@ -8356,9 +8346,9 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                     System.out.println("=====print ok");
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + dates + "'");
                     cn.moveToFirst();
-                    int cns = cn.getInt(cn.getColumnIndex("score"));
-                    int time = cn.getInt(cn.getColumnIndex("playtime"));
-                    int gm1 = cn.getInt(cn.getColumnIndex("gm1"));
+                    int cns = cn.getInt(cn.getColumnIndexOrThrow("score"));
+                    int time = cn.getInt(cn.getColumnIndexOrThrow("playtime"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("gm1"));
                     int cnse = 0;
                     long ptime;
                     if (vs == 1) {
@@ -8433,7 +8423,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
-            final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+            final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
             int spx = skx + mCoinCount;
             final String aStringx = Integer.toString(spx);
 
@@ -8463,7 +8453,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
      /*   int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -8491,7 +8481,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
      /*   int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
@@ -8522,11 +8512,11 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
             if (c1.getCount() != 0) {
 
 
-                //c1.getString(c1.getColumnIndex("id"));
+                //c1.getString(c1.getColumnIndexOrThrow("id"));
 
-                System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
+                System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "daily");
+                downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "daily");
 
             } else {
                 System.out.print("else====");
@@ -8612,11 +8602,11 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                     if (c1.getCount() != 0) {
 
 
-                        //c1.getString(c1.getColumnIndex("id"));
+                        //c1.getString(c1.getColumnIndexOrThrow("id"));
 
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndex("id")));
+                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                        downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "ord");
+                        downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
 
                     } else {
                         downloadcheck("0", "ord");
@@ -8742,8 +8732,8 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                                                 cs = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "' and levelid='" + wordid + "'");
                                                 cs.moveToFirst();
                                                 if (cs.getCount() != 0) {
-                                                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
-                                                    noofclue = cs.getInt(cs.getColumnIndex("noclue"));
+                                                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+                                                    noofclue = cs.getInt(cs.getColumnIndexOrThrow("noclue"));
                                                 }
                                             } else {
                                                 pos = 2;
@@ -8751,8 +8741,8 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                                                 cs.moveToFirst();
                                                 if (cs.getCount() != 0) {
 
-                                                    dscore = cs.getInt(cs.getColumnIndex("playtime"));
-                                                    noofclue = cs.getInt(cs.getColumnIndex("noclue"));
+                                                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+                                                    noofclue = cs.getInt(cs.getColumnIndexOrThrow("noclue"));
                                                 }
                                             }
 
@@ -9214,7 +9204,7 @@ public class Picture_Game_Hard extends BaseGameActivity implements GoogleApiClie
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + mCoinCount;
                         String aStringx = Integer.toString(spx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");

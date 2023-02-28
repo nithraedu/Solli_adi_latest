@@ -36,8 +36,8 @@ public class Apps_Utils {
         if (c.getCount() != 0) {
             for (int i = 0; i < c.getCount(); i++) {
                 c.moveToPosition(i);
-                if (Apps_Utils.appInstalledOrNot(context, c.getString(c.getColumnIndex("package"))) == true) {
-                    myDB.executeSql("UPDATE nit_apps SET is_ins='1' where package = '" + c.getString(c.getColumnIndex("package")) + "'");
+                if (Apps_Utils.appInstalledOrNot(context, c.getString(c.getColumnIndexOrThrow("package"))) == true) {
+                    myDB.executeSql("UPDATE nit_apps SET is_ins='1' where package = '" + c.getString(c.getColumnIndexOrThrow("package")) + "'");
                 }
 
             }
@@ -195,14 +195,14 @@ public class Apps_Utils {
 
         if (c.getCount() != 0) {
             c.moveToFirst();
-            app = c.getString(c.getColumnIndex("package"));
-            tit = c.getString(c.getColumnIndex("app_name"));
-            app_des = c.getString(c.getColumnIndex("desc"+i1));
-            app_downlods = c.getString(c.getColumnIndex("downloads"));
-            logo = c.getString(c.getColumnIndex("logo"));
+            app = c.getString(c.getColumnIndexOrThrow("package"));
+            tit = c.getString(c.getColumnIndexOrThrow("app_name"));
+            app_des = c.getString(c.getColumnIndexOrThrow("desc"+i1));
+            app_downlods = c.getString(c.getColumnIndexOrThrow("downloads"));
+            logo = c.getString(c.getColumnIndexOrThrow("logo"));
 
-            int val =  c.getInt(c.getColumnIndex("shown"))+1;
-            myDB.executeSql("UPDATE nit_apps SET shown='"+val+"' where package = '"+c.getString(c.getColumnIndex("package"))+"'");
+            int val =  c.getInt(c.getColumnIndexOrThrow("shown"))+1;
+            myDB.executeSql("UPDATE nit_apps SET shown='"+val+"' where package = '"+c.getString(c.getColumnIndexOrThrow("package"))+"'");
 
         }
         else{
@@ -212,14 +212,14 @@ public class Apps_Utils {
                 myDB.executeSql("UPDATE nit_apps SET shown='0'");
                 cv.moveToFirst();
 
-                app = cv.getString(cv.getColumnIndex("package"));
-                tit = cv.getString(cv.getColumnIndex("app_name"));
-                app_des = cv.getString(cv.getColumnIndex("desc"+i1));
-                app_downlods = cv.getString(cv.getColumnIndex("downloads"));
-                logo = cv.getString(cv.getColumnIndex("logo"));
+                app = cv.getString(cv.getColumnIndexOrThrow("package"));
+                tit = cv.getString(cv.getColumnIndexOrThrow("app_name"));
+                app_des = cv.getString(cv.getColumnIndexOrThrow("desc"+i1));
+                app_downlods = cv.getString(cv.getColumnIndexOrThrow("downloads"));
+                logo = cv.getString(cv.getColumnIndexOrThrow("logo"));
 
-                int val =  cv.getInt(cv.getColumnIndex("shown"))+1;
-                myDB.executeSql("UPDATE nit_apps SET shown='"+val+"' where package = '"+cv.getString(cv.getColumnIndex("package"))+"'");
+                int val =  cv.getInt(cv.getColumnIndexOrThrow("shown"))+1;
+                myDB.executeSql("UPDATE nit_apps SET shown='"+val+"' where package = '"+cv.getString(cv.getColumnIndexOrThrow("package"))+"'");
             }
         }
     }

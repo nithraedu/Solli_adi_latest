@@ -102,8 +102,8 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
         if (win_cursor.getCount() != 0) {
             for (int i = 0; i < win_cursor.getCount(); i++) {
                 win_cursor.moveToPosition(i);
-                /*System.out.println("-----------------id : " + win_cursor.getString(win_cursor.getColumnIndex("id")));
-                System.out.println("-----------------game_cate : " + win_cursor.getString(win_cursor.getColumnIndex("game_cate")));*/
+                /*System.out.println("-----------------id : " + win_cursor.getString(win_cursor.getColumnIndexOrThrow("id")));
+                System.out.println("-----------------game_cate : " + win_cursor.getString(win_cursor.getColumnIndexOrThrow("game_cate")));*/
             }
         }
 
@@ -286,9 +286,9 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
 
                 } else {
                     win_cursor.moveToFirst();
-                    int game_finish = win_cursor.getInt(win_cursor.getColumnIndex("game_finish"));
-                    String best_score = win_cursor.getString(win_cursor.getColumnIndex("best_score"));
-                    long time = win_cursor.getLong(win_cursor.getColumnIndex("time"));
+                    int game_finish = win_cursor.getInt(win_cursor.getColumnIndexOrThrow("game_finish"));
+                    String best_score = win_cursor.getString(win_cursor.getColumnIndexOrThrow("best_score"));
+                    long time = win_cursor.getLong(win_cursor.getColumnIndexOrThrow("time"));
 
                     timer_msg_chrome.setBase(SystemClock.elapsedRealtime() + time);
                     coin_msg_coin.setText(best_score);
@@ -396,7 +396,7 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
 
                         if (win_cursor.getCount() != 0) {
                             win_cursor.moveToFirst();
-                            game_finish = win_cursor.getInt(win_cursor.getColumnIndex("game_finish"));
+                            game_finish = win_cursor.getInt(win_cursor.getColumnIndexOrThrow("game_finish"));
                             if (game_finish == 1) {
                                 retry_concept();
                             } else {

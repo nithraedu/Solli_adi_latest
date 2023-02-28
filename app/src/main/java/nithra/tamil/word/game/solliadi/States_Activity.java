@@ -166,7 +166,7 @@ public class States_Activity extends AppCompatActivity  {
             Cursor sc3 = db1.rawQuery("select * from userdetail", null);
             sc3.moveToFirst();
             if (sc3.getCount() != 0) {
-                mobileno=sc3.getString(sc3.getColumnIndex("phno"));
+                mobileno=sc3.getString(sc3.getColumnIndexOrThrow("phno"));
 
             }
 
@@ -240,14 +240,14 @@ public class States_Activity extends AppCompatActivity  {
         if (r.getCount()!=0) {
             for (int j = 0; j < r.getCount(); j++) {
                 r.moveToPosition(j);
-                nos.add(r.getInt(r.getColumnIndex("id")));
-                names.add(r.getString(r.getColumnIndex("name")));
-                citys.add(r.getString(r.getColumnIndex("city")));
-                scores.add(r.getInt(r.getColumnIndex("score")));
-                String time = r.getString(r.getColumnIndex("time"));
-                myscore = r.getString(r.getColumnIndex("myscore"));
-                String mytime = r.getString(r.getColumnIndex("mytime"));
-                mypos = r.getString(r.getColumnIndex("mypos"));
+                nos.add(r.getInt(r.getColumnIndexOrThrow("id")));
+                names.add(r.getString(r.getColumnIndexOrThrow("name")));
+                citys.add(r.getString(r.getColumnIndexOrThrow("city")));
+                scores.add(r.getInt(r.getColumnIndexOrThrow("score")));
+                String time = r.getString(r.getColumnIndexOrThrow("time"));
+                myscore = r.getString(r.getColumnIndexOrThrow("myscore"));
+                String mytime = r.getString(r.getColumnIndexOrThrow("mytime"));
+                mypos = r.getString(r.getColumnIndexOrThrow("mypos"));
                 nodatas.setVisibility(View.INVISIBLE);
                 adapt=new customlist_myreport(States_Activity.this,nos,names,scores,citys);
                 list.setAdapter(adapt);
@@ -311,14 +311,14 @@ if (exception.equals("yes"))
     if (r.getCount()!=0) {
         for (int j = 0; j < r.getCount(); j++) {
             r.moveToPosition(j);
-            nos.add(r.getInt(r.getColumnIndex("id")));
-            names.add(r.getString(r.getColumnIndex("name")));
-            citys.add(r.getString(r.getColumnIndex("city")));
-            scores.add(r.getInt(r.getColumnIndex("score")));
-            String time = r.getString(r.getColumnIndex("time"));
-            myscore = r.getString(r.getColumnIndex("myscore"));
-            String mytime = r.getString(r.getColumnIndex("mytime"));
-            mypos = r.getString(r.getColumnIndex("mypos"));
+            nos.add(r.getInt(r.getColumnIndexOrThrow("id")));
+            names.add(r.getString(r.getColumnIndexOrThrow("name")));
+            citys.add(r.getString(r.getColumnIndexOrThrow("city")));
+            scores.add(r.getInt(r.getColumnIndexOrThrow("score")));
+            String time = r.getString(r.getColumnIndexOrThrow("time"));
+            myscore = r.getString(r.getColumnIndexOrThrow("myscore"));
+            String mytime = r.getString(r.getColumnIndexOrThrow("mytime"));
+            mypos = r.getString(r.getColumnIndexOrThrow("mypos"));
             nodatas.setVisibility(View.INVISIBLE);
             adapt=new customlist_myreport(States_Activity.this,nos,names,scores,citys);
             list.setAdapter(adapt);
@@ -433,14 +433,14 @@ System.out.println("=========States_Activity=======current date update success")
                                 if (r.getCount()!=0) {
                                     for (int j = 0; j < r.getCount(); j++) {
                                         r.moveToPosition(j);
-                                        nos.add(r.getInt(r.getColumnIndex("id")));
-                                        names.add(r.getString(r.getColumnIndex("name")));
-                                        citys.add(r.getString(r.getColumnIndex("city")));
-                                        scores.add(r.getInt(r.getColumnIndex("score")));
-                                        String time = r.getString(r.getColumnIndex("time"));
-                                        myscore = r.getString(r.getColumnIndex("myscore"));
-                                        String mytime = r.getString(r.getColumnIndex("mytime"));
-                                        mypos = r.getString(r.getColumnIndex("mypos"));
+                                        nos.add(r.getInt(r.getColumnIndexOrThrow("id")));
+                                        names.add(r.getString(r.getColumnIndexOrThrow("name")));
+                                        citys.add(r.getString(r.getColumnIndexOrThrow("city")));
+                                        scores.add(r.getInt(r.getColumnIndexOrThrow("score")));
+                                        String time = r.getString(r.getColumnIndexOrThrow("time"));
+                                        myscore = r.getString(r.getColumnIndexOrThrow("myscore"));
+                                        String mytime = r.getString(r.getColumnIndexOrThrow("mytime"));
+                                        mypos = r.getString(r.getColumnIndexOrThrow("mypos"));
                                         nodatas.setVisibility(View.INVISIBLE);
                                         adapt=new customlist_myreport(States_Activity.this,nos,names,scores,citys);
                                         list.setAdapter(adapt);
@@ -491,14 +491,14 @@ System.out.println("=========States_Activity=======current date update success")
             if (r.getCount()!=0) {
                 for (int j = 0; j < r.getCount(); j++) {
                     r.moveToPosition(j);
-                   nos.add(r.getInt(r.getColumnIndex("id")));
-                    names.add(r.getString(r.getColumnIndex("name")));
-                    citys.add(r.getString(r.getColumnIndex("city")));
-                    scores.add(r.getInt(r.getColumnIndex("score")));
-                    String time = r.getString(r.getColumnIndex("time"));
-                   myscore = r.getString(r.getColumnIndex("myscore"));
-                    String mytime = r.getString(r.getColumnIndex("mytime"));
-                   mypos = r.getString(r.getColumnIndex("mypos"));
+                   nos.add(r.getInt(r.getColumnIndexOrThrow("id")));
+                    names.add(r.getString(r.getColumnIndexOrThrow("name")));
+                    citys.add(r.getString(r.getColumnIndexOrThrow("city")));
+                    scores.add(r.getInt(r.getColumnIndexOrThrow("score")));
+                    String time = r.getString(r.getColumnIndexOrThrow("time"));
+                   myscore = r.getString(r.getColumnIndexOrThrow("myscore"));
+                    String mytime = r.getString(r.getColumnIndexOrThrow("mytime"));
+                   mypos = r.getString(r.getColumnIndexOrThrow("mypos"));
                     nodatas.setVisibility(View.INVISIBLE);
                     adapt=new customlist_myreport(States_Activity.this,nos,names,scores,citys);
                     list.setAdapter(adapt);
@@ -538,14 +538,14 @@ System.out.println("=========States_Activity=======current date update success")
                 if (r.getCount()!=0) {
                     for (int j = 0; j < r.getCount(); j++) {
                         r.moveToPosition(j);
-                        nos.add(r.getInt(r.getColumnIndex("id")));
-                        names.add(r.getString(r.getColumnIndex("name")));
-                        citys.add(r.getString(r.getColumnIndex("city")));
-                        scores.add(r.getInt(r.getColumnIndex("score")));
-                        String time = r.getString(r.getColumnIndex("time"));
-                        myscore = r.getString(r.getColumnIndex("myscore"));
-                        String mytime = r.getString(r.getColumnIndex("mytime"));
-                        mypos = r.getString(r.getColumnIndex("mypos"));
+                        nos.add(r.getInt(r.getColumnIndexOrThrow("id")));
+                        names.add(r.getString(r.getColumnIndexOrThrow("name")));
+                        citys.add(r.getString(r.getColumnIndexOrThrow("city")));
+                        scores.add(r.getInt(r.getColumnIndexOrThrow("score")));
+                        String time = r.getString(r.getColumnIndexOrThrow("time"));
+                        myscore = r.getString(r.getColumnIndexOrThrow("myscore"));
+                        String mytime = r.getString(r.getColumnIndexOrThrow("mytime"));
+                        mypos = r.getString(r.getColumnIndexOrThrow("mypos"));
                         nodatas.setVisibility(View.INVISIBLE);
                         adapt=new customlist_myreport(States_Activity.this,nos,names,scores,citys);
                         list.setAdapter(adapt);
@@ -585,12 +585,12 @@ System.out.println("=========States_Activity=======current date update success")
                 if (r.getCount()!=0) {
                     for (int j = 0; j < r.getCount(); j++) {
                         r.moveToPosition(j);
-                        nos.add(r.getInt(r.getColumnIndex("id")));
-                        names.add(r.getString(r.getColumnIndex("name")));
-                        citys.add(r.getString(r.getColumnIndex("city")));
-                        scores.add(r.getInt(r.getColumnIndex("score")));
-                        myscore = r.getString(r.getColumnIndex("myscore"));
-                        mypos = r.getString(r.getColumnIndex("mypos"));
+                        nos.add(r.getInt(r.getColumnIndexOrThrow("id")));
+                        names.add(r.getString(r.getColumnIndexOrThrow("name")));
+                        citys.add(r.getString(r.getColumnIndexOrThrow("city")));
+                        scores.add(r.getInt(r.getColumnIndexOrThrow("score")));
+                        myscore = r.getString(r.getColumnIndexOrThrow("myscore"));
+                        mypos = r.getString(r.getColumnIndexOrThrow("mypos"));
                         nodatas.setVisibility(View.INVISIBLE);
                         adapt=new customlist_myreport(States_Activity.this,nos,names,scores,citys);
                         list.setAdapter(adapt);
@@ -709,14 +709,14 @@ System.out.println("=========States_Activity=======current date update success")
                                         if (r.getCount()!=0) {
                                             for (int j = 0; j < r.getCount(); j++) {
                                                 r.moveToPosition(j);
-                                                nos.add(r.getInt(r.getColumnIndex("id")));
-                                                names.add(r.getString(r.getColumnIndex("name")));
-                                                citys.add(r.getString(r.getColumnIndex("city")));
-                                                scores.add(r.getInt(r.getColumnIndex("score")));
-                                                String time = r.getString(r.getColumnIndex("time"));
-                                                myscore = r.getString(r.getColumnIndex("myscore"));
-                                                String mytime = r.getString(r.getColumnIndex("mytime"));
-                                                mypos = r.getString(r.getColumnIndex("mypos"));
+                                                nos.add(r.getInt(r.getColumnIndexOrThrow("id")));
+                                                names.add(r.getString(r.getColumnIndexOrThrow("name")));
+                                                citys.add(r.getString(r.getColumnIndexOrThrow("city")));
+                                                scores.add(r.getInt(r.getColumnIndexOrThrow("score")));
+                                                String time = r.getString(r.getColumnIndexOrThrow("time"));
+                                                myscore = r.getString(r.getColumnIndexOrThrow("myscore"));
+                                                String mytime = r.getString(r.getColumnIndexOrThrow("mytime"));
+                                                mypos = r.getString(r.getColumnIndexOrThrow("mypos"));
                                                 nodatas.setVisibility(View.INVISIBLE);
                                                 adapt=new customlist_myreport(States_Activity.this,nos,names,scores,citys);
                                                 list.setAdapter(adapt);
@@ -807,9 +807,9 @@ System.out.println("=========States_Activity=======current date update success")
             Cursor sc3 = db1.rawQuery("select * from userdetail", null);
             sc3.moveToFirst();
             if (sc3.getCount() != 0) {
-                mobileno=sc3.getString(sc3.getColumnIndex("phno"));
-                email = sc3.getString(sc3.getColumnIndex("email"));
-                reg_id = sc3.getString(sc3.getColumnIndex("regid"));
+                mobileno=sc3.getString(sc3.getColumnIndexOrThrow("phno"));
+                email = sc3.getString(sc3.getColumnIndexOrThrow("email"));
+                reg_id = sc3.getString(sc3.getColumnIndexOrThrow("regid"));
                 android_id = Settings.Secure.getString(getContentResolver(),
                         Settings.Secure.ANDROID_ID);
             }
@@ -843,7 +843,7 @@ System.out.println("=========States_Activity=======current date update success")
                     {
 
 
-                            date = sc2.getString(sc2.getColumnIndex("date"));
+                            date = sc2.getString(sc2.getColumnIndexOrThrow("date"));
                             dates=date+","+dates;
                             up_date=up_date+"or date='"+date+"'";
 
@@ -855,12 +855,12 @@ System.out.println("=========States_Activity=======current date update success")
                         r.moveToFirst();
                         if (r.getCount()!=0) {
                             for (int j = 0; j < r.getCount(); j++) {
-                                dgame1 = r.getString(r.getColumnIndex("gm1"));
-                                dgame2 = r.getString(r.getColumnIndex("gm2"));
-                                dgame3 = r.getString(r.getColumnIndex("gm3"));
-                                dgame4 = r.getString(r.getColumnIndex("gm4"));
-                                dscore = r.getString(r.getColumnIndex("score"));
-                                dplaytime = r.getString(r.getColumnIndex("playtime"));
+                                dgame1 = r.getString(r.getColumnIndexOrThrow("gm1"));
+                                dgame2 = r.getString(r.getColumnIndexOrThrow("gm2"));
+                                dgame3 = r.getString(r.getColumnIndexOrThrow("gm3"));
+                                dgame4 = r.getString(r.getColumnIndexOrThrow("gm4"));
+                                dscore = r.getString(r.getColumnIndexOrThrow("score"));
+                                dplaytime = r.getString(r.getColumnIndexOrThrow("playtime"));
                             }
                             dgame1s=dgame1+","+dgame1s;
                             dgame2s=dgame2+","+dgame2s;
@@ -877,12 +877,12 @@ System.out.println("=========States_Activity=======current date update success")
                         if (d.getCount()!=0) {
                             for (int j = 0; j < d.getCount(); j++) {
 
-                                rgame1 = d.getString(d.getColumnIndex("gm1"));
-                                rgame2 = d.getString(d.getColumnIndex("gm2"));
-                                rgame3 = d.getString(d.getColumnIndex("gm3"));
-                                rgame4 = d.getString(d.getColumnIndex("gm4"));
-                                rscore = d.getString(d.getColumnIndex("score"));
-                                rplaytime = d.getString(d.getColumnIndex("playtime"));
+                                rgame1 = d.getString(d.getColumnIndexOrThrow("gm1"));
+                                rgame2 = d.getString(d.getColumnIndexOrThrow("gm2"));
+                                rgame3 = d.getString(d.getColumnIndexOrThrow("gm3"));
+                                rgame4 = d.getString(d.getColumnIndexOrThrow("gm4"));
+                                rscore = d.getString(d.getColumnIndexOrThrow("score"));
+                                rplaytime = d.getString(d.getColumnIndexOrThrow("playtime"));
 
                                 rgame1s=rgame1+","+rgame1s;
                                 rgame2s=rgame2+","+rgame2s;
@@ -899,7 +899,7 @@ System.out.println("=========States_Activity=======current date update success")
                         if (s.getCount()!=0) {
                             for (int j = 0; j < s.getCount(); j++) {
 
-                                share_count = s.getString(s.getColumnIndex("score"));
+                                share_count = s.getString(s.getColumnIndexOrThrow("score"));
                                 share_counts=share_count+","+share_counts;
 
                             }

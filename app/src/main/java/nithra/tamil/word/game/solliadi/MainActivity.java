@@ -2049,7 +2049,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                     Cursor sc3 = myDbHelper.getQry("select * from userdetail");
                     sc3.moveToFirst();
                     if (sc3.getCount() != 0) {
-                        mobileno = sc3.getString(sc3.getColumnIndex("phno"));
+                        mobileno = sc3.getString(sc3.getColumnIndexOrThrow("phno"));
 
                     }
 
@@ -2122,7 +2122,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                 if (c2.getCount()!=0){
                     for (int i = 0; i < c2.getCount(); i++) {
                         c2.moveToPosition(i);
-                        String date = c2.getString(c2.getColumnIndex("date"));
+                        String date = c2.getString(c2.getColumnIndexOrThrow("date"));
                         System.out.println("=====datea" + date);
                         Cursor cc2 = myDbHelper.getQry("select date from dailytest where isfinish='0' and date='" + date + "'", null);
                         for (int ij = 0; ij < cc2.getCount(); ij++) {
@@ -2163,7 +2163,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                     String date[] = new String[c2.getCount()];
                     for (int i = 0; i < c2.getCount(); i++) {
                         c2.moveToPosition(i);
-                        date[i] = c2.getString(c2.getColumnIndex("date"));
+                        date[i] = c2.getString(c2.getColumnIndexOrThrow("date"));
                         Cursor cc = myDbHelper.getQry("select * from dailytest where isfinish='0' and date='"+date[i]+"'",null);
                         cc.moveToFirst();
                         if(cc.getCount()==0){
@@ -4826,7 +4826,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                         finish();
                         Cursor bb1 = myDbHelper.getQry("select * from score ");
                         bb1.moveToFirst();
-                        int k1 = bb1.getInt(bb1.getColumnIndex("coins"));
+                        int k1 = bb1.getInt(bb1.getColumnIndexOrThrow("coins"));
                         if (k1 <= 20) {
                             bounce_alarm();
                         }
@@ -4908,7 +4908,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                             finish();
                                             Cursor bb1 = myDbHelper.getQry("select * from score ", null);
                                             bb1.moveToFirst();
-                                            int k1=bb1.getInt(bb1.getColumnIndex("coins"));
+                                            int k1=bb1.getInt(bb1.getColumnIndexOrThrow("coins"));
                                             if(k1<=20) {
                                                 bounce_alarm();
                                             }
@@ -4918,7 +4918,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                         finish();
                                         Cursor bb1 = myDbHelper.getQry("select * from score ", null);
                                         bb1.moveToFirst();
-                                        int k1=bb1.getInt(bb1.getColumnIndex("coins"));
+                                        int k1=bb1.getInt(bb1.getColumnIndexOrThrow("coins"));
                                         if(k1<=20) {
                                             bounce_alarm();
                                         }
@@ -4943,7 +4943,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                     exit_dia();
                                     Cursor bb1 = myDbHelper.getQry("select * from score ", null);
                                     bb1.moveToFirst();
-                                    int k1=bb1.getInt(bb1.getColumnIndex("coins"));
+                                    int k1=bb1.getInt(bb1.getColumnIndexOrThrow("coins"));
                                     if(k1<=100) {
                                         bounce_alarm();
                                     }
@@ -4953,7 +4953,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                             finish();
                             Cursor bb1 = myDbHelper.getQry("select * from score ", null);
                             bb1.moveToFirst();
-                            int k1=bb1.getInt(bb1.getColumnIndex("coins"));
+                            int k1=bb1.getInt(bb1.getColumnIndexOrThrow("coins"));
                             if(k1<=100) {
                                 bounce_alarm();
                             }
@@ -5212,7 +5212,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                 finish();
                 Cursor bb1 = myDbHelper.getQry("select * from score ");
                 bb1.moveToFirst();
-                int k1 = bb1.getInt(bb1.getColumnIndex("coins"));
+                int k1 = bb1.getInt(bb1.getColumnIndexOrThrow("coins"));
                 if (k1 <= 20) {
                     bounce_alarm();
                 }
@@ -5636,7 +5636,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                         Cursor sc2 = myDbHelper.getQry("select * from score ");
                         sc2.moveToFirst();
                         if (sc2.getCount() != 0) {
-                            k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                            k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                         }
                         Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                         startActivityForResult(Games.Leaderboards.getLeaderboardIntent(getApiClient(), getString(R.string.leaderboard)), 1001);
@@ -5783,7 +5783,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
             Log.d(TAG, DatabaseUtils.dumpCursorToString(cursor));
 
-            int columnIndex = cursor.getColumnIndex(projection[0]);
+            int columnIndex = cursor.getColumnIndexOrThrow(projection[0]);
             String picturePath = cursor.getString(columnIndex); // returns null
             cursor.close();
 
@@ -5843,7 +5843,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             if (resultCode == -1) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -5871,7 +5871,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                 if (sps.getString(MainActivity.this, "complite_reg").equals("yes")) {
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
@@ -5887,7 +5887,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 20;
                 String aStringx = Integer.toString(spx);
                 //score.setText(aStringx);
@@ -5916,7 +5916,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
                     cn.moveToFirst();
                     if (cn.getCount() != 0) {
-                        int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                        int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                         int gm1s = gm1 + 1;
                         myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                     }
@@ -5956,7 +5956,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                         Cursor sc2 = myDbHelper.getQry("select * from score ");
                         sc2.moveToFirst();
                         if (sc2.getCount() != 0) {
-                            k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                            k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                         }
                         Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                         startActivityForResult(Games.Leaderboards.getLeaderboardIntent(getApiClient(), getString(R.string.leaderboard)), 1001);
@@ -6422,9 +6422,9 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                 c1.moveToFirst();
                 System.out.print("Count====" + c1.getCount());
                 if (c1.getCount() != 0) {
-                    //c1.getString(c1.getColumnIndex("id"));
-                    System.out.print("Last ID===ord=" + c1.getString(c1.getColumnIndex("id")));
-                    downloadcheck1("" + c1.getString(c1.getColumnIndex("id")), "daily");
+                    //c1.getString(c1.getColumnIndexOrThrow("id"));
+                    System.out.print("Last ID===ord=" + c1.getString(c1.getColumnIndexOrThrow("id")));
+                    downloadcheck1("" + c1.getString(c1.getColumnIndexOrThrow("id")), "daily");
                 } else {
                     System.out.print("else====");
                     downloadcheck1("0", "daily");
@@ -7506,7 +7506,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         Cursor lastid1 = myDbHelper.getQry("select * from maintable where gameid=1 and isfinish='1'order by levelid desc");
         lastid1.moveToFirst();
         if (lastid1.getCount() != 0) {
-            level1 = String.valueOf(lastid1.getInt(lastid1.getColumnIndex("levelid")));
+            level1 = String.valueOf(lastid1.getInt(lastid1.getColumnIndexOrThrow("levelid")));
         } else {
             level1 = "-1";
         }
@@ -7514,7 +7514,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         Cursor lastid2 = myDbHelper.getQry("select * from maintable where gameid=2 and isfinish='1'order by levelid desc");
         lastid2.moveToFirst();
         if (lastid2.getCount() != 0) {
-            level2 = String.valueOf(lastid2.getInt(lastid2.getColumnIndex("levelid")));
+            level2 = String.valueOf(lastid2.getInt(lastid2.getColumnIndexOrThrow("levelid")));
         } else {
             level2 = "-1";
         }
@@ -7522,22 +7522,22 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         Cursor lastid3 = myDbHelper.getQry("select * from maintable where gameid=3 and isfinish='1'order by levelid desc");
         lastid3.moveToFirst();
         if (lastid3.getCount() != 0) {
-            level3 = String.valueOf(lastid3.getInt(lastid3.getColumnIndex("levelid")));
+            level3 = String.valueOf(lastid3.getInt(lastid3.getColumnIndexOrThrow("levelid")));
         } else {
             level3 = "-1";
         }
         Cursor lastid4 = myDbHelper.getQry("select * from maintable where gameid=4 and isfinish='1'order by levelid desc");
         lastid4.moveToFirst();
         if (lastid4.getCount() != 0) {
-            level4 = String.valueOf(lastid4.getInt(lastid4.getColumnIndex("levelid")));
+            level4 = String.valueOf(lastid4.getInt(lastid4.getColumnIndexOrThrow("levelid")));
         } else {
             level4 = "-1";
         }
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
 
-        String coins = String.valueOf(cfx.getInt(cfx.getColumnIndex("coins")));
-        String l_points = String.valueOf(cfx.getInt(cfx.getColumnIndex("l_points")));
+        String coins = String.valueOf(cfx.getInt(cfx.getColumnIndexOrThrow("coins")));
+        String l_points = String.valueOf(cfx.getInt(cfx.getColumnIndexOrThrow("l_points")));
 
         PackageInfo pInfo = null;
         try {
@@ -7916,7 +7916,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
                                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ", null);
                                 cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                 int spx = (values.size() - 1) * 10;
                                 String aStringx = Integer.toString(spx + skx);
                                 myDbHelper.executeSql("UPDATE score SET coins='" + (spx + skx) + "'");
@@ -7945,7 +7945,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                 if (sps.getString(MainActivity.this, "complite_reg").equals("yes")) {
                                     Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'", null);
                                     cn.moveToFirst();
-                                    int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                                     int spxx = (values.size() - 1);
                                     int gm1s = gm1 + spxx;
                                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
@@ -7997,7 +7997,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                 if (sps.getString(MainActivity.this, "face_share").equals("")) {
                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ", null);
                                     cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                                     int spx = skx + 10;
                                     String aStringx = Integer.toString(spx);
                                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -8025,7 +8025,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                 ///
                                 Cursor cn = exdb.rawQuery("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'", null);
                                 cn.moveToFirst();
-                                int gm1 = cn.getInt(cn.getColumnIndex("score"));
+                                int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                                 int gm1s = gm1 + 1;
                                 exdb.execSQL("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                                 ///Reward Share
@@ -8356,9 +8356,9 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             Cursor sc3 = myDbHelper.getQry("select * from userdetail");
             sc3.moveToFirst();
             if (sc3.getCount() != 0) {
-                mobileno = sc3.getString(sc3.getColumnIndex("phno"));
-                email = sc3.getString(sc3.getColumnIndex("email"));
-                reg_id = sc3.getString(sc3.getColumnIndex("regid"));
+                mobileno = sc3.getString(sc3.getColumnIndexOrThrow("phno"));
+                email = sc3.getString(sc3.getColumnIndexOrThrow("email"));
+                reg_id = sc3.getString(sc3.getColumnIndexOrThrow("regid"));
                 android_id = Settings.Secure.getString(getContentResolver(),
                         Settings.Secure.ANDROID_ID);
             }
@@ -8387,7 +8387,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                 for (int i = 0; i < sc2.getCount(); i++) {
                     sc2.moveToPosition(i);
                     if (sc2.getCount() != 0) {
-                        date = sc2.getString(sc2.getColumnIndex("date"));
+                        date = sc2.getString(sc2.getColumnIndexOrThrow("date"));
                         dates = date + "," + dates;
 
                         up_date = up_date + "or date='" + date + "'";
@@ -8398,12 +8398,12 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                         if (r.getCount() != 0) {
                             for (int j = 0; j < r.getCount(); j++) {
 
-                                dgame1 = r.getString(r.getColumnIndex("gm1"));
-                                dgame2 = r.getString(r.getColumnIndex("gm2"));
-                                dgame3 = r.getString(r.getColumnIndex("gm3"));
-                                dgame4 = r.getString(r.getColumnIndex("gm4"));
-                                dscore = r.getString(r.getColumnIndex("score"));
-                                dplaytime = r.getString(r.getColumnIndex("playtime"));
+                                dgame1 = r.getString(r.getColumnIndexOrThrow("gm1"));
+                                dgame2 = r.getString(r.getColumnIndexOrThrow("gm2"));
+                                dgame3 = r.getString(r.getColumnIndexOrThrow("gm3"));
+                                dgame4 = r.getString(r.getColumnIndexOrThrow("gm4"));
+                                dscore = r.getString(r.getColumnIndexOrThrow("score"));
+                                dplaytime = r.getString(r.getColumnIndexOrThrow("playtime"));
 
                             }
 
@@ -8422,12 +8422,12 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                         if (d.getCount() != 0) {
                             for (int j = 0; j < d.getCount(); j++) {
 
-                                rgame1 = d.getString(d.getColumnIndex("gm1"));
-                                rgame2 = d.getString(d.getColumnIndex("gm2"));
-                                rgame3 = d.getString(d.getColumnIndex("gm3"));
-                                rgame4 = d.getString(d.getColumnIndex("gm4"));
-                                rscore = d.getString(d.getColumnIndex("score"));
-                                rplaytime = d.getString(d.getColumnIndex("playtime"));
+                                rgame1 = d.getString(d.getColumnIndexOrThrow("gm1"));
+                                rgame2 = d.getString(d.getColumnIndexOrThrow("gm2"));
+                                rgame3 = d.getString(d.getColumnIndexOrThrow("gm3"));
+                                rgame4 = d.getString(d.getColumnIndexOrThrow("gm4"));
+                                rscore = d.getString(d.getColumnIndexOrThrow("score"));
+                                rplaytime = d.getString(d.getColumnIndexOrThrow("playtime"));
 
                                 rgame1s = rgame1 + "," + rgame1s;
                                 rgame2s = rgame2 + "," + rgame2s;
@@ -8443,7 +8443,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                         s.moveToFirst();
                         if (s.getCount() != 0) {
                             for (int j = 0; j < s.getCount(); j++) {
-                                share_count = s.getString(s.getColumnIndex("score"));
+                                share_count = s.getString(s.getColumnIndexOrThrow("score"));
 
                                 share_counts = share_count + "," + share_counts;
 
@@ -8757,7 +8757,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                 public void onClick(View view) {
                     scorecursor = mylogodb.rawQuery("select * from score", null);
                     scorecursor.moveToFirst();
-                    r_check = scorecursor.getInt(scorecursor.getColumnIndex("score_coin"));
+                    r_check = scorecursor.getInt(scorecursor.getColumnIndexOrThrow("score_coin"));
 
                     r_check = r_check + mCoinCount;
 
@@ -11605,8 +11605,8 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                             Cursor c1 = myDbHelper.getQry("select id from maintable order by id DESC");
                             c1.moveToFirst();
                             if (c1.getCount() != 0) {
-                                System.out.print("Last ID===ord=" + c1.getString(c1.getColumnIndex("id")));
-                                downloadcheck("" + c1.getString(c1.getColumnIndex("id")), "ord");
+                                System.out.print("Last ID===ord=" + c1.getString(c1.getColumnIndexOrThrow("id")));
+                                downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
                                 dialog.dismiss();
                             } else {
                                 downloadcheck("0", "ord");
@@ -11808,37 +11808,37 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             //a2=00;
             b1 = "no";
         } else {
-            // a2 = g2.getInt(g2.getColumnIndex("levelid"));
-            b1 = String.valueOf(g1.getInt(g1.getColumnIndex("levelid")));
+            // a2 = g2.getInt(g2.getColumnIndexOrThrow("levelid"));
+            b1 = String.valueOf(g1.getInt(g1.getColumnIndexOrThrow("levelid")));
         }
         if (g2.getCount() == 0) {
             //a2=00;
             b2 = "no";
         } else {
-            // a2 = g2.getInt(g2.getColumnIndex("levelid"));
-            b2 = String.valueOf(g2.getInt(g2.getColumnIndex("levelid")));
+            // a2 = g2.getInt(g2.getColumnIndexOrThrow("levelid"));
+            b2 = String.valueOf(g2.getInt(g2.getColumnIndexOrThrow("levelid")));
         }
         if (g3.getCount() == 0) {
             //  a3=00;
             b3 = "no";
         } else {
-            //  a3 = g3.getInt(g3.getColumnIndex("levelid"));
-            b3 = String.valueOf(g3.getInt(g3.getColumnIndex("levelid")));
+            //  a3 = g3.getInt(g3.getColumnIndexOrThrow("levelid"));
+            b3 = String.valueOf(g3.getInt(g3.getColumnIndexOrThrow("levelid")));
         }
         if (g4.getCount() == 0) {
             // a4=00;
             b4 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b4 = String.valueOf(g4.getInt(g4.getColumnIndex("levelid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b4 = String.valueOf(g4.getInt(g4.getColumnIndexOrThrow("levelid")));
         }
 
         if (g5.getCount() == 0) {
             // a4=00;
             b5 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b5 = String.valueOf(g5.getInt(g5.getColumnIndex("questionid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b5 = String.valueOf(g5.getInt(g5.getColumnIndexOrThrow("questionid")));
         }
 
 
@@ -11846,8 +11846,8 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             // a4=00;
             b6 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b6 = String.valueOf(g6.getInt(g6.getColumnIndex("questionid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b6 = String.valueOf(g6.getInt(g6.getColumnIndexOrThrow("questionid")));
         }
 
 
@@ -11855,16 +11855,16 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             // a4=00;
             b7 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b7 = String.valueOf(g7.getInt(g7.getColumnIndex("questionid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b7 = String.valueOf(g7.getInt(g7.getColumnIndexOrThrow("questionid")));
         }
 
         if (g8.getCount() == 0) {
             // a4=00;
             b8 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b8 = String.valueOf(g8.getInt(g8.getColumnIndex("questionid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b8 = String.valueOf(g8.getInt(g8.getColumnIndexOrThrow("questionid")));
         }
 
 
@@ -11872,76 +11872,76 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             // a4=00;
             b9 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b9 = String.valueOf(g9.getInt(g9.getColumnIndex("questionid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b9 = String.valueOf(g9.getInt(g9.getColumnIndexOrThrow("questionid")));
         }
 
         if (g10.getCount() == 0) {
             // a4=00;
             b10 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b10 = String.valueOf(g10.getInt(g10.getColumnIndex("questionid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b10 = String.valueOf(g10.getInt(g10.getColumnIndexOrThrow("questionid")));
         }
 
         if (g11.getCount() == 0) {
             // a4=00;
             b11 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b11 = String.valueOf(g11.getInt(g11.getColumnIndex("questionid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b11 = String.valueOf(g11.getInt(g11.getColumnIndexOrThrow("questionid")));
         }
 
         if (g12.getCount() == 0) {
             // a4=00;
             b12 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b12 = String.valueOf(g12.getInt(g12.getColumnIndex("questionid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b12 = String.valueOf(g12.getInt(g12.getColumnIndexOrThrow("questionid")));
         }
 
         if (g13.getCount() == 0) {
             // a4=00;
             b13 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b13 = String.valueOf(g13.getInt(g13.getColumnIndex("levelid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b13 = String.valueOf(g13.getInt(g13.getColumnIndexOrThrow("levelid")));
         }
 
         if (g14.getCount() == 0) {
             // a4=00;
             b14 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b14 = String.valueOf(g14.getInt(g14.getColumnIndex("questionid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b14 = String.valueOf(g14.getInt(g14.getColumnIndexOrThrow("questionid")));
         }
 
         if (g15.getCount() == 0) {
             // a4=00;
             b15 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b15 = String.valueOf(g15.getInt(g15.getColumnIndex("questionid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b15 = String.valueOf(g15.getInt(g15.getColumnIndexOrThrow("questionid")));
         }
 
         if (g16.getCount() == 0) {
             // a4=00;
             b16 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b16 = String.valueOf(g16.getInt(g16.getColumnIndex("questionid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b16 = String.valueOf(g16.getInt(g16.getColumnIndexOrThrow("questionid")));
         }
 
        /* if (g14.getCount() == 0) {
             // a4=00;
             b14 = "no";
         } else {
-            // a4 = g4.getInt(g4.getColumnIndex("levelid"));
-            b14 = String.valueOf(g14.getInt(g14.getColumnIndex("levelid")));
+            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+            b14 = String.valueOf(g14.getInt(g14.getColumnIndexOrThrow("levelid")));
         }*/
 
-        //String upload = String.valueOf(b1) + "#" + String.valueOf(b2) + "#" + String.valueOf(b3) + "#" + String.valueOf(b4) + "#" + String.valueOf(c1.getInt(c1.getColumnIndex("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndex("l_points")) + "#" + String.valueOf(b5) + "#" + String.valueOf(b6) + "#" + String.valueOf(b7) + "#" + String.valueOf(b8)));
-        String upload = String.valueOf(b1) + "#" + String.valueOf(b2) + "#" + String.valueOf(b3) + "#" + String.valueOf(b4) + "#" + String.valueOf(c1.getInt(c1.getColumnIndex("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndex("l_points")) + "#" + String.valueOf(b5) + "#" + String.valueOf(b6) + "#" + String.valueOf(b7) + "#" + String.valueOf(b8) + "#" + String.valueOf(b9) + "#" + String.valueOf(b10) + "#" + String.valueOf(b11) + "#" + String.valueOf(b12) + "#" + String.valueOf(b13) + "#" + String.valueOf(b14) + "#" + String.valueOf(b15) + "#" + String.valueOf(b16)));
+        //String upload = String.valueOf(b1) + "#" + String.valueOf(b2) + "#" + String.valueOf(b3) + "#" + String.valueOf(b4) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("l_points")) + "#" + String.valueOf(b5) + "#" + String.valueOf(b6) + "#" + String.valueOf(b7) + "#" + String.valueOf(b8)));
+        String upload = String.valueOf(b1) + "#" + String.valueOf(b2) + "#" + String.valueOf(b3) + "#" + String.valueOf(b4) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("l_points")) + "#" + String.valueOf(b5) + "#" + String.valueOf(b6) + "#" + String.valueOf(b7) + "#" + String.valueOf(b8) + "#" + String.valueOf(b9) + "#" + String.valueOf(b10) + "#" + String.valueOf(b11) + "#" + String.valueOf(b12) + "#" + String.valueOf(b13) + "#" + String.valueOf(b14) + "#" + String.valueOf(b15) + "#" + String.valueOf(b16)));
         System.out.println("#########################upload data" + upload);
         return upload;
     }
@@ -12891,7 +12891,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                         Cursor sc2 = myDbHelper.getQry("select * from score ");
                         sc2.moveToFirst();
                         if (sc2.getCount() != 0) {
-                            k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                            k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                         }
                         Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                         startActivityForResult(Games.Leaderboards.getLeaderboardIntent(getApiClient(), getString(R.string.leaderboard)), 1001);
@@ -12926,7 +12926,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                 Cursor sc2 = myDbHelper.getQry("select * from score ");
                                 sc2.moveToFirst();
                                 if (sc2.getCount() != 0) {
-                                    k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                    k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                                 }
                                 Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                                 startActivityForResult(Games.Leaderboards.getLeaderboardIntent(getApiClient(), getString(R.string.leaderboard)), 1001);
@@ -12939,7 +12939,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                         Cursor sc2 = myDbHelper.getQry("select * from score ");
                                         sc2.moveToFirst();
                                         if (sc2.getCount() != 0) {
-                                            k1 = sc2.getInt(sc2.getColumnIndex("l_points"));
+                                            k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
                                         }
                                         Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
                                         startActivityForResult(Games.Leaderboards.getLeaderboardIntent(getApiClient(), getString(R.string.leaderboard)), 1001);
@@ -13136,7 +13136,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                     if (update_cursor.getCount() != 0) {
                         for (int j = 0; j < update_cursor.getCount(); j++) {
                             update_cursor.moveToPosition(j);
-                            int id = update_cursor.getInt(update_cursor.getColumnIndex("id"));
+                            int id = update_cursor.getInt(update_cursor.getColumnIndexOrThrow("id"));
                             mydbd.execSQL("UPDATE " + table.get(i) + " SET is_finish='" + 1 + "' where id='" + id + "'");
                         }
                     }
@@ -13205,7 +13205,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             public void onClick(View v) {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndex("coins"));
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + ea;
                 String aStringx = Integer.toString(spx);
                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -13352,7 +13352,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                 Cursor up = myDbHelper.getQry("select * from prize_data where date ='" + price_date + "'");
                 up.moveToFirst();
                 if (up.getCount() != 0) {
-                    score_ed = up.getInt(up.getColumnIndex("score"));
+                    score_ed = up.getInt(up.getColumnIndexOrThrow("score"));
                     score_ed = score_ed + score;
                     myDbHelper.executeSql("UPDATE prize_data SET score='" + score_ed + "' where date ='" + price_date + "'");
                     System.out.println("#################old insert");
@@ -13395,7 +13395,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             ol.moveToFirst();
             System.out.println("#################PS_count" + ol.getCount());
             if (ol.getCount() != 0) {
-                old_score_ed = ol.getInt(ol.getColumnIndex("score"));
+                old_score_ed = ol.getInt(ol.getColumnIndexOrThrow("score"));
             }
 
             Cursor up = myDbHelper.getQry("select * from prize_data where date ='" + price_date_d + "'");
@@ -13403,7 +13403,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             System.out.println("#################PS_count" + up.getCount());
             if (up.getCount() != 0) {
 
-                score_ed = up.getInt(up.getColumnIndex("score"));
+                score_ed = up.getInt(up.getColumnIndexOrThrow("score"));
                 prize_u_id = sps.getString(context, "p_user_id");
                 System.out.println("#################PS" + score_ed);
                 System.out.println("#################PS_id" + prize_u_id);
