@@ -614,7 +614,8 @@
                     android:layout_height="1dp"
                     android:layout_below="@+id/r_ads"
                     android:layout_marginTop="@dimen/lrtbp_5"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:visibility="gone"/>
 
 
                 <LinearLayout
@@ -622,7 +623,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/dre"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
                     <ImageView
                         android:id="@+id/daily_notiimage"

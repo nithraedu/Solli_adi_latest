@@ -1759,7 +1759,7 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
 
 
         toggleButton = (TextView) findViewById(R.id.daily_noti);
-        String sds = sps.getString(New_Main_Activity.this, "Daily_notifications");
+    /*    String sds = sps.getString(New_Main_Activity.this, "Daily_notifications");
         if (sds.equals("yes")) {
             toggleButton.setBackgroundResource(R.drawable.on);
         } else if (sds.equals("no")) {
@@ -1782,7 +1782,7 @@ public class New_Main_Activity extends BaseGameActivity implements RippleView.On
                     toggleButton.setBackgroundResource(R.drawable.on);
                 }
             }
-        });
+        });*/
 
 
         ads_lay2 = (LinearLayout) findViewById(R.id.ads_lay2);
