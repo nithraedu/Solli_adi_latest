@@ -1,5 +1,7 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.Commen_string.dbs_name;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -14,22 +16,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-
-import static nithra.tamil.word.game.solliadi.Commen_string.dbs_name;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
-    private static String TAG = "DBHelper"; // Tag just for the LogCat
+    private static final String TAG = "DBHelper"; // Tag just for the LogCat
     // window
     // destination path (location) of our database on device
     private static String DB_PATH = "";
-    private static String DB_NAME = dbs_name;// Database name
-    private SQLiteDatabase mDataBase;
+    private static final String DB_NAME = dbs_name;// Database name
     private final Context mContext;
     Cursor c;
     SharedPreferences mPreferences;
     SharedPreference sp = new SharedPreference();
     DataBaseHelper myDbHelper;
+    private SQLiteDatabase mDataBase;
+
     public DataBaseHelper(Context context) {
         super(context, DB_NAME, null, 3);// 1? its Database Version
         DB_PATH = context.getDatabasePath(DB_NAME).getPath();
@@ -55,17 +55,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         try {
             DataBaseHelper myDbHelper = new DataBaseHelper(mContext);
             SQLiteDatabase sq = this.getReadableDatabase();
-            sq=myDbHelper.getWritableDatabase();
-            sq=myDbHelper.getReadableDatabase();
+            sq = myDbHelper.getWritableDatabase();
+            sq = myDbHelper.getReadableDatabase();
             c = sq.rawQuery(Qry, null);
-        }catch (Exception e){
-            System.out.println("Exception "+e);
+        } catch (Exception e) {
+            System.out.println("Exception " + e);
         }
         return c;
     }
-    public void insert_data(String table,String n_val,ContentValues cv) {
+
+    public void insert_data(String table, String n_val, ContentValues cv) {
         SQLiteDatabase sq = this.getReadableDatabase();
-        sq.insert(table,null,cv);
+        sq.insert(table, null, cv);
 
     }
 
@@ -73,11 +74,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         try {
             DataBaseHelper myDbHelper = new DataBaseHelper(mContext);
             SQLiteDatabase sq = this.getReadableDatabase();
-            sq=myDbHelper.getWritableDatabase();
-            sq=myDbHelper.getReadableDatabase();
+            sq = myDbHelper.getWritableDatabase();
+            sq = myDbHelper.getReadableDatabase();
             sq.execSQL(Qry);
-        }catch (Exception e){
-            System.out.println("Exception "+e);
+        } catch (Exception e) {
+            System.out.println("Exception " + e);
         }
 
 
@@ -167,6 +168,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             mDataBase.close();
         super.close();
     }
+
     @Override
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);

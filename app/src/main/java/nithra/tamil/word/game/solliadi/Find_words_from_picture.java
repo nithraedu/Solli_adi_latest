@@ -1,10 +1,15 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.data_download_url;
+import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.img_down_url;
+
+import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -20,51 +25,16 @@ import android.media.SoundPool;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Environment;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxAdView;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
-import com.facebook.ads.NativeAdLayout;
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.Bundle;
-
-import androidx.appcompat.widget.AppCompatEditText;
-import androidx.core.content.FileProvider;
-
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -73,19 +43,35 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.FileProvider;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.games.Games;
-import com.google.example.games.basegameutils.BaseGameActivity;
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.facebook.ads.NativeAdLayout;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -108,6 +94,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -118,66 +105,18 @@ import java.util.zip.ZipInputStream;
 
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
-import nithra.tamil.word.game.solliadi.adutils.GameExitUtils;
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.data_download_url;
-import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.img_down_url;
-
-public class Find_words_from_picture extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Download_completed {
+public class Find_words_from_picture extends AppCompatActivity implements Download_completed {
+    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
+    public static int chr = 0;
+    static int rvo = 0;
+    static int mCoinCount = 20;
     int fb_reward = 0;
-    private MaxRewardedAd rewardedAd;
     int reward_status = 0;
-
-    @Override
-    public void onSignInFailed() {
-
-    }
-
-    @Override
-    public void onSignInSucceeded() {
-
-    }
-
-    @Override
-    public void download_completed(String status) {
-        System.out.println("#############################status" + status);
-        if (status.equals("nodata")) {
-            nextgamesdialog();
-        } else {
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    next();
-                    System.out.println("p1");
-
-                }
-            }, 500);
-
-        }
-    }
-
-    private void backexitnet() {
-        if (main_act.equals("")) {
-            finish();
-            Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
-            startActivity(i);
-        } else {
-            finish();
-        }
-    }
-
-    private enum PendingAction {
-        NONE, POST_PHOTO, POST_STATUS_UPDATE
-    }
-
     CustomKeyboard mCustomKeyboard;
     Newgame_DataBaseHelper5 newhelper5;
     Chronometer focus;
@@ -192,7 +131,6 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
     DataBaseHelper myDbHelper;
     LinearLayout anslist2, list2_pic;
     TextView verify;
-
     SoundPool click, win, coin, worng, cr_ans, spz4;
     int soundId1, soundId2, soundId3, soundId4, soundId5;
     int sv = 0;
@@ -205,9 +143,7 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
     TextView next_continue;
     TextView ttscores;
     LinearLayout ads_layout_bottom;
-    static int rvo = 0;
     TextView tx1, tx2;
-    static int mCoinCount = 20;
     int extra_coin_s = 0;
     int reward_play_count = 0;
     int ea = 0;
@@ -222,8 +158,6 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
     int answer_types = 0;
     Typeface tyr;
     int dia_dismiss = 0;
-
-    private GoogleApiClient mGoogleApiClient;
     int spxdr = 0;
     int answerlength;
     Dialog openDialogk;
@@ -237,14 +171,54 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
     Newgame_DataBaseHelper4 newhelper4;
     DownloadFileAsync downloadFileAsync;
     ProgressDialog mProgressDialog;
-    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
     String email = "";
-    public static int chr = 0;
     TextView p_coins;
     int e2;
     int setting_access = 0;
+    private MaxRewardedAd rewardedAd;
+    private MaxInterstitialAd ins_game;
+    private InterstitialAd mInterstitialAd;
 
-    private MaxInterstitialAd ins_game,game_exit_ins;
+    public static boolean exists(String URLName) {
+        try {
+            HttpURLConnection.setFollowRedirects(false);
+            // note : you may also need
+            //        HttpURLConnection.setInstanceFollowRedirects(false)
+            HttpURLConnection con =
+                    (HttpURLConnection) new URL(URLName).openConnection();
+            con.setRequestMethod("HEAD");
+            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public void download_completed(String status) {
+        System.out.println("#############################status" + status);
+        if (status.equals("nodata")) {
+            nextgamesdialog();
+        } else {
+            Handler handler = new Handler();
+            handler.postDelayed(() -> {
+                next();
+                System.out.println("p1");
+
+            }, 500);
+
+        }
+    }
+
+    private void backexitnet() {
+        if (main_act.equals("")) {
+            finish();
+            Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
+            startActivity(i);
+        } else {
+            finish();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -279,18 +253,8 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         rewarded_ad();
         if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 0) {
             // Make sure to set the mediation provider value to "max" to ensure proper functionality
-            AppLovinSdk.getInstance(Find_words_from_picture.this).setMediationProvider("max");
-            AppLovinSdk.initializeSdk(Find_words_from_picture.this, new AppLovinSdk.SdkInitializationListener() {
-                @Override
-                public void onSdkInitialized(final AppLovinSdkConfiguration configuration) {
-                    // AppLovin SDK is initialized, start loading ads
-                   // sps.putInt(getApplicationContext(), "ins_ad_new", 0);
-
-                    industrialload_game();
-                    game_exit_ins_ad();
-
-                }
-            });
+            MobileAds.initialize(this);
+            industrialload();
         }
 
         //Sound Pool Sounds
@@ -312,27 +276,7 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
 
         //loadRewardedVideoAd();
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
-                .addScope(Drive.SCOPE_APPFOLDER) // SavedGames
-                .build();
 
-        /*String gid = "16";
-        String qid = "";
-        for (int i = 1; i<=29; i++){
-            if (qid.equals("")){
-                qid = "" +i;
-            } else {
-                qid = qid + "," + i;
-            }
-        }
-        System.out.println("---qid : " +qid);
-        System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
-       // newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid='" + qid + "'and gameid='" + gid + "'");
-        newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
-*/
 
         soundset();
         find();
@@ -347,8 +291,6 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
             //fb_addload_score_screen(Find_words_from_picture.this);
 
         }
-
-
 
 
         if (sps.getString(Find_words_from_picture.this, "fn_intro").equals("")) {
@@ -369,21 +311,18 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
             // sequence.addSequenceItem(feedback, "கருத்துக்கள்  பொத்தானை அழுத்தி மேலும் உங்களுக்கு தெரிந்த விடைகளை எங்களுக்கு அனுப்பவும் .", "அடுத்து");
             //   sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Find_words_from_picture.this)
-                    .setTarget(p_facebook)
-                    .setDismissText("சரி")
-                    .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                    .build())
-                    .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
-                        @Override
-                        public void onDismiss(MaterialShowcaseView itemView, int position) {
+                            .setTarget(p_facebook)
+                            .setDismissText("சரி")
+                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
+                            .build())
+                    .setOnItemDismissedListener((itemView, position) -> {
 
-                            if (position == 2) {
-                                sps.putString(Find_words_from_picture.this, "time_start_fn", "yes");
-                                sps.putString(Find_words_from_picture.this, "showcase_dismiss_fn_intro", "yes");
-                                focus.setBase(SystemClock.elapsedRealtime());
-                                focus.start();
+                        if (position == 2) {
+                            sps.putString(Find_words_from_picture.this, "time_start_fn", "yes");
+                            sps.putString(Find_words_from_picture.this, "showcase_dismiss_fn_intro", "yes");
+                            focus.setBase(SystemClock.elapsedRealtime());
+                            focus.start();
 
-                            }
                         }
                     });
             sequence.start();
@@ -393,22 +332,75 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
 
     }
 
+
+    public void industrialload() {
+        Log.i("TAG", "onAdLoadedCalled");
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                interstiallistener();
+                Log.i("TAG", "onAdLoaded");
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.d("TAG", loadAdError.toString());
+                mInterstitialAd = null;
+                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
+            }
+        });
+
+    }
+
+    public void interstiallistener() {
+        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override
+            public void onAdDismissedFullScreenContent() {
+                // Called when ad is dismissed.
+                // Set the ad reference to null so you don't show the ad a second time.
+                Log.d("TAG", "Ad dismissed fullscreen content.");
+                mInterstitialAd = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                setSc();
+                industrialload();
+            }
+
+            @Override
+            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                // Called when ad fails to show.
+                Log.e("TAG", "Ad failed to show fullscreen content.");
+                mInterstitialAd = null;
+            }
+
+
+            @Override
+            public void onAdShowedFullScreenContent() {
+                // Called when ad is shown.
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                Log.d("TAG", "Ad showed fullscreen content.");
+            }
+        });
+    }
+
     public void showcase_dismiss() {
         Handler handler30 = new Handler();
-        handler30.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        handler30.postDelayed(() -> {
 
-                if (sps.getString(Find_words_from_picture.this, "showcase_dismiss_fn_intro").equals("")) {
-                    showcase_dismiss();
-                } else {
-                    sps.putString(Find_words_from_picture.this, "time_start_fn", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
-
-                }
+            if (sps.getString(Find_words_from_picture.this, "showcase_dismiss_fn_intro").equals("")) {
+                showcase_dismiss();
+            } else {
+                sps.putString(Find_words_from_picture.this, "time_start_fn", "yes");
+                focus.setBase(SystemClock.elapsedRealtime());
+                focus.start();
 
             }
+
         }, 800);
     }
 
@@ -519,16 +511,16 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
                 String fullPath = getFilesDir()
                         + "/Nithra/solliadi/";
                 File file = new File(fullPath + question + "");
-                System.out.println("printqus1"+file);
+                System.out.println("printqus1" + file);
                 if (file.exists()) {
                     Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + question + "");
                     Resources res = getResources();
                     BitmapDrawable bd = new BitmapDrawable(res, bitimg1);
                     image_1.setImageDrawable(bd);
-                    System.out.println("printqus2"+question);
+                    System.out.println("printqus2" + question);
                 } else {
                     missingimage();
-                    System.out.println("printqus3"+question);
+                    System.out.println("printqus3" + question);
                 }
             }
 
@@ -909,13 +901,7 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
                         update_price();
                         // completegame();
                         Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                setSc();
-
-                            }
-                        }, 2000);
+                        handler.postDelayed(() -> setSc(), 2000);
                     }
                 }
             } else {
@@ -934,266 +920,179 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         TextView yes = (TextView) openDialog.findViewById(R.id.yes);
         TextView no = (TextView) openDialog.findViewById(R.id.no);
         CheckBox checkbox_ans = (CheckBox) openDialog.findViewById(R.id.checkbox_ans);
-        checkbox_ans.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-                if (isChecked == true) {
-                    sps.putString(getApplicationContext(), "checkbox_ans", "yes");
-                } else {
-                    sps.putString(getApplicationContext(), "checkbox_ans", "");
-                }
-            }
-        });
-
-        yes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + question_id + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' order by random() limit 1 ");
-                cd.moveToFirst();
-                if (cd.getCount() != 0) {
-                    if (ans_count <= final_ans_count) {
-                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
-                        myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + question_id + "'and gameid='" + gameid + "' and rd='" + rdvalu + "' ");
-                        myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + question_id + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
-
-                        //Score Adding
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx - 50;
-                        String aStringx = Integer.toString(spx);
-                        score.setText(aStringx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                        if (vals == 1) {
-                            ans1.setText(sa);
-                            ans1.setTextColor(getResources().getColor(R.color.rippelColor1));
-                            value_ans1.setBackgroundResource(R.drawable.tick_background);
-                            value_ans1.setClickable(false);
-                            if (answerlength >= 2) {
-                                value_ans2.setVisibility(View.VISIBLE);
-                            }
-
-                        } else if (vals == 2) {
-                            ans2.setText(sa);
-                            ans2.setTextColor(getResources().getColor(R.color.rippelColor1));
-                            value_ans2.setBackgroundResource(R.drawable.tick_background);
-                            value_ans2.setClickable(false);
-                            if (answerlength >= 3) {
-                                value_ans3.setVisibility(View.VISIBLE);
-
-                            }
-                        } else if (vals == 3) {
-                            ans3.setText(sa);
-                            ans3.setTextColor(getResources().getColor(R.color.rippelColor1));
-                            value_ans3.setBackgroundResource(R.drawable.tick_background);
-                            value_ans3.setClickable(false);
-                            if (answerlength >= 4) {
-                                value_ans4.setVisibility(View.VISIBLE);
-                            }
-
-                        } else if (vals == 4) {
-                            ans4.setText(sa);
-                            ans4.setTextColor(getResources().getColor(R.color.rippelColor1));
-                            value_ans4.setBackgroundResource(R.drawable.tick_background);
-                            value_ans4.setClickable(false);
-                            if (answerlength >= 5) {
-                                value_ans5.setVisibility(View.VISIBLE);
-                            }
-
-                        } else if (vals == 5) {
-                            ans5.setText(sa);
-                            ans5.setTextColor(getResources().getColor(R.color.rippelColor1));
-                            value_ans5.setBackgroundResource(R.drawable.tick_background);
-                            value_ans5.setClickable(false);
-                            if (answerlength >= 6) {
-                                value_ans6.setVisibility(View.VISIBLE);
-                            }
-
-                        } else if (vals == 6) {
-                            ans6.setText(sa);
-                            ans6.setTextColor(getResources().getColor(R.color.rippelColor1));
-                            value_ans6.setBackgroundResource(R.drawable.tick_background);
-                            value_ans6.setClickable(false);
-                            if (answerlength >= 7) {
-                                value_ans7.setVisibility(View.VISIBLE);
-                            }
-
-                        } else if (vals == 7) {
-                            ans7.setText(sa);
-                            ans7.setTextColor(getResources().getColor(R.color.rippelColor1));
-                            value_ans7.setBackgroundResource(R.drawable.tick_background);
-                            value_ans7.setClickable(false);
-
-                        }
-                        ans_count++;
-                        openDialog.dismiss();
-                    }
-                    if (ans_count >= final_ans_count) {
-                        verify.setVisibility(View.INVISIBLE);
-                        focus.stop();
-                        // update_price();
-                        String date = sps.getString(Find_words_from_picture.this, "date");
-                        if (date.equals("0")) {
-                            newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid='" + question_id + "'and gameid='" + gameid + "'");
-                        } else {
-                            myDbHelper.executeSql("UPDATE dailytest SET isfinish='1' WHERE levelid='" + question_id + "'and gameid='" + gameid + "'");
-                        }
-                        // completegame();
-                        update_price();
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                setSc();
-
-                            }
-                        }, 2000);
-                    }
-                }
-            }
-        });
-        no.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            if (isChecked) {
+                sps.putString(getApplicationContext(), "checkbox_ans", "yes");
+            } else {
                 sps.putString(getApplicationContext(), "checkbox_ans", "");
-                openDialog.dismiss();
             }
+        });
+
+        yes.setOnClickListener(v -> {
+            Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + question_id + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' order by random() limit 1 ");
+            cd.moveToFirst();
+            if (cd.getCount() != 0) {
+                if (ans_count <= final_ans_count) {
+                    String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
+                    myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + question_id + "'and gameid='" + gameid + "' and rd='" + rdvalu + "' ");
+                    myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + question_id + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
+
+                    //Score Adding
+                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                    cfx.moveToFirst();
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                    int spx = skx - 50;
+                    String aStringx = Integer.toString(spx);
+                    score.setText(aStringx);
+                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                    if (vals == 1) {
+                        ans1.setText(sa);
+                        ans1.setTextColor(getResources().getColor(R.color.rippelColor1));
+                        value_ans1.setBackgroundResource(R.drawable.tick_background);
+                        value_ans1.setClickable(false);
+                        if (answerlength >= 2) {
+                            value_ans2.setVisibility(View.VISIBLE);
+                        }
+
+                    } else if (vals == 2) {
+                        ans2.setText(sa);
+                        ans2.setTextColor(getResources().getColor(R.color.rippelColor1));
+                        value_ans2.setBackgroundResource(R.drawable.tick_background);
+                        value_ans2.setClickable(false);
+                        if (answerlength >= 3) {
+                            value_ans3.setVisibility(View.VISIBLE);
+
+                        }
+                    } else if (vals == 3) {
+                        ans3.setText(sa);
+                        ans3.setTextColor(getResources().getColor(R.color.rippelColor1));
+                        value_ans3.setBackgroundResource(R.drawable.tick_background);
+                        value_ans3.setClickable(false);
+                        if (answerlength >= 4) {
+                            value_ans4.setVisibility(View.VISIBLE);
+                        }
+
+                    } else if (vals == 4) {
+                        ans4.setText(sa);
+                        ans4.setTextColor(getResources().getColor(R.color.rippelColor1));
+                        value_ans4.setBackgroundResource(R.drawable.tick_background);
+                        value_ans4.setClickable(false);
+                        if (answerlength >= 5) {
+                            value_ans5.setVisibility(View.VISIBLE);
+                        }
+
+                    } else if (vals == 5) {
+                        ans5.setText(sa);
+                        ans5.setTextColor(getResources().getColor(R.color.rippelColor1));
+                        value_ans5.setBackgroundResource(R.drawable.tick_background);
+                        value_ans5.setClickable(false);
+                        if (answerlength >= 6) {
+                            value_ans6.setVisibility(View.VISIBLE);
+                        }
+
+                    } else if (vals == 6) {
+                        ans6.setText(sa);
+                        ans6.setTextColor(getResources().getColor(R.color.rippelColor1));
+                        value_ans6.setBackgroundResource(R.drawable.tick_background);
+                        value_ans6.setClickable(false);
+                        if (answerlength >= 7) {
+                            value_ans7.setVisibility(View.VISIBLE);
+                        }
+
+                    } else if (vals == 7) {
+                        ans7.setText(sa);
+                        ans7.setTextColor(getResources().getColor(R.color.rippelColor1));
+                        value_ans7.setBackgroundResource(R.drawable.tick_background);
+                        value_ans7.setClickable(false);
+
+                    }
+                    ans_count++;
+                    openDialog.dismiss();
+                }
+                if (ans_count >= final_ans_count) {
+                    verify.setVisibility(View.INVISIBLE);
+                    focus.stop();
+                    // update_price();
+                    String date = sps.getString(Find_words_from_picture.this, "date");
+                    if (date.equals("0")) {
+                        newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid='" + question_id + "'and gameid='" + gameid + "'");
+                    } else {
+                        myDbHelper.executeSql("UPDATE dailytest SET isfinish='1' WHERE levelid='" + question_id + "'and gameid='" + gameid + "'");
+                    }
+                    // completegame();
+                    update_price();
+                    Handler handler = new Handler();
+                    handler.postDelayed(() -> setSc(), 2000);
+                }
+            }
+        });
+        no.setOnClickListener(v -> {
+            sps.putString(getApplicationContext(), "checkbox_ans", "");
+            openDialog.dismiss();
         });
         openDialog.show();
     }
 
     private void click() {
-        clear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chr = 1;
-                mCustomKeyboard.letter_del_change("1");
-                mCustomKeyboard.letter_del_change("1");
-                pressKey(KeyEvent.KEYCODE_DEL);
-            }
+        clear.setOnClickListener(v -> {
+            chr = 1;
+            mCustomKeyboard.letter_del_change("1");
+            mCustomKeyboard.letter_del_change("1");
+            pressKey(KeyEvent.KEYCODE_DEL);
         });
-        clear.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                chr = 1;
-                mCustomKeyboard.letter_del_change("1");
-                ans_editer.setText("");
-                return false;
-            }
+        clear.setOnLongClickListener(v -> {
+            chr = 1;
+            mCustomKeyboard.letter_del_change("1");
+            ans_editer.setText("");
+            return false;
         });
-        verify.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                verify_data();
-            }
-        });
-        p_setting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        verify.setOnClickListener(v -> verify_data());
+        p_setting.setOnClickListener(v -> {
+            p_setting.setBackgroundResource(R.drawable.sound_off);
+            String snd = sps.getString(Find_words_from_picture.this, "snd");
+            if (snd.equals("off")) {
+                sps.putString(Find_words_from_picture.this, "snd", "on");
+                p_setting.setBackgroundResource(R.drawable.sound_on);
+                sv = 1;
+            } else if (snd.equals("on")) {
+                sps.putString(Find_words_from_picture.this, "snd", "off");
                 p_setting.setBackgroundResource(R.drawable.sound_off);
-                String snd = sps.getString(Find_words_from_picture.this, "snd");
-                if (snd.equals("off")) {
-                    sps.putString(Find_words_from_picture.this, "snd", "on");
-                    p_setting.setBackgroundResource(R.drawable.sound_on);
-                    sv = 1;
-                } else if (snd.equals("on")) {
-                    sps.putString(Find_words_from_picture.this, "snd", "off");
-                    p_setting.setBackgroundResource(R.drawable.sound_off);
-                    sv = 0;
-                }
+                sv = 0;
             }
         });
-        value_ans1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                set_val(1);
-            }
-        });
-        value_ans2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                set_val(2);
-            }
-        });
-        value_ans3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                set_val(3);
-            }
-        });
-        value_ans4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                set_val(4);
-            }
-        });
-        value_ans5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                set_val(5);
-            }
-        });
-        value_ans6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                set_val(6);
-            }
-        });
-        value_ans7.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                set_val(7);
-            }
-        });
-        image_1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pic_show(1);
-            }
-        });
+        value_ans1.setOnClickListener(v -> set_val(1));
+        value_ans2.setOnClickListener(v -> set_val(2));
+        value_ans3.setOnClickListener(v -> set_val(3));
+        value_ans4.setOnClickListener(v -> set_val(4));
+        value_ans5.setOnClickListener(v -> set_val(5));
+        value_ans6.setOnClickListener(v -> set_val(6));
+        value_ans7.setOnClickListener(v -> set_val(7));
+        image_1.setOnClickListener(v -> pic_show(1));
 
-        p_facebook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                share_name = 1;
-                final String a = "com.facebook.katana";
-                permission(a);
-            }
+        p_facebook.setOnClickListener(v -> {
+            share_name = 1;
+            final String a = "com.facebook.katana";
+            permission(a);
         });
-        p_watts_app.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                share_name = 2;
-                String a = "com.whatsapp";
-                permission(a);
-            }
+        p_watts_app.setOnClickListener(v -> {
+            share_name = 2;
+            String a = "com.whatsapp";
+            permission(a);
         });
-        qwt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog(0);
-            }
-        });
+        qwt.setOnClickListener(v -> dialog(0));
 
 
-        ans_editer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(verify.getWindowToken(), 0);
-            }
+        ans_editer.setOnClickListener(v -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(verify.getWindowToken(), 0);
         });
-        ans_editer.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(verify.getWindowToken(), 0);
+        ans_editer.setOnTouchListener((v, event) -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(verify.getWindowToken(), 0);
 
-                return true;
-            }
+            return true;
         });
     }
 
@@ -1266,13 +1165,7 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
                             }
                             update_price();
                             Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    setSc();
-
-                                }
-                            }, 2000);
+                            handler.postDelayed(() -> setSc(), 2000);
                         }
 
                     }
@@ -1433,28 +1326,25 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         } else {
             prize_logo.setVisibility(View.GONE);
         }
-        prize_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
-                    if (sps.getString(Find_words_from_picture.this, "price_registration").equals("com")) {
+        prize_logo.setOnClickListener(v -> {
+            if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
+                if (sps.getString(Find_words_from_picture.this, "price_registration").equals("com")) {
+                    finish();
+                    Intent i = new Intent(Find_words_from_picture.this, Game_Status.class);
+                    startActivity(i);
+                } else {
+                    if (sps.getString(Find_words_from_picture.this, "otp_verify").equals("yes")) {
                         finish();
-                        Intent i = new Intent(Find_words_from_picture.this, Game_Status.class);
+                        Intent i = new Intent(Find_words_from_picture.this, LoginActivity.class);
                         startActivity(i);
                     } else {
-                        if (sps.getString(Find_words_from_picture.this, "otp_verify").equals("yes")) {
-                            finish();
-                            Intent i = new Intent(Find_words_from_picture.this, LoginActivity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            Intent i = new Intent(Find_words_from_picture.this, Price_Login.class);
-                            startActivity(i);
-                        }
+                        finish();
+                        Intent i = new Intent(Find_words_from_picture.this, Price_Login.class);
+                        startActivity(i);
                     }
-                } else {
-                    Toast.makeText(Find_words_from_picture.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(Find_words_from_picture.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -1476,18 +1366,8 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         TextView cancel = (TextView) openDialog_earncoin.findViewById(R.id.cancel);
         TextView ss = (TextView) openDialog_earncoin.findViewById(R.id.ssss);
 
-        ss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_earncoin.cancel();
-            }
-        });
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_earncoin.cancel();
-            }
-        });
+        ss.setOnClickListener(v -> openDialog_earncoin.cancel());
+        cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
         TextView wpro = (TextView) openDialog_earncoin.findViewById(R.id.wpro);
         if (i == 1) {
             cancel.setVisibility(View.INVISIBLE);
@@ -1495,119 +1375,103 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         }
 
         RelativeLayout video = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnvideo);
-        video.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 1;
-                extra_coin_s = 0;
-                if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Find_words_from_picture.this, "" + "Reward video", "Loading...");
+        video.setOnClickListener(v -> {
+            rvo = 1;
+            extra_coin_s = 0;
+            if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_words_from_picture.this, "" + "Reward video", "Loading...");
 
-                    if (fb_reward == 1) {
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                if (fb_reward == 1) {
+                    focus.stop();
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
-                        String date = sps.getString(Find_words_from_picture.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                        } else {
-                            pos = 2;
-                        }
-                        myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-                        myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+                    String date = sps.getString(Find_words_from_picture.this, "date");
+                    int pos;
+                    if (date.equals("0")) {
+                        pos = 1;
+                    } else {
+                        pos = 2;
+                    }
+                    myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+                    myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
 
+                    reward_progressBar.dismiss();
+                    rewardedAd.showAd();
+                    openDialog_earncoin.cancel();
+
+                    // mShowVideoButton.setVisibility(View.VISIBLE);
+                } else {
+                    fb_reward = 0;
+                    //reward(Find_words_from_picture.this);
+                    rewarded_ad();
+                    new Handler().postDelayed(() -> {
                         reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        openDialog_earncoin.cancel();
 
-                        // mShowVideoButton.setVisibility(View.VISIBLE);
-                    } else {
-                        fb_reward = 0;
-                        //reward(Find_words_from_picture.this);
-                        rewarded_ad();
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
+                        Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
 
-                                Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-
-                            }
-                        }, 2000);
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                    }, 2000);
                 }
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
             }
         });
 
-        wp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        openDialog_earncoin.cancel();
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 12);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
+        wp.setOnClickListener(view -> {
+            if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
+                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                if (appinstalled) {
+                    openDialog_earncoin.cancel();
+                    Intent i12 = new Intent(Intent.ACTION_SEND);
+                    i12.setType("text/plain");
+                    i12.setPackage("com.whatsapp");
+                    String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
+                            "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                    i12.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i12, "Share via"), 12);
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-            }
-        });
-        fb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-        gplus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
-
-                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
-                    if (appinstalled) {
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        String date = sps.getString(Find_words_from_picture.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                        } else {
-                            pos = 2;
-                        }
-                        myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-                        myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-
-                        openDialog_earncoin.cancel();
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.google.android.apps.plus");
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 15);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
                 }
 
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+            }
+        });
+        fb.setOnClickListener(view -> {
+
+        });
+        gplus.setOnClickListener(view -> {
+            if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
+
+                final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
+                if (appinstalled) {
+                    focus.stop();
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    String date = sps.getString(Find_words_from_picture.this, "date");
+                    int pos;
+                    if (date.equals("0")) {
+                        pos = 1;
+                    } else {
+                        pos = 2;
+                    }
+                    myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+                    myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+
+                    openDialog_earncoin.cancel();
+                    Intent i1 = new Intent(Intent.ACTION_SEND);
+                    i1.setType("text/plain");
+                    i1.setPackage("com.google.android.apps.plus");
+                    String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
+                            "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                    i1.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i1, "Share via"), 15);
+                } else {
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+                }
+
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             }
 
         });
@@ -1667,33 +1531,29 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         } else {
             prize_logo.setVisibility(View.GONE);
         }
-        prize_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
-                    if (sps.getString(Find_words_from_picture.this, "price_registration").equals("com")) {
+        prize_logo.setOnClickListener(v -> {
+            if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
+                if (sps.getString(Find_words_from_picture.this, "price_registration").equals("com")) {
+                    finish();
+                    Intent i = new Intent(Find_words_from_picture.this, Game_Status.class);
+                    startActivity(i);
+                } else {
+                    if (sps.getString(Find_words_from_picture.this, "otp_verify").equals("yes")) {
                         finish();
-                        Intent i = new Intent(Find_words_from_picture.this, Game_Status.class);
+                        Intent i = new Intent(Find_words_from_picture.this, LoginActivity.class);
                         startActivity(i);
                     } else {
-                        if (sps.getString(Find_words_from_picture.this, "otp_verify").equals("yes")) {
-                            finish();
-                            Intent i = new Intent(Find_words_from_picture.this, LoginActivity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            Intent i = new Intent(Find_words_from_picture.this, Price_Login.class);
-                            startActivity(i);
-                        }
+                        finish();
+                        Intent i = new Intent(Find_words_from_picture.this, Price_Login.class);
+                        startActivity(i);
                     }
-                } else {
-                    Toast.makeText(Find_words_from_picture.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(Find_words_from_picture.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
             }
         });
         Animation myFadeInAnimation = AnimationUtils.loadAnimation(Find_words_from_picture.this, R.anim.blink_animation);
         vid_earn.startAnimation(myFadeInAnimation);
-
 
 
         if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 1) {
@@ -1730,128 +1590,106 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
 
         // final LinearLayout vid_earn = (LinearLayout) openDialog_s.findViewById(R.id.vid_earn);
 
-        vid_earn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 2;
-                if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Find_words_from_picture.this, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
+        vid_earn.setOnClickListener(v -> {
+            rvo = 2;
+            if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_words_from_picture.this, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    rewardedAd.showAd();
+                    rewardvideo.setVisibility(View.INVISIBLE);
+                } else {
+                    new Handler().postDelayed(() -> {
                         reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        rewardvideo.setVisibility(View.INVISIBLE);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward(Find_words_from_picture.this);
-                                    rewarded_ad();
-                                    Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-                    }
-                } else {
-
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
+                        if (fb_reward == 1) {
+                            rewardedAd.showAd();
+                            // mShowVideoButton.setVisibility(View.VISIBLE);
+                        } else {
+                            //reward(Find_words_from_picture.this);
+                            rewarded_ad();
+                            Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
                 }
+            } else {
+
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
             }
+
         });
 
-        rewardvideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 2;
-                if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Find_words_from_picture.this, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
+        rewardvideo.setOnClickListener(v -> {
+            rvo = 2;
+            if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_words_from_picture.this, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    rewardedAd.showAd();
+                    rewardvideo.setVisibility(View.INVISIBLE);
+                } else {
+                    new Handler().postDelayed(() -> {
                         reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        rewardvideo.setVisibility(View.INVISIBLE);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward(Find_words_from_picture.this);
-                                    rewarded_ad();
-                                    Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-                    }
-                } else {
-
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
+                        if (fb_reward == 1) {
+                            rewardedAd.showAd();
+                            // mShowVideoButton.setVisibility(View.VISIBLE);
+                        } else {
+                            //reward(Find_words_from_picture.this);
+                            rewarded_ad();
+                            Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
                 }
-            }
-        });
-        wtp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
-                        String msg = ("நான் சொல்லிஅடி செயலியில் படத்திற்குள் கண்டுபிடி நிலை " + questionid.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivity(Intent.createChooser(i, "Share via"));
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 21);
+            } else {
 
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-            }
-        });
-        fbs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
             }
         });
-        gplus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
-                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.google.android.apps.plus");
+        wtp.setOnClickListener(view -> {
+            if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
+                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.whatsapp");
+                    String msg = ("நான் சொல்லிஅடி செயலியில் படத்திற்குள் கண்டுபிடி நிலை " + questionid.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivity(Intent.createChooser(i, "Share via"));
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 21);
 
-                        String msg = ("நான் சொல்லிஅடி செயலியில் படத்திற்குள் கண்டுபிடி நிலை" + questionid.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 16);
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
                 }
 
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+            }
+        });
+        fbs.setOnClickListener(view -> {
+
+        });
+        gplus.setOnClickListener(view -> {
+            if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
+                final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.google.android.apps.plus");
+
+                    String msg = ("நான் சொல்லிஅடி செயலியில் படத்திற்குள் கண்டுபிடி நிலை" + questionid.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 16);
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+                }
+
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             }
 
         });
@@ -1887,142 +1725,98 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
                 next_continue.setText("சரி");
             }
             Handler handler1 = new Handler();
-            handler1.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    //play1.start();
-                    cns3.setVisibility(View.VISIBLE);
-                }
+            handler1.postDelayed(() -> {
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                //play1.start();
+                cns3.setVisibility(View.VISIBLE);
             }, 500);
             Handler handler2 = new Handler();
-            handler2.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    // play2.start();
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    cns1.setVisibility(View.VISIBLE);
-                }
+            handler2.postDelayed(() -> {
+                // play2.start();
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                cns1.setVisibility(View.VISIBLE);
             }, 1000);
             Handler handler3 = new Handler();
-            handler3.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    //  play3.start();
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    cns2.setVisibility(View.VISIBLE);
-                }
+            handler3.postDelayed(() -> {
+                //  play3.start();
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                cns2.setVisibility(View.VISIBLE);
             }, 1500);
 
 
             Handler handler6 = new Handler();
-            handler6.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    int[] locationInWindow = new int[2];
-                    cns3.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    cns3.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    dumy.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    dumy.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                    transAnimation.setDuration(400);
-                    cns3.startAnimation(transAnimation);
-                    cns3.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            cns3.setVisibility(View.INVISIBLE);
-                        }
-                    }, transAnimation.getDuration());
+            handler6.postDelayed(() -> {
+                int[] locationInWindow = new int[2];
+                cns3.getLocationInWindow(locationInWindow);
+                int[] locationOnScreen = new int[2];
+                cns3.getLocationOnScreen(locationOnScreen);
+                float sourceX = locationOnScreen[0];
+                float sourceY = locationOnScreen[1];
+                int[] locationInWindowSecond = new int[2];
+                dumy.getLocationInWindow(locationInWindowSecond);
+                int[] locationOnScreenSecond = new int[2];
+                dumy.getLocationOnScreen(locationOnScreenSecond);
+                float destinationX = locationOnScreenSecond[0];
+                float destinationY = locationOnScreenSecond[1];
+                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                transAnimation.setDuration(400);
+                cns3.startAnimation(transAnimation);
+                cns3.postDelayed(() -> cns3.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
-                }
             }, 1500);
             Handler handler7 = new Handler();
-            handler7.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    int[] locationInWindow = new int[2];
-                    cns1.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    cns1.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    dumy.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    dumy.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                    transAnimation.setDuration(400);
-                    cns1.startAnimation(transAnimation);
-                    cns1.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            cns1.setVisibility(View.INVISIBLE);
-                        }
-                    }, transAnimation.getDuration());
+            handler7.postDelayed(() -> {
+                int[] locationInWindow = new int[2];
+                cns1.getLocationInWindow(locationInWindow);
+                int[] locationOnScreen = new int[2];
+                cns1.getLocationOnScreen(locationOnScreen);
+                float sourceX = locationOnScreen[0];
+                float sourceY = locationOnScreen[1];
+                int[] locationInWindowSecond = new int[2];
+                dumy.getLocationInWindow(locationInWindowSecond);
+                int[] locationOnScreenSecond = new int[2];
+                dumy.getLocationOnScreen(locationOnScreenSecond);
+                float destinationX = locationOnScreenSecond[0];
+                float destinationY = locationOnScreenSecond[1];
+                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                transAnimation.setDuration(400);
+                cns1.startAnimation(transAnimation);
+                cns1.postDelayed(() -> cns1.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
-                }
             }, 1900);
             Handler handler8 = new Handler();
-            handler8.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    int[] locationInWindow = new int[2];
-                    cns2.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    cns2.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    dumy.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    dumy.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                    transAnimation.setDuration(400);
-                    cns2.startAnimation(transAnimation);
-                    cns2.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            cns2.setVisibility(View.INVISIBLE);
-                        }
-                    }, transAnimation.getDuration());
+            handler8.postDelayed(() -> {
+                int[] locationInWindow = new int[2];
+                cns2.getLocationInWindow(locationInWindow);
+                int[] locationOnScreen = new int[2];
+                cns2.getLocationOnScreen(locationOnScreen);
+                float sourceX = locationOnScreen[0];
+                float sourceY = locationOnScreen[1];
+                int[] locationInWindowSecond = new int[2];
+                dumy.getLocationInWindow(locationInWindowSecond);
+                int[] locationOnScreenSecond = new int[2];
+                dumy.getLocationOnScreen(locationOnScreenSecond);
+                float destinationX = locationOnScreenSecond[0];
+                float destinationY = locationOnScreenSecond[1];
+                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                transAnimation.setDuration(400);
+                cns2.startAnimation(transAnimation);
+                cns2.postDelayed(() -> cns2.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
-                }
             }, 2300);
 
             case2 = 0;
             tot2 = 30;
-            new Thread(new Runnable() {
-
-                public void run() {
-                    while (case2 < tot2) {
-                        try {
-                            Thread.sleep(50);
-                        } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                        bsscores.post(new Runnable() {
-
-                            public void run() {
-                                bsscores.setText("" + case2);
-
-                            }
-
-                        });
-                        case2++;
+            new Thread(() -> {
+                while (case2 < tot2) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
                     }
-
+                    bsscores.post(() -> bsscores.setText("" + case2));
+                    case2++;
                 }
 
             }).start();
@@ -2040,118 +1834,69 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
 
 
             Handler handler11 = new Handler();
-            handler11.postDelayed(new Runnable() {
-                @Override
-                public void run() {
+            handler11.postDelayed(() -> new Thread(() -> {
 
-
-                    new Thread(new Runnable() {
-
-                        public void run() {
-
-                            while (tt_case2 < tt_tot2) {
-                                try {
-                                    Thread.sleep(50);
-                                } catch (InterruptedException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
-                                }
-                                ttscores.post(new Runnable() {
-
-                                    public void run() {
-                                        ttscores.setText("" + tt_case2);
-
-                                    }
-
-                                });
-                                tt_case2++;
-                            }
-
-                        }
-
-                    }).start();
+                while (tt_case2 < tt_tot2) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    ttscores.post(() -> ttscores.setText("" + tt_case2));
+                    tt_case2++;
                 }
-            }, 1500);
+
+            }).start(), 1500);
 
             Handler hand = new Handler();
-            hand.postDelayed(new Runnable() {
-                @Override
-                public void run() {
+            hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 2500);
 
-                    next_continue.setVisibility(View.VISIBLE);
-                }
-            }, 2500);
+            next_continue.setOnClickListener(view -> {
+                y = 0;
+                case2 = 0;
+                tot2 = 0;
+                tt_case2 = 0;
+                tt_tot2 = 0;
 
-            next_continue.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    y = 0;
-                    case2 = 0;
-                    tot2 = 0;
-                    tt_case2 = 0;
-                    tt_tot2 = 0;
-
-                    if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 1) {
-                        dia_dismiss = 1;
-                        openDialog_s.dismiss();
-                        next();
-                        System.out.println("p3");
-                    } else {
-                        //  advancads();
-                        // advancads_content();
-                        if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
-                            sps.putInt(getApplicationContext(), "ins_ad_new", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (ins_game == null || !ins_game.isReady()) {
-                                    dia_dismiss = 1;
-                                    openDialog_s.dismiss();
-                                    next();
-                                    System.out.println("p4");
-
-                                   // industrialload_game();
-                                    return;
-                                }else {
-                                    ins_game.showAd();
-                                }
-
-
-                            } else {
+                if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 1) {
+                    dia_dismiss = 1;
+                    openDialog_s.dismiss();
+                    next();
+                    System.out.println("p3");
+                } else {
+                    //  advancads();
+                    // advancads_content();
+                    if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
+                        sps.putInt(getApplicationContext(), "ins_ad_new", 0);
+                        if (Utils.isNetworkAvailable(getApplicationContext())) {
+                            if (ins_game == null || !ins_game.isReady()) {
                                 dia_dismiss = 1;
                                 openDialog_s.dismiss();
                                 next();
-                                System.out.println("p5");
+                                System.out.println("p4");
+
+                                // industrialload_game();
+                                return;
+                            } else {
+                                ins_game.showAd();
                             }
+
 
                         } else {
                             dia_dismiss = 1;
                             openDialog_s.dismiss();
                             next();
-                            System.out.println("p6");
-                            sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
+                            System.out.println("p5");
                         }
+
+                    } else {
+                        dia_dismiss = 1;
+                        openDialog_s.dismiss();
+                        next();
+                        System.out.println("p6");
+                        sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
                     }
-
-                    /*play1.stop();
-                    play2.stop();
-                    play3.stop();*/
-                    // advancads_content();
-
-
-                    if (Utils.isNetworkAvailable(getApplicationContext())) {
-                        if (getApiClient().isConnected()) {
-                            if (isSignedIn()) {
-                                int k1 = 0;
-                                Cursor sc2 = myDbHelper.getQry("select * from score ");
-                                sc2.moveToFirst();
-                                if (sc2.getCount() != 0) {
-                                    k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
-                                }
-                                Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
-                            }
-                        }
-                    }
-                  /*  dia_dismiss = 1;
-                    openDialog_s.dismiss();*/
                 }
             });
         } else {
@@ -2195,72 +1940,84 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
             //Score Adding
 
 
-            next_continue.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    y = 0;
-                    case2 = 0;
-                    tot2 = 0;
-                    tt_case2 = 0;
-                    tt_tot2 = 0;
-                    if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 1) {
-                        dia_dismiss = 1;
-                        openDialog_s.dismiss();
-                        next();
-                        System.out.println("p7");
-                    }else{
+            next_continue.setOnClickListener(view -> {
+                y = 0;
+                case2 = 0;
+                tot2 = 0;
+                tt_case2 = 0;
+                tt_tot2 = 0;
+                if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 1) {
+                    dia_dismiss = 1;
+                    openDialog_s.dismiss();
+                    next();
+                    System.out.println("p7");
+                } else {
 
-                        if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
-                            sps.putInt(getApplicationContext(), "ins_ad_new", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (ins_game == null || !ins_game.isReady()) {
-                                    dia_dismiss = 1;
-                                    openDialog_s.dismiss();
-                                    next();
-                                    System.out.println("p8");
-
-                                    //industrialload_game();
-                                    return;
-                                }else {
-                                    ins_game.showAd();
-                                }
-
-                            } else {
+                    if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
+                        sps.putInt(getApplicationContext(), "ins_ad_new", 0);
+                        if (Utils.isNetworkAvailable(getApplicationContext())) {
+                            if (ins_game == null || !ins_game.isReady()) {
                                 dia_dismiss = 1;
                                 openDialog_s.dismiss();
                                 next();
-                                System.out.println("p9");
+                                System.out.println("p8");
+
+                                //industrialload_game();
+                            } else {
+                                ins_game.showAd();
                             }
 
                         } else {
                             dia_dismiss = 1;
                             openDialog_s.dismiss();
                             next();
-                            System.out.println("p10");
-                            sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
+                            System.out.println("p9");
                         }
-                    }
 
+                    } else {
+                        dia_dismiss = 1;
+                        openDialog_s.dismiss();
+                        next();
+                        System.out.println("p10");
+                        sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
+                    }
                 }
+
             });
         }
 
-        openDialog_s.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (dia_dismiss != 1) {
-                    sps.putString(Find_words_from_picture.this, "game_area", "on");
-                    tot2 = 0;
-                    tt_tot2 = 0;
-                    case2 = 0;
-                    y = 0;
-                    tt_case2 = 0;
+        openDialog_s.setOnDismissListener(dialog -> {
+            if (dia_dismiss != 1) {
+                sps.putString(Find_words_from_picture.this, "game_area", "on");
+                tot2 = 0;
+                tt_tot2 = 0;
+                case2 = 0;
+                y = 0;
+                tt_case2 = 0;
 
 
-                    String date = sps.getString(Find_words_from_picture.this, "date");
-                    if (date.equals("0")) {
+                String date = sps.getString(Find_words_from_picture.this, "date");
+                if (date.equals("0")) {
 
 
+                    if (main_act.equals("")) {
+                        finish();
+                        openDialog_s.dismiss();
+                        Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        finish();
+                        openDialog_s.dismiss();
+
+                    }
+                } else {
+                    if (sps.getString(Find_words_from_picture.this, "Exp_list").equals("on")) {
+                        finish();
+                        openDialog_s.dismiss();
+                        Intent i = new Intent(Find_words_from_picture.this, Expandable_List_View.class);
+                        startActivity(i);
+
+                    } else {
                         if (main_act.equals("")) {
                             finish();
                             openDialog_s.dismiss();
@@ -2271,34 +2028,15 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
                             openDialog_s.dismiss();
 
                         }
-                    } else {
-                        if (sps.getString(Find_words_from_picture.this, "Exp_list").equals("on")) {
-                            finish();
-                            openDialog_s.dismiss();
-                            Intent i = new Intent(Find_words_from_picture.this, Expandable_List_View.class);
-                            startActivity(i);
-
-                        } else {
-                            if (main_act.equals("")) {
-                                finish();
-                                openDialog_s.dismiss();
-                                Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                                openDialog_s.dismiss();
-
-                            }
-                        }
-
                     }
 
-                } else {
-                    dia_dismiss = 0;
                 }
 
-
+            } else {
+                dia_dismiss = 0;
             }
+
+
         });
 
         if (!isFinishing()) {
@@ -2306,37 +2044,11 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         }
     }
 
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    //*********************reward videos process 3***********************
-
-
-
-
-
-
-
     private void addCoins(int coins) {
         mCoinCount = coins;
         sps.putInt(Find_words_from_picture.this, "reward_coin_txt", coins);
         //mCoinCountText.setText("Coins: " + mCoinCount);
     }
-
-
 
 
     //reward videos***********************//
@@ -2362,14 +2074,11 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
 
 
         final int finalSkx = skx;
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ttscores.setText("" + finalSkx);
-                score.setText("" + finalSkx);
-                openDialog.dismiss();
-                //mCoinCount = 0;
-            }
+        ok_y.setOnClickListener(v -> {
+            ttscores.setText("" + finalSkx);
+            score.setText("" + finalSkx);
+            openDialog.dismiss();
+            //mCoinCount = 0;
         });
 
         openDialog.show();
@@ -2403,13 +2112,10 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
 
 
             b_scores.setText("" + mCoinCount);
-            ok_y.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    score.setText("" + spxdr);
-                    openDialog.dismiss();
-                    //mCoinCount = 0;
-                }
+            ok_y.setOnClickListener(v -> {
+                score.setText("" + spxdr);
+                openDialog.dismiss();
+                //mCoinCount = 0;
             });
 
             openDialog.show();
@@ -2453,21 +2159,18 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         //TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
 
 
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                if (cfx.getCount() != 0) {
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + ea;
-                    String aStringx = Integer.toString(spx);
-                    score.setText(aStringx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                    sps.putString(Find_words_from_picture.this, "daily_bonus_date", date);
-                }
-                openDialog.dismiss();
+        ok_y.setOnClickListener(v -> {
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            if (cfx.getCount() != 0) {
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                int spx = skx + ea;
+                String aStringx = Integer.toString(spx);
+                score.setText(aStringx);
+                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+                sps.putString(Find_words_from_picture.this, "daily_bonus_date", date);
             }
+            openDialog.dismiss();
         });
 
         coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
@@ -2526,36 +2229,30 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
 
         extra_coin = (LinearLayout) openDialog.findViewById(R.id.extra_coin);
 
-        extra_coin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                extra_coin_s = 1;
-                if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Find_words_from_picture.this, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
-                        reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward(Find_words_from_picture.this);
-                                    rewarded_ad();
-                                    Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-
-
-                    }
+        extra_coin.setOnClickListener(v -> {
+            extra_coin_s = 1;
+            if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_words_from_picture.this, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    rewardedAd.showAd();
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                    new Handler().postDelayed(() -> {
+                        reward_progressBar.dismiss();
+                        if (fb_reward == 1) {
+                            rewardedAd.showAd();
+                            // mShowVideoButton.setVisibility(View.VISIBLE);
+                        } else {
+                            //reward(Find_words_from_picture.this);
+                            rewarded_ad();
+                            Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
+
+
                 }
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
             }
         });
                        /* b_close.setOnClickListener(new View.OnClickListener() {
@@ -2567,46 +2264,6 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         openDialog.show();
     }
 
-
-
-    public void game_exit_ins_ad() {
-
-        game_exit_ins = new MaxInterstitialAd(getResources().getString(R.string.Cat_Exit_Ins), this);
-        game_exit_ins.setListener(new MaxAdListener() {
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                openDialog_p.dismiss();
-                game_exit_ins_ad();
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error"+error);
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2"+error);
-            }
-        });
-        game_exit_ins.loadAd();
-
-    }
 
     public void industrialload_game() {
 
@@ -2676,30 +2333,10 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         TextView wq1 = (TextView) openDialogk.findViewById(R.id.wq1);
         TextView wq2 = (TextView) openDialogk.findViewById(R.id.wq2);
         RelativeLayout rts = (RelativeLayout) openDialogk.findViewById(R.id.rts);
-        wq1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openDialogk.dismiss();
-            }
-        });
-        wq2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openDialogk.dismiss();
-            }
-        });
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openDialogk.dismiss();
-            }
-        });
-        rts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialogk.dismiss();
-            }
-        });
+        wq1.setOnClickListener(view -> openDialogk.dismiss());
+        wq2.setOnClickListener(view -> openDialogk.dismiss());
+        cancel.setOnClickListener(view -> openDialogk.dismiss());
+        rts.setOnClickListener(v -> openDialogk.dismiss());
         openDialogk.show();
     }
 
@@ -2733,14 +2370,14 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         if (setting_access == 1) {
             setting_access = 0;
             //if ((ContextCompat.checkSelfPermission(Find_words_from_picture.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                data_download_game();
+            data_download_game();
             /*} else {
                 settingpermission();
             }*/
         } else if (setting_access == 2) {
             setting_access = 0;
             //if ((ContextCompat.checkSelfPermission(Find_words_from_picture.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                data_download_game();
+            data_download_game();
            /* } else {
                 settingpermission();
             }*/
@@ -2967,85 +2604,77 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
     }
 
     private void back() {
-            openDialog_p = new Dialog(Find_words_from_picture.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-            openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+        openDialog_p = new Dialog(Find_words_from_picture.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog_p.setContentView(R.layout.back_pess);
+        TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
+        TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
-            yes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    sps.putString(Find_words_from_picture.this, "game_area", "on");
+        yes.setOnClickListener(v -> {
+            sps.putString(Find_words_from_picture.this, "game_area", "on");
 
 
-                    focus.stop();
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
 
-                    String date = sps.getString(Find_words_from_picture.this, "date");
-                    int pos;
-                    if (date.equals("0")) {
-                        pos = 1;
+            String date = sps.getString(Find_words_from_picture.this, "date");
+            int pos;
+            if (date.equals("0")) {
+                pos = 1;
+            } else {
+                pos = 2;
+            }
+
+            myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+            myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+            //String date = sps.getString(Find_words_from_picture.this, "date");
+            if (date.equals("0")) {
+                if (main_act.equals("")) {
+                    finish();
+                    Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
+                    startActivity(i);
+                } else {
+                    finish();
+                }
+            } else {
+                if (sps.getString(Find_words_from_picture.this, "Exp_list").equals("on")) {
+                    finish();
+                    Intent i = new Intent(Find_words_from_picture.this, Expandable_List_View.class);
+                    startActivity(i);
+                } else {
+                    if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
+                        startActivity(i);
                     } else {
-                        pos = 2;
+                        finish();
                     }
+                }
+            }
 
-                    myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-                    myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-                    //String date = sps.getString(Find_words_from_picture.this, "date");
-                    if (date.equals("0")) {
-                        if (main_act.equals("")) {
-                            finish();
-                            Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                        }
-                    } else {
-                        if (sps.getString(Find_words_from_picture.this, "Exp_list").equals("on")) {
-                            finish();
-                            Intent i = new Intent(Find_words_from_picture.this, Expandable_List_View.class);
-                            startActivity(i);
-                        } else {
-                            if (main_act.equals("")) {
-                                finish();
-                                Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                            }
-                        }
-                    }
-
-                    //ad
-                    if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 0) {
-                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                    openDialog_p.dismiss();
-                                    game_exit_ins.showAd();
-                                }
-                            }
-                        } else {
+            //ad
+            if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 0) {
+                if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
+                    sps.putInt(getApplicationContext(), "game_exit_ins", 0);
+                    if (Utils.isNetworkAvailable(getApplicationContext())) {
+                        if (mInterstitialAd != null) {
                             openDialog_p.dismiss();
-                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
+                            mInterstitialAd.show(Find_words_from_picture.this);
                         }
-                    }else{
-                        openDialog_p.dismiss();
                     }
-                    //ad
-
-
-                }
-            });
-            no.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                } else {
                     openDialog_p.dismiss();
+                    sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
                 }
-            });
-            openDialog_p.show();
+            } else {
+                openDialog_p.dismiss();
+            }
+            //ad
+
+
+        });
+        no.setOnClickListener(v -> openDialog_p.dismiss());
+        openDialog_p.show();
 
 
     }
@@ -3069,51 +2698,36 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
             next_game.setText("படத்திற்குள் கண்டுபிடி புதிய  பதிவுகள் இல்லை. மேலும் நீங்கள் சிறப்பாக விளையாட  காத்திருக்கும் விளையாட்டுக்கள். ");
         }
 
-        c_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Clue_Game_Hard.class);
-                startActivity(i);
-            }
+        c_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Clue_Game_Hard.class);
+            startActivity(i);
         });
-        s_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Solukul_Sol.class);
-                startActivity(i);
-            }
+        s_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Solukul_Sol.class);
+            startActivity(i);
         });
-        w_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Word_Game_Hard.class);
-                startActivity(i);
-            }
+        w_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Word_Game_Hard.class);
+            startActivity(i);
         });
-        p_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Picture_Game_Hard.class);
-                startActivity(i);
-            }
+        p_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Picture_Game_Hard.class);
+            startActivity(i);
         });
 
-        exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
-                startActivity(i);
-            }
+        exit.setOnClickListener(v -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
+            startActivity(i);
         });
 
         Cursor ct;
@@ -3153,23 +2767,17 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
 
         TextView odd_man_out = (TextView) openDialog.findViewById(R.id.odd_man_out);
         TextView matchword = (TextView) openDialog.findViewById(R.id.matchword);
-        matchword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Match_Word.class);
-                startActivity(i);
-            }
+        matchword.setOnClickListener(view -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Match_Word.class);
+            startActivity(i);
         });
-        odd_man_out.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Odd_man_out.class);
-                startActivity(i);
-            }
+        odd_man_out.setOnClickListener(view -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Odd_man_out.class);
+            startActivity(i);
         });
         Cursor cts;
         cts = newhelper.getQry("select * from newmaintable where isfinish='0' order by id limit 1");
@@ -3192,23 +2800,17 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
 
         TextView opposite_word = (TextView) openDialog.findViewById(R.id.opposite_word);
         TextView ote_to_tamil = (TextView) openDialog.findViewById(R.id.ote_to_tamil);
-        opposite_word.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Opposite_word.class);
-                startActivity(i);
-            }
+        opposite_word.setOnClickListener(view -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Opposite_word.class);
+            startActivity(i);
         });
-        ote_to_tamil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Ote_to_Tamil.class);
-                startActivity(i);
-            }
+        ote_to_tamil.setOnClickListener(view -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Ote_to_Tamil.class);
+            startActivity(i);
         });
 
         Cursor ctd;
@@ -3266,41 +2868,29 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         }
 
 
-        seerpaduthu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Makeword_Rightorder.class);
-                startActivity(i);
-            }
+        seerpaduthu.setOnClickListener(view -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Makeword_Rightorder.class);
+            startActivity(i);
         });
-        puthir.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Riddle_game.class);
-                startActivity(i);
-            }
+        puthir.setOnClickListener(view -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Riddle_game.class);
+            startActivity(i);
         });
-        tirukural.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Tirukural.class);
-                startActivity(i);
-            }
+        tirukural.setOnClickListener(view -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Tirukural.class);
+            startActivity(i);
         });
-        pilaithiruthu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, WordError_correction.class);
-                startActivity(i);
-            }
+        pilaithiruthu.setOnClickListener(view -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, WordError_correction.class);
+            startActivity(i);
         });
 
 
@@ -3321,23 +2911,17 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
             eng_to_tamil.setVisibility(View.VISIBLE);
         }
 
-        fill_in_blanks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Fill_in_blanks.class);
-                startActivity(i);
-            }
+        fill_in_blanks.setOnClickListener(v -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Fill_in_blanks.class);
+            startActivity(i);
         });
-        eng_to_tamil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, English_to_tamil.class);
-                startActivity(i);
-            }
+        eng_to_tamil.setOnClickListener(v -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, English_to_tamil.class);
+            startActivity(i);
         });
 
         TextView quiz = (TextView) openDialog.findViewById(R.id.quiz);
@@ -3361,33 +2945,24 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
             quiz.setVisibility(View.VISIBLE);
         }
 
-        match_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Match_tha_fallows_game.class);
-                startActivity(i);
+        match_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Match_tha_fallows_game.class);
+            startActivity(i);
 
-            }
         });
-        find_words_from_pictures.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Find_words_from_picture.class);
-                startActivity(i);
-            }
+        find_words_from_pictures.setOnClickListener(v -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Find_words_from_picture.class);
+            startActivity(i);
         });
-        quiz.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Quiz_Game.class);
-                startActivity(i);
-            }
+        quiz.setOnClickListener(v -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Quiz_Game.class);
+            startActivity(i);
         });
         Newgame_DataBaseHelper6 newhelper6 = new Newgame_DataBaseHelper6(Find_words_from_picture.this);
         TextView jamble_words = (TextView) openDialog.findViewById(R.id.jamble_words);
@@ -3398,14 +2973,11 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
             jamble_words.setVisibility(View.VISIBLE);
         }
 
-        jamble_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Jamble_word_game.class);
-                startActivity(i);
-            }
+        jamble_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Jamble_word_game.class);
+            startActivity(i);
         });
         TextView missing_words = (TextView) openDialog.findViewById(R.id.missing_words);
         Cursor jmps;
@@ -3414,14 +2986,11 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         if (jmps.getCount() != 0) {
             missing_words.setVisibility(View.VISIBLE);
         }
-        missing_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Missing_Words.class);
-                startActivity(i);
-            }
+        missing_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Missing_Words.class);
+            startActivity(i);
         });
         TextView six_differences = (TextView) openDialog.findViewById(R.id.six_differences);
         Cursor dif;
@@ -3430,42 +2999,36 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         if (dif.getCount() != 0) {
             six_differences.setVisibility(View.VISIBLE);
         }
-        six_differences.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-                Intent i = new Intent(Find_words_from_picture.this, Find_difference_between_pictures.class);
-                startActivity(i);
-            }
+        six_differences.setOnClickListener(v -> {
+            finish();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+            Intent i = new Intent(Find_words_from_picture.this, Find_difference_between_pictures.class);
+            startActivity(i);
         });
         openDialog.show();
 
-        openDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+        openDialog.setOnKeyListener((dialog, keyCode, event) -> {
 
-                if (main_act.equals("")) {
+            if (main_act.equals("")) {
 
-                    finish();
-                    //     openDialog_s.dismiss();
-                    Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else {
-                    sps.putString(Find_words_from_picture.this, "game_area", "on");
-                    finish();
-                }
-                openDialog.dismiss();
-                sps.putString(Find_words_from_picture.this, "date", "0");
-
-
-              /*  finish();
-                openDialog.dismiss();
-                //sps.putString(Odd_man_out.this, "date", "0");
-                Intent i = new Intent(Odd_man_out.this, New_Main_Activity.class);
-                startActivity(i);*/
-                return keyCode == KeyEvent.KEYCODE_BACK;
+                finish();
+                //     openDialog_s.dismiss();
+                Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
+                startActivity(i);
+            } else {
+                sps.putString(Find_words_from_picture.this, "game_area", "on");
+                finish();
             }
+            openDialog.dismiss();
+            sps.putString(Find_words_from_picture.this, "date", "0");
+
+
+          /*  finish();
+            openDialog.dismiss();
+            //sps.putString(Odd_man_out.this, "date", "0");
+            Intent i = new Intent(Odd_man_out.this, New_Main_Activity.class);
+            startActivity(i);*/
+            return keyCode == KeyEvent.KEYCODE_BACK;
         });
     }
 
@@ -3615,58 +3178,50 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
         // alertDialogBuilder.setTitle("Update available");
         alertDialogBuilder.setMessage("மேலும் விளையாட வினாக்களை பதிவிறக்கம் செய்ய விரும்புகிறீர்களா ?");
         alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setNegativeButton("ஆம்", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //DownLoad Letters and Words
+        alertDialogBuilder.setNegativeButton("ஆம்", (dialog, id) -> {
+            //DownLoad Letters and Words
 
-                if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
-                    download_datas();
-                } else {
-                    NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-                    native_banner_ad_container.setVisibility(View.INVISIBLE);
-                    head.setVisibility(View.INVISIBLE);
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Find_words_from_picture.this);                           /* .setTitle("Delete entry")*/
-                    alertDialogBuilder.setCancelable(false);
-                    alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
-                            .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // continue with delete
+            if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
+                download_datas();
+            } else {
+                NativeAdLayout native_banner_ad_container1 = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
+                native_banner_ad_container1.setVisibility(View.INVISIBLE);
+                head.setVisibility(View.INVISIBLE);
+                AlertDialog.Builder alertDialogBuilder1 = new AlertDialog.Builder(Find_words_from_picture.this);                           /* .setTitle("Delete entry")*/
+                alertDialogBuilder1.setCancelable(false);
+                alertDialogBuilder1.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
+                        .setPositiveButton("அமைப்பு", (dialog12, which) -> {
+                            // continue with delete
 
-                                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                                    sps.putInt(Find_words_from_picture.this, "goto_sett", 1);
+                            startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                            sps.putInt(Find_words_from_picture.this, "goto_sett", 1);
 
 
-                                    dialog.dismiss();
-                                }
-                            })
-                            .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // do nothing
-                                    sps.putString(Find_words_from_picture.this, "game_area", "on");
-                                    String date = sps.getString(Find_words_from_picture.this, "date");
-                                    if (date.equals("0")) {
-                                        backexitnet();
-                                    } else {
-                                        backexitnet();
-                                    }
-                                   /* Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
-                                    startActivity(i);*/
-                                    dialog.dismiss();
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
-                }
-
+                            dialog12.dismiss();
+                        })
+                        .setNegativeButton("பின்னர்", (dialog1, which) -> {
+                            // do nothing
+                            sps.putString(Find_words_from_picture.this, "game_area", "on");
+                            String date = sps.getString(Find_words_from_picture.this, "date");
+                            if (date.equals("0")) {
+                                backexitnet();
+                            } else {
+                                backexitnet();
+                            }
+                               /* Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
+                                startActivity(i);*/
+                            dialog1.dismiss();
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
             }
+
         });
-        alertDialogBuilder.setPositiveButton("இல்லை ", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                /*Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
-                startActivity(i);*/
-                sps.putString(Find_words_from_picture.this, "game_area", "on");
-                finish();
-            }
+        alertDialogBuilder.setPositiveButton("இல்லை ", (dialog, id) -> {
+            /*Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
+            startActivity(i);*/
+            sps.putString(Find_words_from_picture.this, "game_area", "on");
+            finish();
         });
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
@@ -3687,48 +3242,42 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
     public void missingimage() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Find_words_from_picture.this);                            /*.setTitle("Delete entry")*/
         alertDialogBuilder.setMessage("படங்கள் இல்லை பதிவிறக்கம் செய்யவேண்டுமா? ")
-                .setPositiveButton("ஆம்", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            String date = sps.getString(Find_words_from_picture.this, "date");
-                            if (date.equals("0")) {
-                                Cursor cursor1 = newhelper5.getQry("SELECT * FROM newgames5 where gameid=16 order by questionid desc");
-                                cursor1.moveToFirst();
-                                String lastid = null;
-                                if (cursor1.getCount() != 0) {
-                                    lastid = String.valueOf(cursor1.getInt(cursor1.getColumnIndexOrThrow("questionid")));
-                                }
-                                downpic(question_id, lastid);
+                .setPositiveButton("ஆம்", (dialog, which) -> {
+                    if (Utils.isNetworkAvailable(getApplicationContext())) {
+                        String date = sps.getString(Find_words_from_picture.this, "date");
+                        if (date.equals("0")) {
+                            Cursor cursor1 = newhelper5.getQry("SELECT * FROM newgames5 where gameid=16 order by questionid desc");
+                            cursor1.moveToFirst();
+                            String lastid = null;
+                            if (cursor1.getCount() != 0) {
+                                lastid = String.valueOf(cursor1.getInt(cursor1.getColumnIndexOrThrow("questionid")));
                             }
-                            dialog.dismiss();
-                            System.out.println("checkdismiss");
-                        } else {
-                            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Find_words_from_picture.this);                         /*   .setTitle("Delete entry")*/
-                            alertDialogBuilder.setCancelable(false);
-                            alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
-                                    .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            // continue with delete
-                                            startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 2);
-                                            dialog.dismiss();
-                                        }
-                                    })
-                                    .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            // do nothing
-                                            sps.putString(Find_words_from_picture.this, "game_area", "on");
-                                            String date = sps.getString(Find_words_from_picture.this, "date");
-                                            if (date.equals("0")) {
-                                                backexitnet();
-                                            } else {
-                                                backexitnet();
-                                            }
-                                            dialog.dismiss();
-                                        }
-                                    })
-                                    .setIcon(android.R.drawable.ic_dialog_alert)
-                                    .show();
+                            downpic(question_id, lastid);
                         }
+                        dialog.dismiss();
+                        System.out.println("checkdismiss");
+                    } else {
+                        AlertDialog.Builder alertDialogBuilder1 = new AlertDialog.Builder(Find_words_from_picture.this);                         /*   .setTitle("Delete entry")*/
+                        alertDialogBuilder1.setCancelable(false);
+                        alertDialogBuilder1.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
+                                .setPositiveButton("அமைப்பு", (dialog12, which12) -> {
+                                    // continue with delete
+                                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 2);
+                                    dialog12.dismiss();
+                                })
+                                .setNegativeButton("பின்னர்", (dialog1, which1) -> {
+                                    // do nothing
+                                    sps.putString(Find_words_from_picture.this, "game_area", "on");
+                                    String date = sps.getString(Find_words_from_picture.this, "date");
+                                    if (date.equals("0")) {
+                                        backexitnet();
+                                    } else {
+                                        backexitnet();
+                                    }
+                                    dialog1.dismiss();
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
                     }
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
@@ -3736,8 +3285,9 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 150) {
 
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -3746,7 +3296,7 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
             } else {
                 if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                     boolean showRationale = false;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         showRationale = shouldShowRequestPermissionRationale(permissions[0]);
                     }
                     if (!showRationale) {
@@ -3758,7 +3308,7 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
                         } else {
                             finish();
                         }
-                    } else if (android.Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
                         sps.putInt(Find_words_from_picture.this, "permission", 0);
                         if (main_act.equals("")) {
                             finish();
@@ -3789,12 +3339,12 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
             } else {
                 if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                     boolean showRationale = false;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         showRationale = shouldShowRequestPermissionRationale(permissions[0]);
                     }
                     if (!showRationale) {
                         sps.putInt(Find_words_from_picture.this, "permission", 2);
-                    } else if (android.Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
                         sps.putInt(Find_words_from_picture.this, "permission", 0);
                     }
                 }
@@ -3842,7 +3392,7 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
                     Log.e("log_tag", "Error in https connection" + e.toString());
                 }
                 try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
                     String line = "0";
@@ -3880,25 +3430,338 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
 
     protected Dialog onCreateDialog(int id) {
 
-        switch (id) {
-            case DIALOG_DOWNLOAD_PROGRESS:
-                mProgressDialog = new ProgressDialog(Find_words_from_picture.this);
-                mProgressDialog.setMessage("படங்கள் பதிவிறக்கம் செய்யப்படுகிறது காத்திருக்கவும்.... ");
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                mProgressDialog.setCancelable(false);
-                if (!mProgressDialog.isShowing()) {
-                    mProgressDialog.show();
+        if (id == DIALOG_DOWNLOAD_PROGRESS) {
+            mProgressDialog = new ProgressDialog(Find_words_from_picture.this);
+            mProgressDialog.setMessage("படங்கள் பதிவிறக்கம் செய்யப்படுகிறது காத்திருக்கவும்.... ");
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setCancelable(false);
+            if (!mProgressDialog.isShowing()) {
+                mProgressDialog.show();
+            }
+
+            // playy();
+
+            return mProgressDialog;
+        }
+        return null;
+    }
+
+    public int unpackZip(String ZIP_FILE_NAME) {
+
+        InputStream is;
+        ZipInputStream zis;
+        try {
+
+            String fullPath = getFilesDir() + "/Nithra/solliadi/";
+            is = new FileInputStream(fullPath + ZIP_FILE_NAME);
+            zis = new ZipInputStream(new BufferedInputStream(is));
+            ZipEntry ze;
+
+            while ((ze = zis.getNextEntry()) != null) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                byte[] buffer = new byte[1024];
+                int count;
+
+                // zapis do souboru
+                String filename = ze.getName();
+                FileOutputStream fout = new FileOutputStream(fullPath
+                        + filename);
+
+                // cteni zipu a zapis
+                while ((count = zis.read(buffer)) != -1) {
+                    baos.write(buffer, 0, count);
+                    byte[] bytes = baos.toByteArray();
+                    fout.write(bytes);
+                    baos.reset();
                 }
 
-                // playy();
+                fout.close();
+                zis.closeEntry();
+            }
 
-                return mProgressDialog;
+            zis.close();
+            File file = new File(fullPath + ZIP_FILE_NAME);
+            file.delete();
 
-            default:
-                return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0;
+        }
+        return 1;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //  uiHelper.onActivityResult(requestCode, resultCode, data, dialogCallback);
+        if (requestCode == 0) {
+            if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
+                download_datas();
+            } else {
+                NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
+                native_banner_ad_container.setVisibility(View.INVISIBLE);
+                head.setVisibility(View.INVISIBLE);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Find_words_from_picture.this);
+                alertDialogBuilder.setCancelable(false);
+                alertDialogBuilder.setMessage("புதிய வினாக்களை பதிவிறக்கம் செய்ய இணையத்தை ஆன் செய்யவும்")
+                        .setPositiveButton("அமைப்பு", (dialog, which) -> {
+                            startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                            sps.putInt(Find_words_from_picture.this, "goto_sett", 1);
+                            dialog.dismiss();
+                        })
+                        .setNegativeButton("பின்னர்", (dialog, which) -> {
+                            String date = sps.getString(Find_words_from_picture.this, "date");
+                            if (date.equals("0")) {
+                                backexitnet();
+                            } else {
+                                backexitnet();
+                            }
+                            dialog.dismiss();
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }
+        }
+
+
+        if (requestCode == 12) {
+            if (resultCode == -1) {
+                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                cfx.moveToFirst();
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                int spx = skx + 20;
+                String aStringx = Integer.toString(spx);
+                //score.setText(aStringx);
+                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+                share_earn(20);
+
+
+            } else {
+            }
+        }
+
+    }
+
+    public void share_earn(int a) {
+        final Dialog openDialog = new Dialog(Find_words_from_picture.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog.setContentView(R.layout.share_dialog2);
+        openDialog.setCancelable(false);
+        // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
+        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
+        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+        // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
+        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+        cfx.moveToFirst();
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+     /*   int spx = skx + a;
+        final String aStringx = Integer.toString(spx);*/
+        b_scores.setText("" + a);
+
+
+        ok_y.setOnClickListener(v -> {
+            score.setText("" + skx);
+            openDialog.dismiss();
+            //mCoinCount = 0;
+        });
+
+        openDialog.show();
+    }
+
+    public void coinanim() {
+////
+
+        //score intial
+        Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
+        cfq.moveToFirst();
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
+        String tr = String.valueOf(skq);
+        score.setText(tr);
+        //
+        e2 = skq;
+        //play1.start();
+        spz4.play(soundId4, sv, sv, 0, 0, sv);
+        p_coins.setVisibility(View.VISIBLE);
+        int[] locationInWindow = new int[2];
+        p_coins.getLocationInWindow(locationInWindow);
+        int[] locationOnScreen = new int[2];
+        p_coins.getLocationOnScreen(locationOnScreen);
+        float sourceX = locationOnScreen[0];
+        float sourceY = locationOnScreen[1];
+        int[] locationInWindowSecond = new int[2];
+        score.getLocationInWindow(locationInWindowSecond);
+        int[] locationOnScreenSecond = new int[2];
+        score.getLocationOnScreen(locationOnScreenSecond);
+        float destinationX = locationOnScreenSecond[0];
+        float destinationY = locationOnScreenSecond[1];
+        TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
+        transAnimation.setDuration(700);
+        p_coins.startAnimation(transAnimation);
+        p_coins.postDelayed(() -> p_coins.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+
+
+        ////
+
+
+        new Thread(() -> {
+            int es = e2 + 10;
+            while (e2 < es) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                score.post(() -> score.setText("" + e2));
+                e2++;
+            }
+
+        }).start();
+
+        Handler handler30 = new Handler();
+        handler30.postDelayed(() -> {
+            Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
+            score.startAnimation(levels1);
+        }, 2200);
+
+        Handler handler21 = new Handler();
+        handler21.postDelayed(() -> {
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            if (cfx.getCount() != 0) {
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                int spx = skx + 10;
+                String aStringx = Integer.toString(spx);
+                score.setText(aStringx);
+                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+            }
+            // setSc();
+        }, 700);
+
+    }
+
+    public void settingpermission() {
+        if (sps.getInt(Find_words_from_picture.this, "permission") == 2) {
+            AlertDialog alertDialog = new AlertDialog.Builder(Find_words_from_picture.this).create();
+            alertDialog.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய Settings-ல் உள்ள permission-யை allow செய்யவேண்டும்");
+            alertDialog.setCancelable(false);
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
+                    (dialog, which) -> {
+                        dialog.dismiss();
+                        Intent intent = new Intent();
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
+                        intent.setData(uri);
+                        getApplicationContext().startActivity(intent);
+                        setting_access = 1;
+
+                    });
+
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
+                    (dialog, which) -> {
+                        sps.putString(Find_words_from_picture.this, "game_area", "on");
+                        String date = sps.getString(Find_words_from_picture.this, "date");
+                        if (date.equals("0")) {
+                            if (main_act.equals("")) {
+                                finish();
+                                Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
+                                startActivity(i);
+                            } else {
+                                finish();
+                            }
+                        } else {
+                            finish();
+                            Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
+                            startActivity(i);
+                        }
+                        dialog.dismiss();
+                    });
+
+
+            alertDialog.show();
         }
     }
 
+    public void rewarded_ad() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
+        rewardedAd.setListener(new MaxRewardedAdListener() {
+            @Override
+            public void onRewardedVideoStarted(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onRewardedVideoCompleted(MaxAd ad) {
+                reward_status = 1;
+            }
+
+            @Override
+            public void onUserRewarded(MaxAd ad, MaxReward reward) {
+
+            }
+
+            @Override
+            public void onAdLoaded(MaxAd ad) {
+                fb_reward = 1;
+            }
+
+            @Override
+            public void onAdDisplayed(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdHidden(MaxAd ad) {
+                rewarded_ad();
+                if (reward_status == 1) {
+                    if (extra_coin_s == 0) {
+                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                        cfx.moveToFirst();
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                        int spx = skx + mCoinCount;
+                        String aStringx = Integer.toString(spx);
+                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                    }
+                    Handler handler = new Handler();
+                    handler.postDelayed(() -> {
+                        if (rvo == 2) {
+                            share_earn2(mCoinCount);
+                        } else {
+                            vidcoinearn();
+                        }
+                    }, 500);
+                } else {
+                    Toast.makeText(Find_words_from_picture.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                }
+
+                fb_reward = 0;
+                rewardedAd.loadAd();
+
+
+            }
+
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                rewardedAd.loadAd();
+            }
+        });
+        rewardedAd.loadAd();
+    }
+
+    private enum PendingAction {
+        NONE, POST_PHOTO, POST_STATUS_UPDATE
+    }
 
     class DownloadFileAsync extends AsyncTask<String, String, String> {
 
@@ -3942,7 +3805,7 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
                 input = connection.getInputStream();
                 output = new FileOutputStream(file);
 
-                byte data[] = new byte[4096];
+                byte[] data = new byte[4096];
                 long total = 0;
                 int count;
                 while ((count = input.read(data)) != -1) {
@@ -4001,450 +3864,5 @@ public class Find_words_from_picture extends BaseGameActivity implements GoogleA
 			}*/
         }
     }
-
-
-    public int unpackZip(String ZIP_FILE_NAME) {
-
-        InputStream is;
-        ZipInputStream zis;
-        try {
-
-            String fullPath = getFilesDir() + "/Nithra/solliadi/";
-            is = new FileInputStream(fullPath + ZIP_FILE_NAME);
-            zis = new ZipInputStream(new BufferedInputStream(is));
-            ZipEntry ze;
-
-            while ((ze = zis.getNextEntry()) != null) {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                int count;
-
-                // zapis do souboru
-                String filename = ze.getName();
-                FileOutputStream fout = new FileOutputStream(fullPath
-                        + filename);
-
-                // cteni zipu a zapis
-                while ((count = zis.read(buffer)) != -1) {
-                    baos.write(buffer, 0, count);
-                    byte[] bytes = baos.toByteArray();
-                    fout.write(bytes);
-                    baos.reset();
-                }
-
-                fout.close();
-                zis.closeEntry();
-            }
-
-            zis.close();
-            File file = new File(fullPath + ZIP_FILE_NAME);
-            file.delete();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return 0;
-        }
-        return 1;
-    }
-
-    public static boolean exists(String URLName) {
-        try {
-            HttpURLConnection.setFollowRedirects(false);
-            // note : you may also need
-            //        HttpURLConnection.setInstanceFollowRedirects(false)
-            HttpURLConnection con =
-                    (HttpURLConnection) new URL(URLName).openConnection();
-            con.setRequestMethod("HEAD");
-            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        //  uiHelper.onActivityResult(requestCode, resultCode, data, dialogCallback);
-        if (requestCode == 0) {
-            if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
-                download_datas();
-            } else {
-                NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-                native_banner_ad_container.setVisibility(View.INVISIBLE);
-                head.setVisibility(View.INVISIBLE);
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Find_words_from_picture.this);
-                alertDialogBuilder.setCancelable(false);
-                alertDialogBuilder.setMessage("புதிய வினாக்களை பதிவிறக்கம் செய்ய இணையத்தை ஆன் செய்யவும்")
-                        .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                                sps.putInt(Find_words_from_picture.this, "goto_sett", 1);
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                String date = sps.getString(Find_words_from_picture.this, "date");
-                                if (date.equals("0")) {
-                                    backexitnet();
-                                } else {
-                                    backexitnet();
-                                }
-                                dialog.dismiss();
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }
-        }
-
-
-        if (requestCode == 12) {
-            if (resultCode == -1) {
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                int spx = skx + 20;
-                String aStringx = Integer.toString(spx);
-                //score.setText(aStringx);
-                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                share_earn(20);
-
-
-            } else {
-            }
-        }
-
-    }
-
-    public void share_earn(int a) {
-        final Dialog openDialog = new Dialog(Find_words_from_picture.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        openDialog.setContentView(R.layout.share_dialog2);
-        openDialog.setCancelable(false);
-        // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
-        // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
-        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-        cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-     /*   int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
-        b_scores.setText("" + a);
-
-
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                score.setText("" + skx);
-                openDialog.dismiss();
-                //mCoinCount = 0;
-            }
-        });
-
-        openDialog.show();
-    }
-
-    public void coinanim() {
-////
-
-        //score intial
-        Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
-        cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
-        String tr = String.valueOf(skq);
-        score.setText(tr);
-        //
-        e2 = skq;
-        //play1.start();
-        spz4.play(soundId4, sv, sv, 0, 0, sv);
-        p_coins.setVisibility(View.VISIBLE);
-        int[] locationInWindow = new int[2];
-        p_coins.getLocationInWindow(locationInWindow);
-        int[] locationOnScreen = new int[2];
-        p_coins.getLocationOnScreen(locationOnScreen);
-        float sourceX = locationOnScreen[0];
-        float sourceY = locationOnScreen[1];
-        int[] locationInWindowSecond = new int[2];
-        score.getLocationInWindow(locationInWindowSecond);
-        int[] locationOnScreenSecond = new int[2];
-        score.getLocationOnScreen(locationOnScreenSecond);
-        float destinationX = locationOnScreenSecond[0];
-        float destinationY = locationOnScreenSecond[1];
-        TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
-        transAnimation.setDuration(700);
-        p_coins.startAnimation(transAnimation);
-        p_coins.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                p_coins.setVisibility(View.INVISIBLE);
-            }
-        }, transAnimation.getDuration());
-
-
-        ////
-
-
-        new Thread(new Runnable() {
-
-            public void run() {
-                int es = e2 + 10;
-                while (e2 < es) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    score.post(new Runnable() {
-
-                        public void run() {
-
-                            score.setText("" + e2);
-
-                        }
-
-                    });
-                    e2++;
-                }
-
-            }
-
-        }).start();
-
-        Handler handler30 = new Handler();
-        handler30.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
-                score.startAnimation(levels1);
-            }
-        }, 2200);
-
-        Handler handler21 = new Handler();
-        handler21.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                if (cfx.getCount() != 0) {
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + 10;
-                    String aStringx = Integer.toString(spx);
-                    score.setText(aStringx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                }
-                // setSc();
-            }
-        }, 700);
-
-    }
-
-    public void settingpermission() {
-        if (sps.getInt(Find_words_from_picture.this, "permission") == 2) {
-            AlertDialog alertDialog = new AlertDialog.Builder(Find_words_from_picture.this).create();
-            alertDialog.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய Settings-ல் உள்ள permission-யை allow செய்யவேண்டும்");
-            alertDialog.setCancelable(false);
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            Intent intent = new Intent();
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                            intent.setData(uri);
-                            getApplicationContext().startActivity(intent);
-                            setting_access = 1;
-
-                        }
-                    });
-
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            sps.putString(Find_words_from_picture.this, "game_area", "on");
-                            String date = sps.getString(Find_words_from_picture.this, "date");
-                            if (date.equals("0")) {
-                                if (main_act.equals("")) {
-                                    finish();
-                                    Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    finish();
-                                }
-                            } else {
-                                finish();
-                                Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
-                                startActivity(i);
-                            }
-                            dialog.dismiss();
-                        }
-                    });
-
-
-            alertDialog.show();
-        }
-    }
-
-    public void rewarded_ad(){
-        rewardedAd = MaxRewardedAd.getInstance( getResources().getString(R.string.Reward_Ins), this );
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward=1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_ad();
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(Find_words_from_picture.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-                rewardedAd.loadAd();
-
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
-    }
-
-    /*public void reward(final Context context) {
-        rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
-            @Override
-            public void onError(Ad ad, AdError error) {
-                // Rewarded video ad failed to load
-
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-
-
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Rewarded video ad clicked
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Rewarded Video ad impression - the event will fire when the
-                // video starts playing
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-
-                // Rewarded Video View Complete - the video has been played to the end.
-                // You can use this event to initialize your reward
-
-
-                // Call method to give reward
-                // giveReward();
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-        };
-        rewardedVideoAd.loadAd(
-                rewardedVideoAd.buildLoadAdConfig()
-                        .withAdListener(rewardedVideoAdListener)
-                        .build());
-    }*/
 
 }

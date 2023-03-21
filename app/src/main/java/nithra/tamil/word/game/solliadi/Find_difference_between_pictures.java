@@ -1,5 +1,10 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.data_download_url;
+import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.img_down_url;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -21,7 +26,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.os.SystemClock;
@@ -32,7 +36,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -53,8 +56,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.applovin.mediation.MaxAd;
@@ -62,22 +63,13 @@ import com.applovin.mediation.MaxAdListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxAdView;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.applovin.mediation.ads.MaxRewardedAd;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
 import com.facebook.ads.NativeAdLayout;
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
-
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-
 import com.google.android.material.snackbar.Snackbar;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
@@ -102,6 +94,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -113,38 +106,105 @@ import java.util.zip.ZipInputStream;
 
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
-import nithra.tamil.word.game.solliadi.adutils.GameExitUtils;
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.data_download_url;
-import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.img_down_url;
-
 public class Find_difference_between_pictures extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Download_completed {
-    int fb_reward = 0;
-   // RewardedVideoAd rewardedVideoAd;
-   private MaxRewardedAd rewardedAd;
-    int reward_status = 0;
+    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
     //*********************reward videos process 1***********************
     //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
-
-
-    private boolean mGameOver;
-    private boolean mGamePaused;
-
-    private long mTimeRemaining;
+    public static int chr = 0;
+    static int rvo = 0;
+    static int mCoinCount = 20;
+    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
+    int fb_reward = 0;
     //reward videos process 1***********************
     // Facebook variable starts
+    int reward_status = 0;
+    CustomKeyboard mCustomKeyboard;
+    Newgame_DataBaseHelper5 newhelper5;
+    Newgame_DataBaseHelper6 newhelper6;
+    Chronometer focus;
+    TextView score, ans1, ans2, ans3, ans4, ans5, ans6, ans7, clear, questionid, p_facebook, p_watts_app;
+    ImageView image_1, image_2, value_ans1, value_ans2, value_ans3, value_ans4, value_ans5, value_ans6, value_ans7;
+    AppCompatEditText ans_editer;
+    SharedPreference sps = new SharedPreference();
+    String gameid = "20";
+    String question_id = "", question = "", answer = "";
+    int u_id = 0;
+    int rdvalu;
+    String qs1 = "", qs2 = "";
+    DataBaseHelper myDbHelper;
+    LinearLayout anslist2, list2_pic;
+    TextView verify;
+    SoundPool click, win, coin, worng, cr_ans, spz4;
+    int soundId1, soundId2, soundId3, soundId4, soundId5;
+    int sv = 0;
+    int ans_count = 0, final_ans_count = 0;
+    String isdown = "0";
+    TextView p_setting;
+    Long ttstop;
+    int b_score = 0;
+    Dialog openDialog_s;
+    TextView next_continue;
+    TextView ttscores;
+    LinearLayout ads_layout_bottom;
+    TextView tx1, tx2;
+    int extra_coin_s = 0;
+    int reward_play_count = 0;
+    int ea = 0;
+    int setval_vid;
+    Dialog openDialog;
+    TextView coin_value;
+    int minmumd = 1;
+    int maximumd = 4;
+    int randomnod;
+    int case2 = 0, tot2 = 30, tt_case2, tt_tot2;
+    int y;
+    int answer_types = 0;
+    Typeface tyr;
+    int dia_dismiss = 0;
+    int spxdr = 0;
+    int answerlength;
+    Dialog openDialogk;
+    RelativeLayout head;
+    int share_name = 0;
+    Dialog openDialog_p;
+    LinearLayout ads_lay, qwt;
+    Newgame_DataBaseHelper newhelper;
+    Newgame_DataBaseHelper2 newhelper2;
+    Newgame_DataBaseHelper3 newhelper3;
+    Newgame_DataBaseHelper4 newhelper4;
+    DownloadFileAsync downloadFileAsync;
+    ProgressDialog mProgressDialog;
+    String email = "";
+    TextView p_coins;
+    int e2;
+    int setting_access = 0;
+    // RewardedVideoAd rewardedVideoAd;
+    private MaxRewardedAd rewardedAd;
+    private boolean mGameOver;
+    private boolean mGamePaused;
+    private long mTimeRemaining;
+    private MaxInterstitialAd ins_game, game_exit_ins;
+    private GoogleApiClient mGoogleApiClient;
 
-    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
+    public static boolean exists(String URLName) {
+        try {
+            HttpURLConnection.setFollowRedirects(false);
+            // note : you may also need
+            //        HttpURLConnection.setInstanceFollowRedirects(false)
+            HttpURLConnection con =
+                    (HttpURLConnection) new URL(URLName).openConnection();
+            con.setRequestMethod("HEAD");
+            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     @Override
     public void onSignInFailed() {
@@ -183,79 +243,6 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
             finish();
         }
     }
-
-    private enum PendingAction {
-        NONE, POST_PHOTO, POST_STATUS_UPDATE
-    }
-
-    CustomKeyboard mCustomKeyboard;
-    Newgame_DataBaseHelper5 newhelper5;
-    Newgame_DataBaseHelper6 newhelper6;
-    Chronometer focus;
-    TextView score, ans1, ans2, ans3, ans4, ans5, ans6, ans7, clear, questionid, p_facebook, p_watts_app;
-    ImageView image_1, image_2, value_ans1, value_ans2, value_ans3, value_ans4, value_ans5, value_ans6, value_ans7;
-    AppCompatEditText ans_editer;
-    SharedPreference sps = new SharedPreference();
-    String gameid = "20";
-    String question_id = "", question = "", answer = "";
-    int u_id = 0;
-    int rdvalu;
-    String qs1 = "", qs2 = "";
-    DataBaseHelper myDbHelper;
-    LinearLayout anslist2, list2_pic;
-    TextView verify;
-
-    SoundPool click, win, coin, worng, cr_ans, spz4;
-    int soundId1, soundId2, soundId3, soundId4, soundId5;
-    int sv = 0;
-    int ans_count = 0, final_ans_count = 0;
-    String isdown = "0";
-    TextView p_setting;
-    Long ttstop;
-    int b_score = 0;
-    Dialog openDialog_s;
-    TextView next_continue;
-    TextView ttscores;
-    LinearLayout ads_layout_bottom;
-    static int rvo = 0;
-    TextView tx1, tx2;
-    static int mCoinCount = 20;
-    int extra_coin_s = 0;
-    int reward_play_count = 0;
-    int ea = 0;
-    int setval_vid;
-    Dialog openDialog;
-    TextView coin_value;
-    int minmumd = 1;
-    int maximumd = 4;
-    int randomnod;
-    int case2 = 0, tot2 = 30, tt_case2, tt_tot2;
-    int y;
-    int answer_types = 0;
-    Typeface tyr;
-    int dia_dismiss = 0;
-
-    private MaxInterstitialAd ins_game,game_exit_ins;
-    private GoogleApiClient mGoogleApiClient;
-    int spxdr = 0;
-    int answerlength;
-    Dialog openDialogk;
-    RelativeLayout head;
-    int share_name = 0;
-    Dialog openDialog_p;
-    LinearLayout ads_lay, qwt;
-    Newgame_DataBaseHelper newhelper;
-    Newgame_DataBaseHelper2 newhelper2;
-    Newgame_DataBaseHelper3 newhelper3;
-    Newgame_DataBaseHelper4 newhelper4;
-    DownloadFileAsync downloadFileAsync;
-    ProgressDialog mProgressDialog;
-    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
-    String email = "";
-    public static int chr = 0;
-    TextView p_coins;
-    int e2;
-    int setting_access = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -322,7 +309,6 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
 
 
-
         soundset();
         find();
         click();
@@ -368,10 +354,10 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
             // sequence.addSequenceItem(feedback, "கருத்துக்கள்  பொத்தானை அழுத்தி மேலும் உங்களுக்கு தெரிந்த விடைகளை எங்களுக்கு அனுப்பவும் .", "அடுத்து");
             //   sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Find_difference_between_pictures.this)
-                    .setTarget(p_facebook)
-                    .setDismissText("சரி")
-                    .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                    .build())
+                            .setTarget(p_facebook)
+                            .setDismissText("சரி")
+                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
+                            .build())
                     .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                         @Override
                         public void onDismiss(MaterialShowcaseView itemView, int position) {
@@ -1019,7 +1005,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if (isChecked == true) {
+                if (isChecked) {
                     sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                 } else {
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -2243,8 +2229,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                                     System.out.println("jas4");
                                     //industrialload_game();
                                     return;
-                                }
-                                else {
+                                } else {
                                     ins_game.showAd();
 
                                 }
@@ -2289,9 +2274,6 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                     play2.stop();
                     play3.stop();*/
                     // advancads_content();
-
-
-
 
 
                     if (Utils.isNetworkAvailable(getApplicationContext())) {
@@ -2365,7 +2347,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                         openDialog_s.dismiss();
                         next();
                         System.out.println("jas7");
-                    }else{
+                    } else {
                         if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
                             sps.putInt(getApplicationContext(), "ins_ad_new", 0);
                             if (Utils.isNetworkAvailable(getApplicationContext())) {
@@ -2375,9 +2357,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                                     next();
                                     System.out.println("jas8");
                                     //industrialload_game();
-                                    return;
-                                }
-                                else{
+                                } else {
                                     ins_game.showAd();
                                 }
                             } else {
@@ -2746,17 +2726,18 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
 
             @Override
             public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error"+error);
+                System.out.println("check error" + error);
             }
 
             @Override
             public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2"+error);
+                System.out.println("check error2" + error);
             }
         });
         game_exit_ins.loadAd();
 
     }
+
     public void industrialload_game() {
 
         ins_game = new MaxInterstitialAd(getResources().getString(R.string.Viliyodu_Vilaiyadu_Ins), this);
@@ -2937,17 +2918,11 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
         if (setting_access == 1) {
             setting_access = 0;
             //if ((ContextCompat.checkSelfPermission(Find_difference_between_pictures.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                data_download_game();
-            /*} else {
-                settingpermission();
-            }*/
+            data_download_game();
         } else if (setting_access == 2) {
             setting_access = 0;
-           // if ((ContextCompat.checkSelfPermission(Find_difference_between_pictures.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                data_download_game();
-            /*} else {
-                settingpermission();
-            }*/
+            // if ((ContextCompat.checkSelfPermission(Find_difference_between_pictures.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+            data_download_game();
         }
     }
 
@@ -3170,32 +3145,45 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
     }
 
     private void back() {
-            openDialog_p = new Dialog(Find_difference_between_pictures.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-            openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+        openDialog_p = new Dialog(Find_difference_between_pictures.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog_p.setContentView(R.layout.back_pess);
+        TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
+        TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
-            yes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    sps.putString(Find_difference_between_pictures.this, "game_area", "on");
-                    focus.stop();
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sps.putString(Find_difference_between_pictures.this, "game_area", "on");
+                focus.stop();
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
 
-                    String date = sps.getString(Find_difference_between_pictures.this, "date");
-                    int pos;
-                    if (date.equals("0")) {
-                        pos = 1;
+                String date = sps.getString(Find_difference_between_pictures.this, "date");
+                int pos;
+                if (date.equals("0")) {
+                    pos = 1;
+                } else {
+                    pos = 2;
+                }
+
+                myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+                myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+
+                // String date = sps.getString(Find_words_from_picture.this, "date");
+                if (date.equals("0")) {
+                    if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Find_difference_between_pictures.this, New_Main_Activity.class);
+                        startActivity(i);
                     } else {
-                        pos = 2;
+                        finish();
                     }
-
-                    myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-                    myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-
-                    // String date = sps.getString(Find_words_from_picture.this, "date");
-                    if (date.equals("0")) {
+                } else {
+                    if (sps.getString(Find_difference_between_pictures.this, "Exp_list").equals("on")) {
+                        finish();
+                        Intent i = new Intent(Find_difference_between_pictures.this, Expandable_List_View.class);
+                        startActivity(i);
+                    } else {
                         if (main_act.equals("")) {
                             finish();
                             Intent i = new Intent(Find_difference_between_pictures.this, New_Main_Activity.class);
@@ -3203,51 +3191,38 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                         } else {
                             finish();
                         }
-                    } else {
-                        if (sps.getString(Find_difference_between_pictures.this, "Exp_list").equals("on")) {
-                            finish();
-                            Intent i = new Intent(Find_difference_between_pictures.this, Expandable_List_View.class);
-                            startActivity(i);
-                        } else {
-                            if (main_act.equals("")) {
-                                finish();
-                                Intent i = new Intent(Find_difference_between_pictures.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                            }
-                        }
-
                     }
 
-                    //ad
-                    if (sps.getInt(Find_difference_between_pictures.this, "purchase_ads") == 0) {
-                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                    openDialog_p.dismiss();
-                                    game_exit_ins.showAd();
-                                }
-                            }
-                        } else {
-                            openDialog_p.dismiss();
-                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
-                        }
-                    }else{
-                        openDialog_p.dismiss();
-                    }
-                    //ad
                 }
-            });
-            no.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
+                //ad
+                if (sps.getInt(Find_difference_between_pictures.this, "purchase_ads") == 0) {
+                    if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
+                        sps.putInt(getApplicationContext(), "game_exit_ins", 0);
+                        if (Utils.isNetworkAvailable(getApplicationContext())) {
+                            if (game_exit_ins != null && game_exit_ins.isReady()) {
+                                openDialog_p.dismiss();
+                                game_exit_ins.showAd();
+                            }
+                        }
+                    } else {
+                        openDialog_p.dismiss();
+                        sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
+                    }
+                } else {
                     openDialog_p.dismiss();
                 }
-            });
-            openDialog_p.show();
+                //ad
+            }
+        });
+        no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                openDialog_p.dismiss();
+            }
+        });
+        openDialog_p.show();
 
 
     }
@@ -3946,7 +3921,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
         if (requestCode == 150) {
 
@@ -4054,7 +4029,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
                     Log.e("log_tag", "Error in https connection" + e.toString());
                 }
                 try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
                     String line = "0";
@@ -4095,128 +4070,21 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
 
     protected Dialog onCreateDialog(int id) {
 
-        switch (id) {
-            case DIALOG_DOWNLOAD_PROGRESS:
-                mProgressDialog = new ProgressDialog(Find_difference_between_pictures.this);
-                mProgressDialog.setMessage("படங்கள் பதிவிறக்கம் செய்யப்படுகிறது காத்திருக்கவும்.... ");
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                mProgressDialog.setCancelable(false);
-                if (!mProgressDialog.isShowing()) {
-                    mProgressDialog.show();
-                }
-
-                // playy();
-
-                return mProgressDialog;
-
-            default:
-                return null;
-        }
-    }
-
-
-    class DownloadFileAsync extends AsyncTask<String, String, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            showDialog(DIALOG_DOWNLOAD_PROGRESS);
-        }
-
-        @Override
-        protected String doInBackground(String... aurl) {
-            InputStream input = null;
-            OutputStream output = null;
-            HttpURLConnection connection = null;
-            try {
-                URL url = new URL(aurl[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-                System.out.print("========siva ");
-                // expect HTTP 200 OK, so we don't mistakenly save error report
-                // instead of the file
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    return "Server returned HTTP " + connection.getResponseCode()
-                            + " " + connection.getResponseMessage();
-                }
-
-                // this will be useful to display download percentage
-                // might be -1: server did not report the length
-                final int fileLength = connection.getContentLength();
-
-                File SDCardRoot = getFilesDir();
-
-                File fol = new File(SDCardRoot + "/Nithra/solliadi/");
-                if (!fol.exists()) {
-                    fol.mkdirs();
-                }
-                email = sps.getString(Find_difference_between_pictures.this, "email");
-                File file = new File(SDCardRoot + "/Nithra/solliadi/", email + "-filename.zip");
-
-                // download the file
-                input = connection.getInputStream();
-                output = new FileOutputStream(file);
-
-                byte data[] = new byte[4096];
-                long total = 0;
-                int count;
-                while ((count = input.read(data)) != -1) {
-                    // allow canceling with back button
-                    if (isCancelled()) {
-                        input.close();
-                        return null;
-                    }
-                    total += count;
-                    publishProgress("" + (int) ((total * 100) / fileLength));
-                    // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
-                        output.write(data, 0, count);
-                }
-
-                unpackZip(email + "-filename.zip");
-
-            } catch (Exception e) {
-
-
-                return e.toString();
-            } finally {
-                try {
-                    if (output != null)
-                        output.close();
-                    if (input != null)
-                        input.close();
-                } catch (IOException ignored) {
-                }
-
-                if (connection != null)
-                    connection.disconnect();
-
-
+        if (id == DIALOG_DOWNLOAD_PROGRESS) {
+            mProgressDialog = new ProgressDialog(Find_difference_between_pictures.this);
+            mProgressDialog.setMessage("படங்கள் பதிவிறக்கம் செய்யப்படுகிறது காத்திருக்கவும்.... ");
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setCancelable(false);
+            if (!mProgressDialog.isShowing()) {
+                mProgressDialog.show();
             }
-            return null;
 
+            // playy();
+
+            return mProgressDialog;
         }
-
-
-        @Override
-        protected void onPostExecute(String unused) {
-            mProgressDialog.dismiss();
-            next();
-            System.out.println("jas12");
-        }
-
-
-        protected void onProgressUpdate(String... progress) {
-            Log.d("ANDRO_ASYNC", progress[0]);
-            mProgressDialog.setProgress(Integer.parseInt(progress[0]));
-            /*if(!isNetworkAvailable()){
-				downloadFileAsync.isCancelled();
-				//downloadFileAsync.cancel(true);
-
-			}*/
-        }
+        return null;
     }
-
 
     public int unpackZip(String ZIP_FILE_NAME) {
 
@@ -4260,21 +4128,6 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
             return 0;
         }
         return 1;
-    }
-
-    public static boolean exists(String URLName) {
-        try {
-            HttpURLConnection.setFollowRedirects(false);
-            // note : you may also need
-            //        HttpURLConnection.setInstanceFollowRedirects(false)
-            HttpURLConnection con =
-                    (HttpURLConnection) new URL(URLName).openConnection();
-            con.setRequestMethod("HEAD");
-            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     @Override
@@ -4456,56 +4309,9 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
 
     }
 
-    public void settingpermission() {
-        if (sps.getInt(Find_difference_between_pictures.this, "permission") == 2) {
-            AlertDialog alertDialog = new AlertDialog.Builder(Find_difference_between_pictures.this).create();
-            alertDialog.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய Settings-ல் உள்ள permission-யை allow செய்யவேண்டும்");
-            alertDialog.setCancelable(false);
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            Intent intent = new Intent();
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                            intent.setData(uri);
-                            getApplicationContext().startActivity(intent);
-                            setting_access = 1;
 
-                        }
-                    });
-
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            sps.putString(Find_difference_between_pictures.this, "game_area", "on");
-                            String date = sps.getString(Find_difference_between_pictures.this, "date");
-                            if (date.equals("0")) {
-                                if (main_act.equals("")) {
-                                    finish();
-                                    Intent i = new Intent(Find_difference_between_pictures.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    finish();
-                                }
-                            } else {
-                                finish();
-                                Intent i = new Intent(Find_difference_between_pictures.this, New_Main_Activity.class);
-                                startActivity(i);
-                            }
-                            dialog.dismiss();
-                        }
-                    });
-
-
-            alertDialog.show();
-        }
-    }
-
-
-    public void rewarded_ad(){
-        rewardedAd = MaxRewardedAd.getInstance( getResources().getString(R.string.Reward_Ins), this );
+    public void rewarded_ad() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
         rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
             public void onRewardedVideoStarted(MaxAd ad) {
@@ -4524,7 +4330,7 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
 
             @Override
             public void onAdLoaded(MaxAd ad) {
-                fb_reward=1;
+                fb_reward = 1;
             }
 
             @Override
@@ -4594,143 +4400,110 @@ public class Find_difference_between_pictures extends BaseGameActivity implement
         rewardedAd.loadAd();
     }
 
-    /*public void reward(final Context context) {
-        rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
-            @Override
-            public void onError(Ad ad, AdError error) {
-                // Rewarded video ad failed to load
+    private enum PendingAction {
+        NONE, POST_PHOTO, POST_STATUS_UPDATE
+    }
 
-            }
+    class DownloadFileAsync extends AsyncTask<String, String, String> {
 
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showDialog(DIALOG_DOWNLOAD_PROGRESS);
+        }
 
-
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Rewarded video ad clicked
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Rewarded Video ad impression - the event will fire when the
-                // video starts playing
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-
-                // Rewarded Video View Complete - the video has been played to the end.
-                // You can use this event to initialize your reward
-
-
-                // Call method to give reward
-                // giveReward();
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+        @Override
+        protected String doInBackground(String... aurl) {
+            InputStream input = null;
+            OutputStream output = null;
+            HttpURLConnection connection = null;
+            try {
+                URL url = new URL(aurl[0]);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+                System.out.print("========siva ");
+                // expect HTTP 200 OK, so we don't mistakenly save error report
+                // instead of the file
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    return "Server returned HTTP " + connection.getResponseCode()
+                            + " " + connection.getResponseMessage();
                 }
 
-                fb_reward = 0;
-            }
-        };
-        rewardedVideoAd.loadAd(
-                rewardedVideoAd.buildLoadAdConfig()
-                        .withAdListener(rewardedVideoAdListener)
-                        .build());
-        *//*      rewardedVideoAd.setAdListener(new RewardedVideoAdListener() {
+                // this will be useful to display download percentage
+                // might be -1: server did not report the length
+                final int fileLength = connection.getContentLength();
 
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-            }
+                File SDCardRoot = getFilesDir();
 
-            @Override
-            public void onLoggingImpression(Ad ad) {
+                File fol = new File(SDCardRoot + "/Nithra/solliadi/");
+                if (!fol.exists()) {
+                    fol.mkdirs();
+                }
+                email = sps.getString(Find_difference_between_pictures.this, "email");
+                File file = new File(SDCardRoot + "/Nithra/solliadi/", email + "-filename.zip");
 
-            }
+                // download the file
+                input = connection.getInputStream();
+                output = new FileOutputStream(file);
 
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
+                byte[] data = new byte[4096];
+                long total = 0;
+                int count;
+                while ((count = input.read(data)) != -1) {
+                    // allow canceling with back button
+                    if (isCancelled()) {
+                        input.close();
+                        return null;
                     }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                    total += count;
+                    publishProgress("" + (int) ((total * 100) / fileLength));
+                    // publishing the progress....
+                    if (fileLength > 0) // only if total length is known
+                        output.write(data, 0, count);
                 }
 
-                fb_reward = 0;
-            }
+                unpackZip(email + "-filename.zip");
 
-            @Override
-            public void onError(Ad ad, AdError adError) {
-                //Toast.makeText(context, ""+adError.getErrorCode(), Toast.LENGTH_SHORT).show();
-            }
+            } catch (Exception e) {
 
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-            }
 
-            @Override
-            public void onAdClicked(Ad ad) {
+                return e.toString();
+            } finally {
+                try {
+                    if (output != null)
+                        output.close();
+                    if (input != null)
+                        input.close();
+                } catch (IOException ignored) {
+                }
+
+                if (connection != null)
+                    connection.disconnect();
+
 
             }
-        });
-        rewardedVideoAd.loadAd();*//*
-    }*/
+            return null;
+
+        }
+
+
+        @Override
+        protected void onPostExecute(String unused) {
+            mProgressDialog.dismiss();
+            next();
+            System.out.println("jas12");
+        }
+
+
+        protected void onProgressUpdate(String... progress) {
+            Log.d("ANDRO_ASYNC", progress[0]);
+            mProgressDialog.setProgress(Integer.parseInt(progress[0]));
+            /*if(!isNetworkAvailable()){
+				downloadFileAsync.isCancelled();
+				//downloadFileAsync.cancel(true);
+
+			}*/
+        }
+    }
 
 }

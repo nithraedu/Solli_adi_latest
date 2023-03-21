@@ -1,5 +1,8 @@
 package nithra.tamil.word.game.solliadi.word_search_game.Models.chellange;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Senthamil_Thedal_Native_Banner;
+
 import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -22,20 +25,13 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.os.Vibrator;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.fragment.app.Fragment;
-
 import android.text.Html;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -49,11 +45,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
+
 import com.facebook.ads.Ad;
 import com.facebook.ads.AdError;
 import com.facebook.ads.NativeAdLayout;
-
-
 import com.facebook.ads.RewardedVideoAd;
 import com.facebook.ads.RewardedVideoAdListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -69,14 +67,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
-import nithra.tamil.word.game.solliadi.Clue_Game_Hard;
 import nithra.tamil.word.game.solliadi.DataBaseHelper;
-import nithra.tamil.word.game.solliadi.New_Main_Activity;
-import nithra.tamil.word.game.solliadi.New_Main_Gamelist;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper2;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper3;
-import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
 import nithra.tamil.word.game.solliadi.Utils;
@@ -92,11 +86,6 @@ import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.LikeB
 import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.OnAnimationEndListener;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.OnLikeListener;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Senthamil_Thedal_Native_Banner;
-
 /*import com.facebook.FacebookException;
 import com.facebook.FacebookOperationCanceledException;
 
@@ -109,85 +98,48 @@ import com.facebook.widget.WebDialog;*/
 
 public class challenge_WS_GridFragment extends Fragment implements challenge_WS_GridView.OnWordSelectedListener, OnLikeListener, OnAnimationEndListener, RewardedVideoAdListener {
 
+
+    static private final int coinearn = 1;
     public static RelativeLayout lay_wordsearch;
-
-    private int mRows;
-    private int mColumns;
-
-    private static String[] mWordList = {"வ.ள.ம்", "மு.ய.ல்", "ந.ல.ம்", "நி.ற.ம்", "மு.த.லை", "ந.ம.து", "அ.ள.வு"};
-
-    private final Direction[] mDirections = Direction.values();
-    private boolean[][] mLock;
-    private int[] mRandomIndexes;
-
-    private String[][] mBoard;
     public static Set<Word> mSolution = new HashSet<Word>();
     public static Set<Word> mFoundWords = new HashSet<Word>();
-    ArrayList<String> question_list = new ArrayList<>();
-
-
-    challenge_WS_GridView challengeWsGridView;
-
-    MyTableView myTableView;
-
-    SharedPreference sp = new SharedPreference();
-
     public static int levelId, gridcount;
-
-    LinearLayout option_view;
-
-    RelativeLayout toptool, hintview, coin_lay, progress_lay;
-
     public static ArrayList<String> hints = new ArrayList<>();
-
+    static int rvo = 0;
+    private static String[] mWordList = {"வ.ள.ம்", "மு.ய.ல்", "ந.ல.ம்", "நி.ற.ம்", "மு.த.லை", "ந.ம.து", "அ.ள.வு"};
+    static private int mCoinCount = 20;
+    private final Direction[] mDirections = Direction.values();
+    // Facebook variable starts
+    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
+    public CountDownTimer countDownTimer;
+    ArrayList<String> question_list = new ArrayList<>();
+    challenge_WS_GridView challengeWsGridView;
+    MyTableView myTableView;
+    SharedPreference sp = new SharedPreference();
+    LinearLayout option_view;
+    RelativeLayout toptool, hintview, coin_lay, progress_lay;
     double diagonalInches;
-
-
     String table_name = "", dont_call = "", game_type = "", select_me = "", missing_content = "", game_finish = "";
-
     Animation bounce_anim = null;
-
     Context context;
-
     ImageView more_timer, saval_setting;
     View view = null;
-
     Vibrator vibrate;
-
-
     my_dialog myDialog_class = new my_dialog();
     String showview = "";
     ArrayList<String> showcase_shap;
     ArrayList<View> showcase_id = new ArrayList<View>();
     ArrayList<String> showcase_content = new ArrayList<String>();
-
-
     TextView counton_timer, counts, screatch_txt, question_txt, coin_txt, option1_txt, option2_txt, title_txt;
-
     ArrayList<String> option_array = new ArrayList<>();
-
     ProgressBar ProgressBar;
-
-    public CountDownTimer countDownTimer;
-
-    private long totalTimeCountInMilliseconds, timeBlinkInMilliseconds; // total count down time in
-
-    private boolean blink, timer_stop = false;
-
     int my_progress = 0, time_value = 2, coin_point = 0, leader_point = 0, coin_point1 = 0, goback = 0, total_word = 0, total_finded = 0;
-    ;
-
     Dialog my_my_dialog = null;
-
     List<String> elephantList = new ArrayList<>();
-
     SQLiteDatabase mydb, Inner_mydb, exdb;
     Cursor cursor = null, coin_cursor;
-
     ImageView icon_ad_img;
     LinearLayout n_icon_ad;
-
-
     FrameLayout Baner_frame;
     LinearLayout normal_baner;
     String Dailytest_ok = "";
@@ -195,9 +147,64 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     String btn_str = "";
     Dialog Winning_dialog;
     FirebaseAnalytics mFirebaseAnalytics;
-    static int rvo = 0;
-    // Facebook variable starts
-    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
+    /* private UiLifecycleHelper uiHelper;
+     private Session.StatusCallback callback = new Session.StatusCallback() {
+         @Override
+         public void call(Session session, SessionState state,
+                          Exception exception) {
+             // onSessionStateChange(session, state, exception);
+         }
+     };
+     private FacebookDialog.Callback dialogCallback = new FacebookDialog.Callback() {
+         @Override
+         public void onError(FacebookDialog.PendingCall pendingCall,
+                             Exception error, Bundle data) {
+             Log.d("HelloFacebook", String.format("Error: %s", error.toString()));
+         }
+
+         @Override
+         public void onComplete(FacebookDialog.PendingCall pendingCall,
+                                Bundle data) {
+             Log.d("HelloFacebook", "Success!");
+         }
+     };*/
+    // facebook variable ends
+    int extra_coin_s = 0;
+    MediaPlayer beep_mp;
+    int fb_reward = 0;
+    com.facebook.ads.RewardedVideoAd rewardedVideoAd;
+    int reward_status = 0;
+    String reward_video = "";
+    Newgame_DataBaseHelper newhelper;
+    Newgame_DataBaseHelper2 newhelper2;
+    Newgame_DataBaseHelper3 newhelper3;
+    DataBaseHelper myDbHelper;
+    SQLiteDatabase dbs, dbn, dbn2;
+    private int mRows;
+    private int mColumns;
+    private boolean[][] mLock;
+    private int[] mRandomIndexes;
+    private String[][] mBoard;
+    private long totalTimeCountInMilliseconds, timeBlinkInMilliseconds; // total count down time in
+    private boolean blink, timer_stop = false;
+    private boolean mGameOver;
+    private boolean mGamePaused;
+    private RewardedVideoAd mRewardedVideoAd;
+    //*********************reward videos process 1***********************
+    private long mTimeRemaining;
+
+    public static String getCountryName(Context context, double latitude, double longitude) {
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        List<Address> addresses;
+        try {
+            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                return addresses.get(0).getCountryName();
+            }
+        } catch (IOException ioe) {
+        }
+        return null;
+    }
 
     @Override
     public void onRewardedVideoCompleted() {
@@ -229,10 +236,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
     }
 
-    private enum PendingAction {
-        NONE, POST_PHOTO, POST_STATUS_UPDATE
-    }
-
     public void showcase_dismiss() {
         Handler handler30 = new Handler();
         handler30.postDelayed(new Runnable() {
@@ -249,45 +252,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             }
         }, 800);
     }
-
-    /* private UiLifecycleHelper uiHelper;
-     private Session.StatusCallback callback = new Session.StatusCallback() {
-         @Override
-         public void call(Session session, SessionState state,
-                          Exception exception) {
-             // onSessionStateChange(session, state, exception);
-         }
-     };
-     private FacebookDialog.Callback dialogCallback = new FacebookDialog.Callback() {
-         @Override
-         public void onError(FacebookDialog.PendingCall pendingCall,
-                             Exception error, Bundle data) {
-             Log.d("HelloFacebook", String.format("Error: %s", error.toString()));
-         }
-
-         @Override
-         public void onComplete(FacebookDialog.PendingCall pendingCall,
-                                Bundle data) {
-             Log.d("HelloFacebook", "Success!");
-         }
-     };*/
-    // facebook variable ends
-    int extra_coin_s = 0;
-
-    public static String getCountryName(Context context, double latitude, double longitude) {
-        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-        List<Address> addresses;
-        try {
-            addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            if (addresses != null && !addresses.isEmpty()) {
-                return addresses.get(0).getCountryName();
-            }
-        } catch (IOException ioe) {
-        }
-        return null;
-    }
-
-    MediaPlayer beep_mp;
+    //reward videos process 1***********************
 
     public void startTimer() {
 
@@ -374,7 +339,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
     }
 
-
     public void load_data() {
 
         total_word = 0;
@@ -453,80 +417,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             startTimer();
         }
     }
-
-    public void no_tool() {
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!sp.getString(getActivity(), "ws_challenge_intro").equals("")) {
-                    System.out.println("no_tool ------------no_tool -------");
-                    getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                    startTimer();
-
-                    //  Native_icon_ad.load_add(getActivity(), normal_baner);
-                    //myDialog_class.WST_Native_IconAd(getActivity(), icon_ad_img, n_icon_ad);
-                    //  myDialog_class.WST_Native_BannerAd(getActivity(), Baner_frame);
-
-                } else {
-                    no_tool();
-                }
-
-
-                System.out.println("no_tool ------------" + sp.getString(getActivity(), "ws_challenge_intro"));
-
-            }
-        }, 1000);
-    }
-
-
-    public void no_setting() {
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (sp.getString(getActivity(), "no_setting").equals("")) {
-                    if (sp.getInt(getContext(), "Grid") == 1) {
-
-                        myTableView.setVisibility(View.VISIBLE);
-                    } else {
-                        myTableView.setVisibility(View.GONE);
-                    }
-                    startTimer();
-                } else {
-                    no_setting();
-                }
-            }
-        }, 1000);
-    }
-
-    int fb_reward = 0;
-    com.facebook.ads.RewardedVideoAd rewardedVideoAd;
-    int reward_status = 0;
-    //*********************reward videos process 1***********************
-
-    String reward_video = "";
-
-
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
-
-    static private int mCoinCount = 20, coinearn = 1;
-    private boolean mGameOver;
-    private boolean mGamePaused;
-    private RewardedVideoAd mRewardedVideoAd;
-    private long mTimeRemaining;
-    //reward videos process 1***********************
-
-    Newgame_DataBaseHelper newhelper;
-    Newgame_DataBaseHelper2 newhelper2;
-    Newgame_DataBaseHelper3 newhelper3;
-    DataBaseHelper myDbHelper;
-    SQLiteDatabase dbs, dbn, dbn2;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -608,7 +498,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
         context = getActivity();
 
-        if (myDialog_class.isNetworkAvailable(getActivity())) {
+        if (my_dialog.isNetworkAvailable(getActivity())) {
             if (sp.getInt(getActivity(), "purchase_ads") == 1) {
                 System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
             } else {
@@ -988,10 +878,10 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             //  sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
 
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(getActivity())
-                    .setTarget(question_txt)
-                    .setDismissText("சரி")
-                    .setContentText("குறிப்பு பார்க்க சொல்லை சொடுக்கவும்.")
-                    .build())
+                            .setTarget(question_txt)
+                            .setDismissText("சரி")
+                            .setContentText("குறிப்பு பார்க்க சொல்லை சொடுக்கவும்.")
+                            .build())
                     .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                         @Override
                         public void onDismiss(MaterialShowcaseView itemView, int position) {
@@ -1030,17 +920,8 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
     }
 
+
     //*********************reward videos process 3***********************
-
-
-    private void addCoins(int coins) {
-        mCoinCount = coins;
-        sp.putInt(getActivity(), "reward_coin_txt", coins);
-        //mCoinCountText.setText("Coins: " + mCoinCount);
-    }
-
-
-    //reward videos***********************//
 
     @Override
     public void onPause() {
@@ -1051,6 +932,9 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
         //reward video pocess :4 ************//
     }
+
+
+    //reward videos***********************//
 
     @Override
     public void onResume() {
@@ -1103,7 +987,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void onWordSelected(List<Integer> positions) {
 
@@ -1152,8 +1035,8 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
 
                     if (wordStart != firstPos && wordStart != lastPos) {
-                        if (word.getWord().toLowerCase().equals(forwardWord.toString().toLowerCase())
-                                || word.getWord().toLowerCase().equals(reverseWord.toString().toLowerCase())) {
+                        if (word.getWord().equalsIgnoreCase(forwardWord.toString())
+                                || word.getWord().equalsIgnoreCase(reverseWord.toString())) {
 
                             Toast.makeText(getContext(), "இந்த வார்த்தை வேறு இடத்தில் உள்ளது ", Toast.LENGTH_SHORT).show();
                         }
@@ -1168,8 +1051,8 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                     }
 
                     System.out.println("=========================== word " + word.getWord());
-                    System.out.println("=========================== forwardWord.toString() " + forwardWord.toString());
-                    System.out.println("=========================== reverseWord.toString() " + reverseWord.toString());
+                    System.out.println("=========================== forwardWord.toString() " + forwardWord);
+                    System.out.println("=========================== reverseWord.toString() " + reverseWord);
                     System.out.println("=========================== found " + found);
 
                     if (found != null) {
@@ -1372,7 +1255,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     public void unLiked(LikeButton likeButton) {
 
     }
-
 
     public void winning_report(final Context context, String get_value) {
         //  myDialog_class.media_player(getActivity(), R.raw.winning, "normal");
@@ -1594,31 +1476,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void onPuzzleComplete() {
-        resetBoard();
-        generateBoard();
-        initBoard();
-
-        if (sp.getInt(context, "Grid") == 1) {
-
-            myTableView.setVisibility(View.VISIBLE);
-        }
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                challengeWsGridView.setVisibility(View.VISIBLE);
-                AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
-                anim.setDuration(500);
-                challengeWsGridView.startAnimation(anim);
-            }
-
-        }, 500);
-
-
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -1757,7 +1614,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
     }
 
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -1797,11 +1653,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     }
 
 
-    private challenge_WS_GridView getGridView() {
-        return (challenge_WS_GridView) getView().findViewById(R.id.grd_challenge);
-    }
-
-
     /**
      * Attempts to add a word to the puzzle anywhere possible.
      *
@@ -1811,7 +1662,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
      */
     private Word addWord(String word) {
 
-        String str[] = word.split("\\.");
+        String[] str = word.split("\\.");
 
 
 
@@ -1928,7 +1779,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         }
     }
 
-
     /**
      * Determines if a given word can be placed at a given location in a
      * particular direction. This returns a count of the number of characters
@@ -1941,7 +1791,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
         try {
 
-            String str[] = word.split("\\.");
+            String[] str = word.split("\\.");
 
             StringBuilder builder = new StringBuilder();
             for (String s : str) {
@@ -2071,7 +1921,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         tv1.setTextSize(15);
         tv1.setAllCaps(true);
         lay_wordsearch.addView(tv1);
-        TranslateAnimation anims1 = new TranslateAnimation(myDialog_class.getXY(more_timer)[0], myDialog_class.getXY(ProgressBar)[0], myDialog_class.getXY(more_timer)[1], myDialog_class.getXY(ProgressBar)[1]);
+        TranslateAnimation anims1 = new TranslateAnimation(my_dialog.getXY(more_timer)[0], my_dialog.getXY(ProgressBar)[0], my_dialog.getXY(more_timer)[1], my_dialog.getXY(ProgressBar)[1]);
         anims1.setDuration(500);
         anims1.setFillAfter(true);
         tv1.startAnimation(anims1);
@@ -2083,7 +1933,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             }
         }, 1000);
     }
-
 
     public void more_time() {
         final Dialog dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -2117,7 +1966,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
                 get_time(30);
 
-                if ((60 * time_value * 1000) <= totalTimeCountInMilliseconds) {
+                if ((60L * time_value * 1000) <= totalTimeCountInMilliseconds) {
                     my_progress = (int) (totalTimeCountInMilliseconds / 1000);
                 }
                 startTimer();
@@ -2158,7 +2007,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
                     totalTimeCountInMilliseconds += (30 * 1000);
 
-                    if ((60 * time_value * 1000) <= totalTimeCountInMilliseconds) {
+                    if ((60L * time_value * 1000) <= totalTimeCountInMilliseconds) {
                         my_progress = (int) (totalTimeCountInMilliseconds / 1000);
 
                     }
@@ -2400,7 +2249,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         });
     }
 
-
     public void more_coin() {
         if (Dailytest_ok.equals("")) {
             countDownTimer.cancel();
@@ -2639,241 +2487,12 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         openDialog_earncoin.show();
     }
 
-
-   /* public void more_coin() {
-        final Dialog dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        dialog.setContentView(R.layout.dia_more_coin);
-        dialog.setCancelable(false);
-
-
-        Bitmap imgBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.loading_page);
-        // String imgBitmapPath = MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), imgBitmap, "title", null);
-        String root = Environment.getExternalStorageDirectory().toString();
-        File mydir = new File(root + "/.nithra/TWS");
-        mydir.mkdirs();
-        String fname = "Image-appshare.jpg";
-        final File file = new File(mydir, fname);
-
-        if (file.exists()) {
-            file.delete();
-        }
-
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            imgBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.print("errorg" + e);
-        }
-
-        if (Dailytest_ok.equals("")) {
-            countDownTimer.cancel();
-        }
-        dont_call = "dont_call";
-        TextView cancel_morecoin = (TextView) dialog.findViewById(R.id.cancel_morecoin);
-        RelativeLayout credit_reward = (RelativeLayout) dialog.findViewById(R.id.credit_reward);
-        RelativeLayout credit_WApp = (RelativeLayout) dialog.findViewById(R.id.credit_WApp);
-        RelativeLayout credit_fb = (RelativeLayout) dialog.findViewById(R.id.credit_fb);
-        RelativeLayout credit_gm = (RelativeLayout) dialog.findViewById(R.id.credit_gm);
-        RelativeLayout credit_more = (RelativeLayout) dialog.findViewById(R.id.credit_more);
-
-        final LikeButton media_reward = (LikeButton) dialog.findViewById(R.id.media_reward);
-        final LikeButton media1 = (LikeButton) dialog.findViewById(R.id.media1);
-        final LikeButton media2 = (LikeButton) dialog.findViewById(R.id.media2);
-        final LikeButton media3 = (LikeButton) dialog.findViewById(R.id.media3);
-        final LikeButton media4 = (LikeButton) dialog.findViewById(R.id.media4);
-
-        media_reward.setOnLikeListener(this);
-        media_reward.setOnAnimationEndListener(this);
-
-        media1.setOnLikeListener(this);
-        media1.setOnAnimationEndListener(this);
-
-        media2.setOnLikeListener(this);
-        media2.setOnAnimationEndListener(this);
-
-        media3.setOnLikeListener(this);
-        media3.setOnAnimationEndListener(this);
-
-        media4.setOnLikeListener(this);
-        media4.setOnAnimationEndListener(this);
-
-        credit_reward.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-                //media1.setLiked(true);
-                media_reward.onClick(v);
-            }
-        });
-
-        credit_WApp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-
-                media1.onClick(v);
-            }
-        });
-
-        credit_fb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-
-                media2.onClick(v);
-            }
-        });
-
-        credit_gm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-
-                media3.onClick(v);
-            }
-        });
-        credit_more.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-
-                media4.onClick(v);
-            }
-        });
-
-
-        cancel_morecoin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-
-                dialog.dismiss();
-                startTimer();
-
-                if (timer_stop) {
-                    //timer_stop = false;
-
-                }
-            }
-        });
-
-        dialog.show();
-
-    }*/
-
-  /*  public boolean isLoggedIn() {
-        Session session = Session.getActiveSession();
-        return (session != null && session.isOpened());
-    }
-
-    private void openFacebookSession() {
-        Session.openActiveSession(getActivity(), true, Arrays.asList("email",
-                "user_birthday", "user_hometown", "user_location"),
-                new Session.StatusCallback() {
-                    @Override
-                    public void call(Session session, SessionState state,
-                                     Exception exception) {
-
-                        if (session != null && session.isOpened()) {
-                            // toast("open");
-
-                            if (btn_str.equals("share")) {
-
-                                publishFeedDialog();
-                            } else if (btn_str.equals("invite")) {
-
-                                Bundle params = new Bundle();
-                                params.putString("message", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                        "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                                showDialogWithoutNotificationBarInvite(
-                                        "apprequests", params);
-                            }
-                        }
-                    }
-                });
-    }*/
-
-/*    private void publishFeedDialog() {
-        Bundle params = new Bundle();
-        params.putString("name", "சொல்லிஅடி");
-        // params.putString("caption", "");
-
-
-        params.putString("name", "சொல்லிஅடி");
-        // params.putString("message", "my_message");
-        params.putString("link", "https://goo.gl/CcA9a8");
-        params.putString("description", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் +\n" +
-                "                             விளையாட இங்கே கிளிக் செய்யவும் ");
-        params.putString("caption", "நான் சொல்லிஅடி விளையாட இங்கே கிளிக் செய்யவும்  ");
-
-
-        WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(getActivity(),
-                Session.getActiveSession(), params)).setOnCompleteListener(
-                new WebDialog.OnCompleteListener() {
-
-                    @Override
-                    public void onComplete(Bundle values,
-                                           FacebookException error) {
-                        if (error == null) {
-                            // When the story is posted, echo the success
-                            // and the post Id.
-                            final String postId = values.getString("post_id");
-                            if (postId != null) {
-
-
-                                try {
-                                    System.out.println("Invitation was sent to "
-                                            + values.toString());
-
-                                    for (int i = 0; values.containsKey("to[" + i + "]"); i++) {
-                                        String curId = values
-                                                .getString("to[" + i + "]");
-
-                                    }
-
-                                    // lastearn("invaite friends", (values.size() - 1));
-                                    if ((values.size() - 1) >= 1) {
-                                        //setcoin(values.size() - 1);
-
-                                        coin_collection((values.size() - 1), 10);
-                                    }
-
-                                } catch (Exception e) {
-
-                                }
-
-
-                            } else {
-                                // User clicked the Cancel button
-                                Toast.makeText(getActivity(),
-                                        "Publish cancelled", Toast.LENGTH_SHORT)
-                                        .show();
-                            }
-                        } else if (error instanceof FacebookOperationCanceledException) {
-                            // User clicked the "x" button
-                            Toast.makeText(getActivity(),
-                                    "Publish cancelled", Toast.LENGTH_SHORT)
-                                    .show();
-                        } else {
-                            // Generic, ex: network error
-                            Toast.makeText(getActivity(),
-                                    "Error posting story", Toast.LENGTH_SHORT)
-                                    .show();
-                        }
-                    }
-
-                }).build();
-        feedDialog.show();
-    }*/
-
     private boolean isNetworkAvailable() {
         ConnectivityManager connec = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
+
 
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getActivity().getPackageManager();
@@ -3041,134 +2660,8 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         ////////////////Prize//////////////////
     }
 
-/*
-    public void reward(final Context context) {
-        rewardedVideoAd = new com.facebook.ads.RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-        rewardedVideoAd.setAdListener(new com.facebook.ads.RewardedVideoAdListener() {
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status=1;
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-
-            @Override
-            public void onError(Ad ad, AdError adError) {
-                //Toast.makeText(context, ""+adError.getErrorCode(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-
-            }
-        });
-        rewardedVideoAd.loadAd();
-    }
-*/
-
     public void reward() {
         rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-      /*  rewardedVideoAd.setAdListener(new RewardedVideoAdListener() {
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status=1;
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward();
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-
-            @Override
-            public void onError(Ad ad, AdError adError) {
-                //Toast.makeText(context, ""+adError.getErrorCode(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-
-            }
-        });
-        rewardedVideoAd.loadAd();*/
         RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
             @Override
             public void onError(Ad ad, AdError error) {

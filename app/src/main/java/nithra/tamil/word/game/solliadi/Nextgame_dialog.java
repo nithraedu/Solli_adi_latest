@@ -1,5 +1,7 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.MainActivity.main_act;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -12,10 +14,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import static nithra.tamil.word.game.solliadi.MainActivity.main_act;
-
 public class Nextgame_dialog extends Dialog {
-    SharedPreference sps=new SharedPreference();
+    SharedPreference sps = new SharedPreference();
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
     Newgame_DataBaseHelper3 newhelper3;
@@ -50,7 +50,7 @@ public class Nextgame_dialog extends Dialog {
         c_game.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((Activity)context).finish();
+                ((Activity) context).finish();
                 sps.putString(context, "date", "0");
                 Intent i = new Intent(context, Clue_Game_Hard.class);
                 context.startActivity(i);
@@ -59,7 +59,7 @@ public class Nextgame_dialog extends Dialog {
         s_game.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((Activity)context).finish();
+                ((Activity) context).finish();
                 sps.putString(context, "date", "0");
                 Intent i = new Intent(context, Solukul_Sol.class);
                 context.startActivity(i);
@@ -68,7 +68,7 @@ public class Nextgame_dialog extends Dialog {
         w_game.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((Activity)context).finish();
+                ((Activity) context).finish();
                 sps.putString(context, "date", "0");
                 Intent i = new Intent(context, Word_Game_Hard.class);
                 context.startActivity(i);
@@ -77,7 +77,7 @@ public class Nextgame_dialog extends Dialog {
         p_game.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((Activity)context).finish();
+                ((Activity) context).finish();
                 sps.putString(context, "date", "0");
                 Intent i = new Intent(context, Picture_Game_Hard.class);
                 context.startActivity(i);
@@ -87,7 +87,7 @@ public class Nextgame_dialog extends Dialog {
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((Activity)context).finish();
+                ((Activity) context).finish();
                 sps.putString(context, "date", "0");
                 Intent i = new Intent(context, MainActivity.class);
                 context.startActivity(i);
@@ -134,7 +134,7 @@ public class Nextgame_dialog extends Dialog {
         matchword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((Activity)context).finish();
+                ((Activity) context).finish();
                 sps.putString(context, "date", "0");
                 Intent i = new Intent(context, Match_Word.class);
                 context.startActivity(i);
@@ -143,7 +143,7 @@ public class Nextgame_dialog extends Dialog {
         odd_man_out.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((Activity)context).finish();
+                ((Activity) context).finish();
                 sps.putString(context, "date", "0");
                 Intent i = new Intent(context, Odd_man_out.class);
                 context.startActivity(i);
@@ -173,7 +173,7 @@ public class Nextgame_dialog extends Dialog {
         opposite_word.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((Activity)context).finish();
+                ((Activity) context).finish();
                 sps.putString(context, "date", "0");
                 Intent i = new Intent(context, Opposite_word.class);
                 context.startActivity(i);
@@ -182,7 +182,7 @@ public class Nextgame_dialog extends Dialog {
         ote_to_tamil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((Activity)context).finish();
+                ((Activity) context).finish();
                 sps.putString(context, "date", "0");
                 Intent i = new Intent(context, Ote_to_Tamil.class);
                 context.startActivity(i);
@@ -247,7 +247,7 @@ public class Nextgame_dialog extends Dialog {
         seerpaduthu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((Activity)context).finish();
+                ((Activity) context).finish();
                 sps.putString(context, "date", "0");
                 Intent i = new Intent(context, Makeword_Rightorder.class);
                 context.startActivity(i);
@@ -256,7 +256,7 @@ public class Nextgame_dialog extends Dialog {
         puthir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((Activity)context).finish();
+                ((Activity) context).finish();
                 sps.putString(context, "date", "0");
                 Intent i = new Intent(context, Riddle_game.class);
                 context.startActivity(i);
@@ -265,7 +265,7 @@ public class Nextgame_dialog extends Dialog {
         tirukural.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((Activity)context).finish();
+                ((Activity) context).finish();
                 sps.putString(context, "date", "0");
                 Intent i = new Intent(context, Tirukural.class);
                 context.startActivity(i);
@@ -274,7 +274,7 @@ public class Nextgame_dialog extends Dialog {
         pilaithiruthu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((Activity)context).finish();
+                ((Activity) context).finish();
                 sps.putString(context, "date", "0");
                 Intent i = new Intent(context, WordError_correction.class);
                 context.startActivity(i);
@@ -301,7 +301,7 @@ public class Nextgame_dialog extends Dialog {
         fill_in_blanks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((Activity)context).finish();
+                ((Activity) context).finish();
                 sps.putString(context, "date", "0");
                 Intent i = new Intent(context, Fill_in_blanks.class);
                 context.startActivity(i);
@@ -311,7 +311,7 @@ public class Nextgame_dialog extends Dialog {
         eng_to_tamil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((Activity)context).finish();
+                ((Activity) context).finish();
                 sps.putString(context, "date", "0");
                 Intent i = new Intent(context, English_to_tamil.class);
                 context.startActivity(i);
@@ -327,14 +327,14 @@ public class Nextgame_dialog extends Dialog {
                 if (main_act.equals("")) {
 
 
-                    ((Activity)context).finish();
+                    ((Activity) context).finish();
                     //     openDialog_s.dismiss();
                     Intent i = new Intent(context, MainActivity.class);
                     context.startActivity(i);
                 } else {
 
                     sps.putString(context, "game_area", "on");
-                    ((Activity)context).finish();
+                    ((Activity) context).finish();
                 }
                 openDialog.dismiss();
                 //sps.putString(Odd_man_out.this, "date", "0");

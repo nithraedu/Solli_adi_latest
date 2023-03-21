@@ -5,8 +5,9 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -15,6 +16,7 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
@@ -25,9 +27,9 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
     SQLiteDatabase myDB;
     SharedPreference sharedPreference;
     int iddd;
-     private NotificationHelper noti;
     int isclose = 0;
-    String game_mode="";
+    String game_mode = "";
+    private NotificationHelper noti;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -85,11 +87,12 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
         editor.putString("regId", token);
         editor.commit();
     }
+
     private void handleDataMessage(JSONObject data) {
         /*Log.e(TAG, "push json: " + json.toString());*/
-            /*JSONObject data = null;*/
+        /*JSONObject data = null;*/
 
-            /*data = json.getJSONObject("data");*/
+        /*data = json.getJSONObject("data");*/
         try {
             String message = data.getString("message");
             String title = data.getString("title");
@@ -139,22 +142,12 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
                     ntype = "no";
                 }
 
-                try {
-                    title = URLDecoder.decode(title, "UTF-8");
+                title = URLDecoder.decode(title, StandardCharsets.UTF_8);
 
-                } catch (UnsupportedEncodingException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
                 System.out.println("============================type" + type);
                 if (type.equals("s")) {
-                    System.out.println("str_titlestr_title"+message);
-                    try {
-                        bm = URLDecoder.decode(bm, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                    System.out.println("str_titlestr_title" + message);
+                    bm = URLDecoder.decode(bm, StandardCharsets.UTF_8);
                     myDB.execSQL("INSERT INTO noti_cal(title,message,date,time,isclose,type,bm,ntype,url) values " +
                             "('" + title + "','" + message + "','" + date + "','" + time + "','" + isclose + "','s','" + bm + "','" + ntype + "','" + url + "');");
                     sharedPreference.putInt(this, "typee", 0);
@@ -162,7 +155,7 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
                     c.moveToLast();
                     iddd = c.getInt(0);
                     myDB.close();
-                    if (sharedPreference.getBoolean(this, "notiS_onoff") == true) {
+                    if (sharedPreference.getBoolean(this, "notiS_onoff")) {
                         if (ntype.equals("bt")) {
                             noti.Notification_custom(iddd, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), ST_Activity.class);
                         } else if (ntype.equals("bi")) {
@@ -173,12 +166,7 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
                     }
                 } else if (type.equals("h")) {
 
-                    try {
-                        bm = URLDecoder.decode(bm, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                    bm = URLDecoder.decode(bm, StandardCharsets.UTF_8);
 
                     if (ntype.equals("bt")) {
                         noti.Notification_custom(0, title, message, url, "bt", bm, sharedPreference
@@ -188,14 +176,9 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
                                 .getInt(this, "sund_chk1"), New_Main_Activity.class);
                     }
                 } else if (type.equals("st")) {
-                    System.out.println("str_titlestr_title"+message);
-                    try {
-                        bm = URLDecoder.decode(bm, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                     myDB.execSQL("INSERT INTO noti_cal(title,message,date,time,isclose,type,bm,ntype,url) values " +
+                    System.out.println("str_titlestr_title" + message);
+                    bm = URLDecoder.decode(bm, StandardCharsets.UTF_8);
+                    myDB.execSQL("INSERT INTO noti_cal(title,message,date,time,isclose,type,bm,ntype,url) values " +
                             "('" + title + "','" + message + "','" + date + "','" + time + "','" + isclose + "','s','" + bm + "','" + ntype + "','" + url + "');");
                     sharedPreference.putInt(this, "typee", 0);
                     Cursor c = myDB.rawQuery("select id from noti_cal", null);
@@ -208,7 +191,7 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
 
                     }
                     myDB.close();
-                    if (sharedPreference.getBoolean(this, "notiS_onoff") == true) {
+                    if (sharedPreference.getBoolean(this, "notiS_onoff")) {
                         if (ntype.equals("bt")) {
                             noti.Notification_bm(iddd, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), ST_Activity.class);
                         } else if (ntype.equals("bi")) {
@@ -218,13 +201,8 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
                         }
                     }
                 } else if (type.equals("w")) {
-                    try {
-                        bm = URLDecoder.decode(bm, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                     myDB.execSQL("INSERT INTO noti_cal(title,message,date,time,isclose,type,bm,ntype,url) values " +
+                    bm = URLDecoder.decode(bm, StandardCharsets.UTF_8);
+                    myDB.execSQL("INSERT INTO noti_cal(title,message,date,time,isclose,type,bm,ntype,url) values " +
                             "('" + title + "','" + message + "','" + date + "','" + time + "','" + isclose + "','w','" + bm + "','" + ntype + "','" + url + "');");
                     sharedPreference.putInt(this, "typee", 0);
                     Cursor c = myDB.rawQuery("select id from noti_cal", null);
@@ -237,7 +215,7 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
 
                     }
                     myDB.close();
-                    if (sharedPreference.getBoolean(this, "notiS_onoff") == true) {
+                    if (sharedPreference.getBoolean(this, "notiS_onoff")) {
                         if (ntype.equals("bt")) {
                             noti.Notification_custom(iddd, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), ST_Activity.class);
                         } else if (ntype.equals("bi")) {
@@ -253,13 +231,8 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
                     c.moveToLast();
                     iddd = c.getInt(0);
 
-                    try {
-                        bm = URLDecoder.decode(bm, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                     Cursor c1 = myDB.rawQuery("select id from noti_cal where isclose = '0'", null);
+                    bm = URLDecoder.decode(bm, StandardCharsets.UTF_8);
+                    Cursor c1 = myDB.rawQuery("select id from noti_cal where isclose = '0'", null);
                     if (c1.getCount() != 0) {
 
                     } else {
@@ -267,49 +240,16 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
                     }
                     myDB.close();
                 } else if (type.equals("ins")) {
-                    try {
-                        bm = URLDecoder.decode(bm, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    if (sharedPreference.getBoolean(this, "notiS_onoff") == true) {
+                    bm = URLDecoder.decode(bm, StandardCharsets.UTF_8);
+                    if (sharedPreference.getBoolean(this, "notiS_onoff")) {
                         noti.Notification1(intent_id, title, message, url, "bi", bm, sharedPreference.getInt(this, "sund_chk1"), ST_Activity.class);
                     }
-                } else if (type.equals("g")) {
-
-                    game_mode = "game_mode";
-                    System.out.println("============================gtype" + game_mode);
-
-                    try {
-                        bm = URLDecoder.decode(bm, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-
-                    if (ntype.equals("bt")) {
-                        sharedPreference.putString(this, "multi_on", "yes");
-                        noti.Notification_custom(iddd, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), Solli_adi_multiplayer.class);
-                    } else if (ntype.equals("bi")) {
-                        sharedPreference.putString(this, "multi_on", "yes");
-                        noti.Notification_custom(iddd, title, message, url, "bi", bm, sharedPreference.getInt(this, "sund_chk1"), Solli_adi_multiplayer.class);
-                    } else {
-                        sharedPreference.putString(this, "multi_on", "yes");
-                        noti.Notification_bm(iddd, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), Solli_adi_multiplayer.class);
-                    }
-
-                }else if (type.equals("og")) {
+                } else if (type.equals("og")) {
 
 
                     System.out.println("============================gtype" + game_mode);
 
-                    try {
-                        bm = URLDecoder.decode(bm, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                    bm = URLDecoder.decode(bm, StandardCharsets.UTF_8);
 
                     if (ntype.equals("bt")) {
                         sharedPreference.putString(this, "og_game_on", "yes");
@@ -325,21 +265,16 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
                 } else if (type.equals("sp")) {
                     System.out.println("============================gtype" + game_mode);
 
-                    try {
-                        bm = URLDecoder.decode(bm, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                    bm = URLDecoder.decode(bm, StandardCharsets.UTF_8);
 
                     if (ntype.equals("bt")) {
                         sharedPreference.putString(this, "sd_prize_st", "yes");
                         if (sharedPreference.getString(this, "price_registration").equals("com")) {
                             noti.Notification_custom(iddd, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), Game_Status.class);
-                        }else {
+                        } else {
                             if (sharedPreference.getString(this, "otp_verify").equals("yes")) {
                                 noti.Notification_custom(iddd, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), LoginActivity.class);
-                            }else {
+                            } else {
                                 noti.Notification_custom(iddd, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), Price_Login.class);
                             }
 
@@ -348,10 +283,10 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
                         sharedPreference.putString(this, "sd_prize_st", "yes");
                         if (sharedPreference.getString(this, "price_registration").equals("com")) {
                             noti.Notification_custom(iddd, title, message, url, "bi", bm, sharedPreference.getInt(this, "sund_chk1"), Game_Status.class);
-                        }else {
+                        } else {
                             if (sharedPreference.getString(this, "otp_verify").equals("yes")) {
                                 noti.Notification_custom(iddd, title, message, url, "bi", bm, sharedPreference.getInt(this, "sund_chk1"), LoginActivity.class);
-                            }else {
+                            } else {
                                 noti.Notification_custom(iddd, title, message, url, "bi", bm, sharedPreference.getInt(this, "sund_chk1"), Price_Login.class);
                             }
                         }
@@ -359,12 +294,13 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
                         sharedPreference.putString(this, "sd_prize_st", "yes");
                         if (sharedPreference.getString(this, "price_registration").equals("com")) {
                             noti.Notification_bm(iddd, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), Game_Status.class);
-                        }else {
+                        } else {
                             if (sharedPreference.getString(this, "otp_verify").equals("yes")) {
                                 noti.Notification_custom(iddd, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), LoginActivity.class);
-                            }else {
+                            } else {
                                 noti.Notification_custom(iddd, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), Price_Login.class);
-                            }                        }
+                            }
+                        }
                     }
                    /* if (ntype.equals("bt")) {
                         if (sharedPreference.getString(this, "price_registration").equals("com")) {
@@ -386,43 +322,22 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
                             noti.Notification_custom(iddd, title, message, url, "bi", bm, sharedPreference.getInt(this, "sund_chk1"), Price_Login.class);
                         }
                     }*/
-                }
-                else if (type.equals("ap")) {
+                } else if (type.equals("ap")) {
                     if (appInstalledOrNot(pac)) {
 
                     } else {
 
                         if (ntype.equals("n")) {
-                            try {
-                                bm = URLDecoder.decode(bm, "UTF-8");
-                            } catch (UnsupportedEncodingException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
+                            bm = URLDecoder.decode(bm, StandardCharsets.UTF_8);
                             noti.Notification1(intent_id, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), ST_Activity.class);
                         } else if (ntype.equals("bt")) {
-                            try {
-                                bm = URLDecoder.decode(bm, "UTF-8");
-                            } catch (UnsupportedEncodingException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
+                            bm = URLDecoder.decode(bm, StandardCharsets.UTF_8);
                             noti.Notification1(intent_id, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), ST_Activity.class);
                         } else if (ntype.equals("bi")) {
-                            try {
-                                bm = URLDecoder.decode(bm, "UTF-8");
-                            } catch (UnsupportedEncodingException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
+                            bm = URLDecoder.decode(bm, StandardCharsets.UTF_8);
                             noti.Notification1(intent_id, title, message, url, "bi", bm, sharedPreference.getInt(this, "sund_chk1"), ST_Activity.class);
                         } else if (ntype.equals("w")) {
-                            try {
-                                bm = URLDecoder.decode(bm, "UTF-8");
-                            } catch (UnsupportedEncodingException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
+                            bm = URLDecoder.decode(bm, StandardCharsets.UTF_8);
                             noti.Notification1(intent_id, title, message, url, "bi", bm, sharedPreference.getInt(this, "sund_chk1"), ST_Activity.class);
                         }
                     }
@@ -431,18 +346,13 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
                    /* msgg = message;
                     titt = title;
                     bmmm = bm;*/
-                    try {
-                        bm = URLDecoder.decode(bm, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    if (sharedPreference.getInt(this, "purchase_ads")==0) {
-                        sharedPreference.putString(this,"ads_dialog","on");
+                    bm = URLDecoder.decode(bm, StandardCharsets.UTF_8);
+                    if (sharedPreference.getInt(this, "purchase_ads") == 0) {
+                        sharedPreference.putString(this, "ads_dialog", "on");
                         if (ntype.equals("bt")) {
-                            noti.Notification_rao(type,0, title, message, url, "bt", bm, New_Main_Activity.class);
+                            noti.Notification_rao(type, 0, title, message, url, "bt", bm, New_Main_Activity.class);
                         } else if (ntype.equals("bi")) {
-                            noti.Notification_rao(type,0, title, message, url, "bi", bm, New_Main_Activity.class);
+                            noti.Notification_rao(type, 0, title, message, url, "bi", bm, New_Main_Activity.class);
                         }
                     }
                 } else if (type.equals("u")) {

@@ -42,7 +42,6 @@ import nithra.tamil.word.game.solliadi.SharedPreference;
 public class Billing_Activity extends AppCompatActivity implements PurchasesUpdatedListener {
 
     private static final String TAG = "Billing";
-    private BillingClient billingClient;
     SharedPreference sharedPreference = new SharedPreference();
     List<ProductDetails> productDetailsList;
     Handler handler;
@@ -50,6 +49,7 @@ public class Billing_Activity extends AppCompatActivity implements PurchasesUpda
     RecyclerView recyclerView;
     MyListAdapter adapter;
     ProgressBar mLoadingView;
+    private BillingClient billingClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,13 +76,13 @@ public class Billing_Activity extends AppCompatActivity implements PurchasesUpda
         }
     }
 
-    public void initialDialog(){
+    public void initialDialog() {
         final Dialog initialloading = new Dialog(Billing_Activity.this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth);
         initialloading.setContentView(R.layout.acquire_fragment);
         initialloading.setCanceledOnTouchOutside(false);
 
         mLoadingView = initialloading.findViewById(R.id.screen_wait);
-        recyclerView =initialloading.findViewById(R.id.list);
+        recyclerView = initialloading.findViewById(R.id.list);
         mLoadingView.setVisibility(View.VISIBLE);
 
         initialBilling();
@@ -99,7 +99,7 @@ public class Billing_Activity extends AppCompatActivity implements PurchasesUpda
 
     }
 
-    public void initialBilling(){
+    public void initialBilling() {
         billingClient = BillingClient.newBuilder(this)
                 .enablePendingPurchases()
                 .setListener(
@@ -171,7 +171,7 @@ public class Billing_Activity extends AppCompatActivity implements PurchasesUpda
 
     void handlePurchase(Purchase purchases) {
 
-        if(!purchases.isAcknowledged()){
+        if (!purchases.isAcknowledged()) {
             billingClient.acknowledgePurchase(AcknowledgePurchaseParams
                     .newBuilder()
                     .setPurchaseToken(purchases.getPurchaseToken())
@@ -182,8 +182,8 @@ public class Billing_Activity extends AppCompatActivity implements PurchasesUpda
                     // true - No ads
                     // false - showing ads.
 
-                    Log.d(TAG,"Purchased Successfully");
-                    sharedPreference.putBoolean(Billing_Activity.this, "add_remove",true);
+                    Log.d(TAG, "Purchased Successfully");
+                    sharedPreference.putBoolean(Billing_Activity.this, "add_remove", true);
                     updateUi();
                     //  goBack();
                 }
@@ -191,7 +191,7 @@ public class Billing_Activity extends AppCompatActivity implements PurchasesUpda
             Log.d(TAG, "Purchase Token: " + purchases.getPurchaseToken());
             Log.d(TAG, "Purchase Time: " + purchases.getPurchaseTime());
             Log.d(TAG, "Purchase OrderID: " + purchases.getOrderId());
-            sharedPreference.putBoolean(Billing_Activity.this, "add_remove",true);
+            sharedPreference.putBoolean(Billing_Activity.this, "add_remove", true);
             updateUi();
         }
     }
@@ -207,7 +207,7 @@ public class Billing_Activity extends AppCompatActivity implements PurchasesUpda
                 .setProductDetailsParamsList(productDetailsParamsList)
                 .build();
 
-        BillingResult billingResult = billingClient.launchBillingFlow(activity, billingFlowParams);
+        billingClient.launchBillingFlow(activity, billingFlowParams);
     }
 
     @Override
@@ -224,60 +224,6 @@ public class Billing_Activity extends AppCompatActivity implements PurchasesUpda
             Log.w(TAG, "onPurchasesUpdated() got unknown resultCode: " + billingResult.getResponseCode());
         }
 
-    }
-
-    public class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder>{
-        List<ProductDetails> listdata;
-
-        // RecyclerView recyclerView;
-        public MyListAdapter(List<ProductDetails> listdata) {
-            this.listdata = listdata;
-        }
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-            View listItem= layoutInflater.inflate(R.layout.sku_details_row, parent, false);
-            ViewHolder viewHolder = new ViewHolder(listItem);
-            return viewHolder;
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            final ProductDetails myListData = listdata.get(position);
-            holder.headd.setText(""+myListData.getProductType());
-            holder.title.setText(""+myListData.getTitle());
-            holder.price.setText(""+myListData.getOneTimePurchaseOfferDetails().getFormattedPrice());
-            holder.description.setText(""+myListData.getDescription());
-            holder.button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    launchPurchaseFlow(productDetailsList.get(position));
-                    //Toast.makeText(view.getContext(),"click on item: "+myListData.getDescription(),Toast.LENGTH_LONG).show();
-                }
-            });
-        }
-
-
-        @Override
-        public int getItemCount() {
-            return listdata.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-
-            public TextView headd,title,price,description;
-            public Button button;
-
-            public ViewHolder(View itemView) {
-                super(itemView);
-                headd = itemView.findViewById(R.id.headd);
-                title = itemView.findViewById(R.id.title);
-                price = itemView.findViewById(R.id.price);
-                description = itemView.findViewById(R.id.description);
-                button = itemView.findViewById(R.id.state_button);
-
-            }
-        }
     }
 
     public void congratulations_dialog() {
@@ -308,6 +254,61 @@ public class Billing_Activity extends AppCompatActivity implements PurchasesUpda
         }
 
 
+    }
+
+    public class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder> {
+        List<ProductDetails> listdata;
+
+        // RecyclerView recyclerView;
+        public MyListAdapter(List<ProductDetails> listdata) {
+            this.listdata = listdata;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+            View listItem = layoutInflater.inflate(R.layout.sku_details_row, parent, false);
+            ViewHolder viewHolder = new ViewHolder(listItem);
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            final ProductDetails myListData = listdata.get(position);
+            holder.headd.setText("" + myListData.getProductType());
+            holder.title.setText("" + myListData.getTitle());
+            holder.price.setText("" + myListData.getOneTimePurchaseOfferDetails().getFormattedPrice());
+            holder.description.setText("" + myListData.getDescription());
+            holder.button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    launchPurchaseFlow(productDetailsList.get(position));
+                    //Toast.makeText(view.getContext(),"click on item: "+myListData.getDescription(),Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+
+        @Override
+        public int getItemCount() {
+            return listdata.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+
+            public TextView headd, title, price, description;
+            public Button button;
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+                headd = itemView.findViewById(R.id.headd);
+                title = itemView.findViewById(R.id.title);
+                price = itemView.findViewById(R.id.price);
+                description = itemView.findViewById(R.id.description);
+                button = itemView.findViewById(R.id.state_button);
+
+            }
+        }
     }
 
 }

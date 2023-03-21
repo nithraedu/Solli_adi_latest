@@ -49,15 +49,26 @@ import nithra.tamil.word.game.solliadi.word_search_game.Models.Models.Word;
 
 public class challenge_WS_GridView extends LinearLayout implements OnKeyListener {
 
-    private int mDefaultColor;
-    private int mSelectionColor;
-
-    private int mColumnWidth;
-    private int mColumns, mRows;
-    private float mCornerRadius;
+    public static int clearSelection = 0;
+    public static float[] touchPoint;
     private final float mScale = getResources().getDisplayMetrics().density;
     private final float mMinDistance = (int) (50.0 * mScale + 0.5);
-
+    String[] colors = {"#F44336", "#9C27B0", "#2196F3", "#4CAF50", "#FFC107", "#00BCD4",
+            "#E91E63", "#673AB7", "#009688", "#CDDC39", "#FF5722", "#607D8B", "#3F51B5",
+            "#FF1744", "#0091EA", "#00C853", "#FFAB00", "#795548", "#827717", "#006064"};
+    SharedPreference sp = new SharedPreference();
+    int i = 0, k = 0;
+    Animation animShake, zoomIn, zoomOut;
+    View view;
+    MediaPlayer mp;
+    Animation wobble;
+    List<Integer> listPos = new ArrayList<>();
+    private int mDefaultColor;
+    private int mSelectionColor;
+    private int mColumnWidth;
+    private final int mColumns;
+    private final int mRows;
+    private float mCornerRadius;
     /**
      * Vars related to selection and selection drawing
      */
@@ -69,45 +80,17 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
     private Paint mPaint, mFoundPaint, mHintPaint, mMtPaint;
     private List<View> mPreviousSelection;
     private Bitmap mFoundCache;
-
-    public static int clearSelection = 0;
-
     /**
      * State of the board
      */
     private WordsearchGameState mGameState;
-
     /**
      * Listeners
      */
     private OnWordSelectedListener mOnWordSelectedListener;
-
     private boolean mFocusSelected;
-
     private String mLastWordFound;
-
-    String[] colors = {"#F44336", "#9C27B0", "#2196F3", "#4CAF50", "#FFC107", "#00BCD4",
-            "#E91E63", "#673AB7", "#009688", "#CDDC39", "#FF5722", "#607D8B", "#3F51B5",
-            "#FF1744", "#0091EA", "#00C853", "#FFAB00", "#795548", "#827717", "#006064"};
-
-
-    SharedPreference sp = new SharedPreference();
-
-    int i = 0, k = 0;
-
-    Animation animShake, zoomIn, zoomOut;
-
-    View view;
-
-    private Matrix matrix = new Matrix();
-
-    public static float[] touchPoint;
-
-    MediaPlayer mp;
-
-    Animation wobble;
-
-    List<Integer> listPos = new ArrayList<>();
+    private final Matrix matrix = new Matrix();
 
     public challenge_WS_GridView(Context context) {
         super(context);
@@ -129,7 +112,7 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
     }
 
     public void clearSelection() {
-        if (mSelectionDirection != null && mSelectionSteps != null && mSelStartPosition!=null) {
+        if (mSelectionDirection != null && mSelectionSteps != null && mSelStartPosition != null) {
             for (View view : getSelectionViews()) {
 
                 //((TextView) view.findViewById(R.id.lbl_char)).setTextColor(mDefaultColor);
@@ -387,10 +370,9 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
                 // Selection now includes these characters so
                 // highlight them
 
-                if (mSelectionDirection != null && mSelectionSteps != null && mSelStartPosition != null)
-                {
+                if (mSelectionDirection != null && mSelectionSteps != null && mSelStartPosition != null) {
 
-               /* if (!selectedViews.isEmpty()) {*/
+                    /* if (!selectedViews.isEmpty()) {*/
 
                     //mp = MediaPlayer.create(getContext(), R.raw.btn);
 
@@ -640,6 +622,7 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
             postInvalidate();
         }
     }
+
     /*
      * (non-Javadoc)
      *
@@ -734,13 +717,13 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
         float angleStep = (float) Math.hypot(mColumnWidth, mColumnWidth);
         float pad = mColumnWidth / 3.2f;
 
-        String str[] = word.getWord().split("\\.");
+        String[] str = word.getWord().split("\\.");
         StringBuilder builder = new StringBuilder();
         for (String s : str) {
             builder.append(s);
         }
 
-       // float distance = (word.getDirection().isAngle() ? angleStep : mColumnWidth) * (word.getWord().length() - 1);
+        // float distance = (word.getDirection().isAngle() ? angleStep : mColumnWidth) * (word.getWord().length() - 1);
 
         float distance = (word.getDirection().isAngle() ? angleStep : mColumnWidth) * (str.length - 1);
 
@@ -946,16 +929,11 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
         return -1;
     }
 
-    public static interface OnWordSelectedListener {
-        public void onWordSelected(List<Integer> positions);
+    public interface OnWordSelectedListener {
+        void onWordSelected(List<Integer> positions);
     }
 
     private static final class WordsearchGameState extends BaseSavedState {
-
-        private Set<Word> mFoundWords;
-        private Set<Word> foundWords = new HashSet<>();
-        private Word mHint;
-        private Word mMaintain;
 
         @SuppressWarnings("unused")
         public static final Creator<WordsearchGameState> CREATOR =
@@ -971,14 +949,18 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
                         return new WordsearchGameState(source);
                     }/*
                      * (non-Javadoc)
-					 * 
-					 * @see android.os.Parcelable.Creator#newArray(int)
-					 */
+                     *
+                     * @see android.os.Parcelable.Creator#newArray(int)
+                     */
 
                     public WordsearchGameState[] newArray(int size) {
                         return new WordsearchGameState[size];
                     }
                 };
+        private Set<Word> mFoundWords;
+        private Set<Word> foundWords = new HashSet<>();
+        private Word mHint;
+        private Word mMaintain;
 
         private WordsearchGameState() {
             super(Parcel.obtain());

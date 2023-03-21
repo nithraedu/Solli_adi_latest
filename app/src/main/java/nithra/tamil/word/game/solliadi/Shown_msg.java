@@ -3,14 +3,11 @@ package nithra.tamil.word.game.solliadi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.widget.AppCompatButton;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
-
-
-
+import androidx.appcompat.widget.AppCompatButton;
 
 
 public class Shown_msg extends Activity {
@@ -24,16 +21,15 @@ public class Shown_msg extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-       setContentView(R.layout.shown_msg);
+        setContentView(R.layout.shown_msg);
         setFinishOnTouchOutside(false);
 
         sharedPreference = new SharedPreference();
 
 
-
         if (sharedPreference.getInt(Shown_msg.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
-        }else {
+        } else {
            /* AdRequest adRequest = new AdRequest.Builder().build();
             interstitialAd.loadAd(adRequest);*/
         }
@@ -43,7 +39,6 @@ public class Shown_msg extends Activity {
         extras = getIntent().getExtras();
         String message = extras.getString("message");
         String title = extras.getString("title");
-
 
 
         AppCompatButton ok = (AppCompatButton) findViewById(R.id.button1);
@@ -57,16 +52,15 @@ public class Shown_msg extends Activity {
             @Override
             public void onClick(View arg0) {
                 // TODO Auto-generated method stub
-                if(sharedPreference.getInt(Shown_msg.this,"Noti_add")==1) {
+                if (sharedPreference.getInt(Shown_msg.this, "Noti_add") == 1) {
 
-                        sharedPreference.putInt(getApplicationContext(), "Noti_add", 0);
-                        Intent i = new Intent(Shown_msg.this,MainActivity.class);
-                        finish();
-                        startActivity(i);
+                    sharedPreference.putInt(getApplicationContext(), "Noti_add", 0);
+                    Intent i = new Intent(Shown_msg.this, MainActivity.class);
+                    finish();
+                    startActivity(i);
 
-                }
-                else{
-                    Intent i = new Intent(Shown_msg.this,MainActivity.class);
+                } else {
+                    Intent i = new Intent(Shown_msg.this, MainActivity.class);
                     finish();
                     startActivity(i);
                 }
@@ -78,22 +72,20 @@ public class Shown_msg extends Activity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if(sharedPreference.getInt(Shown_msg.this,"Noti_add")==1) {
+        if (sharedPreference.getInt(Shown_msg.this, "Noti_add") == 1) {
 
-                sharedPreference.putInt(getApplicationContext(), "Noti_add", 0);
-                Intent i = new Intent(Shown_msg.this,Shown_msg.class);
-                finish();
-                startActivity(i);
+            sharedPreference.putInt(getApplicationContext(), "Noti_add", 0);
+            Intent i = new Intent(Shown_msg.this, Shown_msg.class);
+            finish();
+            startActivity(i);
 
-        }
-        else{
-            Intent i = new Intent(Shown_msg.this,Shown_msg.class);
+        } else {
+            Intent i = new Intent(Shown_msg.this, Shown_msg.class);
             finish();
             startActivity(i);
         }
 
     }
-
 
 
 }

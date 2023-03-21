@@ -1,5 +1,9 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -17,46 +21,15 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxAdView;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
-import com.facebook.ads.NativeAdLayout;
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
-import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -70,15 +43,25 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.FileProvider;
 
-
-
-
-
-
-
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.facebook.ads.NativeAdLayout;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
 import java.io.File;
@@ -88,21 +71,19 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
 import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
-import nithra.tamil.word.game.solliadi.adutils.GameExitUtils;
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
+public class Quiz_Game extends BaseGameActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Download_completed {
+    //*********************reward videos process 1***********************
 
-public class Quiz_Game extends BaseGameActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,  Download_completed {
+    static int vs = 0;
+    static int rvo = 0;
+    static int mCoinCount = 20;
     TextView question_txt, c_ans, c_button1, c_button2, c_button3, c_button4, score, c_word_number;
     Chronometer focus;
-
     SharedPreference sps = new SharedPreference();
     String gameid = "17";
     String question_id = "", question = "", answer = "";
@@ -122,44 +103,22 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     TextView next_continue;
     TextView ttscores;
     Typeface typ, tyr;
-    static int vs = 0;
-    static int rvo = 0;
-    static int mCoinCount = 20;
     int f_sec;
     int r = 0;
     int dia_dismiss = 0;
-
-    private MaxInterstitialAd ins_game,game_exit_ins;
-
-
     int extra_coin_s = 0;
     TextView s_word_number, s_score_edit, hint, p_coins, p_coins_red, earncoin, to_no, discription, c_settings, ch_facebook, ch_watts_app;
     int reward_play_count = 0;
     int ea = 0;
     int setval_vid;
     TextView coin_value;
-    private GoogleApiClient mGoogleApiClient;
     RelativeLayout head;
     int share_name = 0;
     int e2;
     int fb_reward = 0;
-    //RewardedVideoAd rewardedVideoAd;
-    private MaxRewardedAd rewardedAd;
     int reward_status = 0;
-    //*********************reward videos process 1***********************
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
-
-
-    private boolean mGameOver;
-    private boolean mGamePaused;
-
-    private long mTimeRemaining;
     //reward videos process 1***********************
     LinearLayout qwt;
-
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
     Newgame_DataBaseHelper3 newhelper3;
@@ -167,6 +126,14 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     Newgame_DataBaseHelper5 newhelper5;
     TextView word1, word2, word3, word4, word5, word6, ans, dis, close;
     LinearLayout ads_lay;
+    private MaxInterstitialAd ins_game, game_exit_ins;
+    private GoogleApiClient mGoogleApiClient;
+    //RewardedVideoAd rewardedVideoAd;
+    private MaxRewardedAd rewardedAd;
+    private boolean mGameOver;
+    private boolean mGamePaused;
+    private long mTimeRemaining;
+
     private void backexitnet() {
         if (main_act.equals("")) {
             finish();
@@ -237,13 +204,11 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         ads_layout = (LinearLayout) openDialog_s.findViewById(R.id.fl_adplaceholder);
 
 
-
-
         if (sps.getInt(Quiz_Game.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
         } else {
             //fb_addload_score_screen(Quiz_Game.this);
-           /**/
+            /**/
         }
 
 
@@ -269,17 +234,16 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         find();
         next();
         soundset();
-       // loads_ads_banner();
+        // loads_ads_banner();
         ads_lay = (LinearLayout) findViewById(R.id.ads_lay);
         if (sps.getInt(Quiz_Game.this, "purchase_ads") == 0) {
-        if (Utils.isNetworkAvailable(Quiz_Game.this)) {
+            if (Utils.isNetworkAvailable(Quiz_Game.this)) {
 
-        Ad_NativieUtils.load_add_facebook(this,getResources().getString(R.string.Viliyodu_Vilaiyadu_Native_Banner_new),ads_lay);
-        }
-        else {
-            ads_lay.setVisibility(View.GONE);
-        }
-        }else{
+                Ad_NativieUtils.load_add_facebook(this, getResources().getString(R.string.Viliyodu_Vilaiyadu_Native_Banner_new), ads_lay);
+            } else {
+                ads_lay.setVisibility(View.GONE);
+            }
+        } else {
             ads_lay.setVisibility(View.GONE);
         }
 
@@ -292,10 +256,10 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             sequence.addSequenceItem(c_ans, "விடையை பார்க்க கேள்விக்குறி பொத்தானை அழுத்தி விடை காணலாம்.", "அடுத்து");
             //  sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Quiz_Game.this)
-                    .setTarget(ch_facebook)
-                    .setDismissText("சரி")
-                    .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                    .build())
+                            .setTarget(ch_facebook)
+                            .setDismissText("சரி")
+                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
+                            .build())
                     .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                         @Override
                         public void onDismiss(MaterialShowcaseView itemView, int position) {
@@ -405,10 +369,10 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         if (sps.getInt(Quiz_Game.this, "purchase_ads") == 1) {
             native_banner_ad_container.setVisibility(View.GONE);
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        }else {
-            if (Utils.isNetworkAvailable(Quiz_Game.this)){
+        } else {
+            if (Utils.isNetworkAvailable(Quiz_Game.this)) {
                 native_banner_ad_container.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
 
@@ -574,7 +538,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                        if (isChecked == true) {
+                        if (isChecked) {
                             sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                         } else {
                             sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -1113,7 +1077,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
                     dia_dismiss = 1;
                     openDialog_s.dismiss();
                     next();
-                }else {
+                } else {
                     if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
                         sps.putInt(getApplicationContext(), "ins_ad_new", 0);
                         if (Utils.isNetworkAvailable(getApplicationContext())) {
@@ -1172,15 +1136,15 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             public void onDismiss(DialogInterface dialog) {
                 if (dia_dismiss != 1) {
                     sps.putString(Quiz_Game.this, "game_area", "on");
-                        if (main_act.equals("")) {
-                            finish();
-                            openDialog_s.dismiss();
-                            Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            openDialog_s.dismiss();
-                        }
+                    if (main_act.equals("")) {
+                        finish();
+                        openDialog_s.dismiss();
+                        Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        finish();
+                        openDialog_s.dismiss();
+                    }
 
                 } else {
                     dia_dismiss = 0;
@@ -1230,14 +1194,6 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     //*********************reward videos process 3***********************
 
 
-
-
-
-
-
-
-
-
     private void addCoins(int coins) {
         mCoinCount = coins;
         sps.putInt(Quiz_Game.this, "reward_coin_txt", coins);
@@ -1245,10 +1201,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     }
 
 
-
-
     //reward videos***********************//
-
 
 
     public void game_exit_ins_ad() {
@@ -1278,12 +1231,12 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
 
             @Override
             public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error"+error);
+                System.out.println("check error" + error);
             }
 
             @Override
             public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2"+error);
+                System.out.println("check error2" + error);
             }
         });
         game_exit_ins.loadAd();
@@ -1484,89 +1437,87 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
 
     private void back() {
         sps.putString(Quiz_Game.this, "game_area", "on");
-            openDialog_p = new Dialog(Quiz_Game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-            openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+        openDialog_p = new Dialog(Quiz_Game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog_p.setContentView(R.layout.back_pess);
+        TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
+        TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
-            yes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    focus.stop();
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                focus.stop();
 
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
 
-                        String date = sps.getString(Quiz_Game.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                        } else {
-                            pos = 2;
-                        }
+                String date = sps.getString(Quiz_Game.this, "date");
+                int pos;
+                if (date.equals("0")) {
+                    pos = 1;
+                } else {
+                    pos = 2;
+                }
 
-                        newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
+                newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
 
-                        // String date = sps.getString(Quiz_Game.this, "date");
-                        if (date.equals("0")) {
-                            if (main_act.equals("")) {
-                                finish();
-                                Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                            }
-                        } else {
-                            if (sps.getString(Quiz_Game.this, "Exp_list").equals("on")) {
-                                finish();
-                                Intent i = new Intent(Quiz_Game.this, Expandable_List_View.class);
-                                startActivity(i);
-                            } else {
-                                if (main_act.equals("")) {
-                                    finish();
-                                    Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    finish();
-                                }
-                            }
-
+                // String date = sps.getString(Quiz_Game.this, "date");
+                if (date.equals("0")) {
+                    if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        finish();
                     }
-
-
-
-
-                    //ad
-                    if (sps.getInt(Quiz_Game.this, "purchase_ads") == 0) {
-                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                    openDialog_p.dismiss();
-                                    game_exit_ins.showAd();
-                                }
-                            }
+                } else {
+                    if (sps.getString(Quiz_Game.this, "Exp_list").equals("on")) {
+                        finish();
+                        Intent i = new Intent(Quiz_Game.this, Expandable_List_View.class);
+                        startActivity(i);
+                    } else {
+                        if (main_act.equals("")) {
+                            finish();
+                            Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
+                            startActivity(i);
                         } else {
-                            openDialog_p.dismiss();
-                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
+                            finish();
                         }
-                    }else{
-                        openDialog_p.dismiss();
                     }
-                    //ad
 
                 }
-            });
-            no.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
+
+                //ad
+                if (sps.getInt(Quiz_Game.this, "purchase_ads") == 0) {
+                    if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
+                        sps.putInt(getApplicationContext(), "game_exit_ins", 0);
+                        if (Utils.isNetworkAvailable(getApplicationContext())) {
+                            if (game_exit_ins != null && game_exit_ins.isReady()) {
+                                openDialog_p.dismiss();
+                                game_exit_ins.showAd();
+                            }
+                        }
+                    } else {
+                        openDialog_p.dismiss();
+                        sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
+                    }
+                } else {
                     openDialog_p.dismiss();
                 }
-            });
+                //ad
 
-            openDialog_p.show();
+            }
+        });
+        no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                openDialog_p.dismiss();
+            }
+        });
+
+        openDialog_p.show();
 
 
     }
@@ -1852,7 +1803,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
                         // mShowVideoButton.setVisibility(View.VISIBLE);
                     } else {
                         fb_reward = 0;
-                       // reward(Quiz_Game.this);
+                        // reward(Quiz_Game.this);
                         rewarded_ad();
                         new Handler().postDelayed(new Runnable() {
                             @Override
@@ -2935,7 +2886,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == 151) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 sps.putInt(Quiz_Game.this, "permission", 1);
@@ -2993,9 +2944,8 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     }
 
 
-
-    public void rewarded_ad(){
-        rewardedAd = MaxRewardedAd.getInstance( getResources().getString(R.string.Reward_Ins), this );
+    public void rewarded_ad() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
         rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
             public void onRewardedVideoStarted(MaxAd ad) {
@@ -3014,7 +2964,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
 
             @Override
             public void onAdLoaded(MaxAd ad) {
-                fb_reward=1;
+                fb_reward = 1;
             }
 
             @Override
@@ -3025,7 +2975,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             @Override
             public void onAdHidden(MaxAd ad) {
                 rewarded_ad();
-                if (reward_status==1){
+                if (reward_status == 1) {
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
@@ -3046,7 +2996,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
                             }
                         }
                     }, 500);
-                }else {
+                } else {
                     Toast.makeText(Quiz_Game.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                 }
 
@@ -3083,84 +3033,5 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         });
         rewardedAd.loadAd();
     }
-
-    /*public void reward(final Context context) {
-        rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
-            @Override
-            public void onError(Ad ad, AdError error) {
-                // Rewarded video ad failed to load
-
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-
-
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Rewarded video ad clicked
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Rewarded Video ad impression - the event will fire when the
-                // video starts playing
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-
-                // Rewarded Video View Complete - the video has been played to the end.
-                // You can use this event to initialize your reward
-
-
-                // Call method to give reward
-                // giveReward();
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-        };
-        rewardedVideoAd.loadAd(
-                rewardedVideoAd.buildLoadAdConfig()
-                        .withAdListener(rewardedVideoAdListener)
-                        .build());
-    }*/
 
 }

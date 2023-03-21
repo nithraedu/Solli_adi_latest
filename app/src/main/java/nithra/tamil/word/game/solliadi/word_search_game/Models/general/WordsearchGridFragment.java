@@ -94,174 +94,108 @@ import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.OnLik
 public class WordsearchGridFragment extends Fragment implements WordsearchGridView.OnWordSelectedListener, OnLikeListener, OnAnimationEndListener {
 
     public static RelativeLayout lay_wordsearch;
-    Dialog my_my_dialog = null;
 
-    private int mRows;
-    private int mColumns;
-    Dialog openDialog_earncoin;
-    /*private static String[] mWordList = {"YES", "WONDROUS", "WONDERFUL", "WONDER", "WITH", "WILLING", "WHOLE",
-            "WELL", "WEALTHY", "VOYAGE", "VIVACIOUS", "VITAL", "VISUALIZE", "VISION", "VIGOROUS", "VICTORY", "VIBRANT",
-            "VENERATED", "VARY", "VALUED", "UPBEAT", "UNWAVERING", "UNUSUAL", "UNITY", "UNIQUE", "UNDERSTANDING", "TRUTH", "TRUSTFUL",
-            "TRIUMPH", "TRANSFORM", "TRANQUIL", "TOGETHER", "TODAY", "TIED", "THRIVE", "THOROUGH", "THIS", "THERAPEUTIC",
-            "THANKFUL", "TEAM", "TAKE", "SYNCHRONIZED", "SUSTAIN", "SURE", "SUPPORT", "SUNNY", "SUCCESS", "STYLE", "STUPENDOUS",
-            "STUNNING", "STRONG", "STIRRING", "STIR", "STEADY", "STABLE", "SPONTANEOUS", "SPLENDID", "SPIRIT", "SPARKLING",
-            "SOUL", "SOLUTION", "SMOOTH", "SMILE", "SMART", "SINCERE", "SIMPLE", "SILENCE", "SHOWN", "SHINE", "SHIFT", "SERENITY",
-            "SENSATIONAL", "SENSATION", "SELFLESS", "SECURE", "SAFE", "ROUSING", "ROBUST", "RICH", "REWARDING", "REVOLUTIONIZE",
-            "REVERED", "RESTORE", "RESPECT", "RESOURCES", "RESOUND", "RESOLUTION", "REPLENISHED", "RENOWNED", "RENEW",
-            "REMARKABLE", "RELY", "RELAX", "REJUVENATE", "REJOICE", "REFRESH", "REFINEMENT", "RECOGNIZED", "REALIZE", "READY", "QUIET",
-            "QUICK-MINDED", "QUICK", "QUEST", "PURPOSE", "PROUD", "PROTECT", "PROSPEROUS", "PROMINENT", "PROJECT", "PRODUCTIVE",
-            "PRINCIPLE", "PRETTY", "PREPARED", "POWERFUL", "POSITIVE", "POPULAR", "POLISH", "POISE", "POETIC", "PLETHORA", "PLENTY",
-            "PLENTEOUS", "PLEASURE", "PHENOMENON", "PERSISTENT", "PERFECT", "PERCEPTIVE", "PEACEFUL", "PEACE", "PASSIONATE", "PARTY",
-            "PARADISE", "ORIGINAL", "OPTIMISTIC", "OPENHANDED", "OPEN", "NURTURE", "NOVEL", "NOURISH", "NATURE", "MOVING",
-            "MOTIVATE", "MOMENT", "MODIFY", "MISSION", "MIRACLE", "METAMORPHOSIS", "MEND", "MEDITATE", "MEANINGFUL",
-            "MASTER", "MARVELOUS", "MAKE", "MAJESTIC", "MAINTAIN", "MAGNANIMOUS", "LUMINOUS", "LUCRATIVE", "LUCIDITY", "LOYAL",
-            "LOVELINESS", "LOVE", "LIVELY", "LEGENDARY", "LEARN", "LEADER", "LAUGH", "KNOW", "KISS", "KINDHEARTED",
-            "KIND", "KEEN", "JUBILATION", "JOVIAL", "JOINED", "JAZZED", "INVENTIVE", "INTUITIVE", "INTELLIGENT", "INTELLECTUAL",
-            "INSTINCT", "INSTANTANEOUS", "INSPIRE", "INNOVATE", "INNATE", "INGENIOUS", "INDEPENDENT", "INCREASE", "INCOMPARABLE",
-            "IMPECCABLE", "IMMENSE", "IMMACULATE", "IMAGINATIVE", "IDEAL", "HONORED", "HONEST", "HOLY", "HIGHEST", "HERE",
-            "HELPFUL", "HEAVENLY", "HEART", "HEALTHY", "HEALED", "HARMONY", "HAPPY", "HANDSOME", "GUTSY", "GROW", "GRIN",
-            "GREGARIOUS", "GREEN", "GRATITUDE", "GRACIOUS", "GRACEFUL", "GRACE", "GORGEOUS", "GOOD", "GLOW", "GLAD", "GIVE", "GIFTED",
-            "GENUINE", "GENIUS", "GENEROUS", "GATHER", "FUNNY", "FULL", "FRIENDLY", "FREEDOM", "FORTUNATE", "FOLLOW", "FLOURISH",
-            "FLEXIBLE", "FEAT", "FASCINATING", "FAMOUS", "FAMILY", "FAITH", "EXULTANT", "EXTRAORDINARY", "EXQUISITE", "EXPRESSIVE",
-            "EXPRESS", "EXPLORE", "EXPAND", "EXHILARATING", "EXCITED", "EVERYONE", "ESTEEM", "ESTABLISHED", "ESSENCE",
-            "EQUITABLE", "ENTIRELY", "ENTHUSE", "ENTERTAINING", "ENORMOUSLY", "ENJOY", "ENGAGING", "ENERGY", "ENERGETIC", "ENDORSE",
-            "ENCOURAGE", "ENCOMPASSING", "EMPATHETIC", "EMBRACE", "ELOQUENT", "ELEGANCE", "ELECTRIFYING", "EFFORTLESS", "EFFICIENT",
-            "EFFERVESCENT", "EFFECTIVE", "ECSTASY", "EASY", "EARNEST", "EAGER", "EACH", "DOUBT", "DONATE", "DIVINE", "DISTINGUISHED",
-            "DISCOVER", "DISCIPLINED", "DIRECT", "DETERMINED", "DESERVING", "DELIGHT", "DEDICATED", "DAZZLING", "CUTE",
-            "CURE", "CULTIVATE", "CUDDLE", "CREATE", "COURTEOUS", "COURAGEOUS", "COUPLED", "CORE", "COPIOUS", "CONVICTION", "CONTENT",
-            "CONSTANT", "CONSCIOUS", "CONNECT", "CONGENIAL", "CONFIDENT", "COMRADESHIP", "COMPLETE", "COMPASSIONATE",
-            "COMPANIONSHIP", "COMMEND", "COMFORTABLE", "CLOSENESS", "CLEVER", "CLEAN", "CLASSY", "CLARITY", "CHOOSE", "CHERISH",
-            "CHEERFUL", "CHARMING", "CHARITABLE", "CHARISMATIC", "CHARACTER", "CHANGE", "CERTAIN", "CELEBRATE", "CARING", "CAPTIVATING",
-            "CALM", "BURGEON", "BUNCH", "BUBBLY", "BRILLIANT", "BRIGHT", "BRAVE", "BOUNTY", "BOLD", "BLOOM", "BLISS", "BLESSED",
-            "BIGHEARTED", "BENEVOLENT", "BENEFIT", "BELIEVE", "BEAUTIFUL", "BEAMING", "BASIC", "AUTHENTIC", "ATTRACTIVE", "ATTENTIVE",
-            "ASTUTE", "ASTOUNDING", "ASTONISH", "ASSERTIVE", "ARTISTIC", "ARTICULATE", "APTITUDE", "APPROVE", "APPRECIATION", "ANSWER",
-            "ANIMATED", "AMUSING", "AMITY", "AMAZE", "ALTER", "ALLOW", "ALLIANCE", "ALIVE", "AIRY", "AGREE", "AFFLUENT", "AFFIRMATIVE",
-            "AFFIRM", "ADVENTURE", "ADORED", "ADOPT", "ADMIRE", "ADJUST", "ACUMEN", "ACTIVE", "ACHIEVEMENT", "ACCOMPLISHED", "ACCLAIMED",
-            "ACCEPT", "ABUNDANT", "ABSOLUTELY"
-    };*/
-
-
-    //private static String[] mWordList={"கு.ர.ங்.கு","மு.ய.ல்","ஒ.ட்.ட.க.ச்.சி.வி.ங்.கி","சி.று.த்.தை.ப்.பு.லி","மு.த.லை","வ.ரி.க்.கு.தி.ரை","கு.ள்.ள.ந.ரி"};
-
-    private static String[] mWordList = {"வ.ள.ம்", "மு.ய.ல்", "ந.ல.ம்", "நி.ற.ம்", "மு.த.லை", "ந.ம.து", "அ.ள.வு"};
-    // வ,ள ,ம்$ந,ல,ம்$நி,ற,ம்$த,ர, ம்$உ,த்,த,ர,வு$வ,ழ,க்,க,ம்$எ,ளி,தா,க$அ,ள,வு$ந,ம,து$நா,டு
-
-
-    String table_name = "", level_category = "", level_id = "", dont_call = "";
-
-    String btn_str = "";
-
-    Word hint_word = null;
-    boolean onstop = false;
-
-    private final Direction[] mDirections = Direction.values();
-    private boolean[][] mLock;
-    private int[] mRandomIndexes;
-
-    private String[][] mBoard;
-
-    ArrayList<String> my_solution = new ArrayList<>();
     public static Set<Word> mSolution = new HashSet<Word>();
-
+    //private static String[] mWordList={"கு.ர.ங்.கு","மு.ய.ல்","ஒ.ட்.ட.க.ச்.சி.வி.ங்.கி","சி.று.த்.தை.ப்.பு.லி","மு.த.லை","வ.ரி.க்.கு.தி.ரை","கு.ள்.ள.ந.ரி"};
     public static Set<Word> mFoundWords = new HashSet<Word>();
-
+    // வ,ள ,ம்$ந,ல,ம்$நி,ற,ம்$த,ர, ம்$உ,த்,த,ர,வு$வ,ழ,க்,க,ம்$எ,ளி,தா,க$அ,ள,வு$ந,ம,து$நா,டு
     public static Set<Word> mFoundWords_alter = new HashSet<Word>();
-
-    WordsearchGridView wordsearchGridView;
-
-
-    private TinyDB tinyDB;
-
-    Animation bounce_anim = null;
-
-    MyTableView myTableView;
-
-    RecyclerView recyclerView;
-
-    private RecyclerAdapter mWordAdapter;
-
-    SharedPreference sp = new SharedPreference();
-
     public static int levelId, gridcount;
-
-    RelativeLayout toptool, hintview, coin_lay;
-
     public static ArrayList<String> hints = new ArrayList<>();
     public static ArrayList<String> find_word = new ArrayList<>();
-
-    double diagonalInches;
-
-    Context context;
-    Vibrator vibrate;
-
-    ImageView general_setting;
-
-    TextView counts, coin_txt, screatch_txt, level_txt, level_name_txt;
-
     public static Chronometer chronometer;
     public static long timeWhenStopped = 0;
-
+    static int rvo = 0;
+    private static String[] mWordList = {"வ.ள.ம்", "மு.ய.ல்", "ந.ல.ம்", "நி.ற.ம்", "மு.த.லை", "ந.ம.து", "அ.ள.வு"};
+    static private int mCoinCount = 20;
+    private final Direction[] mDirections = Direction.values();
+    // Facebook variable starts
+    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
+    Dialog my_my_dialog = null;
+    Dialog openDialog_earncoin;
+    String table_name = "", level_category = "", level_id = "", dont_call = "";
+    String btn_str = "";
+    Word hint_word = null;
+    boolean onstop = false;
+    ArrayList<String> my_solution = new ArrayList<>();
+    WordsearchGridView wordsearchGridView;
+    Animation bounce_anim = null;
+    MyTableView myTableView;
+    RecyclerView recyclerView;
+    SharedPreference sp = new SharedPreference();
+    RelativeLayout toptool, hintview, coin_lay;
+    double diagonalInches;
+    Context context;
+    Vibrator vibrate;
+    ImageView general_setting;
+    TextView counts, coin_txt, screatch_txt, level_txt, level_name_txt;
     String meanning_words = "";
-
     int credits_coin = 0, coin_point = 0, goback = 0;
-
     List<String> elephantList = new ArrayList<>();
-
     SQLiteDatabase mydb, Inner_mydb, exdb;
-
     Cursor cursor = null, coin_cursor = null;
     int extra_coin_s = 0;
-    static int rvo = 0;
-    // CallbackManager callbackManager;
-    // AppInviteDialog mInvititeDialog;
-
     ImageView icon_ad_img;
     LinearLayout n_icon_ad;
-
+    // CallbackManager callbackManager;
+    // AppInviteDialog mInvititeDialog;
     FrameLayout Baner_frame;
     LinearLayout normal_baner;
-
-
     my_dialog myDialog_class = new my_dialog();
     String showview = "";
     ArrayList<String> showcase_shap;
     ArrayList<View> showcase_id = new ArrayList<View>();
     ArrayList<String> showcase_content = new ArrayList<String>();
     String share_content = "";
-
-    // Facebook variable starts
-    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
-
-    private enum PendingAction {
-        NONE, POST_PHOTO, POST_STATUS_UPDATE
-    }
-
     FirebaseAnalytics mFirebaseAnalytics;
-/*
-    private UiLifecycleHelper uiHelper;
-    private Session.StatusCallback callback = new Session.StatusCallback() {
-        @Override
-        public void call(Session session, SessionState state,
-                         Exception exception) {
-            // onSessionStateChange(session, state, exception);
-        }
-    };
-    private FacebookDialog.Callback dialogCallback = new FacebookDialog.Callback() {
-        @Override
-        public void onError(FacebookDialog.PendingCall pendingCall,
-                            Exception error, Bundle data) {
-            Log.d("HelloFacebook", String.format("Error: %s", error.toString()));
-        }
+    String call_onstop = "";
+    int fb_reward = 0;
+    int reward_status = 0;
+    String reward_video = "";
+    /*
+        private UiLifecycleHelper uiHelper;
+        private Session.StatusCallback callback = new Session.StatusCallback() {
+            @Override
+            public void call(Session session, SessionState state,
+                             Exception exception) {
+                // onSessionStateChange(session, state, exception);
+            }
+        };
+        private FacebookDialog.Callback dialogCallback = new FacebookDialog.Callback() {
+            @Override
+            public void onError(FacebookDialog.PendingCall pendingCall,
+                                Exception error, Bundle data) {
+                Log.d("HelloFacebook", String.format("Error: %s", error.toString()));
+            }
 
-        @Override
-        public void onComplete(FacebookDialog.PendingCall pendingCall,
-                               Bundle data) {
-            Log.d("HelloFacebook", "Success!");
-        }
-    };
-    // facebook variable ends
+            @Override
+            public void onComplete(FacebookDialog.PendingCall pendingCall,
+                                   Bundle data) {
+                Log.d("HelloFacebook", "Success!");
+            }
+        };
+        // facebook variable ends
 
-*/
+    */
+    //reward videos process 1***********************
+    Newgame_DataBaseHelper newhelper;
+    Newgame_DataBaseHelper2 newhelper2;
+    Newgame_DataBaseHelper3 newhelper3;
+    DataBaseHelper myDbHelper;
+    SQLiteDatabase dbs, dbn, dbn2;
+    private int mRows;
+    private int mColumns;
+    private boolean[][] mLock;
+    private int[] mRandomIndexes;
+    //*********************reward videos process 1***********************
+    private String[][] mBoard;
+    private TinyDB tinyDB;
+    private RecyclerAdapter mWordAdapter;
+    //com.facebook.ads.RewardedVideoAd rewardedVideoAd;
+    private MaxRewardedAd rewardedAd;
+    private boolean mGameOver;
+    private boolean mGamePaused;
+    private long mTimeRemaining;
 
     public static String getCountryName(Context context, double latitude, double longitude) {
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
@@ -347,34 +281,6 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
     }
 
-    String call_onstop = "";
-
-    int fb_reward = 0;
-    //com.facebook.ads.RewardedVideoAd rewardedVideoAd;
-    private MaxRewardedAd rewardedAd;
-
-    int reward_status = 0;
-    //*********************reward videos process 1***********************
-
-    String reward_video = "";
-
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
-
-    static private int mCoinCount = 20, coinearn = 1;
-    private boolean mGameOver;
-    private boolean mGamePaused;
-
-    private long mTimeRemaining;
-    //reward videos process 1***********************
-    Newgame_DataBaseHelper newhelper;
-    Newgame_DataBaseHelper2 newhelper2;
-    Newgame_DataBaseHelper3 newhelper3;
-    DataBaseHelper myDbHelper;
-    SQLiteDatabase dbs, dbn, dbn2;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.wordsearch_view, null);
@@ -395,7 +301,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             }
         }, 4000);
 
-        if (myDialog_class.isNetworkAvailable(getActivity())) {
+        if (my_dialog.isNetworkAvailable(getActivity())) {
             if (sp.getInt(getActivity(), "purchase_ads") == 1) {
                 System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
             } else {
@@ -590,8 +496,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 //                coin_txt.startAnimation(bounce_anim);
             }
         } finally {
-            if (coin_cursor != null)
-                coin_cursor.close();
+            if (coin_cursor != null) coin_cursor.close();
         }
 
 
@@ -714,7 +619,6 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
         return view;
     }
 
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -799,27 +703,33 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
             }
             //  sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
-            sequence.addSequenceItem(new MaterialShowcaseView.Builder(getActivity())
-                            .setTarget(recyclerView)
-                            .setDismissText("சரி")
-                            .setContentText(data)
-                            .build())
-                    .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
-                        @Override
-                        public void onDismiss(MaterialShowcaseView itemView, int position) {
-                            if (position == 1) {
-                                sp.putString(getActivity(), "ws_general_intro", "no");
-                                sp.putString(getActivity(), "ws_general_showcase_intro", "yes");
-                                chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
-                                chronometer.start();
+            sequence.addSequenceItem(new MaterialShowcaseView.Builder(getActivity()).setTarget(recyclerView).setDismissText("சரி").setContentText(data).build()).setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
+                @Override
+                public void onDismiss(MaterialShowcaseView itemView, int position) {
+                    if (position == 1) {
+                        sp.putString(getActivity(), "ws_general_intro", "no");
+                        sp.putString(getActivity(), "ws_general_showcase_intro", "yes");
+                        chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+                        chronometer.start();
 
-                            }
-                        }
-                    });
+                    }
+                }
+            });
 
 
             sequence.start();
 
+        }
+    }
+
+    public void reward_fun() {
+        //mCoinCount = 0;
+        if (Utils.isNetworkAvailable(getActivity())) {
+
+
+        } else {
+
+            Toast.makeText(getActivity(), "இணையதள சேவையை சரிபார்க்கவும்..", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -855,27 +765,11 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
     //*********************reward videos process 3***********************
 
-    public void reward_fun() {
-        //mCoinCount = 0;
-        if (Utils.isNetworkAvailable(getActivity())) {
-
-
-        } else {
-
-            Toast.makeText(getActivity(), "இணையதள சேவையை சரிபார்க்கவும்..", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
     private void addCoins(int coins) {
         mCoinCount = coins;
         sp.putInt(getActivity(), "reward_coin_txt", coins);
         //mCoinCountText.setText("Coins: " + mCoinCount);
     }
-
-
-    //reward videos***********************//
-
 
     @Override
     public void onPause() {
@@ -906,6 +800,9 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             sp.putString(getActivity(), "" + level_category + "_" + level_id, "" + timeWhenStopped);
         }
     }
+
+
+    //reward videos***********************//
 
     @Override
     public void onResume() {
@@ -1002,7 +899,6 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
     }
 
-
     public void onWordSelected(List<Integer> positions) {
 
         int firstPos = positions.get(0);
@@ -1072,8 +968,8 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                 }
 
                 System.out.println("=========================== word " + word.getWord());
-                System.out.println("=========================== forwardWord.toString() " + forwardWord.toString());
-                System.out.println("=========================== reverseWord.toString() " + reverseWord.toString());
+                System.out.println("=========================== forwardWord.toString() " + forwardWord);
+                System.out.println("=========================== reverseWord.toString() " + reverseWord);
                 System.out.println("=========================== found " + found);
 
 
@@ -1111,7 +1007,6 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             winning_report();
         }
     }
-
 
     private void onPuzzleComplete() {
         System.out.println("generate== ");
@@ -1302,7 +1197,6 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
     }
 
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -1375,11 +1269,9 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
         return (RecyclerView) getView().findViewById(R.id.grd_word_list);
     }
 
-
     private WordsearchGridView getGridView() {
         return (WordsearchGridView) getView().findViewById(R.id.grd_wordsearch);
     }
-
 
     /**
      * Attempts to add a word to the puzzle anywhere possible.
@@ -1390,7 +1282,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
      */
     private Word addWord(String word) {
 
-        String str[] = word.split("\\.");
+        String[] str = word.split("\\.");
 
 
 
@@ -1508,7 +1400,6 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
         }
     }
 
-
     /**
      * Determines if a given word can be placed at a given location in a
      * particular direction. This returns a count of the number of characters
@@ -1521,7 +1412,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
         try {
 
-            String str[] = word.split("\\.");
+            String[] str = word.split("\\.");
 
             StringBuilder builder = new StringBuilder();
             for (String s : str) {
@@ -1650,200 +1541,9 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
     }
 
-
-    /**
-     * Represents a word placed at an arbitrary location in a grid. Row and
-     * Column point to the position of the first character in the word,
-     * regardless of direction or reversal.
-     *
-     * @author wes
-     */
-
-
-    public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> {
-
-        List<Word> mWords;
-
-        Context context;
-
-        public void setWordsFound(Collection<Word> words) {
-            mFoundWords.addAll(words);
-        }
-
-        public void setWordFound(Word word) {
-            mFoundWords.add(word);
-//            mWords.remove(word);
-//            mWords.add(word);
-            notifyDataSetChanged();
-        }
-
-        class MyViewHolder extends RecyclerView.ViewHolder {
-
-            TextView tv;
-
-            MyViewHolder(View view) {
-                super(view);
-
-                tv = (TextView) view.findViewById(R.id.lbl_word);
-            }
-        }
-
-        public RecyclerAdapter(Context context, List<Word> words) {
-            this.context = context;
-            this.mWords = words;
-        }
-
-        @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.wordsearch_word, parent, false);
-
-            return new MyViewHolder(itemView);
-        }
-
-        @Override
-        public void onBindViewHolder(MyViewHolder holder, final int position) {
-
-            Word word = mWords.get(position);
-            System.out.println("Size wordStr mWords :" + mWords);
-            //v.setFocusable(false);
-            holder.tv.setFocusable(false);
-
-
-            if (word.getWord() != null) {
-                String wordStr = word.getWord();
-                //wordStr = wordStr.substring(0, 1).toUpperCase() + wordStr.substring(1);
-
-               /* System.out.println("Size wordStr mWords_sub_0,1 :" + wordStr.substring(0, 1).toUpperCase());
-                System.out.println("Size wordStr mWords_sub_1 :" + wordStr.substring(1));
-                System.out.println("Size wordStr mWords_sub_0,1+sub_1 :" + wordStr);
-*/
-                wordStr = wordStr.replace(".", "");
-                holder.tv.setText(wordStr);
-
-            }
-
-            holder.tv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-
-                    hint_word = mWords.get(position);
-
-                    if (mFoundWords.contains(mWords.get(position))) {
-
-                        if (table_name.equals("general")) {
-
-                            WordsearchGridFragment.timeWhenStopped = chronometer.getBase() - SystemClock.elapsedRealtime();
-                            WordsearchGridFragment.chronometer.stop();
-
-                            final Dialog dialog = new Dialog(getActivity(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                            dialog.setContentView(R.layout.dia_word_meaning);
-                            dialog.show();
-
-                            RelativeLayout meaning_lay = (RelativeLayout) dialog.findViewById(R.id.meaning_lay);
-                            meaning_lay.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    dialog.dismiss();
-                                }
-                            });
-                            TextView word_content = (TextView) dialog.findViewById(R.id.word_content);
-                            TextView word_title = (TextView) dialog.findViewById(R.id.word_title);
-                            TextView meaning_cancel = (TextView) dialog.findViewById(R.id.meaning_cancel);
-                            meaning_cancel.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    dialog.dismiss();
-                                }
-                            });
-
-                            Cursor cursor = null;
-
-                            String my_hint = hint_word.getWord().replace(".", "");
-                            try {
-                                cursor = mydb.rawQuery("select * from general_meaning where Word='" + my_hint + "'", null);
-                                if (cursor.getCount() != 0) {
-                                    cursor.moveToFirst();
-                                    String meaning = cursor.getString(cursor.getColumnIndexOrThrow("Sentence"));
-
-                                    word_title.setText("" + (hint_word.getWord().replace(".", "")));
-
-                                    String htmlText = meaning.replace(hint_word.getWord().replace(".", ""), "<font color='#ffffff'>" + hint_word.getWord().replace(".", "") + "</font>");
-                                    word_content.setText(Html.fromHtml(htmlText));
-                                }
-                            } finally {
-                                if (cursor != null)
-                                    cursor.close();
-                            }
-
-                            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                @Override
-                                public void onDismiss(DialogInterface dialog) {
-                                    WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
-                                    WordsearchGridFragment.chronometer.start();
-                                }
-                            });
-                        }
-
-                    } else {
-                        hint_dia(mWords.get(position));
-                    }
-
-                   /* if (hints.contains(mWords.get(position).getWord())) {
-
-                        if (mFoundWords.contains(mWords.get(position))) {
-
-                        } else {
-
-                            //Toast.makeText(getContext(), "Hint for this word already shown", Toast.LENGTH_SHORT).show();
-                            wordsearchGridView.showHint(mWords.get(position));
-                        }
-
-                    } else {
-
-                        if (!mFoundWords.contains(mWords.get(position))) {
-
-                            if (!hints.contains(mWords.get(position).getWord())) {
-
-                                hints.add(mWords.get(position).getWord());
-
-                                wordsearchGridView.showHint(mWords.get(position));
-
-                            }
-
-
-                        }
-                    }
-*/
-
-                }
-            });
-
-            if (!mFoundWords.contains(word)) {
-                holder.tv.setTextColor(0xFFFFFFFF);
-
-                holder.tv.setPaintFlags(holder.tv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-            } else {
-
-                holder.tv.setTextColor(Color.parseColor("#9e9e9e"));
-
-                holder.tv.setPaintFlags(holder.tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            }
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return mWords.size();
-        }
-    }
-
     public void dia_dismiss(Dialog dialog) {
         dialog.dismiss();
     }
-
 
     public void winning_report() {
         //   myDialog_class.media_player(getActivity(), R.raw.winning, "normal");
@@ -2019,8 +1719,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                     }
                 }
             } finally {
-                if (meanning_word_cur != null)
-                    meanning_word_cur.close();
+                if (meanning_word_cur != null) meanning_word_cur.close();
             }
 
 
@@ -2053,7 +1752,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                 tinyDB.putListObject("solutions" + level_category + level_id, new ArrayList<>(mSolution));
                 tinyDB.putListObject("found" + level_category + level_id, new ArrayList<>(mFoundWords));
 
-                WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime() + 0);
+                WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime());
                 WordsearchGridFragment.chronometer.start();
                 coin_txt.setText("" + coin_point);
                 //coin_txt.startAnimation(bounce_anim);
@@ -2077,8 +1776,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 //                coin_txt.startAnimation(bounce_anim);
                     }
                 } finally {
-                    if (coin_cursor != null)
-                        coin_cursor.close();
+                    if (coin_cursor != null) coin_cursor.close();
                 }
 
                 if (goback == 2) {
@@ -2100,7 +1798,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                     tinyDB.putListObject("solutions" + level_category + level_id, new ArrayList<>(mSolution));
                     tinyDB.putListObject("found" + level_category + level_id, new ArrayList<>(mFoundWords));
 
-                    WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime() + 0);
+                    WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime());
                     WordsearchGridFragment.chronometer.start();
                     coin_txt.setText("" + coin_point);
 
@@ -2170,8 +1868,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                 leader_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("l_points"));
             }
         } finally {
-            if (coin_cursor != null)
-                coin_cursor.close();
+            if (coin_cursor != null) coin_cursor.close();
         }
 
 
@@ -2289,8 +1986,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
             }
         } finally {
-            if (credit_cursor != null)
-                credit_cursor.close();
+            if (credit_cursor != null) credit_cursor.close();
         }
 
         int score_vale = (mSolution.size() * 3) + credits_coin;
@@ -2356,8 +2052,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                 Inner_mydb.insert(table_name, null, contentValues12);
             }
         } finally {
-            if (win_cursor != null)
-                win_cursor.close();
+            if (win_cursor != null) win_cursor.close();
         }
 
 
@@ -2396,8 +2091,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
 
             } finally {
-                if (win_cursor != null)
-                    win_cursor.close();
+                if (win_cursor != null) win_cursor.close();
             }
         }
 
@@ -2407,7 +2101,6 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
         win_coin.setText("" + (score_vale - credits_coin));
         current_score.setText("" + score_vale);
     }
-
 
     public void congreate_finish() {
         final Dialog unlock_dialog = new Dialog(getActivity(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -2469,7 +2162,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                 tinyDB.putListObject("solutions" + level_category + level_id, new ArrayList<>(mSolution));
                 tinyDB.putListObject("found" + level_category + level_id, new ArrayList<>(mFoundWords));
 
-                WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime() + 0);
+                WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime());
                 WordsearchGridFragment.chronometer.start();
                 coin_txt.setText("" + coin_point);
                 coin_txt.startAnimation(bounce_anim);
@@ -2500,7 +2193,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                     tinyDB.putListObject("solutions" + level_category + level_id, new ArrayList<>(mSolution));
                     tinyDB.putListObject("found" + level_category + level_id, new ArrayList<>(mFoundWords));
 
-                    WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime() + 0);
+                    WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime());
                     WordsearchGridFragment.chronometer.start();
                     coin_txt.setText("" + coin_point);
 
@@ -2523,9 +2216,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
     @Override
     public void onAnimationEnd(LikeButton likeButton) {
 
-        String share_content = "தமிழ் வார்த்தை விளையாட்டை விளையாட இது உங்களுக்கான சொற்களம்.\n" +
-                "நீங்களும் இக்களத்தில் ஒருவராக இருக்க \n" +
-                "நித்ராவின் செம்மொழி  வேட்டை செயலியை  கீழே உள்ள லிங்கை கிளிக் செய்து தரவிறக்கம் செய்யவும்.\n" + "https://goo.gl/5FhjMM";
+        String share_content = "தமிழ் வார்த்தை விளையாட்டை விளையாட இது உங்களுக்கான சொற்களம்.\n" + "நீங்களும் இக்களத்தில் ஒருவராக இருக்க \n" + "நித்ராவின் செம்மொழி  வேட்டை செயலியை  கீழே உள்ள லிங்கை கிளிக் செய்து தரவிறக்கம் செய்யவும்.\n" + "https://goo.gl/5FhjMM";
         String root = Environment.getExternalStorageDirectory().toString();
         File mydir = new File(root + "/.nithra/TWS");
         mydir.mkdirs();
@@ -2555,7 +2246,6 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
         //Log.d(TAG, "Animation End for %s" + likeButton);
     }
-
 
     public void more_coin(String val) {
 
@@ -2597,8 +2287,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
         RelativeLayout video = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnvideo);
 
-        share_content = "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh";
+        share_content = "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh";
         String root = Environment.getExternalStorageDirectory().toString();
         File mydir = new File(root + "/.nithra/TWS");
         mydir.mkdirs();
@@ -2657,8 +2346,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                         i.setType("text/plain");
                         i.setPackage("com.whatsapp");
 
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
                         i.putExtra(Intent.EXTRA_TEXT, msg);
                         startActivityForResult(Intent.createChooser(i, "Share via"), 21);
 
@@ -2799,130 +2487,6 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
 
     }
-
-    /*public void more_coin(String need_coin) {
-        final Dialog dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        dialog.setContentView(R.layout.dia_more_coin);
-        dialog.setCancelable(false);
-
-        Bitmap imgBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.loading_page);
-        // String imgBitmapPath = MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), imgBitmap, "title", null);
-        String root = Environment.getExternalStorageDirectory().toString();
-        File mydir = new File(root + "/.nithra/TWS");
-        mydir.mkdirs();
-        String fname = "Image-appshare.jpg";
-        final File file = new File(mydir, fname);
-
-        if (file.exists()) {
-            file.delete();
-        }
-
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            imgBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.print("errorg" + e);
-        }
-
-        dont_call = "dont_call";
-
-        WordsearchGridFragment.timeWhenStopped = chronometer.getBase() - SystemClock.elapsedRealtime();
-        WordsearchGridFragment.chronometer.stop();
-
-        TextView cancel_morecoin = (TextView) dialog.findViewById(R.id.cancel_morecoin);
-        TextView share_content = (TextView) dialog.findViewById(R.id.share_content);
-        RelativeLayout credit_reward = (RelativeLayout) dialog.findViewById(R.id.credit_reward);
-        RelativeLayout credit_WApp = (RelativeLayout) dialog.findViewById(R.id.credit_WApp);
-        RelativeLayout credit_fb = (RelativeLayout) dialog.findViewById(R.id.credit_fb);
-        RelativeLayout credit_gm = (RelativeLayout) dialog.findViewById(R.id.credit_gm);
-        RelativeLayout credit_more = (RelativeLayout) dialog.findViewById(R.id.credit_more);
-
-        if (need_coin.equals("yes")) {
-            share_content.setText("உங்களிடம் போதுமான நாணயங்கள் இல்லை செயலியை பகிர்ந்து நாணயங்கள் பெறவும் .");
-        }
-
-
-        final LikeButton media_reward = (LikeButton) dialog.findViewById(R.id.media_reward);
-        final LikeButton media1 = (LikeButton) dialog.findViewById(R.id.media1);
-        final LikeButton media2 = (LikeButton) dialog.findViewById(R.id.media2);
-        final LikeButton media3 = (LikeButton) dialog.findViewById(R.id.media3);
-        final LikeButton media4 = (LikeButton) dialog.findViewById(R.id.media4);
-
-        media_reward.setOnLikeListener(this);
-        media_reward.setOnAnimationEndListener(this);
-
-        media1.setOnLikeListener(this);
-        media1.setOnAnimationEndListener(this);
-
-        media2.setOnLikeListener(this);
-        media2.setOnAnimationEndListener(this);
-
-        media3.setOnLikeListener(this);
-        media3.setOnAnimationEndListener(this);
-
-        media4.setOnLikeListener(this);
-        media4.setOnAnimationEndListener(this);
-
-
-        credit_reward.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-                //media1.setLiked(true);
-                media_reward.onClick(v);
-            }
-        });
-
-        credit_WApp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-                //media1.setLiked(true);
-                media1.onClick(v);
-            }
-        });
-
-        credit_fb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-                media2.onClick(v);
-            }
-        });
-
-        credit_gm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-                media3.onClick(v);
-            }
-        });
-        credit_more.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-                media4.onClick(v);
-            }
-        });
-
-
-        cancel_morecoin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-                dialog.dismiss();
-                dont_call = "";
-                WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
-                WordsearchGridFragment.chronometer.start();
-            }
-        });
-
-        dialog.show();
-
-    }*/
 
     /*   public boolean isLoggedIn() {
            Session session = Session.getActiveSession();
@@ -3071,8 +2635,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                     meaning_txt.setText(Html.fromHtml(htmlText));
                 }
             } finally {
-                if (cursor != null)
-                    cursor.close();
+                if (cursor != null) cursor.close();
             }
 
         }
@@ -3165,6 +2728,130 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+    /*public void more_coin(String need_coin) {
+        final Dialog dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        dialog.setContentView(R.layout.dia_more_coin);
+        dialog.setCancelable(false);
+
+        Bitmap imgBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.loading_page);
+        // String imgBitmapPath = MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), imgBitmap, "title", null);
+        String root = Environment.getExternalStorageDirectory().toString();
+        File mydir = new File(root + "/.nithra/TWS");
+        mydir.mkdirs();
+        String fname = "Image-appshare.jpg";
+        final File file = new File(mydir, fname);
+
+        if (file.exists()) {
+            file.delete();
+        }
+
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            imgBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.print("errorg" + e);
+        }
+
+        dont_call = "dont_call";
+
+        WordsearchGridFragment.timeWhenStopped = chronometer.getBase() - SystemClock.elapsedRealtime();
+        WordsearchGridFragment.chronometer.stop();
+
+        TextView cancel_morecoin = (TextView) dialog.findViewById(R.id.cancel_morecoin);
+        TextView share_content = (TextView) dialog.findViewById(R.id.share_content);
+        RelativeLayout credit_reward = (RelativeLayout) dialog.findViewById(R.id.credit_reward);
+        RelativeLayout credit_WApp = (RelativeLayout) dialog.findViewById(R.id.credit_WApp);
+        RelativeLayout credit_fb = (RelativeLayout) dialog.findViewById(R.id.credit_fb);
+        RelativeLayout credit_gm = (RelativeLayout) dialog.findViewById(R.id.credit_gm);
+        RelativeLayout credit_more = (RelativeLayout) dialog.findViewById(R.id.credit_more);
+
+        if (need_coin.equals("yes")) {
+            share_content.setText("உங்களிடம் போதுமான நாணயங்கள் இல்லை செயலியை பகிர்ந்து நாணயங்கள் பெறவும் .");
+        }
+
+
+        final LikeButton media_reward = (LikeButton) dialog.findViewById(R.id.media_reward);
+        final LikeButton media1 = (LikeButton) dialog.findViewById(R.id.media1);
+        final LikeButton media2 = (LikeButton) dialog.findViewById(R.id.media2);
+        final LikeButton media3 = (LikeButton) dialog.findViewById(R.id.media3);
+        final LikeButton media4 = (LikeButton) dialog.findViewById(R.id.media4);
+
+        media_reward.setOnLikeListener(this);
+        media_reward.setOnAnimationEndListener(this);
+
+        media1.setOnLikeListener(this);
+        media1.setOnAnimationEndListener(this);
+
+        media2.setOnLikeListener(this);
+        media2.setOnAnimationEndListener(this);
+
+        media3.setOnLikeListener(this);
+        media3.setOnAnimationEndListener(this);
+
+        media4.setOnLikeListener(this);
+        media4.setOnAnimationEndListener(this);
+
+
+        credit_reward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+                //media1.setLiked(true);
+                media_reward.onClick(v);
+            }
+        });
+
+        credit_WApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+                //media1.setLiked(true);
+                media1.onClick(v);
+            }
+        });
+
+        credit_fb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+                media2.onClick(v);
+            }
+        });
+
+        credit_gm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+                media3.onClick(v);
+            }
+        });
+        credit_more.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+                media4.onClick(v);
+            }
+        });
+
+
+        cancel_morecoin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+                dialog.dismiss();
+                dont_call = "";
+                WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+                WordsearchGridFragment.chronometer.start();
+            }
+        });
+
+        dialog.show();
+
+    }*/
+
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getActivity().getPackageManager();
         boolean app_installed = false;
@@ -3208,8 +2895,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                 coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coins"));
             }
         } finally {
-            if (coin_cursor != null)
-                coin_cursor.close();
+            if (coin_cursor != null) coin_cursor.close();
         }
         coin_point += (share_member * value);
         coin_earned_anim(b_scores, (share_member * value));
@@ -3266,54 +2952,6 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
         }
 
     }
-
-
-/*
-    private void showDialogWithoutNotificationBarInvite(String action, Bundle params) {
-        final WebDialog dialog = new WebDialog.Builder(getActivity(),
-                Session.getActiveSession(), action, params)
-                .setOnCompleteListener(new WebDialog.OnCompleteListener() {
-                    @Override
-                    public void onComplete(Bundle values,
-                                           FacebookException error) {
-                        System.out.println("fb error : " + error);
-                        if (error != null && !(error instanceof FacebookOperationCanceledException)) {
-                            Toast.makeText(getActivity(), "Request Not Send", Toast.LENGTH_SHORT).show();
-                        }
-
-                        try {
-                            System.out.println("Invitation was sent to "
-                                    + values.toString());
-
-                            for (int i = 0; values.containsKey("to[" + i + "]"); i++) {
-                                String curId = values
-                                        .getString("to[" + i + "]");
-
-                            }
-
-                            // lastearn("invaite friends", (values.size() - 1));
-                            if ((values.size() - 1) >= 1) {
-                                //setcoin(values.size() - 1);
-
-                                coin_collection((values.size() - 1), 10);
-                            }
-
-                        } catch (Exception e) {
-
-                        }
-                    }
-                }).build();
-
-        Window dialog_window = dialog.getWindow();
-        dialog_window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        // dialogAction = action;
-        // dialogParams = params;
-
-        dialog.show();
-    }
-*/
 
     /*
         private void showDialogWithoutNotificationBarInvite(String action, Bundle params) {
@@ -3391,73 +3029,6 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
         ////////////////Prize//////////////////
     }
 
-    /*
-        public void reward(final Context context) {
-            rewardedVideoAd = new com.facebook.ads.RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-            rewardedVideoAd.setAdListener(new com.facebook.ads.RewardedVideoAdListener() {
-
-                @Override
-                public void onRewardedVideoCompleted() {
-                    reward_status=1;
-                }
-
-                @Override
-                public void onLoggingImpression(Ad ad) {
-
-                }
-
-                @Override
-                public void onRewardedVideoClosed() {
-                    reward(context);
-                    if (reward_status==1){
-                        if (extra_coin_s == 0) {
-                            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                            cfx.moveToFirst();
-                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                            int spx = skx + mCoinCount;
-                            String aStringx = Integer.toString(spx);
-                            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                        }
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (rvo == 2) {
-                                    share_earn2(mCoinCount);
-                                } else {
-                                    vidcoinearn();
-                                }
-                            }
-                        }, 500);
-                    }else {
-                        Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                    }
-
-                    fb_reward = 0;
-                }
-
-                @Override
-                public void onError(Ad ad, AdError adError) {
-                    //Toast.makeText(context, ""+adError.getErrorCode(), Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onAdLoaded(Ad ad) {
-                    // Rewarded video ad is loaded and ready to be displayed
-                    fb_reward = 1;
-                }
-
-                @Override
-                public void onAdClicked(Ad ad) {
-
-                }
-            });
-            rewardedVideoAd.loadAd();
-        }
-    */
-
-
     public void rewarded_ad() {
         rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), getActivity());
         rewardedAd.setListener(new MaxRewardedAdListener() {
@@ -3531,148 +3102,52 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
     }
 
 
-   /* public void reward() {
-        rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-
-        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
-            @Override
-            public void onError(Ad ad, AdError error) {
-                // Rewarded video ad failed to load
-
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-
-
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Rewarded video ad clicked
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Rewarded Video ad impression - the event will fire when the
-                // video starts playing
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-
-                // Rewarded Video View Complete - the video has been played to the end.
-                // You can use this event to initialize your reward
-
-
-                // Call method to give reward
-                // giveReward();
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward();
-                if (reward_status == 1) {
-                 */
-    /*   if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }*/
-    /*
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-        };
-        rewardedVideoAd.loadAd(
-                rewardedVideoAd.buildLoadAdConfig()
-                        .withAdListener(rewardedVideoAdListener)
-                        .build());
-*/
-    /*    rewardedVideoAd.setAdListener(new RewardedVideoAdListener() {
-
-        @Override
-        public void onRewardedVideoCompleted() {
-            reward_status=1;
-        }
-
-        @Override
-        public void onLoggingImpression(Ad ad) {
-
-        }
-
-        @Override
-        public void onRewardedVideoClosed() {
-            reward();
-            if (reward_status==1){
-                if (extra_coin_s == 0) {
-                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                    cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + mCoinCount;
-                    String aStringx = Integer.toString(spx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                }
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
+/*
+    private void showDialogWithoutNotificationBarInvite(String action, Bundle params) {
+        final WebDialog dialog = new WebDialog.Builder(getActivity(),
+                Session.getActiveSession(), action, params)
+                .setOnCompleteListener(new WebDialog.OnCompleteListener() {
                     @Override
-                    public void run() {
-                        if (rvo == 2) {
-                            share_earn2(mCoinCount);
-                        } else {
-                            vidcoinearn();
+                    public void onComplete(Bundle values,
+                                           FacebookException error) {
+                        System.out.println("fb error : " + error);
+                        if (error != null && !(error instanceof FacebookOperationCanceledException)) {
+                            Toast.makeText(getActivity(), "Request Not Send", Toast.LENGTH_SHORT).show();
+                        }
+
+                        try {
+                            System.out.println("Invitation was sent to "
+                                    + values.toString());
+
+                            for (int i = 0; values.containsKey("to[" + i + "]"); i++) {
+                                String curId = values
+                                        .getString("to[" + i + "]");
+
+                            }
+
+                            // lastearn("invaite friends", (values.size() - 1));
+                            if ((values.size() - 1) >= 1) {
+                                //setcoin(values.size() - 1);
+
+                                coin_collection((values.size() - 1), 10);
+                            }
+
+                        } catch (Exception e) {
+
                         }
                     }
-                }, 500);
-            }else {
-                Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-            }
+                }).build();
 
-            fb_reward = 0;
-        }
+        Window dialog_window = dialog.getWindow();
+        dialog_window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        @Override
-        public void onError(Ad ad, AdError adError) {
-            //Toast.makeText(context, ""+adError.getErrorCode(), Toast.LENGTH_SHORT).show();
-        }
+        // dialogAction = action;
+        // dialogParams = params;
 
-        @Override
-        public void onAdLoaded(Ad ad) {
-            // Rewarded video ad is loaded and ready to be displayed
-            fb_reward = 1;
-        }
-
-        @Override
-        public void onAdClicked(Ad ad) {
-
-        }
-    });
-    rewardedVideoAd.loadAd();*//*
-    }*/
+        dialog.show();
+    }
+*/
 
     public void share_earn2(int a) {
         final Dialog openDialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -3735,5 +3210,197 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             openDialog.show();
         }
 
+    }
+
+    private enum PendingAction {
+        NONE, POST_PHOTO, POST_STATUS_UPDATE
+    }
+
+    /**
+     * Represents a word placed at an arbitrary location in a grid. Row and
+     * Column point to the position of the first character in the word,
+     * regardless of direction or reversal.
+     *
+     * @author wes
+     */
+
+
+    public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> {
+
+        List<Word> mWords;
+
+        Context context;
+
+        public RecyclerAdapter(Context context, List<Word> words) {
+            this.context = context;
+            this.mWords = words;
+        }
+
+        public void setWordsFound(Collection<Word> words) {
+            mFoundWords.addAll(words);
+        }
+
+        public void setWordFound(Word word) {
+            mFoundWords.add(word);
+//            mWords.remove(word);
+//            mWords.add(word);
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.wordsearch_word, parent, false);
+
+            return new MyViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(MyViewHolder holder, final int position) {
+
+            Word word = mWords.get(position);
+            System.out.println("Size wordStr mWords :" + mWords);
+            //v.setFocusable(false);
+            holder.tv.setFocusable(false);
+
+
+            if (word.getWord() != null) {
+                String wordStr = word.getWord();
+                //wordStr = wordStr.substring(0, 1).toUpperCase() + wordStr.substring(1);
+
+               /* System.out.println("Size wordStr mWords_sub_0,1 :" + wordStr.substring(0, 1).toUpperCase());
+                System.out.println("Size wordStr mWords_sub_1 :" + wordStr.substring(1));
+                System.out.println("Size wordStr mWords_sub_0,1+sub_1 :" + wordStr);
+*/
+                wordStr = wordStr.replace(".", "");
+                holder.tv.setText(wordStr);
+
+            }
+
+            holder.tv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+
+                    hint_word = mWords.get(position);
+
+                    if (mFoundWords.contains(mWords.get(position))) {
+
+                        if (table_name.equals("general")) {
+
+                            WordsearchGridFragment.timeWhenStopped = chronometer.getBase() - SystemClock.elapsedRealtime();
+                            WordsearchGridFragment.chronometer.stop();
+
+                            final Dialog dialog = new Dialog(getActivity(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                            dialog.setContentView(R.layout.dia_word_meaning);
+                            dialog.show();
+
+                            RelativeLayout meaning_lay = (RelativeLayout) dialog.findViewById(R.id.meaning_lay);
+                            meaning_lay.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            TextView word_content = (TextView) dialog.findViewById(R.id.word_content);
+                            TextView word_title = (TextView) dialog.findViewById(R.id.word_title);
+                            TextView meaning_cancel = (TextView) dialog.findViewById(R.id.meaning_cancel);
+                            meaning_cancel.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            Cursor cursor = null;
+
+                            String my_hint = hint_word.getWord().replace(".", "");
+                            try {
+                                cursor = mydb.rawQuery("select * from general_meaning where Word='" + my_hint + "'", null);
+                                if (cursor.getCount() != 0) {
+                                    cursor.moveToFirst();
+                                    String meaning = cursor.getString(cursor.getColumnIndexOrThrow("Sentence"));
+
+                                    word_title.setText("" + (hint_word.getWord().replace(".", "")));
+
+                                    String htmlText = meaning.replace(hint_word.getWord().replace(".", ""), "<font color='#ffffff'>" + hint_word.getWord().replace(".", "") + "</font>");
+                                    word_content.setText(Html.fromHtml(htmlText));
+                                }
+                            } finally {
+                                if (cursor != null) cursor.close();
+                            }
+
+                            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                    WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+                                    WordsearchGridFragment.chronometer.start();
+                                }
+                            });
+                        }
+
+                    } else {
+                        hint_dia(mWords.get(position));
+                    }
+
+                   /* if (hints.contains(mWords.get(position).getWord())) {
+
+                        if (mFoundWords.contains(mWords.get(position))) {
+
+                        } else {
+
+                            //Toast.makeText(getContext(), "Hint for this word already shown", Toast.LENGTH_SHORT).show();
+                            wordsearchGridView.showHint(mWords.get(position));
+                        }
+
+                    } else {
+
+                        if (!mFoundWords.contains(mWords.get(position))) {
+
+                            if (!hints.contains(mWords.get(position).getWord())) {
+
+                                hints.add(mWords.get(position).getWord());
+
+                                wordsearchGridView.showHint(mWords.get(position));
+
+                            }
+
+
+                        }
+                    }
+*/
+
+                }
+            });
+
+            if (!mFoundWords.contains(word)) {
+                holder.tv.setTextColor(0xFFFFFFFF);
+
+                holder.tv.setPaintFlags(holder.tv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            } else {
+
+                holder.tv.setTextColor(Color.parseColor("#9e9e9e"));
+
+                holder.tv.setPaintFlags(holder.tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return mWords.size();
+        }
+
+        class MyViewHolder extends RecyclerView.ViewHolder {
+
+            TextView tv;
+
+            MyViewHolder(View view) {
+                super(view);
+
+                tv = (TextView) view.findViewById(R.id.lbl_word);
+            }
+        }
     }
 }

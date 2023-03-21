@@ -1,6 +1,7 @@
-plugins{
+plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
+    id 'org.jetbrains.kotlin.android'
 }
 
 android {
@@ -76,16 +77,13 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'me.spark:submitbutton:1.0.1'
     implementation 'com.android.installreferrer:installreferrer:2.2'
-
-
-    /*implementation 'com.google.android.gms:play-services-appset:16.0.2'
-    implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
-    implementation 'com.google.android.gms:play-services-basement:18.1.0'*/
+    implementation 'com.google.android.gms:play-services-ads:21.5.0'
+    implementation 'com.airbnb.android:lottie:4.1.0'
 
 
     //applovin
-    implementation 'com.applovin:applovin-sdk:11.5.0'
-    implementation 'com.applovin.mediation:facebook-adapter:6.11.0.4'
+    implementation 'com.applovin:applovin-sdk:11.6.0'
+    implementation 'com.applovin.mediation:facebook-adapter:6.12.0.1'
 
 }
 

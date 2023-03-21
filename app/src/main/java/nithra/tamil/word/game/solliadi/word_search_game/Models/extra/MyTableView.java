@@ -51,20 +51,27 @@ import nithra.tamil.word.game.solliadi.word_search_game.Models.general.general_p
  */
 public class MyTableView extends LinearLayout {
 
+    public static float[] touchPoint;
+    private final float mScale = getResources().getDisplayMetrics().density;
+    private final float mMinDistance = (int) (50.0 * mScale + 0.5);
     SharedPreference sp = new SharedPreference();
-
+    String[] colors = {"#E53935", "#D81B60", "#8E24AA", "#5E35B1", "#3949AB", "#1E88E5",
+            "#039BE5", "#00897B", "#AA00FF", "#CDDC39", "#FF1744", "#F57F17",
+            "#FB8C00", "#FFD600", "#FFAB00", "#F4511E", "#9E9E9E", "#8D6E63",
+            "#546E7A", "#C51162"};
+    String[] clrs = {"#D50000", "#880E4F", "#4A148C", "#311B92", "#1A237E", "#0D47A1",
+            "#01579B", "#006064", "#004D40", "#DD2C00"};
+    int i = 0, k = 0;
+    Animation animShake, zoomIn, zoomOut;
+    View view;
     private int mDefaultColor;
     private int mSelectionColor;
-
     /**
      * Vars used in calculations
      */
     private int mColumnWidth;
-    private int mColumns=5, mRows=5;
+    private int mColumns = 5, mRows = 5;
     private float mCornerRadius;
-    private final float mScale = getResources().getDisplayMetrics().density;
-    private final float mMinDistance = (int) (50.0 * mScale + 0.5);
-
     /**
      * Vars related to selection and selection drawing
      */
@@ -74,47 +81,24 @@ public class MyTableView extends LinearLayout {
     private Integer mSelectionSteps;
     private Direction mSelectionDirection;
     private Paint mPaint, mFoundPaint, mHintPaint, mMtPaint;
-    private List<View> mPreviousSelection;
-    private Bitmap mFoundCache;
-
-    /**
-     * State of the board
-     */
-    private WordsearchGameState mGameState;
-
-    /**
-     * Listeners
-     */
-    private OnWordSelectedListener mOnWordSelectedListener;
-
-    private boolean mFocusSelected;
-
-    private String mLastWordFound;
 
     /*String[] colors = {"#ef5350", "#ec407a", "#ba68c8", "#9575cd", "#7986cb", "#64b5f6",
             "#4fc3f7", "#4dd0e1", "#4db6ac", "#81c784", "#aed581", "#dce775",
             "#ffee58", "#ffa726", "#ff7043", "#bdbdbd", "#90a4ae", "#ff5252",
             "#eeff41", "#7c4dff"};*/
-
-    String[] colors = {"#E53935", "#D81B60", "#8E24AA", "#5E35B1", "#3949AB", "#1E88E5",
-            "#039BE5", "#00897B", "#AA00FF", "#CDDC39", "#FF1744", "#F57F17",
-            "#FB8C00", "#FFD600", "#FFAB00", "#F4511E", "#9E9E9E", "#8D6E63",
-            "#546E7A", "#C51162"};
-
-    String clrs[]={"#D50000","#880E4F","#4A148C","#311B92","#1A237E","#0D47A1",
-            "#01579B","#006064","#004D40","#DD2C00"};
-
-
-
-    int i = 0,k=0;
-
-    Animation animShake, zoomIn, zoomOut;
-
-    View view;
-
-    private Matrix matrix = new Matrix();
-
-    public static float[] touchPoint;
+    private List<View> mPreviousSelection;
+    private Bitmap mFoundCache;
+    /**
+     * State of the board
+     */
+    private WordsearchGameState mGameState;
+    /**
+     * Listeners
+     */
+    private OnWordSelectedListener mOnWordSelectedListener;
+    private boolean mFocusSelected;
+    private String mLastWordFound;
+    private final Matrix matrix = new Matrix();
 
 
     public MyTableView(Context context) {
@@ -252,7 +236,7 @@ public class MyTableView extends LinearLayout {
             if (tv != null) {
                 tv.setTextColor(mFocusSelected ? 0xFF3f51b5 : mSelectionColor);
             }
-            Toast.makeText(getContext(), ""+tv.getText(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "" + tv.getText(), Toast.LENGTH_SHORT).show();
             mFocusSelected = !mFocusSelected;
         }
 
@@ -392,7 +376,7 @@ public class MyTableView extends LinearLayout {
                     ((TextView) v.findViewById(R.id.lbl_char)).setTextSize(15);
                 }
 
-                if(sp.getInt(getContext(),"Grid")==1){
+                if (sp.getInt(getContext(), "Grid") == 1) {
 
                     //((TextView) v.findViewById(R.id.lbl_char)).setBackgroundResource(R.drawable.square);
                 }
@@ -465,7 +449,7 @@ public class MyTableView extends LinearLayout {
             //tv.startAnimation(fadeOut);
 
             DisplayMetrics metrics = new DisplayMetrics();
-            ((general_play)getContext()).getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            ((general_play) getContext()).getWindowManager().getDefaultDisplay().getMetrics(metrics);
             int widthPixels = metrics.widthPixels;
             int heightPixels = metrics.heightPixels;
             float widthDpi = metrics.xdpi;
@@ -480,23 +464,23 @@ public class MyTableView extends LinearLayout {
 
             TranslateAnimation anims = null;
 
-            if(smallestWidth==240){
+            if (smallestWidth == 240) {
 
                 anims = new TranslateAnimation(250, 250, 450, 80);
 
-            }else if(smallestWidth==320){
+            } else if (smallestWidth == 320) {
 
                 anims = new TranslateAnimation(200, 200, 400, 80);
-            }else if(smallestWidth==360){
+            } else if (smallestWidth == 360) {
 
                 anims = new TranslateAnimation(300, 300, 600, 100);
-            }else if(smallestWidth>360 && smallestWidth<=480){
+            } else if (smallestWidth > 360 && smallestWidth <= 480) {
 
                 anims = new TranslateAnimation(600, 600, 1000, 100);
-            }else if(smallestWidth>=480 && smallestWidth<=600){
+            } else if (smallestWidth >= 480 && smallestWidth <= 600) {
 
                 anims = new TranslateAnimation(600, 600, 1000, 100);
-            }else if(smallestWidth>=600 && smallestWidth<=720){
+            } else if (smallestWidth >= 600 && smallestWidth <= 720) {
 
                 anims = new TranslateAnimation(700, 700, 1000, 150);
             }
@@ -792,16 +776,11 @@ public class MyTableView extends LinearLayout {
         return -1;
     }
 
-    public static interface OnWordSelectedListener {
-        public void onWordSelected(List<Integer> positions);
+    public interface OnWordSelectedListener {
+        void onWordSelected(List<Integer> positions);
     }
 
     private static final class WordsearchGameState extends BaseSavedState {
-
-        private Set<Word> mFoundWords;
-        private Set<Word> foundWords = new HashSet<>();
-        private Word mHint;
-        private Word mMaintain;
 
         @SuppressWarnings("unused")
         public static final Creator<WordsearchGameState> CREATOR =
@@ -817,14 +796,18 @@ public class MyTableView extends LinearLayout {
                         return new WordsearchGameState(source);
                     }/*
                      * (non-Javadoc)
-					 *
-					 * @see android.os.Parcelable.Creator#newArray(int)
-					 */
+                     *
+                     * @see android.os.Parcelable.Creator#newArray(int)
+                     */
 
                     public WordsearchGameState[] newArray(int size) {
                         return new WordsearchGameState[size];
                     }
                 };
+        private Set<Word> mFoundWords;
+        private Set<Word> foundWords = new HashSet<>();
+        private Word mHint;
+        private Word mMaintain;
 
         private WordsearchGameState() {
             super(Parcel.obtain());

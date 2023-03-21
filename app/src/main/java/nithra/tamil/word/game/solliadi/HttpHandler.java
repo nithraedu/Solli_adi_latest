@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -69,7 +70,7 @@ public class HttpHandler {
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(
                                 conn.getInputStream()));
-                StringBuffer sb = new StringBuffer("");
+                StringBuffer sb = new StringBuffer();
                 String line = "";
 
                 while ((line = in.readLine()) != null) {
@@ -83,7 +84,7 @@ public class HttpHandler {
                 return sb.toString();
 
             } else {
-                return new String("false : " + responseCode);
+                return "false : " + responseCode;
             }
 
            /* InputStream in = new BufferedInputStream(conn.getInputStream());
@@ -153,7 +154,7 @@ public class HttpHandler {
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(
                                 conn.getInputStream()));
-                StringBuffer sb = new StringBuffer("");
+                StringBuffer sb = new StringBuffer();
                 String line = "";
 
                 while ((line = in.readLine()) != null) {
@@ -167,7 +168,7 @@ public class HttpHandler {
                 return sb.toString();
 
             } else {
-                return new String("false : " + responseCode);
+                return "false : " + responseCode;
             }
 
            /* InputStream in = new BufferedInputStream(conn.getInputStream());

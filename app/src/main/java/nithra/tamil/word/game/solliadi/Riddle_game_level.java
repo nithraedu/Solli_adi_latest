@@ -10,8 +10,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -25,21 +23,18 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.facebook.ads.NativeAdLayout;
 
 
-
-
-
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-
-
 public class Riddle_game_level extends AppCompatActivity {
+    public static SharedPreferences mPreferences;
     TextView time1, time2, time3, score1, score2, score3, levelid, levelname;
     Typeface typ, tyr;
     DataBaseHelper myDbHelper;
     TextView levela, levelb, levelc;
-    public static SharedPreferences mPreferences;
     SQLiteDatabase exdb;
     TextView action;
     TextView intro;
@@ -205,17 +200,17 @@ public class Riddle_game_level extends AppCompatActivity {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
             native_banner_ad_container.setVisibility(View.GONE);
 
-        }else {
-            if (Utils.isNetworkAvailable(Riddle_game_level.this)){
+        } else {
+            if (Utils.isNetworkAvailable(Riddle_game_level.this)) {
                 native_banner_ad_container.setVisibility(View.GONE);
-               // fb_native(Riddle_game_level.this,native_banner_ad_container);
+                // fb_native(Riddle_game_level.this,native_banner_ad_container);
 
                 /*  if (spa.getInt(Riddle_game_level.this,"native_banner_ads")==1){
                     New_Main_Gamelist.inflateAd(Riddle_game_level.this,native_banner_ad_container);
                 }else {
                     fb_native(Riddle_game_level.this,native_banner_ad_container);
                 }*/
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
 

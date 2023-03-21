@@ -1,5 +1,9 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Ragasiya_sorgal_Native_Banner;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -17,37 +21,11 @@ import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxAdView;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
-import com.facebook.ads.NativeAdLayout;
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.FileProvider;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -77,119 +55,185 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/*import com.facebook.AppEventsLogger;
-import com.facebook.FacebookException;
-import com.facebook.FacebookOperationCanceledException;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
-import com.facebook.widget.FacebookDialog;
-import com.facebook.widget.WebDialog;
-import com.facebook.widget.WebDialog.OnCompleteListener;*/
+import androidx.appcompat.app.AlertDialog;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.FileProvider;
 
-
-
-
-
-
-
-
-
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.facebook.ads.NativeAdLayout;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.games.Games;
-
+import com.google.android.material.snackbar.Snackbar;
 import com.google.example.games.basegameutils.BaseGameActivity;
 import com.google.example.games.basegameutils.BaseGameUtils;
 import com.google.firebase.analytics.FirebaseAnalytics;
-
 
 import org.json.JSONArray;
 
 import java.io.File;
 import java.io.FileOutputStream;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 import de.hdodenhof.circleimageview.CircleImageView;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
 import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
-import nithra.tamil.word.game.solliadi.adutils.GameExitUtils;
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Ragasiya_sorgal_Native_Banner;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Senthamil_Thedal_Native_Banner;
-
-public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,  Download_completed {
-
-    int fb_reward = 0;
-    //RewardedVideoAd rewardedVideoAd;
-    private MaxRewardedAd rewardedAd;
-
-    int reward_status = 0;
-    //*********************reward videos process 1***********************
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
-
-
-    private boolean mGameOver;
-    private boolean mGamePaused;
-
-    private long mTimeRemaining;
-    //reward videos process 1***********************
+public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Download_completed {
 
     public static final String TAG = "SavedGames";
+    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
+    //*********************reward videos process 1***********************
+    //private final String AD_UNIT_ID = getString(R.string.rewarded);
 
     // The AppState slot we are editing.  For simplicity this sample only manipulates a single
     // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
     // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
     private static final int APP_STATE_KEY = 1;
-
     // Request code used to invoke sign-in UI.
     private static final int RC_SIGN_IN = 9001;
-
     // Request code used to invoke Snapshot selection UI.
     private static final int RC_SELECT_SNAPSHOT = 9002;
-
-    /// Client used to interact with Google APIs.
-    private GoogleApiClient mGoogleApiClient;
-
-
-    // True when the application is attempting to resolve a sign-in error that has a possible
-    // resolution,
-    private boolean mIsResolving = false;
-
-    // True immediately after the user clicks the sign-in button/
-    private boolean mSignInClicked = false;
-
-    // True if we want to automatically attempt to sign in the user at application start.
-    private boolean mAutoStartSignIn = true;
+    /////////native advance////////////
+    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
+    //reward videos process 1***********************
+    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
+    /////////Native_Top_Advanced////////////
+    private static final String ADMOB_AD_UNIT_ID_Top = "ca-app-pub-4267540560263635/2303543680";
+    /////////Native_Top_Advanced////////////
+    /////////Native_BackPress_Advanced////////////
+    private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
+    public static FrameLayout add, add2, add3;
+    public static LinearLayout add_e;
+    public static LinearLayout add_sc;
+    static int ry;
+    static int mCoinCount = 20;
 
 
     // Facebook variable starts
-
+    static int rvo = 0;
+    static SharedPreference spd = new SharedPreference();
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
-
-    private PendingAction pendingAction = PendingAction.NONE;
+    int fb_reward = 0;
+    int reward_status = 0;
+    String btn_str = "";
+    DataBaseHelper myDbHelper;
+    Typeface typ, tyr;
+    // facebook variable ends
+    TextView c_time, score, to_no;
+    Chronometer focus;
+    SQLiteDatabase exdb, dbs, dbn, dbn2;
+    EditText c_edit;
+    int level;
+    int gameid = 8;
+    int w_id;
+    TextView c_verify, c_clear, ans_high;
+    int f_sec;
+    TextView c_ans;
+    SharedPreference sps = new SharedPreference();
+    TextView bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9, bt10, bt11, bt12, bt13, bt14, bt15, bt16;
+    SoundPool click, win, coin, worng;
+    int soundId1, soundId2, soundId3, soundId4;
+    // MediaPlayer c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19, c20;
+    // MediaPlayer r1, play1;
+    // MediaPlayer w1;
+    int sv = 0;
+    int e2;
+    TextView c_coin;
+    RadioButton fn1, fn2, fn3;
+    TextView c_settings;
+    TextView toggleButton;
+    LinearLayout adds, list4;
+    PopupWindow popupWindow;
+    int kx = 1;
+    RelativeLayout w_head, helpshare_layout;
+    TextView shareq, h_gplues, h_watts_app, h_facebook;
+    int r = 0;
+    String sa;
+    int type;
+    JSONArray warray, warray2, carray, sarray, sarray2;
+    String str_vpcont;
+    String email = "";
+    Timer t1, th;
+    int t, t2;
+    LinearLayout qtw;
+    TextView earncoin;
+    int minmum = 1;
+    int maximum = 3;
+    int randomno;
+    TextView next_continue;
+    String downok = "", downnodata = "";
+    ProgressDialog mProgressDialog;
+    TextView ttscores;
+    int tim = 0;
+    long ttstop;
+    int noclue = 0;
+    String retype = "s";
+    RelativeLayout edit_buttons_layout;
+    Dialog openDialog_p;
+    Dialog openDialog_s;
+    int s = 0;
+    TextView question;
+    int share_name = 0;
+    int setting_access = 0;
+    Context context = this;
+    RelativeLayout adsicon, adsicon2;
+    CircleImageView ads_logo, ads_logo2;
+    int loadaddcontent = 0;
+    /////////Native_BackPress_Advanced////////////
+    int daily_start = 0;
+    Newgame_DataBaseHelper newhelper;
+    Newgame_DataBaseHelper2 newhelper2;
+    Newgame_DataBaseHelper3 newhelper3;
+    Newgame_DataBaseHelper4 newhelper4;
+    int extra_coin_s = 0;
+    int reward_play_count = 0;
+    int ea = 0;
+    Dialog openDialog;
+    int setval_vid;
+    TextView coin_value;
+    /////////native advance////////////
+    int minmumd = 1;
+    int maximumd = 4;
+    int randomnod;
+    FirebaseAnalytics mFirebaseAnalytics;
+    int dia_dismiss = 0;
+    //RewardedVideoAd rewardedVideoAd;
+    private MaxRewardedAd rewardedAd;
+    private boolean mGameOver;
+    private boolean mGamePaused;
+    private long mTimeRemaining;
+    /// Client used to interact with Google APIs.
+    private GoogleApiClient mGoogleApiClient;
+    // True when the application is attempting to resolve a sign-in error that has a possible
+    // resolution,
+    private boolean mIsResolving = false;
+    // True immediately after the user clicks the sign-in button/
+    private boolean mSignInClicked = false;
+    // True if we want to automatically attempt to sign in the user at application start.
+    private boolean mAutoStartSignIn = true;
+    private final PendingAction pendingAction = PendingAction.NONE;
+    private MaxInterstitialAd ins_game, game_exit_ins;
 
     @Override
     public void onSignInFailed() {
@@ -211,9 +255,6 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
         }
     }
 
-    private enum PendingAction {
-        NONE, POST_PHOTO, POST_STATUS_UPDATE
-    }
     private void backexitnet() {
         if (main_act.equals("")) {
             finish();
@@ -223,123 +264,6 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
             finish();
         }
     }
-    String btn_str = "";
-    // facebook variable ends
-
-
-    DataBaseHelper myDbHelper;
-    Typeface typ, tyr;
-    TextView c_time, score, to_no;
-    Chronometer focus;
-    SQLiteDatabase exdb, dbs, dbn, dbn2;
-    EditText c_edit;
-    int level;
-    int gameid = 8;
-    int w_id;
-    TextView c_verify, c_clear, ans_high;
-    int f_sec;
-    ;
-    TextView c_ans;
-    SharedPreference sps = new SharedPreference();
-    TextView bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9, bt10, bt11, bt12, bt13, bt14, bt15, bt16;
-    // MediaPlayer c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19, c20;
-    // MediaPlayer r1, play1;
-    // MediaPlayer w1;
-
-    SoundPool click, win, coin, worng;
-    int soundId1, soundId2, soundId3, soundId4;
-    int sv = 0;
-
-    int e2;
-    TextView c_coin;
-    RadioButton fn1, fn2, fn3;
-    TextView c_settings;
-    TextView toggleButton;
-    LinearLayout adds, list4;
-
-    PopupWindow popupWindow;
-    int kx = 1;
-    RelativeLayout w_head, helpshare_layout;
-    TextView shareq, h_gplues, h_watts_app, h_facebook;
-    int r = 0;
-
-
-    String sa;
-
-    int type;
-
-    JSONArray warray, warray2, carray, sarray, sarray2;
-    String str_vpcont;
-    String email = "";
-
-    Timer t1, th;
-    int t, t2;
-
-    private MaxInterstitialAd ins_game,game_exit_ins;
-
-    LinearLayout qtw;
-    TextView earncoin;
-    int minmum = 1;
-    int maximum = 3;
-    int randomno;
-    TextView next_continue;
-    String downok = "", downnodata = "";
-    ProgressDialog mProgressDialog;
-    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
-    TextView ttscores;
-    int tim = 0;
-    long ttstop;
-    int noclue = 0;
-    static int ry;
-    String retype = "s";
-    static int mCoinCount=20;
-    static int rvo = 0;
-    RelativeLayout edit_buttons_layout;
-    Dialog openDialog_p;
-    Dialog openDialog_s;
-    int s = 0;
-    TextView question;
-    /////////native advance////////////
-    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
-    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
-
-    int share_name = 0;
-    int setting_access = 0;
-    public static FrameLayout add, add2, add3;
-    static SharedPreference spd = new SharedPreference();
-    Context context = this;
-    RelativeLayout adsicon, adsicon2;
-    CircleImageView ads_logo, ads_logo2;
-    int loadaddcontent = 0;
-    /////////native advance////////////
-
-    /////////Native_Top_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_Top = "ca-app-pub-4267540560263635/2303543680";
-    /////////Native_Top_Advanced////////////
-    /////////Native_BackPress_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
-    /////////Native_BackPress_Advanced////////////
-    int daily_start = 0;
-
-    public static LinearLayout add_e;
-    public static LinearLayout add_sc;
-    Newgame_DataBaseHelper newhelper;
-    Newgame_DataBaseHelper2 newhelper2;
-    Newgame_DataBaseHelper3 newhelper3;
-    Newgame_DataBaseHelper4 newhelper4;
-
-    int extra_coin_s = 0;
-    int reward_play_count = 0;
-    int ea = 0;
-
-    Dialog openDialog;
-    int setval_vid;
-    TextView coin_value;
-    int minmumd = 1;
-    int maximumd = 4;
-    int randomnod;
-    FirebaseAnalytics mFirebaseAnalytics;
-    int dia_dismiss = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -406,7 +330,6 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
                 .build();
 
 
-
         //loadRewardedVideoAd();
 
         if (sps.getString(Ote_to_Tamil.this, "signinagain").equals("yes")) {
@@ -426,7 +349,6 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
             }
 
         }
-
 
 
         if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 1) {
@@ -573,12 +495,12 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
 //loads_ads_banner();
         adds = (LinearLayout) findViewById(R.id.ads_lay);
         if (sps.getInt(context, "purchase_ads") == 0) {
-        if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
+            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
 
-            Ad_NativieUtils.load_add_facebook(this,getResources().getString(R.string.Ragasiya_sorgal_Native_Banner_new),adds);
-        }else {
-            adds.setVisibility(View.GONE);
-        }
+                Ad_NativieUtils.load_add_facebook(this, getResources().getString(R.string.Ragasiya_sorgal_Native_Banner_new), adds);
+            } else {
+                adds.setVisibility(View.GONE);
+            }
         } else {
             adds.setVisibility(View.GONE);
         }
@@ -627,10 +549,10 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
             //  sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
 
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Ote_to_Tamil.this)
-                    .setTarget(helpshare_layout)
-                    .setDismissText("சரி")
-                    .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                    .build())
+                            .setTarget(helpshare_layout)
+                            .setDismissText("சரி")
+                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
+                            .build())
                     .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                         @Override
                         public void onDismiss(MaterialShowcaseView itemView, int position) {
@@ -695,9 +617,9 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
             native_banner_ad_container.setVisibility(View.GONE);
 
         } else {
-            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)){
-                fb_native_Ragasiya_sorgal_Native_Banner(Ote_to_Tamil.this,native_banner_ad_container);
-            }else {
+            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
+                fb_native_Ragasiya_sorgal_Native_Banner(Ote_to_Tamil.this, native_banner_ad_container);
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
 
@@ -731,18 +653,17 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
 
             @Override
             public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error"+error);
+                System.out.println("check error" + error);
             }
 
             @Override
             public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2"+error);
+                System.out.println("check error2" + error);
             }
         });
         game_exit_ins.loadAd();
 
     }
-
 
     public void industrialload_game() {
 
@@ -784,7 +705,6 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
         ins_game.loadAd();
 
     }
-
 
     public void clicklistner() {
         c_settings.setOnClickListener(new View.OnClickListener() {
@@ -1160,7 +1080,7 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                                if (isChecked == true) {
+                                if (isChecked) {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                                 } else {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -2244,9 +2164,7 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
             bt14.setText(letter14);
             bt15.setText(letter12);
             bt16.setText(letter13);
-        } else if (type == 2)
-
-        {
+        } else if (type == 2) {
 
             StringTokenizer tokenizer = new StringTokenizer(a, ",");
             StringTokenizer word = new StringTokenizer(sa, ",");
@@ -2617,10 +2535,10 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
         if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 1) {
             native_banner_ad_container.setVisibility(View.GONE);
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        }else {
-            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)){
+        } else {
+            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
                 native_banner_ad_container.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
         }
@@ -2932,7 +2850,7 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
                     if (fb_reward == 1) {
                         reward_progressBar.dismiss();
                         rewardedAd.showAd();
-                    }else {
+                    } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -2965,7 +2883,6 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
         openDialog.show();
     }
 
-
     public void onBackPressed() {
         sps.putString(Ote_to_Tamil.this, "game_area", "on");
 
@@ -2973,91 +2890,91 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
             popupWindow.dismiss();
         } else {
             sps.putInt(Ote_to_Tamil.this, "addlodedd", 0);
-                s = 1;
-                openDialog_p = new Dialog(Ote_to_Tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                openDialog_p.setContentView(R.layout.back_pess);
-                TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-                TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+            s = 1;
+            openDialog_p = new Dialog(Ote_to_Tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+            openDialog_p.setContentView(R.layout.back_pess);
+            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
+            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
-                yes.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+            yes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                        String dates = sps.getString(Ote_to_Tamil.this, "date");
-                        int pos;
-                        if (dates.equals("0")) {
-                            pos = 1;
-                            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                            focus.stop();
-                            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
+                    String dates = sps.getString(Ote_to_Tamil.this, "date");
+                    int pos;
+                    if (dates.equals("0")) {
+                        pos = 1;
+                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                        focus.stop();
+                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
 
-                            //    newhelper2.executeSql("UPDATE newmaintable2 SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                            focus.stop();
-                            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
+                        //    newhelper2.executeSql("UPDATE newmaintable2 SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
+                    } else {
+                        pos = 2;
+                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                        focus.stop();
+                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
 
-                            //   newhelper2.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                        }
-
-
-                            String date = sps.getString(Ote_to_Tamil.this, "date");
-                            if (date.equals("0")) {
-
-                                if (main_act.equals("")) {
-                                    finish();
-                                    Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    finish();
-                                }
-
-                            } else {
-                                if (sps.getString(Ote_to_Tamil.this, "Exp_list").equals("on")) {
-                                    finish();
-                                    Intent i = new Intent(Ote_to_Tamil.this, Expandable_List_View.class);
-                                    startActivity(i);
-                                } else {
-                                    if (main_act.equals("")) {
-                                        finish();
-                                        Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                                        startActivity(i);
-                                    } else {
-                                        finish();
-                                    }
-                                }
-                            }
-
-                        //ad
-                        if (sps.getInt(context, "purchase_ads") == 0) {
-                            if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                                sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                                if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                    if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                        openDialog_p.dismiss();
-                                        game_exit_ins.showAd();
-                                    }
-                                }
-                            } else {
-                                openDialog_p.dismiss();
-                                sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
-                            }
-                        }else{
-                            openDialog_p.dismiss();
-                        }
-                        //ad
-
+                        //   newhelper2.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
                     }
-                });
-                no.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
 
+
+                    String date = sps.getString(Ote_to_Tamil.this, "date");
+                    if (date.equals("0")) {
+
+                        if (main_act.equals("")) {
+                            finish();
+                            Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
+                            startActivity(i);
+                        } else {
+                            finish();
+                        }
+
+                    } else {
+                        if (sps.getString(Ote_to_Tamil.this, "Exp_list").equals("on")) {
+                            finish();
+                            Intent i = new Intent(Ote_to_Tamil.this, Expandable_List_View.class);
+                            startActivity(i);
+                        } else {
+                            if (main_act.equals("")) {
+                                finish();
+                                Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
+                                startActivity(i);
+                            } else {
+                                finish();
+                            }
+                        }
+                    }
+
+                    //ad
+                    if (sps.getInt(context, "purchase_ads") == 0) {
+                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
+                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
+                            if (Utils.isNetworkAvailable(getApplicationContext())) {
+                                if (game_exit_ins != null && game_exit_ins.isReady()) {
+                                    openDialog_p.dismiss();
+                                    game_exit_ins.showAd();
+                                }
+                            }
+                        } else {
+                            openDialog_p.dismiss();
+                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
+                        }
+                    } else {
                         openDialog_p.dismiss();
                     }
-                });
-                openDialog_p.show();
+                    //ad
+
+                }
+            });
+            no.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    openDialog_p.dismiss();
+                }
+            });
+            openDialog_p.show();
 
 
         }
@@ -3122,9 +3039,9 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
         if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 1) {
             ads_layout.setVisibility(View.GONE);
         } else {
-            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)){
+            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
                 //New_Main_Activity.load_add_fb_rect_score_screen(Ote_to_Tamil.this, ads_layout);
-            }else {
+            } else {
                 ads_layout.setVisibility(View.GONE);
             }
             //New_Main_Activity.load_addFromMain_multiplayer(Ote_to_Tamil.this, ads_layout);
@@ -3205,7 +3122,7 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
                         reward_progressBar.dismiss();
                         rewardedAd.showAd();
                         rewardvideo.setVisibility(View.INVISIBLE);
-                    }else {
+                    } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -3240,7 +3157,7 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
                         reward_progressBar.dismiss();
                         rewardedAd.showAd();
                         rewardvideo.setVisibility(View.INVISIBLE);
-                    }else {
+                    } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -3358,14 +3275,12 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
                     if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
                         sps.putInt(getApplicationContext(), "ins_ad_new", 0);
                         if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if(ins_game == null || !ins_game.isReady()) {
+                            if (ins_game == null || !ins_game.isReady()) {
                                 dia_dismiss = 1;
                                 openDialog_s.dismiss();
                                 next();
                                 industrialload_game();
-                                return;
-                            }
-                            else{
+                            } else {
                                 ins_game.showAd();
                             }
 
@@ -3416,8 +3331,25 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
             public void onDismiss(DialogInterface dialog) {
                 if (dia_dismiss != 1) {
                     sps.putString(Ote_to_Tamil.this, "game_area", "on");
-                        String date = sps.getString(Ote_to_Tamil.this, "date");
-                        if (date.equals("0")) {
+                    String date = sps.getString(Ote_to_Tamil.this, "date");
+                    if (date.equals("0")) {
+                        if (main_act.equals("")) {
+                            finish();
+                            openDialog_s.dismiss();
+                            Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
+                            startActivity(i);
+                        } else {
+                            openDialog_s.dismiss();
+                            finish();
+                        }
+                    } else {
+                        if (sps.getString(Ote_to_Tamil.this, "Exp_list").equals("on")) {
+                            finish();
+                            openDialog_s.dismiss();
+                            Intent i = new Intent(Ote_to_Tamil.this, Expandable_List_View.class);
+                            startActivity(i);
+
+                        } else {
                             if (main_act.equals("")) {
                                 finish();
                                 openDialog_s.dismiss();
@@ -3427,26 +3359,9 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
                                 openDialog_s.dismiss();
                                 finish();
                             }
-                        } else {
-                            if (sps.getString(Ote_to_Tamil.this, "Exp_list").equals("on")) {
-                                finish();
-                                openDialog_s.dismiss();
-                                Intent i = new Intent(Ote_to_Tamil.this, Expandable_List_View.class);
-                                startActivity(i);
-
-                            } else {
-                                if (main_act.equals("")) {
-                                    finish();
-                                    openDialog_s.dismiss();
-                                    Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    openDialog_s.dismiss();
-                                    finish();
-                                }
-                            }
-
                         }
+
+                    }
 
                 } else {
                     dia_dismiss = 0;
@@ -3835,8 +3750,8 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
 
         if (setting_access == 1) {
             setting_access = 0;
-           // if ((ContextCompat.checkSelfPermission(Ote_to_Tamil.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                downloaddata_daily();
+            // if ((ContextCompat.checkSelfPermission(Ote_to_Tamil.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+            downloaddata_daily();
             /*} else {
                 Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
                 finish();
@@ -3845,14 +3760,13 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
         } else if (setting_access == 2) {
             setting_access = 0;
             //if ((ContextCompat.checkSelfPermission(Ote_to_Tamil.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                downloaddata_regular();
+            downloaddata_regular();
            /* } else {
                 Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
                 finish();
                 startActivity(i);
             }*/
         }
-
 
 
         if (sps.getInt(Ote_to_Tamil.this, "goto_sett") == 1) {
@@ -3916,6 +3830,13 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
            /* focus.setBase(SystemClock.elapsedRealtime() + ttstop);
             focus.start();*/
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // uiHelper.onSaveInstanceState(outState);
+        outState.putString(PENDING_ACTION_BUNDLE_KEY, pendingAction.name());
     }
 /*
     public boolean isLoggedIn() {
@@ -4126,13 +4047,6 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
                     }
                 });
     }*/
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        // uiHelper.onSaveInstanceState(outState);
-        outState.putString(PENDING_ACTION_BUNDLE_KEY, pendingAction.name());
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -4861,7 +4775,7 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
         if (requestCode == 150) {
 
@@ -4936,24 +4850,6 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
         }
     }
 
-
-    //*********************reward videos process 3***********************
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private void addCoins(int coins) {
         mCoinCount = coins;
         sps.putInt(Ote_to_Tamil.this, "reward_coin_txt", coins);
@@ -4961,9 +4857,7 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
     }
 
 
-
-
-    //reward videos***********************//
+    //*********************reward videos process 3***********************
 
     public void vidcoinearn() {
 
@@ -5004,6 +4898,9 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
 
     }
 
+
+    //reward videos***********************//
+
     public void share_earn(int a) {
         final Dialog openDialog = new Dialog(Ote_to_Tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.share_dialog2);
@@ -5031,7 +4928,6 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
 
         openDialog.show();
     }
-
 
     public void share_earn2(int a) {
         final Dialog openDialog = new Dialog(Ote_to_Tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -5340,8 +5236,6 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
         helpshare(a);
     }
 
-//*** In Adapter **
-
     public void ins_app(final Context context, View view1, int vall) {
         TextView titt = (TextView) view1.findViewById(R.id.txtlist);
         ImageView logo = (ImageView) view1.findViewById(R.id.imageview);
@@ -5581,6 +5475,8 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
         });
     }
 
+//*** In Adapter **
+
     private boolean appInstalledOrNot(Context context, String uri) {
         PackageManager pm = context.getPackageManager();
         boolean app_installed = false;
@@ -5592,7 +5488,6 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
         }
         return app_installed;
     }
-
 
     //*** In ad area **
     public void showcase_dismiss() {
@@ -5691,7 +5586,7 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
                                         } else {
                                             finish();
                                         }
-                                    }else {
+                                    } else {
                                         if (date.equals("0")) {
                                             backexitnet();
                                         } else {
@@ -5723,7 +5618,7 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
                     } else {
                         finish();
                     }
-                }else {
+                } else {
                     finish();
                     Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
                     startActivity(i);
@@ -5748,10 +5643,8 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
         download_data_server.execute();
     }
 
-
-
-    public void rewarded_ad(){
-        rewardedAd = MaxRewardedAd.getInstance( getResources().getString(R.string.Reward_Ins), this );
+    public void rewarded_ad() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
         rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
             public void onRewardedVideoStarted(MaxAd ad) {
@@ -5770,7 +5663,7 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
 
             @Override
             public void onAdLoaded(MaxAd ad) {
-                fb_reward=1;
+                fb_reward = 1;
             }
 
             @Override
@@ -5781,7 +5674,7 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
             @Override
             public void onAdHidden(MaxAd ad) {
                 rewarded_ad();
-                if (reward_status==1){
+                if (reward_status == 1) {
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
@@ -5802,7 +5695,7 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
                             }
                         }
                     }, 500);
-                }else {
+                } else {
                     Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                 }
 
@@ -5841,84 +5734,9 @@ public class Ote_to_Tamil extends BaseGameActivity implements GoogleApiClient.Co
     }
 
 
-    /*public void reward(final Context context) {
-        rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
-            @Override
-            public void onError(Ad ad, AdError error) {
-                // Rewarded video ad failed to load
-
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-
-
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Rewarded video ad clicked
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Rewarded Video ad impression - the event will fire when the
-                // video starts playing
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-
-                // Rewarded Video View Complete - the video has been played to the end.
-                // You can use this event to initialize your reward
-
-
-                // Call method to give reward
-                // giveReward();
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-        };
-        rewardedVideoAd.loadAd(
-                rewardedVideoAd.buildLoadAdConfig()
-                        .withAdListener(rewardedVideoAdListener)
-                        .build());
-    }*/
+    private enum PendingAction {
+        NONE, POST_PHOTO, POST_STATUS_UPDATE
+    }
 
 }
 

@@ -1,5 +1,8 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.MainActivity.main_act;
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -17,30 +20,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
-import com.facebook.ads.NativeAdLayout;
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -61,11 +46,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.facebook.ads.Ad;
+import com.facebook.ads.AdError;
+import com.facebook.ads.InterstitialAdListener;
+import com.facebook.ads.NativeAdLayout;
+import com.facebook.ads.RewardedVideoAd;
+import com.facebook.ads.RewardedVideoAdListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.games.Games;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.example.games.basegameutils.BaseGameActivity;
 import com.google.example.games.basegameutils.BaseGameUtils;
 
@@ -79,11 +75,24 @@ import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
-import static nithra.tamil.word.game.solliadi.MainActivity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-
 public class English_to_tamil extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    public static final String TAG = "SavedGames";
+    //*********************reward videos process 1***********************
+    //private final String AD_UNIT_ID = getString(R.string.rewarded);
+
+    // The AppState slot we are editing.  For simplicity this sample only manipulates a single
+    // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
+    // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
+    private static final int APP_STATE_KEY = 1;
+    // Request code used to invoke sign-in UI.
+    private static final int RC_SIGN_IN = 9001;
+    // Request code used to invoke Snapshot selection UI.
+    private static final int RC_SELECT_SNAPSHOT = 9002;
+    static int ry;
+    //reward videos process 1***********************
+    static int rvo = 0;
+    static int mCoinCount = 20;
+    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
     Newgame_DataBaseHelper3 newhelper3;
@@ -109,7 +118,6 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
     SharedPreference sps = new SharedPreference();
     long ttstop;
     Chronometer focus;
-
     com.facebook.ads.InterstitialAd interstitialAd_game;
     Dialog openDialog_p;
     Dialog openDialog_s;
@@ -117,65 +125,34 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
     TextView next_continue;
     TextView ttscores;
     Typeface typ, tyr;
-    static int ry;
-    private GoogleApiClient mGoogleApiClient;
-
     int fb_reward = 0;
     RewardedVideoAd rewardedVideoAd;
     int reward_status = 0;
-    //*********************reward videos process 1***********************
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
-
-
-    private boolean mGameOver;
-    private boolean mGamePaused;
-
-    private long mTimeRemaining;
-    //reward videos process 1***********************
-    static int rvo = 0;
-    static int mCoinCount = 20;
-    public static final String TAG = "SavedGames";
-
-    // The AppState slot we are editing.  For simplicity this sample only manipulates a single
-    // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
-    // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
-    private static final int APP_STATE_KEY = 1;
-
-    // Request code used to invoke sign-in UI.
-    private static final int RC_SIGN_IN = 9001;
-
-    // Request code used to invoke Snapshot selection UI.
-    private static final int RC_SELECT_SNAPSHOT = 9002;
-
-    /// Client used to interact with Google APIs.
-
-    // True when the application is attempting to resolve a sign-in error that has a possible
-    // resolution,
-    private boolean mIsResolving = false;
-
-    // True immediately after the user clicks the sign-in button/
-    private boolean mSignInClicked = false;
-
-    // True if we want to automatically attempt to sign in the user at application start.
-    private boolean mAutoStartSignIn = true;
-
-
-    // Facebook variable starts
-
-    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     int r = 0;
-
     TextView ans_high, c_settings;
     RelativeLayout w_head, helpshare_layout;
+
+    /// Client used to interact with Google APIs.
     TextView c_word_number;
     TextView earncoin;
     LinearLayout qwt, adds;
+
+
+    // Facebook variable starts
     int share_name = 0;
     TextView shareq, h_gplues, h_watts_app, h_facebook;
     int dia_dismiss = 0;
+    private GoogleApiClient mGoogleApiClient;
+    private boolean mGameOver;
+    private boolean mGamePaused;
+    private long mTimeRemaining;
+    // True when the application is attempting to resolve a sign-in error that has a possible
+    // resolution,
+    private boolean mIsResolving = false;
+    // True immediately after the user clicks the sign-in button/
+    private boolean mSignInClicked = false;
+    // True if we want to automatically attempt to sign in the user at application start.
+    private boolean mAutoStartSignIn = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -211,7 +188,6 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
                 .build();
 
 
-        New_Main_Activity.fb_addload(English_to_tamil.this);
         if (sps.getInt(English_to_tamil.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
         } else {
@@ -235,10 +211,10 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
             sequence.setConfig(config);
             sequence.addSequenceItem(c_ans, "விடையை பார்க்க கேள்விக்குறி பொத்தானை அழுத்தி விடை காணலாம்.", "அடுத்து");
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(English_to_tamil.this)
-                    .setTarget(helpshare_layout)
-                    .setDismissText("சரி")
-                    .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                    .build())
+                            .setTarget(helpshare_layout)
+                            .setDismissText("சரி")
+                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
+                            .build())
                     .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                         @Override
                         public void onDismiss(MaterialShowcaseView itemView, int position) {
@@ -278,6 +254,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
         }
 
     }
+
     private void next() {
 
         reset();
@@ -334,6 +311,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
 
 
     }
+
     private void reset() {
         c_button1.setText("");
         c_button2.setText("");
@@ -379,6 +357,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
         c_button15.setVisibility(View.VISIBLE);
         c_button16.setVisibility(View.VISIBLE);
     }
+
     private void find() {
         question_txt = (TextView) findViewById(R.id.question_txt);
         c_button1 = (TextView) findViewById(R.id.c_button1);
@@ -426,6 +405,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
         c_ans.setEnabled(true);
         earncoin = (TextView) findViewById(R.id.earncoin);
     }
+
     private void click() {
 
         c_ans.setOnClickListener(new View.OnClickListener() {
@@ -518,7 +498,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                                if (isChecked == true) {
+                                if (isChecked) {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                                 } else {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -857,6 +837,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
         });
 
     }
+
     public void simple() {
         System.out.println("#######################answer" + answer);
         String a = "ட,ம்,எ,ன்,கை,மே,சை,மா,நா,டு,போ,க்,கு,வ,ர";
@@ -1167,6 +1148,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
 
         }
     }
+
     public void medium() {
         System.out.println("#######################answer" + answer);
         String a = "சீ,ட்,பே,ரு,ணி,இ,லை,ஒ,ற்,றை,மீ,ரி,க்,அ,சை";
@@ -1554,6 +1536,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
 
         }
     }
+
     public void hard() {
         String a = "கே,சே,பி,யா,தி,ரே,ஏ,வ்,ர்,கே,ஃ,ஓ,ப,ல்,இ,து,பு,மு,ரூ";
         System.out.println("#######################answer" + answer);
@@ -1923,6 +1906,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
             c_button16.setText(word8);
         }
     }
+
     private void verify(String val) {
         System.out.println("##################verify" + val);
         System.out.println("##################levelid" + levelid);
@@ -1973,10 +1957,12 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
 
 
     }
+
     private void pressKey(int keycode) {
         KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, keycode);
         ans_txt.onKeyDown(keycode, event);
     }
+
     public void coinanim() {
 ////
         if (score_type == 1) {
@@ -2289,6 +2275,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
             }, 2500);
         }
     }
+
     public void setSc() {
         if (s == 1) {
             openDialog_p.dismiss();
@@ -2691,6 +2678,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
         }
 
     }
+
     public void onBackPressed() {
  /*   public boolean onKeyDown(int keyCode, KeyEvent event) {
         //return super.onKeyDown(keyCode, event);
@@ -2699,54 +2687,56 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
 
         sps.putString(English_to_tamil.this, "game_area", "on");
         sps.putInt(English_to_tamil.this, "addlodedd", 0);
-            s = 1;
-            openDialog_p = new Dialog(English_to_tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-            openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
-            CheckBox checkbox_back = (CheckBox) openDialog_p.findViewById(R.id.checkbox_back);
-            LinearLayout ads_lay = (LinearLayout) openDialog_p.findViewById(R.id.fl_adplaceholder);
-            // load_addcontent2(context, ads_lay);
+        s = 1;
+        openDialog_p = new Dialog(English_to_tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog_p.setContentView(R.layout.back_pess);
+        TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
+        TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+        CheckBox checkbox_back = (CheckBox) openDialog_p.findViewById(R.id.checkbox_back);
+        LinearLayout ads_lay = (LinearLayout) openDialog_p.findViewById(R.id.fl_adplaceholder);
+        // load_addcontent2(context, ads_lay);
 
-            if (sps.getInt(English_to_tamil.this, "purchase_ads") == 1) {
-                ads_lay.setVisibility(View.GONE);
-            } else {
-                //load_addinstall(context, ads_lay);
-                // MainActivity.load_addFromMain_BackPress_REC(English_to_tamil.this, ads_lay);
 
-                if (Utils.isNetworkAvailable(English_to_tamil.this)) {
-                    New_Main_Activity.load_add_fb_rect(English_to_tamil.this, ads_lay);
+        ads_lay.setVisibility(View.GONE);
+
+
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String dates = sps.getString(English_to_tamil.this, "date");
+                int pos;
+                if (dates.equals("0")) {
+                    pos = 1;
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
+
+                    //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                 } else {
-                    ads_lay.setVisibility(View.GONE);
+                    pos = 2;
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
+
+                    //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                 }
-            }
 
-
-
-            yes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    String dates = sps.getString(English_to_tamil.this, "date");
-                    int pos;
-                    if (dates.equals("0")) {
-                        pos = 1;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
-
-                        //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                String date = sps.getString(English_to_tamil.this, "date");
+                if (date.equals("0")) {
+                    if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(English_to_tamil.this, MainActivity.class);
+                        startActivity(i);
                     } else {
-                        pos = 2;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
-
-                        //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                        finish();
                     }
-
-                    String date = sps.getString(English_to_tamil.this, "date");
-                    if (date.equals("0")) {
+                } else {
+                    if (sps.getString(English_to_tamil.this, "Exp_list").equals("on")) {
+                        finish();
+                        Intent i = new Intent(English_to_tamil.this, Expandable_List_View.class);
+                        startActivity(i);
+                    } else {
                         if (main_act.equals("")) {
                             finish();
                             Intent i = new Intent(English_to_tamil.this, MainActivity.class);
@@ -2754,34 +2744,22 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
                         } else {
                             finish();
                         }
-                    } else {
-                        if (sps.getString(English_to_tamil.this, "Exp_list").equals("on")) {
-                            finish();
-                            Intent i = new Intent(English_to_tamil.this, Expandable_List_View.class);
-                            startActivity(i);
-                        } else {
-                            if (main_act.equals("")) {
-                                finish();
-                                Intent i = new Intent(English_to_tamil.this, MainActivity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                            }
-                        }
                     }
                 }
-            });
-            no.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    openDialog_p.dismiss();
-                }
-            });
-            openDialog_p.show();
+            }
+        });
+        no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDialog_p.dismiss();
+            }
+        });
+        openDialog_p.show();
 
 
         // return super.onKeyDown(keyCode, event);
     }
+
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getPackageManager();
         boolean app_installed = false;
@@ -2793,6 +2771,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
         }
         return app_installed;
     }
+
     private boolean isNetworkAvailable() {
         ConnectivityManager connec = (ConnectivityManager) this
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -2808,6 +2787,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
         sps.putInt(English_to_tamil.this, "reward_coin_txt", coins);
         //mCoinCountText.setText("Coins: " + mCoinCount);
     }
+
     //reward videos***********************//
     public void vidcoinearn() {
         final Dialog openDialog = new Dialog(English_to_tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -2836,6 +2816,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
 
         openDialog.show();
     }
+
     public void share_earn2(int a) {
         final Dialog openDialog = new Dialog(English_to_tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.share_dialog2);
@@ -2861,25 +2842,30 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
         });
         openDialog.show();
     }
+
     @Override
     public void onSignInFailed() {
 
     }
+
     @Override
     public void onSignInSucceeded() {
 
     }
+
     @Override
     public void onConnected(Bundle connectionHint) {
         Log.d(TAG, "onConnected");
         //  updateUI();
     }
+
     @Override
     public void onConnectionSuspended(int i) {
         Log.d(TAG, "onConnectionSuspended: " + i);
         mGoogleApiClient.connect();
         // updateUI();
     }
+
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed");
@@ -2901,17 +2887,10 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
 
         //  updateUI();
     }
+
     private void ins_add() {
         //10 geme once intersttial ad show
-      /*  interstitialAd_game = new InterstitialAd(English_to_tamil.this);
 
-        if (sps.getInt(English_to_tamil.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
-        } else {
-            interstitialAd_game.setAdUnitId(getString(R.string.industrial_between));
-            AdRequest notadRequest1 = new AdRequest.Builder().build();
-            interstitialAd_game.loadAd(notadRequest1);
-        }*/
         interstitialAd_game = new com.facebook.ads.InterstitialAd(English_to_tamil.this, getString(R.string.industrial_between));
         InterstitialAdListener interstitialAdListener = new InterstitialAdListener() {
             @Override
@@ -2958,57 +2937,13 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
         if (sps.getInt(English_to_tamil.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
         } else {
-            /*interstitialAd_game.setAdUnitId(getString(R.string.industrial_between));
-            AdRequest notadRequest1 = new AdRequest.Builder().build();*/
-            //interstitialAd_game.loadAd();
             interstitialAd_game.loadAd(
                     interstitialAd_game.buildLoadAdConfig()
                             .withAdListener(interstitialAdListener)
                             .build());
         }
-
-/*
-        interstitialAd_game.setAdListener(new InterstitialAdListener() {
-            @Override
-            public void onInterstitialDisplayed(Ad ad) {
-                              */
-/*  Toast.makeText(VideoStatusActivity.this, "Display",
-                                        Toast.LENGTH_SHORT).show();*//*
-
-
-            }
-
-            @Override
-            public void onInterstitialDismissed(Ad ad) {
-                dia_dismiss = 1;
-                openDialog_s.dismiss();
-                next();
-                ins_add();
-            }
-
-            @Override
-            public void onError(Ad ad, AdError adError) {
-
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-
-            }
-        });
-*/
-
     }
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -3425,7 +3360,7 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
         if (requestCode == 152) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -3890,65 +3825,6 @@ public class English_to_tamil extends BaseGameActivity implements GoogleApiClien
 
     public void reward(final Context context) {
         rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-        /*rewardedVideoAd.setAdListener(new RewardedVideoAdListener() {
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status=1;
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status==1){
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-
-            @Override
-            public void onError(Ad ad, AdError adError) {
-                //Toast.makeText(context, ""+adError.getErrorCode(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-
-            }
-        });
-        rewardedVideoAd.loadAd();*/
         RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
             @Override
             public void onError(Ad ad, AdError error) {

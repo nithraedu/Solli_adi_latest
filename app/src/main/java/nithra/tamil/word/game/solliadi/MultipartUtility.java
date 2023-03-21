@@ -17,17 +17,17 @@ import java.util.List;
 /**
  * This utility class provides an abstraction layer for sending multipart HTTP
  * POST requests to a web server.
- * @author www.codejava.net
  *
+ * @author www.codejava.net
  */
 
 public class MultipartUtility {
-    private final String boundary;
     private static final String LINE_FEED = "\r\n";
-    private HttpURLConnection httpConn;
-    private String charset;
-    private OutputStream outputStream;
-    private PrintWriter writer;
+    private final String boundary;
+    private final HttpURLConnection httpConn;
+    private final String charset;
+    private final OutputStream outputStream;
+    private final PrintWriter writer;
 
     public MultipartUtility(String requestURL, String charset)
             throws IOException {
@@ -69,12 +69,12 @@ public class MultipartUtility {
         String fileName = uploadFile.getName();
         writer.append("--" + boundary).append(LINE_FEED);
         writer.append(
-                "Content-Disposition: form-data; name=\"" + fieldName
-                        + "\"; filename=\"" + fileName + "\"")
+                        "Content-Disposition: form-data; name=\"" + fieldName
+                                + "\"; filename=\"" + fileName + "\"")
                 .append(LINE_FEED);
         writer.append(
-                "Content-Type: "
-                        + URLConnection.guessContentTypeFromName(fileName))
+                        "Content-Type: "
+                                + URLConnection.guessContentTypeFromName(fileName))
                 .append(LINE_FEED);
         writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
         writer.append(LINE_FEED);

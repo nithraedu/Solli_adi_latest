@@ -29,10 +29,10 @@ public class notify_adapter extends ArrayAdapter<String> {
     private final int[] read;
     String[] url;
     int[] idd;
-Notify_del notifyDel;
+    Notify_del notifyDel;
 
 
-    public notify_adapter(Activity context, int[] read, String[] title, String[] urls, int[] id,String[] msgDate,String[] msgTime) {
+    public notify_adapter(Activity context, int[] read, String[] title, String[] urls, int[] id, String[] msgDate, String[] msgTime) {
         super(context, R.layout.notify_item, title);
         this.context = context;
         this.read = read;
@@ -41,7 +41,7 @@ Notify_del notifyDel;
         this.msgTime = msgTime;
         this.url = urls;
         this.idd = id;
-        notifyDel=(Notify_del)context;
+        notifyDel = (Notify_del) context;
     }
 
     @Override
@@ -105,7 +105,7 @@ Notify_del notifyDel;
         rowView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                notifyDel.onLongClick(idd[position],0);
+                notifyDel.onLongClick(idd[position], 0);
                 Log.i("check_jaasim", "onItemLongClick: ");
                 return true;
             }

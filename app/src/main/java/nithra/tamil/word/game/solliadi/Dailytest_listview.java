@@ -21,10 +21,10 @@ import java.util.Calendar;
 public class Dailytest_listview extends AppCompatActivity {
     customlist adapt;
     SQLiteDatabase exdb;
-    String listu[];
+    String[] listu;
     ListView list;
 
-    String gameid[], fin[], noans[];
+    String[] gameid, fin, noans;
     SharedPreference sps = new SharedPreference();
     TextView nodata;
 

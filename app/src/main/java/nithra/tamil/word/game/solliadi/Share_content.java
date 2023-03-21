@@ -26,7 +26,7 @@ public class Share_content {
     public void Share_content(Context context, String sharefinal) {
 
         contexts = context;
-        show_share_dia(context,sharefinal);
+        show_share_dia(context, sharefinal);
     }
 
     private java.util.List<ResolveInfo> showAllShareApp() {
@@ -96,6 +96,12 @@ public class Share_content {
         shareDialog.show();
     }
 
+    static class ViewHolder {
+        ImageView ivLogo;
+        TextView tvAppName;
+        TextView tvPackageName;
+    }
+
     class MyAdapter extends BaseAdapter {
         Context cons;
         PackageManager pm;
@@ -141,11 +147,5 @@ public class Share_content {
 
             return convertView;
         }
-    }
-
-    static class ViewHolder {
-        ImageView ivLogo;
-        TextView tvAppName;
-        TextView tvPackageName;
     }
 }

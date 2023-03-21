@@ -14,11 +14,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Environment;
-
-import androidx.core.app.NotificationCompat;
-
 import android.view.View;
 import android.widget.RemoteViews;
+
+import androidx.core.app.NotificationCompat;
 
 import java.io.File;
 import java.util.Calendar;
@@ -26,10 +25,10 @@ import java.util.Random;
 import java.util.StringTokenizer;
 
 class NotificationHelper_offline extends ContextWrapper {
-    private NotificationManager manager;
     public static final String PRIMARY_CHANNEL = "default";
     NotificationChannel chan1 = null;
     Context context;
+    private NotificationManager manager;
 
     public NotificationHelper_offline(Context base) {
         super(base);
@@ -73,7 +72,7 @@ class NotificationHelper_offline extends ContextWrapper {
         }
         DataBaseHelper myDbHelper;
         myDbHelper = new DataBaseHelper(context);
-        exdb = context.openOrCreateDatabase("Solli_Adi", context.MODE_PRIVATE, null);
+        exdb = context.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
         NotificationCompat.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder = new NotificationCompat.Builder(context, PRIMARY_CHANNEL);
@@ -89,7 +88,7 @@ class NotificationHelper_offline extends ContextWrapper {
         sps.putString(context, "Exp_list", "off");
         sps.putInt(context, "addlodedd", 2);
         sps.putString(context, "yes_reward", "yes");
-        sps.putInt(context,"native_banner_ads",0);
+        sps.putInt(context, "native_banner_ads", 0);
         //i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -477,7 +476,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         }
 
-        NotificationManager nm = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         String snd = sps.getString(context, "Daily_notifications");
 
@@ -510,7 +509,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         DataBaseHelper myDbHelper;
         myDbHelper = new DataBaseHelper(context);
-        exdb = context.openOrCreateDatabase("Solli_Adi", context.MODE_PRIVATE, null);
+        exdb = context.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
 
         NotificationCompat.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -524,7 +523,7 @@ class NotificationHelper_offline extends ContextWrapper {
         sps.putString(context, "Exp_list", "off");
         sps.putInt(context, "addlodedd", 2);
         sps.putString(context, "yes_reward", "yes");
-        sps.putInt(context,"native_banner_ads",0);
+        sps.putInt(context, "native_banner_ads", 0);
         //i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -701,7 +700,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         }
 
-        NotificationManager nm = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         String snd = sps.getString(context, "Daily_notifications");
 
         if (snd.equals("yes")) {
@@ -733,7 +732,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         DataBaseHelper myDbHelper;
         myDbHelper = new DataBaseHelper(context);
-        exdb = context.openOrCreateDatabase("Solli_Adi", context.MODE_PRIVATE, null);
+        exdb = context.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
 
         NotificationCompat.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -748,7 +747,7 @@ class NotificationHelper_offline extends ContextWrapper {
         sps.putString(context, "Exp_list", "off");
         sps.putInt(context, "addlodedd", 2);
         sps.putString(context, "yes_reward", "yes");
-        sps.putInt(context,"native_banner_ads",0);
+        sps.putInt(context, "native_banner_ads", 0);
         //i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -960,7 +959,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         }
 
-        NotificationManager nm = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         String snd = sps.getString(context, "Daily_notifications");
 
@@ -993,7 +992,7 @@ class NotificationHelper_offline extends ContextWrapper {
         DataBaseHelper myDbHelper;
         myDbHelper = new DataBaseHelper(context);
 
-        exdb = context.openOrCreateDatabase("Solli_Adi", context.MODE_PRIVATE, null);
+        exdb = context.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
 
         // NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
@@ -1009,7 +1008,7 @@ class NotificationHelper_offline extends ContextWrapper {
         sps.putString(context, "Exp_list", "off");
         sps.putInt(context, "addlodedd", 2);
         sps.putString(context, "yes_reward", "yes");
-        sps.putInt(context,"native_banner_ads",0);
+        sps.putInt(context, "native_banner_ads", 0);
         //i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -1094,7 +1093,7 @@ class NotificationHelper_offline extends ContextWrapper {
             }
         }
 
-        NotificationManager nm = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         String snd = sps.getString(context, "Daily_notifications");
 
@@ -1126,7 +1125,7 @@ class NotificationHelper_offline extends ContextWrapper {
         }
         DataBaseHelper myDbHelper;
         myDbHelper = new DataBaseHelper(context);
-        exdb = context.openOrCreateDatabase("Solli_Adi", context.MODE_PRIVATE, null);
+        exdb = context.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
 
         // NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
@@ -1141,7 +1140,7 @@ class NotificationHelper_offline extends ContextWrapper {
         sps.putString(context, "Exp_list", "off");
         sps.putInt(context, "addlodedd", 2);
         sps.putString(context, "yes_reward", "yes");
-        sps.putInt(context,"native_banner_ads",0);
+        sps.putInt(context, "native_banner_ads", 0);
         //i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -1202,7 +1201,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         }
 
-        NotificationManager nm = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         String snd = sps.getString(context, "Daily_notifications");
 
@@ -1233,7 +1232,7 @@ class NotificationHelper_offline extends ContextWrapper {
         DataBaseHelper myDbHelper;
         myDbHelper = new DataBaseHelper(context);
 
-        exdb = context.openOrCreateDatabase("Solli_Adi", context.MODE_PRIVATE, null);
+        exdb = context.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
 
         // NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
@@ -1249,7 +1248,7 @@ class NotificationHelper_offline extends ContextWrapper {
         sps.putString(context, "Exp_list", "off");
         sps.putInt(context, "addlodedd", 2);
         sps.putString(context, "yes_reward", "yes");
-        sps.putInt(context,"native_banner_ads",0);
+        sps.putInt(context, "native_banner_ads", 0);
         //i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -1310,7 +1309,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         }
 
-        NotificationManager nm = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         String snd = sps.getString(context, "Daily_notifications");
 
@@ -1341,7 +1340,7 @@ class NotificationHelper_offline extends ContextWrapper {
         DataBaseHelper myDbHelper;
         myDbHelper = new DataBaseHelper(context);
 
-        exdb = context.openOrCreateDatabase("Solli_Adi", context.MODE_PRIVATE, null);
+        exdb = context.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
 
         // NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
@@ -1357,7 +1356,7 @@ class NotificationHelper_offline extends ContextWrapper {
         sps.putString(context, "Exp_list", "off");
         sps.putInt(context, "addlodedd", 2);
         sps.putString(context, "yes_reward", "yes");
-        sps.putInt(context,"native_banner_ads",0);
+        sps.putInt(context, "native_banner_ads", 0);
         //i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -1418,7 +1417,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         }
 
-        NotificationManager nm = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         String snd = sps.getString(context, "Daily_notifications");
 
@@ -1450,7 +1449,7 @@ class NotificationHelper_offline extends ContextWrapper {
         DataBaseHelper myDbHelper;
         myDbHelper = new DataBaseHelper(context);
 
-        exdb = context.openOrCreateDatabase("Solli_Adi", context.MODE_PRIVATE, null);
+        exdb = context.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
 
         // NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
@@ -1466,7 +1465,7 @@ class NotificationHelper_offline extends ContextWrapper {
         sps.putString(context, "Exp_list", "off");
         sps.putInt(context, "addlodedd", 2);
         sps.putString(context, "yes_reward", "yes");
-        sps.putInt(context,"native_banner_ads",0);
+        sps.putInt(context, "native_banner_ads", 0);
         //i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -1527,7 +1526,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         }
 
-        NotificationManager nm = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         String snd = sps.getString(context, "Daily_notifications");
 
@@ -1559,7 +1558,7 @@ class NotificationHelper_offline extends ContextWrapper {
         DataBaseHelper myDbHelper;
         myDbHelper = new DataBaseHelper(context);
 
-        exdb = context.openOrCreateDatabase("Solli_Adi", context.MODE_PRIVATE, null);
+        exdb = context.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
 
         // NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
@@ -1575,7 +1574,7 @@ class NotificationHelper_offline extends ContextWrapper {
         sps.putString(context, "Exp_list", "off");
         sps.putInt(context, "addlodedd", 2);
         sps.putString(context, "yes_reward", "yes");
-        sps.putInt(context,"native_banner_ads",0);
+        sps.putInt(context, "native_banner_ads", 0);
         //i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -1636,7 +1635,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         }
 
-        NotificationManager nm = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         String snd = sps.getString(context, "Daily_notifications");
 
@@ -1668,7 +1667,7 @@ class NotificationHelper_offline extends ContextWrapper {
         DataBaseHelper myDbHelper;
         myDbHelper = new DataBaseHelper(context);
 
-        exdb = context.openOrCreateDatabase("Solli_Adi", context.MODE_PRIVATE, null);
+        exdb = context.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
 
         // NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
@@ -1684,7 +1683,7 @@ class NotificationHelper_offline extends ContextWrapper {
         sps.putString(context, "Exp_list", "off");
         sps.putInt(context, "addlodedd", 2);
         sps.putString(context, "yes_reward", "yes");
-        sps.putInt(context,"native_banner_ads",0);
+        sps.putInt(context, "native_banner_ads", 0);
         //i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -1745,7 +1744,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         }
 
-        NotificationManager nm = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         String snd = sps.getString(context, "Daily_notifications");
 
@@ -1777,7 +1776,7 @@ class NotificationHelper_offline extends ContextWrapper {
         DataBaseHelper myDbHelper;
         myDbHelper = new DataBaseHelper(context);
 
-        exdb = context.openOrCreateDatabase("Solli_Adi", context.MODE_PRIVATE, null);
+        exdb = context.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
 
         // NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
@@ -1793,7 +1792,7 @@ class NotificationHelper_offline extends ContextWrapper {
         sps.putString(context, "Exp_list", "off");
         sps.putInt(context, "addlodedd", 2);
         sps.putString(context, "yes_reward", "yes");
-        sps.putInt(context,"native_banner_ads",0);
+        sps.putInt(context, "native_banner_ads", 0);
         //i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -1854,7 +1853,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         }
 
-        NotificationManager nm = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         String snd = sps.getString(context, "Daily_notifications");
 
@@ -1886,7 +1885,7 @@ class NotificationHelper_offline extends ContextWrapper {
         DataBaseHelper myDbHelper;
         myDbHelper = new DataBaseHelper(context);
 
-        exdb = context.openOrCreateDatabase("Solli_Adi", context.MODE_PRIVATE, null);
+        exdb = context.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
 
         // NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
@@ -1902,7 +1901,7 @@ class NotificationHelper_offline extends ContextWrapper {
         sps.putString(context, "Exp_list", "off");
         sps.putInt(context, "addlodedd", 2);
         sps.putString(context, "yes_reward", "yes");
-        sps.putInt(context,"native_banner_ads",0);
+        sps.putInt(context, "native_banner_ads", 0);
         //i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -1963,7 +1962,7 @@ class NotificationHelper_offline extends ContextWrapper {
 
         }
 
-        NotificationManager nm = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         String snd = sps.getString(context, "Daily_notifications");
 

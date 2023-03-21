@@ -76,11 +76,11 @@ public class ShowcaseConfig {
         this.mShape = shape;
     }
 
-    public void setShapePadding(int padding) {
-        this.mShapePadding = padding;
-    }
-
     public int getShapePadding() {
         return mShapePadding;
+    }
+
+    public void setShapePadding(int padding) {
+        this.mShapePadding = padding;
     }
 }

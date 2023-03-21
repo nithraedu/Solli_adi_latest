@@ -1,5 +1,9 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Senthamil_Thedal_Native_Banner;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -17,39 +21,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxAdView;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
-import com.facebook.ads.NativeAdLayout;
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
@@ -57,7 +33,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -72,15 +47,25 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.FileProvider;
 
-
-
-
-
-
-
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.facebook.ads.NativeAdLayout;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
 import java.io.File;
@@ -96,39 +81,23 @@ import java.util.StringTokenizer;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
 import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
-import nithra.tamil.word.game.solliadi.adutils.GameExitUtils;
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Senthamil_Thedal_Native_Banner;
-
 public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Download_completed {
 
-    int fb_reward = 0;
-    //RewardedVideoAd rewardedVideoAd;
-    private MaxRewardedAd rewardedAd;
-
-    int reward_status = 0;
     //*********************reward videos process 1***********************
     //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
 
-
-    private boolean mGameOver;
-    private boolean mGamePaused;
-
-    private long mTimeRemaining;
-    //reward videos process 1***********************
-
+    static int ry;
+    static int rvo = 0;
+    static int mCoinCount = 20;
+    int fb_reward = 0;
+    int reward_status = 0;
     Newgame_DataBaseHelper newhelper;
+    //reward videos process 1***********************
     Newgame_DataBaseHelper2 newhelper2;
     Newgame_DataBaseHelper3 newhelper3;
     Newgame_DataBaseHelper4 newhelper4;
@@ -167,12 +136,6 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
     TextView next_continue;
     TextView ttscores;
     Typeface typ, tyr;
-    static int ry;
-    static int rvo = 0;
-    static int mCoinCount=20;
-
-
-    private MaxInterstitialAd ins_game,game_exit_ins;
     int f_sec;
     TextView to_no;
     int r = 0;
@@ -181,23 +144,28 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
     RelativeLayout w_head, helpshare_layout;
     long ttstop;
     LinearLayout adds;
-    private GoogleApiClient mGoogleApiClient;
     TextView clear_value;
     LinearLayout list4;
     TextView earncoin;
-
     int extra_coin_s = 0;
     int reward_play_count = 0;
     int ea = 0;
     int clear_data = 0;
     LinearLayout qwt;
-
     Dialog openDialog;
     LinearLayout extra_coin;
     TextView coin_value;
     int setval_vid;
-    int dia_dismiss=0;
-    int coin_anim=0;
+    int dia_dismiss = 0;
+    int coin_anim = 0;
+    //RewardedVideoAd rewardedVideoAd;
+    private MaxRewardedAd rewardedAd;
+    private boolean mGameOver;
+    private boolean mGamePaused;
+    private long mTimeRemaining;
+    private MaxInterstitialAd ins_game, game_exit_ins;
+    private GoogleApiClient mGoogleApiClient;
+
     private void backexitnet() {
         if (main_act.equals("")) {
             finish();
@@ -207,6 +175,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
             finish();
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -245,7 +214,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         coin = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
         soundId4 = coin.load(Fill_in_blanks.this, R.raw.coins, 1);
 
-        ImageView prize_logo=(ImageView)findViewById(R.id.prize_logo);
+        ImageView prize_logo = (ImageView) findViewById(R.id.prize_logo);
         /*final Animation pendulam;
         pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
         prize_logo.startAnimation(pendulam);*/
@@ -283,19 +252,15 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         openDialog_s.setContentView(R.layout.score_screen2);
 
 
-
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
-
 
 
         if (sps.getInt(Fill_in_blanks.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
         } else {
             //fb_addload_score_screen(Fill_in_blanks.this);
-           /**/
+            /**/
         }
-
-
 
 
         find();
@@ -319,15 +284,15 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         //loads_ads_banner();
         adds = (LinearLayout) findViewById(R.id.ads_lay);
         if (sps.getInt(Fill_in_blanks.this, "purchase_ads") == 0) {
-        if (Utils.isNetworkAvailable(Fill_in_blanks.this)) {
+            if (Utils.isNetworkAvailable(Fill_in_blanks.this)) {
 
-        Ad_NativieUtils.load_add_facebook(this,getResources().getString(R.string.Senthamil_Thedal_Native_Banner_new),adds);
-        }else {
-            adds.setVisibility(View.GONE);
-        }
-        }else{
+                Ad_NativieUtils.load_add_facebook(this, getResources().getString(R.string.Senthamil_Thedal_Native_Banner_new), adds);
+            } else {
                 adds.setVisibility(View.GONE);
             }
+        } else {
+            adds.setVisibility(View.GONE);
+        }
 
 
         if (sps.getString(Fill_in_blanks.this, "fill_to_intro").equals("")) {
@@ -342,10 +307,10 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
             sequence.addSequenceItem(c_ans, "விடையை பார்க்க கேள்விக்குறி பொத்தானை அழுத்தி விடை காணலாம்.", "அடுத்து");
 
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Fill_in_blanks.this)
-                    .setTarget(helpshare_layout)
-                    .setDismissText("சரி")
-                    .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                    .build())
+                            .setTarget(helpshare_layout)
+                            .setDismissText("சரி")
+                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
+                            .build())
                     .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                         @Override
                         public void onDismiss(MaterialShowcaseView itemView, int position) {
@@ -378,15 +343,15 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
             native_banner_ad_container.setVisibility(View.GONE);
 
         } else {
-            if (Utils.isNetworkAvailable(Fill_in_blanks.this)){
-                fb_native_Senthamil_Thedal_Native_Banner(Fill_in_blanks.this,native_banner_ad_container);
+            if (Utils.isNetworkAvailable(Fill_in_blanks.this)) {
+                fb_native_Senthamil_Thedal_Native_Banner(Fill_in_blanks.this, native_banner_ad_container);
 
                 /*  if (sps.getInt(Fill_in_blanks.this,"native_banner_ads")==1){
                     New_Main_Gamelist.inflateAd(Fill_in_blanks.this,native_banner_ad_container);
                 }else {
                     fb_native(Fill_in_blanks.this,native_banner_ad_container);
                 }*/
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
         }
@@ -693,10 +658,10 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
 
             ttstop = focus.getBase() - SystemClock.elapsedRealtime();
             focus.stop();
-            if (coin_anim==0){
+            if (coin_anim == 0) {
                 coinanim();
                 price_update();
-                coin_anim=1;
+                coin_anim = 1;
             }
 
 
@@ -949,17 +914,17 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
 
     private void next() {
 
-        coin_anim=0;
+        coin_anim = 0;
         Random rns = new Random();
         randomno_set = rns.nextInt(maximum_s - minmum_s + 1) + minmum_s;
         NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
         if (sps.getInt(Fill_in_blanks.this, "purchase_ads") == 1) {
             native_banner_ad_container.setVisibility(View.GONE);
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        }else {
-            if (Utils.isNetworkAvailable(Fill_in_blanks.this)){
+        } else {
+            if (Utils.isNetworkAvailable(Fill_in_blanks.this)) {
                 native_banner_ad_container.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
         }
@@ -1430,7 +1395,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
             click_txt_change();
         } else {
             downloaddata_regular2();
-           // nextgamesdialog();
+            // nextgamesdialog();
         }
     }
 
@@ -1485,10 +1450,10 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         }
 
         mylist.add("" + randomno);
-        String str = ""+mylist;
-        str = str.replace("[","");
-        str = str.replace("]","");
-        str = str.replace(" ","");
+        String str = "" + mylist;
+        str = str.replace("[", "");
+        str = str.replace("]", "");
+        str = str.replace(" ", "");
 
 
         sps.putString(Fill_in_blanks.this, "value_data_blanks", "" + str);
@@ -1604,7 +1569,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                                if (isChecked == true) {
+                                if (isChecked) {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                                 } else {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -3140,9 +3105,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
             c_button14.setText(letter14);
             c_button15.setText(letter12);
             c_button16.setText(letter13);
-        } else if (letter_length == 2)
-
-        {
+        } else if (letter_length == 2) {
 
             StringTokenizer tokenizer = new StringTokenizer(a, ",");
             StringTokenizer word = new StringTokenizer(letters, ",");
@@ -3479,14 +3442,12 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
 
     public void setSc() {
         if (s == 1) {
-            if (openDialog_p!=null)
-            {
-                if (openDialog_p.isShowing())
-                {
+            if (openDialog_p != null) {
+                if (openDialog_p.isShowing()) {
                     openDialog_p.dismiss();
                 }
             }
-          //  openDialog_p.dismiss();
+            //  openDialog_p.dismiss();
             s = 0;
         }
 
@@ -3501,7 +3462,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         final LinearLayout vid_earn = (LinearLayout) openDialog_s.findViewById(R.id.vid_earn);
         LinearLayout ads_layout = (LinearLayout) openDialog_s.findViewById(R.id.fl_adplaceholder);
 
-        ImageView prize_logo=(ImageView)openDialog_s.findViewById(R.id.prize_logo);
+        ImageView prize_logo = (ImageView) openDialog_s.findViewById(R.id.prize_logo);
         if (sps.getInt(Fill_in_blanks.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
@@ -3540,10 +3501,10 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         if (sps.getInt(Fill_in_blanks.this, "purchase_ads") == 1) {
             ads_layout.setVisibility(View.GONE);
         } else {
-           // New_Main_Activity.load_addFromMain_multiplayer(Fill_in_blanks.this, ads_layout);
-            if (Utils.isNetworkAvailable(Fill_in_blanks.this)){
+            // New_Main_Activity.load_addFromMain_multiplayer(Fill_in_blanks.this, ads_layout);
+            if (Utils.isNetworkAvailable(Fill_in_blanks.this)) {
                 //New_Main_Activity.load_add_fb_rect_score_screen(Fill_in_blanks.this, ads_layout);
-            }else {
+            } else {
                 ads_layout.setVisibility(View.GONE);
             }
           /*  if (loadaddcontent == 1) {
@@ -3622,7 +3583,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                         reward_progressBar.dismiss();
                         rewardedAd.showAd();
                         rewardvideo.setVisibility(View.INVISIBLE);
-                    }else {
+                    } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -3655,7 +3616,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                         reward_progressBar.dismiss();
                         rewardedAd.showAd();
                         rewardvideo.setVisibility(View.INVISIBLE);
-                    }else {
+                    } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -3801,7 +3762,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
             word.setText("");
             word.setText("ºòŸC ªêŒè");
             r = 0;
-        }else {
+        } else {
             word.setText("");
             word.setText("Iè ÜŸ¹î‹");
         }
@@ -3821,14 +3782,12 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                     if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
                         sps.putInt(getApplicationContext(), "ins_ad_new", 0);
                         if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if(ins_game == null || !ins_game.isReady()) {
+                            if (ins_game == null || !ins_game.isReady()) {
                                 next();
                                 industrialload_game();
-                                dia_dismiss=1;
+                                dia_dismiss = 1;
                                 openDialog_s.dismiss();
-                                return;
-                            }
-                            else{
+                            } else {
                                 ins_game.showAd();
                             }
 
@@ -3888,10 +3847,27 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         openDialog_s.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                if (dia_dismiss!=1){
+                if (dia_dismiss != 1) {
                     sps.putString(Fill_in_blanks.this, "game_area", "on");
-                        String date = sps.getString(Fill_in_blanks.this, "date");
-                        if (date.equals("0")) {
+                    String date = sps.getString(Fill_in_blanks.this, "date");
+                    if (date.equals("0")) {
+                        if (main_act.equals("")) {
+                            finish();
+                            openDialog_s.dismiss();
+                            Intent i = new Intent(Fill_in_blanks.this, New_Main_Activity.class);
+                            startActivity(i);
+                        } else {
+                            finish();
+                            openDialog_s.dismiss();
+                        }
+                    } else {
+                        if (sps.getString(Fill_in_blanks.this, "Exp_list").equals("on")) {
+                            finish();
+                            openDialog_s.dismiss();
+                            Intent i = new Intent(Fill_in_blanks.this, Expandable_List_View.class);
+                            startActivity(i);
+
+                        } else {
                             if (main_act.equals("")) {
                                 finish();
                                 openDialog_s.dismiss();
@@ -3901,30 +3877,13 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                                 finish();
                                 openDialog_s.dismiss();
                             }
-                        } else {
-                            if (sps.getString(Fill_in_blanks.this, "Exp_list").equals("on")) {
-                                finish();
-                                openDialog_s.dismiss();
-                                Intent i = new Intent(Fill_in_blanks.this, Expandable_List_View.class);
-                                startActivity(i);
-
-                            } else {
-                                if (main_act.equals("")) {
-                                    finish();
-                                    openDialog_s.dismiss();
-                                    Intent i = new Intent(Fill_in_blanks.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    finish();
-                                    openDialog_s.dismiss();
-                                }
-                            }
-
                         }
 
+                    }
 
-                }else {
-                    dia_dismiss=0;
+
+                } else {
+                    dia_dismiss = 0;
                 }
 
             }
@@ -3967,9 +3926,6 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
     }
 
 
-
-
-
     public void game_exit_ins_ad() {
 
         game_exit_ins = new MaxInterstitialAd(getResources().getString(R.string.Cat_Exit_Ins), this);
@@ -3997,12 +3953,12 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
 
             @Override
             public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error"+error);
+                System.out.println("check error" + error);
             }
 
             @Override
             public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2"+error);
+                System.out.println("check error2" + error);
             }
         });
         game_exit_ins.loadAd();
@@ -4051,13 +4007,6 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
     }
 
 
-
-
-
-
-
-
-
     private void addCoins(int coins) {
         mCoinCount = coins;
         sps.putInt(Fill_in_blanks.this, "reward_coin_txt", coins);
@@ -4098,7 +4047,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
             extra_coin_s = 0;
             reward_play_count = reward_play_count + 1;
             //daily_bones();
-            ea=ea+setval_vid;
+            ea = ea + setval_vid;
             coin_value.setText("" + ea);
             //mCoinCount = 0;
         } else {
@@ -4128,7 +4077,6 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
 
             openDialog.show();
         }
-
 
 
     }
@@ -4351,7 +4299,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
         if (requestCode == 152) {
 
@@ -4467,89 +4415,89 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         sps.putString(Fill_in_blanks.this, "fill_intro_time_start", "yes");
         sps.putString(Fill_in_blanks.this, "game_area", "on");
         sps.putInt(Fill_in_blanks.this, "addlodedd", 0);
-            s = 1;
-            openDialog_p = new Dialog(Fill_in_blanks.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-            openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+        s = 1;
+        openDialog_p = new Dialog(Fill_in_blanks.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog_p.setContentView(R.layout.back_pess);
+        TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
+        TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
 
-            yes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-                    String dates = sps.getString(Fill_in_blanks.this, "date");
-                    int pos;
-                    if (dates.equals("0")) {
-                        pos = 1;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
+                String dates = sps.getString(Fill_in_blanks.this, "date");
+                int pos;
+                if (dates.equals("0")) {
+                    pos = 1;
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
 
-                        //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    } else {
-                        pos = 2;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
+                    //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                } else {
+                    pos = 2;
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
 
-                        //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    }
-
-                        String date = sps.getString(Fill_in_blanks.this, "date");
-                        if (date.equals("0")) {
-                            if (main_act.equals("")) {
-                                finish();
-                                Intent i = new Intent(Fill_in_blanks.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                            }
-                        } else {
-                            if (sps.getString(Fill_in_blanks.this, "Exp_list").equals("on")) {
-                                finish();
-                                Intent i = new Intent(Fill_in_blanks.this, Expandable_List_View.class);
-                                startActivity(i);
-                            } else {
-                                if (main_act.equals("")) {
-                                    finish();
-                                    Intent i = new Intent(Fill_in_blanks.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    finish();
-                                }
-                            }
-                        }
-
-                    //ad
-                    if (sps.getInt(Fill_in_blanks.this, "purchase_ads") == 0) {
-                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                    openDialog_p.dismiss();
-                                    game_exit_ins.showAd();
-                                }
-                            }
-                        } else {
-                            openDialog_p.dismiss();
-                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
-                        }
-                    }else{
-                        openDialog_p.dismiss();
-                    }
-                    //ad
-
+                    //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                 }
-            });
-            no.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
+                String date = sps.getString(Fill_in_blanks.this, "date");
+                if (date.equals("0")) {
+                    if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Fill_in_blanks.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        finish();
+                    }
+                } else {
+                    if (sps.getString(Fill_in_blanks.this, "Exp_list").equals("on")) {
+                        finish();
+                        Intent i = new Intent(Fill_in_blanks.this, Expandable_List_View.class);
+                        startActivity(i);
+                    } else {
+                        if (main_act.equals("")) {
+                            finish();
+                            Intent i = new Intent(Fill_in_blanks.this, New_Main_Activity.class);
+                            startActivity(i);
+                        } else {
+                            finish();
+                        }
+                    }
+                }
+
+                //ad
+                if (sps.getInt(Fill_in_blanks.this, "purchase_ads") == 0) {
+                    if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
+                        sps.putInt(getApplicationContext(), "game_exit_ins", 0);
+                        if (Utils.isNetworkAvailable(getApplicationContext())) {
+                            if (game_exit_ins != null && game_exit_ins.isReady()) {
+                                openDialog_p.dismiss();
+                                game_exit_ins.showAd();
+                            }
+                        }
+                    } else {
+                        openDialog_p.dismiss();
+                        sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
+                    }
+                } else {
                     openDialog_p.dismiss();
                 }
-            });
-            openDialog_p.show();
+                //ad
+
+            }
+        });
+        no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                openDialog_p.dismiss();
+            }
+        });
+        openDialog_p.show();
 
 
         // return super.onKeyDown(keyCode, event);
@@ -5291,6 +5239,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
             }
         }, 800);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -5344,6 +5293,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         }
 
     }
+
     public void share_earn(int a) {
         final Dialog openDialog = new Dialog(Fill_in_blanks.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.share_dialog2);
@@ -5390,11 +5340,11 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         if (str_day1.length() == 1) {
             str_day1 = "0" + str_day1;
         }
-        final String str_date1 =  str_day1 + "-" + str_month1 + "-" + cur_year1;
+        final String str_date1 = str_day1 + "-" + str_month1 + "-" + cur_year1;
 
-        Date date1=new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24));
-        SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
-        final String date=sdf.format(date1);
+        Date date1 = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        final String date = sdf.format(date1);
 
 
         //  TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
@@ -5421,8 +5371,8 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
             }
         });
 
-        System.out.println("############################^^^^^^^^^^^^^^currentdate"+str_date1);
-        System.out.println("############################^^^^^^^^^^^^^^saveddate"+sps.getString(Fill_in_blanks.this, "daily_bonus_date"));
+        System.out.println("############################^^^^^^^^^^^^^^currentdate" + str_date1);
+        System.out.println("############################^^^^^^^^^^^^^^saveddate" + sps.getString(Fill_in_blanks.this, "daily_bonus_date"));
 
         if (str_date1.equals(sps.getString(Fill_in_blanks.this, "daily_bonus_date"))) {
 
@@ -5440,12 +5390,12 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         } else if (sps.getInt(Fill_in_blanks.this, "daily_bonus_count") == 4) {
             ea = 300;
         }
-        prize_data_update(Fill_in_blanks.this,ea);
+        prize_data_update(Fill_in_blanks.this, ea);
         coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
       /*  final int vals = reward_play_count * 100;
         ea = ea + vals;*/
         coin_value.setText("" + ea);
-        setval_vid=ea;
+        setval_vid = ea;
         Random rn = new Random();
         randomno = rn.nextInt(maximum - minmum + 1) + minmum;
 
@@ -5471,8 +5421,8 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
 
         TextView coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
         ea = 100;
-        final int vals=reward_play_count*100;
-        ea=ea+vals;
+        final int vals = reward_play_count * 100;
+        ea = ea + vals;
         coin_value.setText("" + ea);
 
         extra_coin = (LinearLayout) openDialog.findViewById(R.id.extra_coin);
@@ -5486,7 +5436,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                     if (fb_reward == 1) {
                         reward_progressBar.dismiss();
                         rewardedAd.showAd();
-                    }else {
+                    } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -5517,7 +5467,8 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                         });*/
         openDialog.show();
     }
-    public void price_update(){
+
+    public void price_update() {
         ////////////////Prize//////////////////
         long timeElapsed = SystemClock.elapsedRealtime() - focus.getBase();
         int hours = (int) (timeElapsed / 3600000);
@@ -5639,8 +5590,8 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
     }
 
 
-    public void rewarded_ad(){
-        rewardedAd = MaxRewardedAd.getInstance( getResources().getString(R.string.Reward_Ins), this );
+    public void rewarded_ad() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
         rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
             public void onRewardedVideoStarted(MaxAd ad) {
@@ -5659,7 +5610,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
 
             @Override
             public void onAdLoaded(MaxAd ad) {
-                fb_reward=1;
+                fb_reward = 1;
             }
 
             @Override
@@ -5670,7 +5621,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
             @Override
             public void onAdHidden(MaxAd ad) {
                 rewarded_ad();
-                if (reward_status==1){
+                if (reward_status == 1) {
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
@@ -5691,7 +5642,7 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
                             }
                         }
                     }, 500);
-                }else {
+                } else {
                     Toast.makeText(Fill_in_blanks.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                 }
 
@@ -5728,145 +5679,6 @@ public class Fill_in_blanks extends BaseGameActivity implements GoogleApiClient.
         });
         rewardedAd.loadAd();
     }
-
-    /*public void reward(final Context context) {
-        rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-      *//*  rewardedVideoAd.setAdListener(new RewardedVideoAdListener() {
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status=1;
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-
-            @Override
-            public void onError(Ad ad, AdError adError) {
-                //Toast.makeText(context, ""+adError.getErrorCode(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-
-            }
-        });
-        rewardedVideoAd.loadAd();*//*
-        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
-            @Override
-            public void onError(Ad ad, AdError error) {
-                // Rewarded video ad failed to load
-
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-
-
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Rewarded video ad clicked
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Rewarded Video ad impression - the event will fire when the
-                // video starts playing
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-
-                // Rewarded Video View Complete - the video has been played to the end.
-                // You can use this event to initialize your reward
-
-
-                // Call method to give reward
-                // giveReward();
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-        };
-        rewardedVideoAd.loadAd(
-                rewardedVideoAd.buildLoadAdConfig()
-                        .withAdListener(rewardedVideoAdListener)
-                        .build());
-    }*/
     @Override
     public void onDestroy() {
         super.onDestroy();

@@ -1,5 +1,7 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
+
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -7,10 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.Settings;
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -22,12 +23,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.ads.NativeAdLayout;
-
-
-
-
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -44,14 +42,14 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-
 public class Main_Login extends AppCompatActivity {
+    public static String android_id;
+    static SharedPreference sps = new SharedPreference();
     EditText phno_edit, otps;
     TextView signin, signup;
-    public static String android_id;
     String isregster, register_id, after_otp, before_time;
     SQLiteDatabase exdb;
     CountDownTimer countDownTimer;          // built in android class CountDownTimer
@@ -59,7 +57,6 @@ public class Main_Login extends AppCompatActivity {
     long timeBlinkInMilliseconds;           // start time of start blinking
     boolean blink;
     String mobile_noo;
-    static SharedPreference sps = new SharedPreference();
     LinearLayout adds;
 
     @Override
@@ -268,7 +265,7 @@ public class Main_Login extends AppCompatActivity {
             Log.e("log_tag", "Error in https connection" + e.toString());
         }
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
             sb = new StringBuilder();
             sb.append(reader.readLine() + "\n");
             String line = "0";
@@ -410,7 +407,7 @@ public class Main_Login extends AppCompatActivity {
             otp.setVisibility(View.VISIBLE);
             textViewShowTime.setVisibility(View.VISIBLE);
             if (time.equals("yes")) {
-                totalTimeCountInMilliseconds = Integer.parseInt(before_time) * 1000;      // time count for 2 minutes = 60 seconds
+                totalTimeCountInMilliseconds = Integer.parseInt(before_time) * 1000L;      // time count for 2 minutes = 60 seconds
 
             } else {
                 totalTimeCountInMilliseconds = 300 * 1000;      // time count for 2 minutes = 60 seconds
@@ -717,7 +714,7 @@ public class Main_Login extends AppCompatActivity {
             HttpEntity entity = response.getEntity();
             is = entity.getContent();
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
             sb = new StringBuilder();
             sb.append(reader.readLine() + "\n");
             String line = "0";
@@ -838,7 +835,7 @@ public class Main_Login extends AppCompatActivity {
 
             }
         }*/
-   NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
+        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
 
         if (sps.getInt(Main_Login.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");

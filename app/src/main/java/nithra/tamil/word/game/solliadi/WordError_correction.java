@@ -1,5 +1,9 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Ragasiya_sorgal_Native_Banner;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -17,42 +21,11 @@ import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxAdView;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
-import com.facebook.ads.NativeAdLayout;
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -62,7 +35,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -80,23 +52,25 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/*import com.facebook.FacebookException;
-import com.facebook.FacebookOperationCanceledException;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
-import com.facebook.widget.FacebookDialog;
-import com.facebook.widget.WebDialog;*/
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.FileProvider;
 
-
-
-
-
-
-
-
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.facebook.ads.NativeAdLayout;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.example.games.basegameutils.BaseGameActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -105,7 +79,6 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 
@@ -113,38 +86,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
 import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
-import nithra.tamil.word.game.solliadi.adutils.GameExitUtils;
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Ragasiya_sorgal_Native_Banner;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Senthamil_Thedal_Native_Banner;
-
-public class WordError_correction extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,  Download_completed {
-    int fb_reward = 0;
-    //RewardedVideoAd rewardedVideoAd;
-    private MaxRewardedAd rewardedAd;
-
-    int reward_status = 0;
-    //*********************reward videos process 1***********************
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
-
-
-    private boolean mGameOver;
-    private boolean mGamePaused;
-
-    private long mTimeRemaining;
-    //reward videos process 1***********************
-
+public class WordError_correction extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Download_completed {
+    public static final String TAG = "SavedGames";
 
     /////////native advance////////////
     private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
@@ -155,78 +103,36 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
     /////////Native_Top_Advanced////////////
     /////////Native_BackPress_Advanced////////////
     private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
-    /////////Native_BackPress_Advanced////////////
-
-    public static final String TAG = "SavedGames";
-
     // The AppState slot we are editing.  For simplicity this sample only manipulates a single
     // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
     // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
     private static final int APP_STATE_KEY = 1;
-
+    //reward videos process 1***********************
     // Request code used to invoke sign-in UI.
     private static final int RC_SIGN_IN = 9001;
-
     // Request code used to invoke Snapshot selection UI.
     private static final int RC_SELECT_SNAPSHOT = 9002;
-
-    /// Client used to interact with Google APIs.
-    private GoogleApiClient mGoogleApiClient;
+    public static FrameLayout add, add2, add3;
+    public static LinearLayout add_e;
+    /////////Native_BackPress_Advanced////////////
+    public static LinearLayout add_sc;
+    static SharedPreference spd = new SharedPreference();
+    static int ry;
+    static int rvo = 0;
+    static int mCoinCount = 20;
+    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     // True when the application is attempting to resolve a sign-in error that has a possible
     // resolution,
-    private boolean mIsResolving = false;
-
+    private final boolean mIsResolving = false;
     // True immediately after the user clicks the sign-in button/
-    private boolean mSignInClicked = false;
-
+    private final boolean mSignInClicked = false;
     // True if we want to automatically attempt to sign in the user at application start.
-    private boolean mAutoStartSignIn = true;
-
-
+    private final boolean mAutoStartSignIn = true;
+    private final WordError_correction.PendingAction pendingAction = WordError_correction.PendingAction.NONE;
+    int fb_reward = 0;
+    int reward_status = 0;
     // Facebook variable starts
-
-    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
-
-    private WordError_correction.PendingAction pendingAction = WordError_correction.PendingAction.NONE;
-
-    @Override
-    public void onSignInFailed() {
-
-    }
-
-    @Override
-    public void onSignInSucceeded() {
-
-    }
-
-    @Override
-    public void download_completed(String status) {
-        System.out.println("#############################status" + status);
-        if (status.equals("nodata")) {
-            nextgamesdialog();
-        } else {
-            next();
-        }
-    }
-
-
-    private enum PendingAction {
-        NONE, POST_PHOTO, POST_STATUS_UPDATE
-    }
-
-    private void backexitnet() {
-        if (main_act.equals("")) {
-            finish();
-            Intent i = new Intent(WordError_correction.this, New_Main_Activity.class);
-            startActivity(i);
-        } else {
-            finish();
-        }
-    }
-
     String btn_str = "";
-
-
     TextView c_time, score, to_no, question_txt;
     SQLiteDatabase exdb, dbs, dbn, dbn2;
     SharedPreference sps = new SharedPreference();
@@ -248,11 +154,8 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
     TextView c_coin;
     int e2 = 0;
     Dialog openDialog_s;
-
     int share_name = 0;
     int setting_access = 0;
-    public static FrameLayout add, add2, add3;
-    static SharedPreference spd = new SharedPreference();
     Context context = this;
     RelativeLayout adsicon, adsicon2;
     CircleImageView ads_logo, ads_logo2;
@@ -260,43 +163,26 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
     TextView next_continue;
     TextView ttscores;
     Typeface typ, tyr;
-
-
-    private MaxInterstitialAd ins_game,game_exit_ins;
-
-    static int ry;
-
-    static int rvo = 0;
-    static int mCoinCount = 20;
     String retype = "s";
-
     long ttstop;
     LinearLayout adds, list4;
     LinearLayout qtw;
     Dialog openDialog_p;
-
     int s = 0;
     int f_sec;
     int r = 0;
-
     int minmum = 1;
     int maximum = 3;
     int randomno;
     int daily_start = 0;
-
-    public static LinearLayout add_e;
-    public static LinearLayout add_sc;
-
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
     Newgame_DataBaseHelper3 newhelper3;
     DataBaseHelper myDbHelper;
     Newgame_DataBaseHelper4 newhelper4;
-
     int extra_coin_s = 0;
     int reward_play_count = 0;
     int ea = 0;
-
     TextView coin_value;
     int minmumd = 1;
     int maximumd = 4;
@@ -305,6 +191,44 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
     int setval_vid;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
+    //RewardedVideoAd rewardedVideoAd;
+    private MaxRewardedAd rewardedAd;
+    private boolean mGameOver;
+    private boolean mGamePaused;
+    private long mTimeRemaining;
+    /// Client used to interact with Google APIs.
+    private GoogleApiClient mGoogleApiClient;
+    private MaxInterstitialAd ins_game, game_exit_ins;
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
+    }
+
+    @Override
+    public void download_completed(String status) {
+        System.out.println("#############################status" + status);
+        if (status.equals("nodata")) {
+            nextgamesdialog();
+        } else {
+            next();
+        }
+    }
+
+    private void backexitnet() {
+        if (main_act.equals("")) {
+            finish();
+            Intent i = new Intent(WordError_correction.this, New_Main_Activity.class);
+            startActivity(i);
+        } else {
+            finish();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -424,15 +348,14 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
         //loads_ads_banner();
         adds = (LinearLayout) findViewById(R.id.ads_lay);
         if (sps.getInt(context, "purchase_ads") == 0) {
-        if (Utils.isNetworkAvailable(WordError_correction.this)) {
-            Ad_NativieUtils.load_add_facebook(this,getResources().getString(R.string.Ragasiya_sorgal_Native_Banner_new),adds);
-        }else {
-            adds.setVisibility(View.GONE);
-        }
+            if (Utils.isNetworkAvailable(WordError_correction.this)) {
+                Ad_NativieUtils.load_add_facebook(this, getResources().getString(R.string.Ragasiya_sorgal_Native_Banner_new), adds);
+            } else {
+                adds.setVisibility(View.GONE);
+            }
         } else {
             adds.setVisibility(View.GONE);
         }
-
 
 
         if (sps.getInt(WordError_correction.this, "purchase_ads") == 1) {
@@ -469,11 +392,7 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
         }
 
 
-
-
         //uiHelper = new UiLifecycleHelper(this, callback);
-
-
 
 
         String snd = sps.getString(WordError_correction.this, "snd");
@@ -547,10 +466,10 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
 
 
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(WordError_correction.this)
-                    .setTarget(helpshare_layout)
-                    .setDismissText("சரி")
-                    .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                    .build())
+                            .setTarget(helpshare_layout)
+                            .setDismissText("சரி")
+                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
+                            .build())
                     .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                         @Override
                         public void onDismiss(MaterialShowcaseView itemView, int position) {
@@ -860,7 +779,7 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                                if (isChecked == true) {
+                                if (isChecked) {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                                 } else {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -1091,9 +1010,9 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
             native_banner_ad_container.setVisibility(View.GONE);
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
         } else {
-            if (Utils.isNetworkAvailable(WordError_correction.this)){
+            if (Utils.isNetworkAvailable(WordError_correction.this)) {
                 native_banner_ad_container.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
         }
@@ -4099,7 +4018,6 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
         }
     }
 
-
     private void find() {
         to_no = (TextView) findViewById(R.id.c_word_number);
         question_txt = (TextView) findViewById(R.id.question_txt);
@@ -4679,9 +4597,7 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
                                 openDialog_s.dismiss();
                                 next();
                                 industrialload_game();
-                                return;
-                            }
-                            else{
+                            } else {
                                 ins_game.showAd();
                             }
 
@@ -4753,8 +4669,25 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
                 if (dia_dismiss != 1) {
                     sps.putString(WordError_correction.this, "game_area", "on");
 
-                        String date = sps.getString(WordError_correction.this, "date");
-                        if (date.equals("0")) {
+                    String date = sps.getString(WordError_correction.this, "date");
+                    if (date.equals("0")) {
+                        if (main_act.equals("")) {
+                            finish();
+                            openDialog_s.dismiss();
+                            Intent i = new Intent(WordError_correction.this, New_Main_Activity.class);
+                            startActivity(i);
+                        } else {
+                            openDialog_s.dismiss();
+                            finish();
+                        }
+                    } else {
+                        if (sps.getString(WordError_correction.this, "Exp_list").equals("on")) {
+                            finish();
+                            openDialog_s.dismiss();
+                            Intent i = new Intent(WordError_correction.this, Expandable_List_View.class);
+                            startActivity(i);
+
+                        } else {
                             if (main_act.equals("")) {
                                 finish();
                                 openDialog_s.dismiss();
@@ -4764,23 +4697,6 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
                                 openDialog_s.dismiss();
                                 finish();
                             }
-                        } else {
-                            if (sps.getString(WordError_correction.this, "Exp_list").equals("on")) {
-                                finish();
-                                openDialog_s.dismiss();
-                                Intent i = new Intent(WordError_correction.this, Expandable_List_View.class);
-                                startActivity(i);
-
-                            } else {
-                                if (main_act.equals("")) {
-                                    finish();
-                                    openDialog_s.dismiss();
-                                    Intent i = new Intent(WordError_correction.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    openDialog_s.dismiss();
-                                    finish();
-                                }
 
 
                         }
@@ -4818,31 +4734,16 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
 
     }
 
-
-
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
-
-
-
-
-
-
 
     private void addCoins(int coins) {
         mCoinCount = coins;
         sps.putInt(WordError_correction.this, "reward_coin_txt", coins);
         //mCoinCountText.setText("Coins: " + mCoinCount);
     }
-
-
-
-
-    //reward videos***********************//
-
-
 
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getPackageManager();
@@ -4855,6 +4756,9 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
         }
         return app_installed;
     }
+
+
+    //reward videos***********************//
 
     private boolean appInstalledOrNot(Context context, String uri) {
         PackageManager pm = context.getPackageManager();
@@ -5141,12 +5045,12 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
 
             @Override
             public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error"+error);
+                System.out.println("check error" + error);
             }
 
             @Override
             public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2"+error);
+                System.out.println("check error2" + error);
             }
         });
         game_exit_ins.loadAd();
@@ -5231,7 +5135,6 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
         }
 
     }
-
 
     public void dialog(int i) {
         final Dialog openDialog_earncoin = new Dialog(WordError_correction.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -5590,7 +5493,6 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
         }
     }
 
-
     protected void onResume() {
         super.onResume();
 
@@ -5666,7 +5568,6 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
 
     }
 
-
     public void onBackPressed() {
  /*   public boolean onKeyDown(int keyCode, KeyEvent event) {
         //return super.onKeyDown(keyCode, event);
@@ -5676,92 +5577,91 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
         sps.putString(WordError_correction.this, "game_area", "on");
         sps.putInt(WordError_correction.this, "addlodedd", 0);
 
-            s = 1;
-            openDialog_p = new Dialog(WordError_correction.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-            openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+        s = 1;
+        openDialog_p = new Dialog(WordError_correction.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog_p.setContentView(R.layout.back_pess);
+        TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
+        TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
-            yes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-                    String dates = sps.getString(WordError_correction.this, "date");
-                    int pos;
-                    if (dates.equals("0")) {
-                        pos = 1;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                String dates = sps.getString(WordError_correction.this, "date");
+                int pos;
+                if (dates.equals("0")) {
+                    pos = 1;
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
 
-                        //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    } else {
-                        pos = 2;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+                    //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                } else {
+                    pos = 2;
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
 
-                        //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    }
-
-                        String date = sps.getString(WordError_correction.this, "date");
-                        if (date.equals("0")) {
-                            if (main_act.equals("")) {
-                                finish();
-                                Intent i = new Intent(WordError_correction.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                            }
-                        } else {
-                            if (sps.getString(WordError_correction.this, "Exp_list").equals("on")) {
-                                finish();
-                                Intent i = new Intent(WordError_correction.this, Expandable_List_View.class);
-                                startActivity(i);
-                            } else {
-                                if (main_act.equals("")) {
-                                    finish();
-                                    Intent i = new Intent(WordError_correction.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    finish();
-                                }
-                            }
-                        }
-                    //ad
-                    if (sps.getInt(context, "purchase_ads") == 0) {
-                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                    openDialog_p.dismiss();
-                                    game_exit_ins.showAd();
-                                }
-                            }
-                        } else {
-                            openDialog_p.dismiss();
-                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
-                        }
-                    }else{
-                        openDialog_p.dismiss();
-                    }
-                    //ad
-
+                    //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                 }
-            });
-            no.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
+                String date = sps.getString(WordError_correction.this, "date");
+                if (date.equals("0")) {
+                    if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(WordError_correction.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        finish();
+                    }
+                } else {
+                    if (sps.getString(WordError_correction.this, "Exp_list").equals("on")) {
+                        finish();
+                        Intent i = new Intent(WordError_correction.this, Expandable_List_View.class);
+                        startActivity(i);
+                    } else {
+                        if (main_act.equals("")) {
+                            finish();
+                            Intent i = new Intent(WordError_correction.this, New_Main_Activity.class);
+                            startActivity(i);
+                        } else {
+                            finish();
+                        }
+                    }
+                }
+                //ad
+                if (sps.getInt(context, "purchase_ads") == 0) {
+                    if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
+                        sps.putInt(getApplicationContext(), "game_exit_ins", 0);
+                        if (Utils.isNetworkAvailable(getApplicationContext())) {
+                            if (game_exit_ins != null && game_exit_ins.isReady()) {
+                                openDialog_p.dismiss();
+                                game_exit_ins.showAd();
+                            }
+                        }
+                    } else {
+                        openDialog_p.dismiss();
+                        sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
+                    }
+                } else {
                     openDialog_p.dismiss();
                 }
-            });
-            openDialog_p.show();
+                //ad
+
+            }
+        });
+        no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                openDialog_p.dismiss();
+            }
+        });
+        openDialog_p.show();
 
 
         // return super.onKeyDown(keyCode, event);
     }
-
 
     public void permission(final String a) {
         focus.stop();
@@ -6237,6 +6137,15 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
         openDialog.show();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //  uiHelper.onDestroy();
+        if (openDialog_p != null && openDialog_p.isShowing()) {
+            openDialog_p.dismiss();
+        }
+    }
+
 /*    public boolean isLoggedIn() {
         Session session = Session.getActiveSession();
         return (session != null && session.isOpened());
@@ -6447,16 +6356,7 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
     }*/
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        //  uiHelper.onDestroy();
-        if (openDialog_p != null && openDialog_p.isShowing()) {
-            openDialog_p.dismiss();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
         if (requestCode == 152) {
 
@@ -6643,9 +6543,8 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
         download_data_server.execute();
     }
 
-
-    public void rewarded_ad(){
-        rewardedAd = MaxRewardedAd.getInstance( getResources().getString(R.string.Reward_Ins), this );
+    public void rewarded_ad() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
         rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
             public void onRewardedVideoStarted(MaxAd ad) {
@@ -6664,7 +6563,7 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
 
             @Override
             public void onAdLoaded(MaxAd ad) {
-                fb_reward=1;
+                fb_reward = 1;
             }
 
             @Override
@@ -6675,7 +6574,7 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
             @Override
             public void onAdHidden(MaxAd ad) {
                 rewarded_ad();
-                if (reward_status==1){
+                if (reward_status == 1) {
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
@@ -6696,7 +6595,7 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
                             }
                         }
                     }, 500);
-                }else {
+                } else {
                     Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                 }
 
@@ -6736,143 +6635,7 @@ public class WordError_correction extends BaseGameActivity implements GoogleApiC
     }
 
 
-    /*public void reward(final Context context) {
-        rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-     *//*   rewardedVideoAd.setAdListener(new RewardedVideoAdListener() {
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-
-            @Override
-            public void onError(Ad ad, AdError adError) {
-                //Toast.makeText(context, ""+adError.getErrorCode(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-
-            }
-        });
-        rewardedVideoAd.loadAd();*//*
-        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
-            @Override
-            public void onError(Ad ad, AdError error) {
-                // Rewarded video ad failed to load
-
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-
-
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Rewarded video ad clicked
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Rewarded Video ad impression - the event will fire when the
-                // video starts playing
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-
-                // Rewarded Video View Complete - the video has been played to the end.
-                // You can use this event to initialize your reward
-
-
-                // Call method to give reward
-                // giveReward();
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-        };
-        rewardedVideoAd.loadAd(
-                rewardedVideoAd.buildLoadAdConfig()
-                        .withAdListener(rewardedVideoAdListener)
-                        .build());
-    }*/
-
+    private enum PendingAction {
+        NONE, POST_PHOTO, POST_STATUS_UPDATE
+    }
 }

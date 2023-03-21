@@ -11,11 +11,12 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.provider.Settings;
-import androidx.core.app.ActivityCompat;
 import android.text.format.DateUtils;
 import android.view.Gravity;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,8 +25,9 @@ import java.util.Date;
 import java.util.StringTokenizer;
 
 public class Utils {
-    public static ProgressDialog mProgress;
     public static final String MORE_APPS = "https://play.google.com/store/apps/developer?id=Nithra";
+    public static ProgressDialog mProgress;
+    public static String gcm_updation_link = "https://www.nithra.mobi/appgcm/gcmmahabharatham/update.php";
 
     public static ProgressDialog mProgress(Context context, String txt, Boolean aBoolean) {
         mProgress = new ProgressDialog(context);
@@ -41,7 +43,6 @@ public class Utils {
             return PendingIntent.FLAG_UPDATE_CURRENT;
         }
     }
-
 
     public static void settypeface(Context context, TextView textView) {
         Typeface tf1 = Typeface.createFromAsset(context.getAssets(), "new.ttf");
@@ -85,6 +86,12 @@ public class Utils {
         String Product = Build.PRODUCT;
         return Manufacturer + "-" + Model + "-" + Brand + "-" + Product;
     }
+/*    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connec = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }*/
+
     public static boolean isNetworkAvailable(Context context) {
         boolean result = false;
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -114,11 +121,6 @@ public class Utils {
         }
         return result;
     }
-/*    public static boolean isNetworkAvailable(Context context) {
-        ConnectivityManager connec = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }*/
 
     public static String body_font() {
         String bodyFont = "<style> body { font-size:20px; } table { font-size:20px; <font face='bamini'> }</style>"
@@ -147,8 +149,6 @@ public class Utils {
     public static String android_id(Context context) {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
-
-    public static String gcm_updation_link = "https://www.nithra.mobi/appgcm/gcmmahabharatham/update.php";
 
     public static String am_pm1(int hur, int min) {
         String AM_PM = "AM";
@@ -201,7 +201,6 @@ public class Utils {
                 date_app_update = sdf1.parse(sharedPreference.getString(context, "gcm_update"));
             } else {
                 date_app_update = sdf1.parse(today_date);
-                ;
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -216,15 +215,16 @@ public class Utils {
         }
         return aBoolean;
     }
+
     public static boolean isAppInstalled(Context context, String packageName) {
         try {
             context.getPackageManager().getApplicationInfo(packageName, 0);
             return true;
-        }
-        catch (PackageManager.NameNotFoundException e) {
+        } catch (PackageManager.NameNotFoundException e) {
             return false;
         }
     }
+
     public static int versioncode_get(Context context) {
         PackageInfo pInfo = null;
 
@@ -236,6 +236,7 @@ public class Utils {
         }
         return pInfo.versionCode;
     }
+
     public static String versionname_get(Context context) {
         PackageInfo pInfo = null;
 

@@ -40,6 +40,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class Download_data_Find_dif_bet_pic extends AsyncTask<String, Void, String> {
+    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
     DataBaseHelper myDbHelper;
     Newgame_DataBaseHelper6 newhelper6;
     ProgressDialog progressDialog;
@@ -50,7 +51,6 @@ public class Download_data_Find_dif_bet_pic extends AsyncTask<String, Void, Stri
     String gameids = "", questionids = "", actions = "";
     SharedPreference sps = new SharedPreference();
     Download_data_Find_dif_bet_pic.DownloadFileAsync downloadFileAsync;
-    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
     ProgressDialog nProgressDialog;
 
 
@@ -62,6 +62,21 @@ public class Download_data_Find_dif_bet_pic extends AsyncTask<String, Void, Stri
         questionids = questionid;
         context_d = context;
 
+    }
+
+    public static boolean exists(String URLName) {
+        try {
+            HttpURLConnection.setFollowRedirects(false);
+            // note : you may also need
+            //        HttpURLConnection.setInstanceFollowRedirects(false)
+            HttpURLConnection con =
+                    (HttpURLConnection) new URL(URLName).openConnection();
+            con.setRequestMethod("HEAD");
+            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
@@ -92,7 +107,7 @@ public class Download_data_Find_dif_bet_pic extends AsyncTask<String, Void, Stri
                                     for (int i = 0; i < jArray.length(); i++) {
                                         System.out.print("Insert for=======");
                                         json_data = jArray.getJSONObject(i);
-                                       if ( gameids.equals("20")) {
+                                        if (gameids.equals("20")) {
                                             ContentValues cv = new ContentValues();
                                             cv.put("id", json_data.getString("id"));
                                             cv.put("gameid", json_data.getString("gameid"));
@@ -108,8 +123,8 @@ public class Download_data_Find_dif_bet_pic extends AsyncTask<String, Void, Stri
                                             newhelper6.insert_data("newgames5", null, cv);
                                         }
                                     }
-                                    if ( gameids.equals("20")) {
-                                        if (exists(img_down_url + sps.getString(context_d, "email") + "-filename.zip") == true) {
+                                    if (gameids.equals("20")) {
+                                        if (exists(img_down_url + sps.getString(context_d, "email") + "-filename.zip")) {
                                             startDownload();
                                             System.out.println("##################file exist");
                                         } else {
@@ -124,7 +139,7 @@ public class Download_data_Find_dif_bet_pic extends AsyncTask<String, Void, Stri
                                     System.out.println("###########################Data downloding nodata");
                                 }
                                 System.out.println("checkdownload");
-                                if ( gameids.equals("20")) {
+                                if (gameids.equals("20")) {
                                     System.out.println("--check2");
                                     download_completed.download_completed_pic(data);
                                     progressDialog.dismiss();
@@ -196,20 +211,61 @@ public class Download_data_Find_dif_bet_pic extends AsyncTask<String, Void, Stri
     }
 
     protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case DIALOG_DOWNLOAD_PROGRESS:
-                nProgressDialog = new ProgressDialog(context_d);
-                nProgressDialog.setMessage("படங்கள் பதிவிறக்கம் செய்யப்படுகிறது காத்திருக்கவும்.... ");
-                nProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                nProgressDialog.setCancelable(false);
-                nProgressDialog.show();
-                // playy();
-                return nProgressDialog;
-            default:
-                return null;
+        if (id == DIALOG_DOWNLOAD_PROGRESS) {
+            nProgressDialog = new ProgressDialog(context_d);
+            nProgressDialog.setMessage("படங்கள் பதிவிறக்கம் செய்யப்படுகிறது காத்திருக்கவும்.... ");
+            nProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            nProgressDialog.setCancelable(false);
+            nProgressDialog.show();
+            // playy();
+            return nProgressDialog;
         }
+        return null;
     }
 
+    public int unpackZip(String ZIP_FILE_NAME) {
+        InputStream is;
+        ZipInputStream zis;
+        try {
+
+            String fullPath = Environment.getExternalStorageDirectory()
+                    .getAbsolutePath() + "/Nithra/solliadi/";
+            is = new FileInputStream(fullPath + ZIP_FILE_NAME);
+            zis = new ZipInputStream(new BufferedInputStream(is));
+            ZipEntry ze;
+
+            while ((ze = zis.getNextEntry()) != null) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                byte[] buffer = new byte[1024];
+                int count;
+
+                // zapis do souboru
+                String filename = ze.getName();
+                FileOutputStream fout = new FileOutputStream(fullPath
+                        + filename);
+
+                // cteni zipu a zapis
+                while ((count = zis.read(buffer)) != -1) {
+                    baos.write(buffer, 0, count);
+                    byte[] bytes = baos.toByteArray();
+                    fout.write(bytes);
+                    baos.reset();
+                }
+
+                fout.close();
+                zis.closeEntry();
+            }
+
+            zis.close();
+            File file = new File(fullPath + ZIP_FILE_NAME);
+            file.delete();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0;
+        }
+        return 1;
+    }
 
     class DownloadFileAsync extends AsyncTask<String, String, String> {
 
@@ -255,7 +311,7 @@ public class Download_data_Find_dif_bet_pic extends AsyncTask<String, Void, Stri
                 input = connection.getInputStream();
                 output = new FileOutputStream(file);
 
-                byte data[] = new byte[4096];
+                byte[] data = new byte[4096];
                 long total = 0;
                 int count;
                 while ((count = input.read(data)) != -1) {
@@ -325,7 +381,7 @@ public class Download_data_Find_dif_bet_pic extends AsyncTask<String, Void, Stri
                 System.out.println("result=======////==" + e);
             }
             System.out.println("--check4");
-             download_completed.download_completed_pic(data);
+            download_completed.download_completed_pic(data);
             progressDialog.dismiss();
         }
      /*   protected void onProgressUpdate(String... progress) {
@@ -337,66 +393,6 @@ public class Download_data_Find_dif_bet_pic extends AsyncTask<String, Void, Stri
 
 			}*//*
         }*/
-    }
-
-
-    public int unpackZip(String ZIP_FILE_NAME) {
-        InputStream is;
-        ZipInputStream zis;
-        try {
-
-            String fullPath = Environment.getExternalStorageDirectory()
-                    .getAbsolutePath() + "/Nithra/solliadi/";
-            is = new FileInputStream(fullPath + ZIP_FILE_NAME);
-            zis = new ZipInputStream(new BufferedInputStream(is));
-            ZipEntry ze;
-
-            while ((ze = zis.getNextEntry()) != null) {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                int count;
-
-                // zapis do souboru
-                String filename = ze.getName();
-                FileOutputStream fout = new FileOutputStream(fullPath
-                        + filename);
-
-                // cteni zipu a zapis
-                while ((count = zis.read(buffer)) != -1) {
-                    baos.write(buffer, 0, count);
-                    byte[] bytes = baos.toByteArray();
-                    fout.write(bytes);
-                    baos.reset();
-                }
-
-                fout.close();
-                zis.closeEntry();
-            }
-
-            zis.close();
-            File file = new File(fullPath + ZIP_FILE_NAME);
-            file.delete();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return 0;
-        }
-        return 1;
-    }
-
-    public static boolean exists(String URLName) {
-        try {
-            HttpURLConnection.setFollowRedirects(false);
-            // note : you may also need
-            //        HttpURLConnection.setInstanceFollowRedirects(false)
-            HttpURLConnection con =
-                    (HttpURLConnection) new URL(URLName).openConnection();
-            con.setRequestMethod("HEAD");
-            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
 

@@ -1,5 +1,8 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.data_download_url;
+import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.img_down_url;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -36,10 +39,8 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.data_download_url;
-import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.img_down_url;
-
 public class Download_data_server extends AsyncTask<String, Void, String> {
+    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
     DataBaseHelper myDbHelper;
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
@@ -55,7 +56,6 @@ public class Download_data_server extends AsyncTask<String, Void, String> {
     String gameids = "", questionids = "", actions = "";
     SharedPreference sps = new SharedPreference();
     DownloadFileAsync downloadFileAsync;
-    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
     ProgressDialog nProgressDialog;
 
 
@@ -72,6 +72,21 @@ public class Download_data_server extends AsyncTask<String, Void, String> {
         questionids = questionid;
         context_d = context;
 
+    }
+
+    public static boolean exists(String URLName) {
+        try {
+            HttpURLConnection.setFollowRedirects(false);
+            // note : you may also need
+            //        HttpURLConnection.setInstanceFollowRedirects(false)
+            HttpURLConnection con =
+                    (HttpURLConnection) new URL(URLName).openConnection();
+            con.setRequestMethod("HEAD");
+            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
@@ -174,7 +189,7 @@ public class Download_data_server extends AsyncTask<String, Void, String> {
                                         }
                                     }
                                     if (gameids.equals("16") || gameids.equals("20")) {
-                                        if (exists(img_down_url + sps.getString(context_d, "email") + "-filename.zip") == true) {
+                                        if (exists(img_down_url + sps.getString(context_d, "email") + "-filename.zip")) {
                                             startDownload();
                                             System.out.println("##################file exist");
                                         } else {
@@ -262,20 +277,61 @@ public class Download_data_server extends AsyncTask<String, Void, String> {
     }
 
     protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case DIALOG_DOWNLOAD_PROGRESS:
-                nProgressDialog = new ProgressDialog(context_d);
-                nProgressDialog.setMessage("படங்கள் பதிவிறக்கம் செய்யப்படுகிறது காத்திருக்கவும்.... ");
-                nProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                nProgressDialog.setCancelable(false);
-                nProgressDialog.show();
-                // playy();
-                return nProgressDialog;
-            default:
-                return null;
+        if (id == DIALOG_DOWNLOAD_PROGRESS) {
+            nProgressDialog = new ProgressDialog(context_d);
+            nProgressDialog.setMessage("படங்கள் பதிவிறக்கம் செய்யப்படுகிறது காத்திருக்கவும்.... ");
+            nProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            nProgressDialog.setCancelable(false);
+            nProgressDialog.show();
+            // playy();
+            return nProgressDialog;
         }
+        return null;
     }
 
+    public int unpackZip(String ZIP_FILE_NAME) {
+        InputStream is;
+        ZipInputStream zis;
+        try {
+
+            String fullPath = Environment.getExternalStorageDirectory()
+                    .getAbsolutePath() + "/Nithra/solliadi/";
+            is = new FileInputStream(fullPath + ZIP_FILE_NAME);
+            zis = new ZipInputStream(new BufferedInputStream(is));
+            ZipEntry ze;
+
+            while ((ze = zis.getNextEntry()) != null) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                byte[] buffer = new byte[1024];
+                int count;
+
+                // zapis do souboru
+                String filename = ze.getName();
+                FileOutputStream fout = new FileOutputStream(fullPath
+                        + filename);
+
+                // cteni zipu a zapis
+                while ((count = zis.read(buffer)) != -1) {
+                    baos.write(buffer, 0, count);
+                    byte[] bytes = baos.toByteArray();
+                    fout.write(bytes);
+                    baos.reset();
+                }
+
+                fout.close();
+                zis.closeEntry();
+            }
+
+            zis.close();
+            File file = new File(fullPath + ZIP_FILE_NAME);
+            file.delete();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0;
+        }
+        return 1;
+    }
 
     class DownloadFileAsync extends AsyncTask<String, String, String> {
 
@@ -321,7 +377,7 @@ public class Download_data_server extends AsyncTask<String, Void, String> {
                 input = connection.getInputStream();
                 output = new FileOutputStream(file);
 
-                byte data[] = new byte[4096];
+                byte[] data = new byte[4096];
                 long total = 0;
                 int count;
                 while ((count = input.read(data)) != -1) {
@@ -391,7 +447,7 @@ public class Download_data_server extends AsyncTask<String, Void, String> {
                 System.out.println("result=======////==" + e);
             }
             System.out.println("--check4");
-           // download_completed.download_completed(data);
+            // download_completed.download_completed(data);
             progressDialog.dismiss();
         }
      /*   protected void onProgressUpdate(String... progress) {
@@ -403,66 +459,6 @@ public class Download_data_server extends AsyncTask<String, Void, String> {
 
 			}*//*
         }*/
-    }
-
-
-    public int unpackZip(String ZIP_FILE_NAME) {
-        InputStream is;
-        ZipInputStream zis;
-        try {
-
-            String fullPath = Environment.getExternalStorageDirectory()
-                    .getAbsolutePath() + "/Nithra/solliadi/";
-            is = new FileInputStream(fullPath + ZIP_FILE_NAME);
-            zis = new ZipInputStream(new BufferedInputStream(is));
-            ZipEntry ze;
-
-            while ((ze = zis.getNextEntry()) != null) {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                int count;
-
-                // zapis do souboru
-                String filename = ze.getName();
-                FileOutputStream fout = new FileOutputStream(fullPath
-                        + filename);
-
-                // cteni zipu a zapis
-                while ((count = zis.read(buffer)) != -1) {
-                    baos.write(buffer, 0, count);
-                    byte[] bytes = baos.toByteArray();
-                    fout.write(bytes);
-                    baos.reset();
-                }
-
-                fout.close();
-                zis.closeEntry();
-            }
-
-            zis.close();
-            File file = new File(fullPath + ZIP_FILE_NAME);
-            file.delete();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return 0;
-        }
-        return 1;
-    }
-
-    public static boolean exists(String URLName) {
-        try {
-            HttpURLConnection.setFollowRedirects(false);
-            // note : you may also need
-            //        HttpURLConnection.setInstanceFollowRedirects(false)
-            HttpURLConnection con =
-                    (HttpURLConnection) new URL(URLName).openConnection();
-            con.setRequestMethod("HEAD");
-            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
 

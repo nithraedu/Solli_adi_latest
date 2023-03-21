@@ -22,12 +22,12 @@ import java.util.List;
 
 public class BillingManager implements PurchasesUpdatedListener {
 
+    public static final String SKU_ID = "removeads";
     private final Activity mActivity;
     private final BillingUpdateListener mBillingUpdatesListener;
-    private BillingClient mBillingClient;
-    private boolean mIsServiceConnected;
-    public static final String SKU_ID = "removeads";
     private final List<Purchase> mPurchases = new ArrayList<>();
+    private final BillingClient mBillingClient;
+    private boolean mIsServiceConnected;
 
     public BillingManager(Activity activity, final BillingUpdateListener updatesListener) {
 
@@ -59,7 +59,7 @@ public class BillingManager implements PurchasesUpdatedListener {
                             public void onQueryPurchasesResponse(BillingResult billingResult, List purchases) {
                                 // check billingResult
                                 // process returned purchase list, e.g. display the plans user owns
-                                onQueryPurchasesFinished(billingResult,purchases);
+                                onQueryPurchasesFinished(billingResult, purchases);
                             }
                         }
                 );
@@ -67,10 +67,10 @@ public class BillingManager implements PurchasesUpdatedListener {
             }
         };
 
-        if (mIsServiceConnected){
+        if (mIsServiceConnected) {
             queryToExecute.run();
-        }else{
-        startServiceConnection(queryToExecute);
+        } else {
+            startServiceConnection(queryToExecute);
         }
     }
 
@@ -145,7 +145,5 @@ public class BillingManager implements PurchasesUpdatedListener {
         mPurchases.add(purchase);
 
     }
-    public void billingclientDestory(){
-        mBillingClient.endConnection();
-    }
+
 }

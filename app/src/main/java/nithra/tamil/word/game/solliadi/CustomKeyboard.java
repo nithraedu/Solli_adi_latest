@@ -19,12 +19,13 @@
 
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.Find_words_from_picture.chr;
+
 import android.app.Activity;
 import android.content.Context;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
-import androidx.appcompat.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.InputType;
 import android.view.KeyEvent;
@@ -37,9 +38,9 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import java.util.List;
+import androidx.appcompat.widget.AppCompatEditText;
 
-import static nithra.tamil.word.game.solliadi.Find_words_from_picture.chr;
+import java.util.List;
 
 /**
  * When an activity hosts a keyboardView, this class allows several EditText's to register for it.
@@ -50,23 +51,20 @@ import static nithra.tamil.word.game.solliadi.Find_words_from_picture.chr;
 class CustomKeyboard {
 
     /**
-     * A link to the KeyboardView that is used to render this CustomKeyboard1.
-     */
-    private KeyboardView mKeyboardView;
-    /**
-     * A link to the activity that hosts the {@link #mKeyboardView}.
-     */
-    private Activity mHostActivity;
-
-    /**
      * The key (code) handler.
      */
 
     String str = "";
     int vall = 0;
-
-
-    private OnKeyboardActionListener mOnKeyboardActionListener = new OnKeyboardActionListener() {
+    /**
+     * A link to the KeyboardView that is used to render this CustomKeyboard1.
+     */
+    private final KeyboardView mKeyboardView;
+    /**
+     * A link to the activity that hosts the {@link #mKeyboardView}.
+     */
+    private final Activity mHostActivity;
+    private final OnKeyboardActionListener mOnKeyboardActionListener = new OnKeyboardActionListener() {
 
         public final static int CodeDelete = -5; // Keyboard.KEYCODE_DELETE
 
@@ -108,7 +106,7 @@ class CustomKeyboard {
                     || primaryCode == 45 || primaryCode == 42 || primaryCode == 47 || primaryCode == 92 || primaryCode == 124 || primaryCode == 57 || primaryCode == 95 || primaryCode == 91
                     || primaryCode == 93 || primaryCode == 123 || primaryCode == 125 || primaryCode == 34 || primaryCode == 39) {
 
-                    System.out.println("######################TYPE 1");
+                System.out.println("######################TYPE 1");
                 editable.insert(start, Character.toString((char) primaryCode));
             } else { // insert character
                 if (primaryCode == -10001 || primaryCode == -10002 || primaryCode == -10003 || primaryCode == -10004 || primaryCode == -10005 || primaryCode == -10006 || primaryCode == -10007 || primaryCode == -10008
@@ -117,11 +115,11 @@ class CustomKeyboard {
                         || primaryCode == -10050 || primaryCode == -10051 || primaryCode == -10052 || primaryCode == -10053 || primaryCode == -10054 || primaryCode == -10055 || primaryCode == -10056 || primaryCode == -10057
                         || primaryCode == -10058 || primaryCode == -10059 || primaryCode == -10060 || primaryCode == -10061 || primaryCode == -10062 || primaryCode == -10063 || primaryCode == -10402) {
                     System.out.println("######################TYPE 2");
-                    chr=0;
+                    chr = 0;
                     edittext.getEditableText().insert(start, word_return(primaryCode));
                 } else {
                     System.out.println("######################TYPE 3");
-                    if (chr!=1){
+                    if (chr != 1) {
                         edittext.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
                         edittext.getEditableText().insert(start - 1, word_return(primaryCode));
                         vall = 1;
@@ -1912,7 +1910,7 @@ class CustomKeyboard {
             letter_change(-10062);
         } else if (str.equals("க்ஷ")) {
             letter_change(-10063);
-        }else if (str.equals("1")) {
+        } else if (str.equals("1")) {
             letter_change(32);
         }
     }

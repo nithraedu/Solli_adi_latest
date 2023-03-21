@@ -1,10 +1,15 @@
-
 package nithra.tamil.word.game.solliadi;
 
 
 import com.google.gson.annotations.SerializedName;
 
 public class Downloading_pogo {
+    @SerializedName("action")
+    public String action;
+    @SerializedName("lastqid")
+    public String lastqid;
+    @SerializedName("android_id")
+    public String android_id;
     @SerializedName("status")
     private String status;
     @SerializedName("id")
@@ -17,12 +22,7 @@ public class Downloading_pogo {
     private String letters;
     @SerializedName("answer")
     private String answer;
-    @SerializedName("action")
-    public String action;
-    @SerializedName("lastqid")
-    public String lastqid;
-    @SerializedName("android_id")
-    public String android_id;
+    private String hints;
 
     public Downloading_pogo(String action, String gameid, String lastqid, String android_id) {
         this.action = action;
@@ -31,30 +31,28 @@ public class Downloading_pogo {
         this.android_id = android_id;
     }
 
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public void setLastqid(String lastqid) {
-        this.lastqid = lastqid;
-    }
-
-    public void setAndroid_id(String android_id) {
-        this.android_id = android_id;
-    }
-
-    private String hints;
-
     public String getAction() {
         return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 
     public String getLastqid() {
         return lastqid;
     }
 
+    public void setLastqid(String lastqid) {
+        this.lastqid = lastqid;
+    }
+
     public String getAndroid_id() {
         return android_id;
+    }
+
+    public void setAndroid_id(String android_id) {
+        this.android_id = android_id;
     }
 
     public String getStatus() {

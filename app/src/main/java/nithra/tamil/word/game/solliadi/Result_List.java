@@ -1,7 +1,8 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
+
 import android.content.Intent;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -9,36 +10,32 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.ads.NativeAdLayout;
 
-
-
-
-
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-
 public class Result_List extends AppCompatActivity {
-TextView daily_result,weekly_result,monthly_result,share_result;
+    static SharedPreference sps = new SharedPreference();
+    TextView daily_result, weekly_result, monthly_result, share_result;
     LinearLayout adds;
-    static SharedPreference sps=new SharedPreference();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_result__list);
-        daily_result=(TextView)findViewById(R.id.daily_result);
-        weekly_result=(TextView)findViewById(R.id.weekly_result);
-        monthly_result=(TextView)findViewById(R.id.monthly_result);
-        share_result=(TextView)findViewById(R.id.share_result);
-        adds=(LinearLayout)findViewById(R.id.ads_lay);
+        daily_result = (TextView) findViewById(R.id.daily_result);
+        weekly_result = (TextView) findViewById(R.id.weekly_result);
+        monthly_result = (TextView) findViewById(R.id.monthly_result);
+        share_result = (TextView) findViewById(R.id.share_result);
+        adds = (LinearLayout) findViewById(R.id.ads_lay);
 
         daily_result.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
                 Intent i = new Intent(Result_List.this, Results.class);
-                i.putExtra("value1",1);
+                i.putExtra("value1", 1);
                 startActivity(i);
             }
         });
@@ -47,7 +44,7 @@ TextView daily_result,weekly_result,monthly_result,share_result;
             public void onClick(View v) {
                 finish();
                 Intent i = new Intent(Result_List.this, Results.class);
-                i.putExtra("value1",2);
+                i.putExtra("value1", 2);
                 startActivity(i);
             }
         });
@@ -56,7 +53,7 @@ TextView daily_result,weekly_result,monthly_result,share_result;
             public void onClick(View v) {
                 finish();
                 Intent i = new Intent(Result_List.this, Results.class);
-                i.putExtra("value1",3);
+                i.putExtra("value1", 3);
                 startActivity(i);
             }
         });
@@ -65,7 +62,7 @@ TextView daily_result,weekly_result,monthly_result,share_result;
             public void onClick(View v) {
                 finish();
                 Intent i = new Intent(Result_List.this, Results.class);
-                i.putExtra("value1",4);
+                i.putExtra("value1", 4);
                 startActivity(i);
             }
         });
@@ -75,7 +72,7 @@ TextView daily_result,weekly_result,monthly_result,share_result;
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //return super.onKeyDown(keyCode, event);
 
-        if(keyCode==KeyEvent.KEYCODE_BACK) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
 
             finish();
             Intent i = new Intent(Result_List.this, Game_States.class);
@@ -118,7 +115,7 @@ TextView daily_result,weekly_result,monthly_result,share_result;
 
             }
         }*/
-      NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
+        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
 
         if (sps.getInt(Result_List.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");

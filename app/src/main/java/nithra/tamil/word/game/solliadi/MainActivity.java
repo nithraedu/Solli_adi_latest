@@ -1,10 +1,11 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.price_url;
+import static nithra.tamil.word.game.solliadi.Utils.date_put;
+
 import android.Manifest;
 import android.animation.ValueAnimator;
-import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
@@ -40,18 +41,6 @@ import android.os.StatFs;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.provider.Settings;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
@@ -86,38 +75,23 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.android.billingclient.api.Purchase;
-/*import com.facebook.FacebookException;
-import com.facebook.FacebookOperationCanceledException;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
-import com.facebook.widget.FacebookDialog;
-import com.facebook.widget.LikeView;
-import com.facebook.widget.WebDialog;*/
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
-
-
-
-
-
-
-
-
-
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -125,20 +99,11 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesActivityResultCodes;
-import com.google.android.gms.games.multiplayer.Invitation;
-import com.google.android.gms.games.multiplayer.OnInvitationReceivedListener;
-import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
-import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
-import com.google.android.gms.games.multiplayer.realtime.Room;
-import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateListener;
-import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
 import com.google.android.gms.games.snapshot.Snapshot;
 import com.google.android.gms.games.snapshot.SnapshotMetadata;
 import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
 import com.google.android.gms.games.snapshot.Snapshots;
 import com.google.android.gms.plus.PlusOneButton;
-import com.google.android.gms.tasks.OnCompleteListener;
-
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
@@ -146,14 +111,11 @@ import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.tasks.OnSuccessListener;
 import com.google.android.play.core.tasks.Task;
-
 import com.google.example.games.basegameutils.BaseGameActivity;
 import com.google.example.games.basegameutils.BaseGameUtils;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.gson.Gson;
-
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -187,9 +149,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
-import java.text.DateFormat;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -209,7 +170,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import nit_app.Apps_Utils;
 import nit_app.DataBaseHelper1;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
@@ -220,38 +180,21 @@ import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.DataBaseHelper_wordsearch;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.Word_search_main;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.game_class.Word_search_levels;
-
-
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.price_url;
 
-
-
-public class MainActivity extends BaseGameActivity implements RippleView.OnRippleCompleteListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,  RoomUpdateListener, RealTimeMessageReceivedListener, OnInvitationReceivedListener, RoomStatusUpdateListener, Download_completed {
-
-
-    //*********************reward videos process 1***********************
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-
-
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
-
-    static int mCoinCount=20;
-    private boolean mGameOver;
-    private boolean mGamePaused;
-
-    private long mTimeRemaining;
-    //reward videos process 1***********************
+public class MainActivity extends BaseGameActivity implements RippleView.OnRippleCompleteListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Download_completed {
 
 
     public static final String TAG = "SavedGames";
-
+    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
+    public static final String data_check = "https://nithra.mobi/solliadi/solliadi.php";
+    static final int PLUS_ONE_REQUEST_CODE = 0;
+    //*********************reward videos process 1***********************
+    //private final String AD_UNIT_ID = getString(R.string.rewarded);
+    //reward videos process 1***********************
+    private static final int GAME_OVER_REWARD = 1;
     // The AppState slot we are editing.  For simplicity this sample only manipulates a single
 // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
 // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
@@ -263,33 +206,66 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
     // Request code used to invoke Snapshot selection UI.
     private static final int RC_SELECT_SNAPSHOT = 9002;
-
-    /// Client used to interact with Google APIs
-    // True when the application is attempting to resolve a sign-in error that has a possible
-    // resolution,
-    private boolean mIsResolving = false;
-
-    // True immediately after the user clicks the sign-in button/
-    private boolean mSignInClicked = false;
-
-    // True if we want to automatically attempt to sign in the user at application start.
-    private boolean mAutoStartSignIn = true;
-
-
+    private static final int RC_SAVED_GAMES = 9009;
+    private static final int MAX_SNAPSHOT_RESOLVE_RETRIES = 3;
+    ////
+    /////////native advance////////////
+    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
+    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
+    /////////native advance////////////
+    /////////Native_Top_Advanced////////////
+    private static final String ADMOB_AD_UNIT_ID_Top = "ca-app-pub-4267540560263635/2303543680";
+    /////////Native_Top_Advanced////////////
+    /////////Native_BackPress_Advanced////////////
+    private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
+    private static final String LOADING_PHRASE_CONFIG_KEY = "app_sort_order";
+    private static final String LOADING_PHRASE_CONFIG_KEY2 = "SolliadiPrize";
+    public static SharedPreferences mPreferences;
+    ///
+    public static LinearLayout add;
+    public static LinearLayout add_rect;
+    public static LinearLayout add_rect_mul;
+    public static LinearLayout add_rect_backpress;
+    public static boolean ad_load;
+    public static FrameLayout add2, add3;
+    public static FrameLayout add_p;
+    public static String main_act = "";
+    static int mCoinCount = 20;
+    static SharedPreference sps = new SharedPreference();
+    static LinearLayout ads_lay;
+    static LinearLayout ads_lay_rectangle;
+    static LinearLayout ads_lay_new;
+    static SharedPreference spd = new SharedPreference();
+    static String price_date = "";
+    static String price_date_d = "";
+    static String price_month_date = "";
+    static String price_year_date = "";
+    static String prize_u_id = "";
+    static int score_ed = 0;
+    static int old_score_ed = 0;
+    static String price_pre_month_date = "";
+    static String price_date_dm = "";
+    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
+    private final int c_total = 1050;
+    ///////////////////////////////////////////////////////////Word Search/////////////////////////////////////////////////////////
+    private final PendingAction pendingAction = PendingAction.NONE;
+    private final int PICK_IMAGE_REQUEST = 4;
     Context context = this;
     SharedPreference wee = new SharedPreference();
-    RippleView wordgame1, cluegame, picgame, solukulsol, oddmanout, matchword, opposite_word,
-            english_to_tamil, right_order, riddle, tirukural_s, error_correction,
-            fill_in_blanks, eng_to_tamil, pic_to_words;
+    RippleView wordgame1, cluegame, picgame, solukulsol, oddmanout, matchword, opposite_word, english_to_tamil, right_order, riddle, tirukural_s, error_correction, fill_in_blanks, eng_to_tamil, pic_to_words;
     DataBaseHelper myDbHelper;
     Newgame_DataBaseHelper newhelper;
-    Newgame_DataBaseHelper2 newhelper2;
+    /*public static LinearLayout add;
+    public static LinearLayout add2;
+    public static AdView adView2;
+    public static AdView adView;
+    public static AdRequest request;
+    public static AdRequest request2;*/ Newgame_DataBaseHelper2 newhelper2;
     Newgame_DataBaseHelper3 newhelper3;
     Newgame_DataBaseHelper4 newhelper4;
     Newgame_DataBaseHelper5 newhelper5;
     int level = 1;
     TextView action;
-    public static SharedPreferences mPreferences;
     SQLiteDatabase db1, dbs, dbn, dbns;
     Typeface tyr;
     Typeface typ;
@@ -300,68 +276,40 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     int sv = 0;
     //
     LinearLayout pic_lay;
-
     TextView toggleButton;
-
-
     TextView m_settings;
-    static SharedPreference sps = new SharedPreference();
     TextView wordgame, hintgame, solegame, pictgame;
     TranslateAnimation translateAnimation1, translateAnimation2, translateAnimation3, translateAnimation4, translateAnimation5;
     TranslateAnimation translateAnimation6, translateAnimation7, translateAnimation8, translateAnimation9, translateAnimation10;
     SharedPreference spa = new SharedPreference();
     TextView name_main, noti;
-
-    ///ad file
-    private int exit = 0;
     int back_flag = 0;
     int feedcheck;
     SQLiteDatabase myDB = null;
-    static LinearLayout ads_lay;
-    static LinearLayout ads_lay_rectangle;
-
-    static LinearLayout ads_lay_new;
-
-    /*public static LinearLayout add;
-    public static LinearLayout add2;
-    public static AdView adView2;
-    public static AdView adView;
-    public static AdRequest request;
-    public static AdRequest request2;*/
-
-
     DrawerLayout drawer;
     LinearLayout free_roll;
-
-
     int vercode = 0;
     String vername;
     TextView ver_name, version_code;
     String version_name;
     int versions_code;
     PlusOneButton mPlusOneButton;
-    static final int PLUS_ONE_REQUEST_CODE = 0;
     Toolbar toolbar;
     int fornt = 0;
-
     JSONArray warray, warray2, carray, sarray, sarray2;
     String str_vpcont;
     ///Db Variaables
     String w_gameid;
     String w_letterid;
-
     String email = "";
-
     Timer t1, th;
     int t, t2;
     DataBaseHelper1 db;
     WebView webView;
-    private int c_counter = 0;
-    private int c_total = 1050;
     TextView counter, time2, notis, noti_lenear, noti_img;
     Thread thread;
+    // Facebook variable starts
     TextView checkupdate;
-
     int ry;
     String downok = "", downnodata = "";
     String ddddd = "";
@@ -370,132 +318,12 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     ProgressDialog nProgressDialog;
     String saved_data;
     TextView p_id, c_id, ss_id, s_id, p_login_txt, oddmanout_ss_id, matchwords_no;
-
     GoogleApiClient mGoogleApiClient;
-    private static final int RC_SAVED_GAMES = 9009;
-    private String mCurrentSaveName = "snapshotTemp";
-    private byte[] mSaveGameData;
-    private static final int MAX_SNAPSHOT_RESOLVE_RETRIES = 3;
     LinearLayout ads_lay2, ads_lay3;
-    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
     LinearLayout upcheck;
-
-    public static final String data_check = "https://nithra.mobi/solliadi/solliadi.php";
     int downcheck = 0;
-
     int rk = 0;
-
     String retype = "s";
-    // Facebook variable starts
-
-    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
-
-    private PendingAction pendingAction = PendingAction.NONE;
-
-    @Override
-    public void onRealTimeMessageReceived(RealTimeMessage realTimeMessage) {
-        System.out.println("=============================onRealTimeMessageReceived" + realTimeMessage);
-    }
-
-    @Override
-    public void onRoomCreated(int i, Room room) {
-        System.out.println("=============================onRoomCreated" + room);
-    }
-
-    @Override
-    public void onJoinedRoom(int i, Room room) {
-        System.out.println("=============================onJoinedRoom" + room);
-    }
-
-    @Override
-    public void onLeftRoom(int i, String s) {
-
-    }
-
-    @Override
-    public void onRoomConnected(int i, Room room) {
-        System.out.println("=============================onRoomConnected" + room);
-    }
-
-    @Override
-    public void onInvitationReceived(Invitation invitation) {
-        System.out.println("=============================Invitation Recived" + invitation);
-    }
-
-    @Override
-    public void onInvitationRemoved(String s) {
-        System.out.println("=============================onInvitationRemoved" + s);
-    }
-
-    @Override
-    public void onRoomConnecting(Room room) {
-
-    }
-
-    @Override
-    public void onRoomAutoMatching(Room room) {
-
-    }
-
-    @Override
-    public void onPeerInvitedToRoom(Room room, List<String> list) {
-        System.out.println("=============================onPeerInvitedToRoom" + room);
-    }
-
-    @Override
-    public void onPeerDeclined(Room room, List<String> list) {
-
-    }
-
-    @Override
-    public void onPeerJoined(Room room, List<String> list) {
-
-    }
-
-    @Override
-    public void onPeerLeft(Room room, List<String> list) {
-
-    }
-
-    @Override
-    public void onConnectedToRoom(Room room) {
-        System.out.println("=============================onConnectedToRoom" + room);
-    }
-
-    @Override
-    public void onDisconnectedFromRoom(Room room) {
-
-    }
-
-    @Override
-    public void onPeersConnected(Room room, List<String> list) {
-        System.out.println("=============================onPeersConnected" + room);
-    }
-
-    @Override
-    public void onPeersDisconnected(Room room, List<String> list) {
-
-    }
-
-    @Override
-    public void onP2PConnected(String s) {
-
-    }
-
-    @Override
-    public void onP2PDisconnected(String s) {
-
-    }
-
-    @Override
-    public void download_completed(String status) {
-        Toast.makeText(context, "" + status, Toast.LENGTH_SHORT).show();
-    }
-
-    private enum PendingAction {
-        NONE, POST_PHOTO, POST_STATUS_UPDATE
-    }
-
     /*    private UiLifecycleHelper uiHelper;
 
         private Session.StatusCallback callback = new Session.StatusCallback() {
@@ -518,81 +346,40 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                    Bundle data) {
                 Log.d("HelloFacebook", "Success!");
             }
-        };*/
-    String btn_str = "";
-
+        };*/ String btn_str = "";
     int min = 1;
     int max = 4;
     int random;
-    // facebook variable ends
-    //nithra.mobi
-
-    ///
-    public static LinearLayout add;
-    public static LinearLayout add_rect;
-    public static LinearLayout add_rect_mul;
-    public static LinearLayout add_rect_backpress;
-
-    ////Add
-
-    public static boolean ad_load;
-    private int PICK_IMAGE_REQUEST = 4;
-    ////
-    /////////native advance////////////
-    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
-    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
-    /////////native advance////////////
-    /////////Native_Top_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_Top = "ca-app-pub-4267540560263635/2303543680";
-    /////////Native_Top_Advanced////////////
-    /////////Native_BackPress_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
-    /////////Native_BackPress_Advanced////////////
-
-
     /*private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/4032646722";
-    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~9746757509";*/
-    String strr_html;
+    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~9746757509";*/ String strr_html;
     RelativeLayout adsicon2;
     CircleImageView ads_logo, ads_logo2;
-    public static FrameLayout add2, add3;
-    public static FrameLayout add_p;
-    static SharedPreference spd = new SharedPreference();
-    private FirebaseRemoteConfig mFirebaseRemoteConfig;
-    private static final String LOADING_PHRASE_CONFIG_KEY = "app_sort_order";
-    private static final String LOADING_PHRASE_CONFIG_KEY2 = "SolliadiPrize";
     LinearLayout saved;
     FrameLayout ads_layout_bottom;
     TextView opposite_word_id, english_to_tamil_id;
     TextView right_order_id, riddle_id, tirukuralid, error_correction_id, fill_in_blanks_id, eng_to_tamil_no, pic_to_words_no, match_words_no;
     int mutiplayer_siginin = 0;
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
-
-    public static String main_act = "";
+    // facebook variable ends
+    //nithra.mobi
     int r = 0;
     LinearLayout r_ads;
-
-
-    static final String TAG2 = "TrivialDrive";
     // The helper object
     int RC_REQUEST = 10001;
     RelativeLayout re_ads;
+    ////Add
     int ads_request = 0;
     TextView rm_name;
-    private BillingManager mBillingManager;
-
     ////////////////////////////////////////////////////////Word Search/////////////////////////////////////////////////////////
     SQLiteDatabase Inner_mydb, mydbd;
     DataBaseHelper_wordsearch myDbHelperd;
     Cursor update_cursor = null;
     ArrayList<String> column = new ArrayList<>(Arrays.asList("challenge_word", "oposit_word", "Q_A_word", "missing_word"));
+    /////////Native_BackPress_Advanced////////////
     ArrayList<String> table = new ArrayList<>(Arrays.asList("challenge", "yethirsoll", "Q_A", "missing_word"));
     SharedPreference sp = new SharedPreference();
     int version_code_n = 0, update = 0;
     String current_date = "";
     RippleView word_search_main, match_the_fallows;
-    ///////////////////////////////////////////////////////////Word Search/////////////////////////////////////////////////////////
-
     LinearLayout leader_bd, achivements_d, word_search_d, multi_d;
     TextView word_search_game;
     LinearLayout ads_layd;
@@ -600,26 +387,336 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     int extra_coin_s = 0;
     int reward_play_count = 0;
     int ea = 0;
-
     int minmum = 1;
     int maximum = 4;
     int randomno;
     Dialog openDialog;
     TextView coin_value;
     int setval_vid;
-    static String price_date = "";
-    static String price_date_d = "";
-    static String price_month_date = "";
-    static String price_year_date = "";
-    static String prize_u_id = "";
-    static int score_ed = 0;
-    static int old_score_ed = 0;
     Button prices;
     RelativeLayout prize_lay;
-    static String price_pre_month_date = "";
-    static String price_date_dm = "";
     AppUpdateManager appUpdateManager;
     Dialog openDialogterm;
+    private boolean mGameOver;
+    private boolean mGamePaused;
+    private long mTimeRemaining;
+    /// Client used to interact with Google APIs
+    // True when the application is attempting to resolve a sign-in error that has a possible
+    // resolution,
+    private boolean mIsResolving = false;
+    // True immediately after the user clicks the sign-in button/
+    private boolean mSignInClicked = false;
+    // True if we want to automatically attempt to sign in the user at application start.
+    private boolean mAutoStartSignIn = true;
+    ///ad file
+    private int exit = 0;
+    private int c_counter = 0;
+    private String mCurrentSaveName = "snapshotTemp";
+    private byte[] mSaveGameData;
+    private FirebaseRemoteConfig mFirebaseRemoteConfig;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+    private BillingManager mBillingManager;
+
+    public static void sharedPrefAdd(String one, String two, final SharedPreferences mPreferences) {
+        // TODO Auto-generated method stub
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putString(one, two);
+        editor.commit();
+    }
+
+    public static boolean exists(String URLName) {
+        try {
+            HttpURLConnection.setFollowRedirects(false);
+            // note : you may also need
+            //        HttpURLConnection.setInstanceFollowRedirects(false)
+            HttpURLConnection con = (HttpURLConnection) new URL(URLName).openConnection();
+            con.setRequestMethod("HEAD");
+            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static String[] getAppVersionInfo(String playUrl) {
+        HtmlCleaner cleaner = new HtmlCleaner();
+        CleanerProperties props = cleaner.getProperties();
+        props.setAllowHtmlInsideAttributes(true);
+        props.setAllowMultiWordAttributes(true);
+        props.setRecognizeUnicodeChars(true);
+        props.setOmitComments(true);
+        try {
+            URL url = new URL(playUrl);
+            URLConnection conn = url.openConnection();
+            TagNode node = cleaner.clean(new InputStreamReader(conn.getInputStream()));
+            Object[] new_nodes = node.evaluateXPath("//*[@class='recent-change']");
+            Object[] version_nodes = node.evaluateXPath("//*[@itemprop='softwareVersion']");
+
+            String version = "", whatsNew = "";
+            for (Object new_node : new_nodes) {
+                TagNode info_node = (TagNode) new_node;
+                whatsNew += info_node.getAllChildren().get(0).toString().trim() + "\n";
+            }
+            if (version_nodes.length > 0) {
+                TagNode ver = (TagNode) version_nodes[0];
+                version = ver.getAllChildren().get(0).toString().trim();
+            }
+            return new String[]{version, whatsNew};
+        } catch (IOException | XPatherException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String getAppVersionInfo2(String playUrl) {
+        HtmlCleaner cleaner = new HtmlCleaner();
+        CleanerProperties props = cleaner.getProperties();
+        props.setAllowHtmlInsideAttributes(true);
+        props.setAllowMultiWordAttributes(true);
+        props.setRecognizeUnicodeChars(true);
+        props.setOmitComments(true);
+        try {
+            URL url = new URL(playUrl);
+            URLConnection conn = url.openConnection();
+            TagNode node = cleaner.clean(new InputStreamReader(conn.getInputStream()));
+            Object[] version_nodes = node.evaluateXPath("//*[@class='link']");
+
+
+            String version = "";
+
+            if (version_nodes.length > 0) {
+                TagNode ver = (TagNode) version_nodes[0];
+                version = ver.getAllChildren().get(0).toString().trim();
+            }
+            return version;
+        } catch (IOException | XPatherException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Boolean clr_chace(Context context) {
+        Boolean aBoolean = false;
+        SharedPreference sharedPreference = new SharedPreference();
+        Calendar calendar = Calendar.getInstance();
+        long next_hour = calendar.getTimeInMillis();
+
+        SimpleDateFormat sdf1 = new SimpleDateFormat("dd/M/yyyy");
+        Date result = new Date(next_hour);
+        String formatted = sdf1.format(result);
+
+        StringTokenizer st2 = new StringTokenizer(formatted, "/");
+        int rep_day = Integer.parseInt(st2.nextToken());
+        int rep_month = Integer.parseInt(st2.nextToken());
+        int rep_year = Integer.parseInt(st2.nextToken());
+
+        rep_month = rep_month - 1;
+
+        String today_date = rep_day + "/" + rep_month + "/" + rep_year;
+
+        Date date_today = null, date_app_update = null;
+
+        try {
+            date_today = sdf1.parse(today_date);
+            if (!sharedPreference.getString(context, "clr_chace").equals("")) {
+                date_app_update = sdf1.parse(sharedPreference.getString(context, "clr_chace"));
+            } else {
+                date_app_update = sdf1.parse(today_date);
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            System.out.println("clr_chace : error");
+        }
+
+
+        if (sharedPreference.getString(context, "clr_chace").equals("")) {
+
+            aBoolean = true;
+            System.out.println("clr_chace : " + aBoolean);
+        } else {
+            if (date_today.compareTo(date_app_update) >= 0) {
+                aBoolean = true;
+                System.out.println("clr_chace : " + aBoolean);
+            }
+        }
+        return aBoolean;
+    }
+
+    public static boolean determineConnectivity(Context context) {
+        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = manager.getActiveNetworkInfo();
+        return info != null && info.getState() == NetworkInfo.State.CONNECTED;
+    }
+
+    public static void prize_data_update(Context context, int score) {
+        Newgame_DataBaseHelper myDbHelper = new Newgame_DataBaseHelper(context);
+        myDbHelper.executeSql("create table if not exists prize_data(id INTEGER PRIMARY KEY AUTOINCREMENT,date varchar,score integer,isfinish integer DEFAULT 0);");
+
+        if (sps.getString(context, "price_registration").equals("com")) {
+            int score_ed = 0;
+            Calendar calendar3 = Calendar.getInstance();
+            int cur_year1 = calendar3.get(Calendar.YEAR);
+            int cur_month1 = calendar3.get(Calendar.MONTH);
+            int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
+
+            String str_month1 = "" + (cur_month1 + 1);
+            if (str_month1.length() == 1) {
+                str_month1 = "0" + str_month1;
+            }
+
+            String str_day1 = "" + cur_day1;
+            if (str_day1.length() == 1) {
+                str_day1 = "0" + str_day1;
+            }
+            price_date = str_month1 + "-" + cur_year1;
+            System.out.println("#################PS_price_date_in" + price_date);
+//////////////////////////////////////////////////////////////////////////////////////PRIZE DATA TABLE///////////////////////////////////////////////////////////////////////////
+            Cursor sc2d = myDbHelper.getQry("select * from prize_data where date ='" + price_date + "'");
+            sc2d.moveToFirst();
+            if (sc2d.getCount() == 0) {
+                System.out.println("#################new insert");
+                ContentValues cv = new ContentValues();
+                cv.put("date", price_date);
+                cv.put("score", score);
+                myDbHelper.insert_data("prize_data", null, cv);
+            } else if (sc2d.getCount() != 0) {
+                Cursor up = myDbHelper.getQry("select * from prize_data where date ='" + price_date + "'");
+                up.moveToFirst();
+                if (up.getCount() != 0) {
+                    score_ed = up.getInt(up.getColumnIndexOrThrow("score"));
+                    score_ed = score_ed + score;
+                    myDbHelper.executeSql("UPDATE prize_data SET score='" + score_ed + "' where date ='" + price_date + "'");
+                    System.out.println("#################old insert");
+                }
+            }
+
+            System.out.println("###################score_ed" + score_ed);
+        }
+
+//////////////////////////////////////////////////////////////////////////////////////PRIZE DATA TABLE///////////////////////////////////////////////////////////////////////////
+    }
+
+    public static void send_prize_data(final Context context) {
+
+        Calendar calendar3 = Calendar.getInstance();
+        price_year_date = String.valueOf(calendar3.get(Calendar.YEAR));
+        int cur_month1 = calendar3.get(Calendar.MONTH);
+        int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
+
+        price_month_date = "" + (cur_month1 + 1);
+        if (price_month_date.length() == 1) {
+            price_month_date = "0" + price_month_date;
+        }
+
+
+        price_date_d = price_month_date + "-" + price_year_date;
+        System.out.println("#################PS_date" + price_date_d);
+
+        price_pre_month_date = "" + (cur_month1);
+        if (price_pre_month_date.length() == 1) {
+            price_pre_month_date = "0" + price_pre_month_date;
+        }
+
+        price_date_dm = price_pre_month_date + "-" + price_year_date;
+        System.out.println("#################PSV_date" + price_date_dm);
+
+        if (sps.getString(context, "price_registration").equals("com")) {
+            Newgame_DataBaseHelper myDbHelper = new Newgame_DataBaseHelper(context);
+            Cursor ol = myDbHelper.getQry("select * from prize_data where date ='" + price_date_dm + "'");
+            ol.moveToFirst();
+            System.out.println("#################PS_count" + ol.getCount());
+            if (ol.getCount() != 0) {
+                old_score_ed = ol.getInt(ol.getColumnIndexOrThrow("score"));
+            }
+
+            Cursor up = myDbHelper.getQry("select * from prize_data where date ='" + price_date_d + "'");
+            up.moveToFirst();
+            System.out.println("#################PS_count" + up.getCount());
+            if (up.getCount() != 0) {
+
+                score_ed = up.getInt(up.getColumnIndexOrThrow("score"));
+                prize_u_id = sps.getString(context, "p_user_id");
+                System.out.println("#################PS" + score_ed);
+                System.out.println("#################PS_id" + prize_u_id);
+                // Showing progress dialog at user registration time.
+                // Creating string request with post method.
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, price_url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String ServerResponse) {
+                        JSONArray jArray, jArray2;
+                        JSONObject json_data = null;
+                        JSONObject json_data2 = null;
+                        String data = "";
+                        try {
+                            jArray = new JSONArray(ServerResponse);
+                            json_data = jArray.getJSONObject(0);
+                            if (json_data.getString("status").equals("success")) {
+                                for (int i = 0; i < jArray.length(); i++) {
+                                    String urls = json_data.getString("web");
+                                    String result = json_data.getString("result");
+                                    System.out.println("##############result###########" + result);
+                                    jArray2 = new JSONArray(result);
+                                    json_data2 = jArray2.getJSONObject(0);
+                                    for (int j = 0; j < jArray2.length(); j++) {
+                                        String pos = json_data2.getString("position");
+                                        System.out.println("##############pos###########" + pos);
+                                    }
+
+                                    System.out.println("##############urls###########" + urls);
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        // Hiding the progress dialog after all task complete.
+                        // Showing response message coming from server.
+                        System.out.println("Game Status ServerResponse" + ServerResponse);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        // Hiding the progress dialog after all task complete.
+                        // Showing error message if something goes wrong.
+                        Toast.makeText(context, volleyError.toString(), Toast.LENGTH_LONG).show();
+                    }
+                }) {
+                    @Override
+                    protected Map<String, String> getParams() {
+
+                        // Creating Map String Params.
+                        Map<String, String> params = new HashMap<String, String>();
+                        // Adding All values to Params.
+                        params.put("mode", "GameStatus");
+                        params.put("user_id", prize_u_id);
+                        params.put("month", price_month_date);
+                        params.put("year", price_year_date);
+                        params.put("score", String.valueOf(score_ed));
+                        params.put("pre_month", String.valueOf(price_pre_month_date));
+                        params.put("pre_year", String.valueOf(price_year_date));
+                        params.put("old_score", String.valueOf(old_score_ed));
+                        System.out.println("####Tuser_id" + prize_u_id);
+                        System.out.println("####Tmonth" + price_month_date);
+                        System.out.println("####Tyear" + price_year_date);
+                        System.out.println("####Tscore" + score_ed);
+                        return params;
+                    }
+
+                };
+                // Creating RequestQueue.
+                RequestQueue requestQueue = Volley.newRequestQueue(context);
+                // Adding the StringRequest object into requestQueue.
+                requestQueue.add(stringRequest);
+
+            }
+        }
+
+    }
+
+    @Override
+    public void download_completed(String status) {
+        Toast.makeText(context, "" + status, Toast.LENGTH_SHORT).show();
+    }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -635,11 +732,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         System.out.println("=============Androidid" + Utils.android_id(context));
 
 
-
-
-
-
-
         /////////
 
         // builder_dialog = new AdLoader.Builder(this, ADMOB_AD_UNIT_ID_Top);
@@ -650,16 +742,10 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         main_act = "m_on";
 
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
+        mGoogleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
                 .addScope(Drive.SCOPE_APPFOLDER) // SavedGames
                 .build();
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
+        mGoogleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
                 .addScope(Drive.SCOPE_APPFOLDER) // SavedGames
                 .build();
 
@@ -692,7 +778,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         } catch (Exception ex) {
             //ex.printStackTrace();
         }*/
-
 
 
         db = new DataBaseHelper1(this);
@@ -778,7 +863,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
         if (clr_chace(MainActivity.this)) {
             System.out.println("==============================remote=====");
-            Utils.date_put(MainActivity.this, "clr_chace", 7);
+            date_put(MainActivity.this, "clr_chace", 7);
             //remoteConfig();
         }
 
@@ -839,41 +924,36 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                     if (!appinstalled) {
                         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                         alertDialog.setMessage("விளையாட்டுகளை சேமிக்க கூகிள் பிளே கேம்ஸ்யை இன்ஸ்டால் செய்யவும். ");
-                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ஆம் ",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        startActivity(new Intent(Intent.ACTION_VIEW,
-                                                Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.play.games")));
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ஆம் ", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.play.games")));
 
-                                    }
-                                });
+                            }
+                        });
 
-                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "இல்லை ",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
+                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "இல்லை ", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
                         alertDialog.show();
                     } else {
                         if (sps.getString(MainActivity.this, "signinagain").equals("")) {
                             //  First_register("yes");
                             AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                             alertDialog.setMessage("விளையாட்டுகளை சேமிக்க கூகுள் பிளே கேம்ஸ்ல் இணைத்துக்கொள்கிறீர்களா? ");
-                            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ஆம் ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            viewsaved();
-                                            dialog.dismiss();
-                                        }
-                                    });
-                            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "இல்லை ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                        }
-                                    });
+                            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ஆம் ", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    viewsaved();
+                                    dialog.dismiss();
+                                }
+                            });
+                            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "இல்லை ", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
                             alertDialog.show();
                             alertDialog.show();
                         } else {
@@ -936,15 +1016,10 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             @Override
             public void onSuccess(AppUpdateInfo appUpdateInfo) {
                 System.out.println("####################AppUpdateInfo");
-                if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                        && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
                     System.out.println("####################UpdateAvailability");
                     try {
-                        appUpdateManager.startUpdateFlowForResult(
-                                appUpdateInfo,
-                                AppUpdateType.IMMEDIATE,
-                                MainActivity.this,
-                                200);
+                        appUpdateManager.startUpdateFlowForResult(appUpdateInfo, AppUpdateType.IMMEDIATE, MainActivity.this, 200);
                     } catch (IntentSender.SendIntentException e) {
                         e.printStackTrace();
                     }
@@ -1120,7 +1195,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         achive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
 
 
             }
@@ -1355,8 +1429,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             TextView txt_ex2 = (TextView) openDialogterm.findViewById(R.id.txt_ex2);
             no.setText("AGREE & CONTINUE");
             txt_ex.setText("Privacy & Terms");
-            txt_ex2.setText("Thanks for downloading or updating Solli Adi\n\n" +
-                    "By clicking privacy tab you can read our privacy policy and agree to the terms of privacy policy to continue using Nithra Solli Adi.");
+            txt_ex2.setText("Thanks for downloading or updating Solli Adi\n\n" + "By clicking privacy tab you can read our privacy policy and agree to the terms of privacy policy to continue using Nithra Solli Adi.");
             yes.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -1940,7 +2013,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 */
 
                 sps.putInt(MainActivity.this, "dbcopy" + Utils.versioncode_get(MainActivity.this), 1);
-//                Apps_Utils.app_install_check(MainActivity.this, db);
 
                 //newupdate();
 
@@ -2464,8 +2536,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
@@ -2495,7 +2566,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             public void onClick(View v) {
                /* Downloading_pogo downloading_pogo=new Downloading_pogo("get_gamedata", "13", "1", "86ebb8bb4caf9bf9");
                 loginRetrofit2Api(downloading_pogo);*/
-               // loginRetrofit2Api("get_gamedata", "13", "1", "86ebb8bb4caf9bf9");
+                // loginRetrofit2Api("get_gamedata", "13", "1", "86ebb8bb4caf9bf9");
                 drawer.closeDrawer(navigationView);
 
             }
@@ -2538,18 +2609,17 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                         alertDialog.setMessage("தரவுகளை சேமிக்க பின்வரும் permission-யை allow செய்யவேண்டும்");
                         alertDialog.setCancelable(false);
-                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        if ((ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 261);
-                                        } else {
-                                            backup_db();
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                if ((ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
+                                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 261);
+                                } else {
+                                    backup_db();
 
-                                        }
-                                    }
-                                });
+                                }
+                            }
+                        });
 
                         alertDialog.show();
 
@@ -2559,25 +2629,23 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                                 alertDialog.setMessage("தரவுகளை சேமிக்க  settings-யில்  உள்ள permission-யை allow செய்யவேண்டும்");
                                 alertDialog.setCancelable(false);
-                                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                                Intent intent = new Intent();
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                                Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                                intent.setData(uri);
-                                                getApplicationContext().startActivity(intent);
-                                            }
-                                        });
+                                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        Intent intent = new Intent();
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                        Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
+                                        intent.setData(uri);
+                                        getApplicationContext().startActivity(intent);
+                                    }
+                                });
 
-                                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                            }
-                                        });
+                                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
 
                                 alertDialog.show();
                             } else {
@@ -2631,18 +2699,17 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                         alertDialog.setMessage("தரவுகளை உள்ளீடு செய்ய பின்வரும் permission-யை allow செய்யவேண்டும்");
                         alertDialog.setCancelable(false);
-                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        if ((ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 171);
-                                        } else {
-                                            restorecheck();
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                if ((ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
+                                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 171);
+                                } else {
+                                    restorecheck();
 
-                                        }
-                                    }
-                                });
+                                }
+                            }
+                        });
 
                         alertDialog.show();
 
@@ -2652,25 +2719,23 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                                 alertDialog.setMessage("தரவுகளை உள்ளீடு செய்ய  settings-யில்  உள்ள permission-யை allow செய்யவேண்டும்");
                                 alertDialog.setCancelable(false);
-                                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                                Intent intent = new Intent();
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                                Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                                intent.setData(uri);
-                                                getApplicationContext().startActivity(intent);
-                                            }
-                                        });
+                                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        Intent intent = new Intent();
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                        Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
+                                        intent.setData(uri);
+                                        getApplicationContext().startActivity(intent);
+                                    }
+                                });
 
-                                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                            }
-                                        });
+                                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
 
 
                                 alertDialog.show();
@@ -2743,17 +2808,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         nithra.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               /* Download_data_server download_data_server = new Download_data_server(MainActivity.this,"sld","new");
-                download_data_server.execute();*/
-
-             /*   d.get(0).getData1();
-                d.get(0).setData1("sakthivel");*/
-                // Toast.makeText(context, ""+ d.get(3).getData1(), Toast.LENGTH_SHORT).show();
-
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/developer?id=Nithra")));
-               /* Intent i = new Intent(MainActivity.this, more_app.class);
-                startActivity(i);
-                drawer.closeDrawer(navigationView);*/
             }
         });
         upcheck = (LinearLayout) findViewById(R.id.upcheck);
@@ -2837,7 +2892,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         });
 
 
-     //   ads_lay2 = (LinearLayout) findViewById(R.id.ads_lay2);
+        //   ads_lay2 = (LinearLayout) findViewById(R.id.ads_lay2);
 
 
        /* ads_lay2.setOnClickListener(new View.OnClickListener() {
@@ -3132,21 +3187,19 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                         alertDialog.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய பின்வரும் permission-யை allow செய்யவேண்டும்");
                         alertDialog.setCancelable(false);
-                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        if ((ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 151);
-                                        } else {
-                                            if (determineConnectivity(MainActivity.this))
-                                                downloaddata();
-                                            else
-                                                Toast.makeText(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                if ((ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
+                                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 151);
+                                } else {
+                                    if (determineConnectivity(MainActivity.this)) downloaddata();
+                                    else
+                                        Toast.makeText(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
 
-                                        }
-                                    }
-                                });
+                                }
+                            }
+                        });
 
                         alertDialog.show();
 
@@ -3156,25 +3209,23 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                                 alertDialog.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய  settings-யில்  உள்ள permission-யை allow செய்யவேண்டும்");
                                 alertDialog.setCancelable(false);
-                                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                                Intent intent = new Intent();
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                                Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                                intent.setData(uri);
-                                                getApplicationContext().startActivity(intent);
-                                            }
-                                        });
+                                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        Intent intent = new Intent();
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                        Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
+                                        intent.setData(uri);
+                                        getApplicationContext().startActivity(intent);
+                                    }
+                                });
 
-                                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                            }
-                                        });
+                                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
 
 
                                 alertDialog.show();
@@ -3189,8 +3240,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                             if ((ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
                                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 151);
                             } else {
-                                if (determineConnectivity(MainActivity.this))
-                                    downloaddata();
+                                if (determineConnectivity(MainActivity.this)) downloaddata();
                                 else
                                     Toast.makeText(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
                             }
@@ -3354,15 +3404,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             CharSequence text = getIntent().getCharSequenceExtra(Intent.ACTION_VIEW);
             String Word = "" + text;
             System.out.println("first  " + Word);
-            if (data.toString().contains("multiplayer")) {
-                if (isNetworkAvailable()) {
-                    finish();
-                    Intent i = new Intent(MainActivity.this, Solli_adi_multiplayer.class);
-                    startActivity(i);
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_LONG).show();
-                }
-            }  else if (data.toString().contains("prize")) {
+            if (data.toString().contains("prize")) {
                 if (determineConnectivity(MainActivity.this)) {
                     if (sp.getString(MainActivity.this, "price_registration").equals("com")) {
                         //finish();
@@ -3387,91 +3429,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
         }
     }
-
-    private void multiplayer_game_start() {
-        mutiplayer_siginin = 0;
-        sps.putString(context, "multi_on", "no");
-        System.out.println("=============leader board");
-
-
-        myDbHelper.executeSql("UPDATE maintable SET rtm=0");
-        newhelper.executeSql("UPDATE newmaintable SET rtm=0");
-        newhelper2.executeSql("UPDATE newmaintable2 SET rtm=0");
-        newhelper3.executeSql("UPDATE right_order SET rtm=0");
-        myDbHelper.executeSql("delete from answertable where rd=3");
-
-        final boolean appinstalled = appInstalledOrNot("com.google.android.play.games");
-        if (!appinstalled) {
-            AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-            alertDialog.setMessage("நிகழ்நேர போட்டி  விளையாட கூகிள் பிளே கேம்ஸ்யை இன்ஸ்டால் செய்யவும். ");
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ஆம் ",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            startActivity(new Intent(Intent.ACTION_VIEW,
-                                    Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.play.games")));
-
-                        }
-                    });
-
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "இல்லை ",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            alertDialog.show();
-        } else {
-            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                if (getApiClient().isConnected()) {
-                    if (isSignedIn()) {
-                        finish();
-                        System.out.println("=============Api already connected");
-                        Intent i = new Intent(MainActivity.this, Solli_adi_multiplayer.class);
-                        startActivity(i);
-
-                    } else {
-                        beginUserInitiatedSignIn();
-                        mGoogleApiClient.connect();
-                        System.out.println("=============Api already connected else");
-
-                    }
-                } else {
-                    if (sps.getString(MainActivity.this, "signinagain_leader").equals("")) {
-                        System.out.println("=============need to connect client");
-                        final Dialog openDialog_p = new Dialog(MainActivity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                        openDialog_p.setContentView(R.layout.googleapiclient_connect);
-                        LinearLayout yes = (LinearLayout) openDialog_p.findViewById(R.id.sign_in_btn);
-                        // TextView no = (TextView) openDialog_p.findViewById(R.id.no);
-                        yes.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                sps.putString(MainActivity.this, "signinagain_leader", "yes");
-                                sps.putString(MainActivity.this, "signinagain", "yes");
-                                Log.d(TAG, "Connecting client.");
-                                mutiplayer_siginin = 1;
-                                beginUserInitiatedSignIn();
-                                mGoogleApiClient.connect();
-                                openDialog_p.dismiss();
-                            }
-                        });
-                        openDialog_p.show();
-
-                    } else {
-                        System.out.println("=============Api already connected");
-                        mGoogleApiClient.connect();
-                        finish();
-                        Intent i = new Intent(MainActivity.this, Solli_adi_multiplayer.class);
-                        startActivity(i);
-                    }
-                }
-            } else {
-                Toast.makeText(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-
     //method
     @Override
     public void onBackPressed() {
@@ -3482,6 +3439,52 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             super.onBackPressed();
         }
     }
+
+
+
+ /*   public  void settings()
+    {
+
+        String snd=sps.getString(MainActivity.this, "snd");
+        final Dialog openDialog = new Dialog(MainActivity.this,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog.setContentView(R.layout.settings);
+
+        toggleButton=(ToggleButton)openDialog.findViewById(R.id.toggle);
+        if (snd.equals("off"))
+        {
+            toggleButton.setChecked(true);
+        }else if (snd.equals("on"))
+        {
+
+            toggleButton.setChecked(false);
+        }
+        Button cancel=(Button)openDialog.findViewById(R.id.cancel);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDialog.dismiss();
+
+            }
+        });
+        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked == true) {
+                    play1.setVolume(0, 0);
+                    sps.putString(MainActivity.this, "snd", "off");
+
+
+                }
+                if (isChecked == false) {
+                    play1.setVolume(1, 1);
+                    sps.putString(MainActivity.this, "snd", "on");
+                }
+
+            }
+        });
+
+        openDialog.show();
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -3511,6 +3514,279 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         return true;
     }
 
+/*
+
+    public void registergcm() {
+
+
+        final String regId = GCMRegistrar.getRegistrationId(this);
+        System.out.println("validdd===" + "=====" + regId);
+
+        if (regId.equals("")) {
+            GCMRegistrar.register(this, SENDER_ID);
+        } else {
+            if (GCMRegistrar.isRegisteredOnServer(this)) {
+
+            } else {
+                if (sps.getInt(getApplicationContext(), "isvalid") == 0) {
+                    ServerUtilities.register(MainActivity.this, "raj", "mohan",
+                            regId);
+                }
+            }
+        }
+
+    }
+
+    private final BroadcastReceiver mHandleMessageReceiverdic = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // String newMessage = intent.getExtras().getString(EXTRA_MESSAGE);
+            WakeLocker.acquire(getApplicationContext());
+
+            WakeLocker.release();
+        }
+    };
+*/
+
+
+   /* public void reggcmfun() {
+
+        final Handler handler = new Handler() {
+            public void handleMessage(Message msg) {
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        System.out.println("onPostExecute");
+                    }
+                };
+                runOnUiThread(runnable);
+            }
+        };
+        final Thread checkUpdate = new Thread() {
+            public void run() {
+                try {
+                    System.out.println("theardBackground starts");
+
+                    registergcm();
+                    System.out.println("theardBackground ends");
+
+                } catch (Exception e) {
+
+                }
+                handler.sendEmptyMessage(0);
+            }
+        };
+        checkUpdate.start();
+
+    }
+
+    public void updateGCM(final String vcode, final String vname) {
+        final Handler handler = new Handler() {
+            public void handleMessage(Message msg) {
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        sps.putInt(getApplicationContext(), "vcode", vercode);
+                    }
+                };
+                runOnUiThread(runnable);
+            }
+        };
+        Thread checkUpdate = new Thread() {
+            public void run() {
+                try {
+                    updateGCM1(vcode, vname);
+                } catch (Exception e) {
+
+                }
+                handler.sendEmptyMessage(0);
+            }
+        };
+
+        checkUpdate.start();
+    }
+
+    public void updateGCM1(String vcode, String vname) {
+
+        HttpClient client = new DefaultHttpClient();
+        HttpPost post = new HttpPost("https://www.nithra.mobi/appgcm/gcmtamilgame/update.php");
+        try {
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
+
+            nameValuePairs.add(new BasicNameValuePair("vcode", vcode));
+            nameValuePairs.add(new BasicNameValuePair("vname", vname));
+            nameValuePairs.add(new BasicNameValuePair("email", Utils.android_id(context)));
+
+            post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            HttpResponse response = client.execute(post);
+            BufferedReader rd = new BufferedReader(new InputStreamReader(
+                    response.getEntity().getContent()));
+
+            String line = "";
+            while ((line = rd.readLine()) != null) {
+                Log.e("HttpResponse", line);
+            }
+
+        } catch (IOException e) {
+
+        }
+    }
+
+    public void gcmfun(final String message, final String title, String type, final String date, final String time) {
+
+*//* dialog for show message *//*
+        final Dialog dialog_s = new Dialog(this,
+                android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        dialog_s.setContentView(R.layout.cross_app);
+
+        Button ok = (Button) dialog_s.findViewById(R.id.button1);
+        ok.setText("Ok");
+        TextView textView1 = (TextView) dialog_s.findViewById(R.id.version2);
+        TextView textView2 = (TextView) dialog_s.findViewById(R.id.textView2);
+        textView1.setText("" + title);
+        textView2.setText("" + message);
+        ok.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                // TODO Auto-generated method stub
+                dialog_s.dismiss();
+            }
+        });
+
+*//* dialog for show for web link message *//*
+
+        final Dialog dialog_w = new Dialog(this,
+                android.R.style.Theme_Translucent_NoTitleBar);
+        dialog_w.setContentView(R.layout.notification_url);
+        TextView txtHeading = (TextView) dialog_w.findViewById(R.id.txtHeading);
+        Button btnClkHere = (Button) dialog_w.findViewById(R.id.btnClkHere);
+
+        txtHeading.setText(title);
+        btnClkHere.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                if (Utils.isNetworkAvailable(MainActivity.this)) {
+
+                    otfun(title, message);
+
+                } else {
+                    Utils.toast_normal(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும் ");
+                }
+                dialog_w.dismiss();
+            }
+        });
+        if (type.equals("s")) {
+            dialog_s.show();
+        } else if (type.equals("w")) {
+            dialog_w.show();
+        }
+
+    }
+
+
+    public void otfun(String title, String message) {
+
+
+        final Dialog dialog_ot = new Dialog(this,
+                android.R.style.Theme_Translucent_NoTitleBar);
+        dialog_ot.setContentView(R.layout.otdia);
+        TextView titletxtot = (TextView) dialog_ot.findViewById(R.id.title);
+        //final WebView webView2 = (WebView) dialog_ot.findViewById(R.id.webView2);
+        titletxtot.setText(title);
+        final LinearLayout addview = (LinearLayout) dialog_ot
+                .findViewById(R.id.addview);
+        MainActivity.load_addFromMain(MainActivity.this, addview);
+
+
+        WebView notesWebView = (WebView) dialog_ot
+                .findViewById(R.id.webView2);
+        WebSettings ws = notesWebView.getSettings();
+        ws.setJavaScriptEnabled(true);
+        notesWebView.loadUrl(message);
+
+        notesWebView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return true;
+            }
+        });
+        notesWebView.setWebViewClient(new WebViewClient() {
+
+            @Override
+            public void onReceivedError(WebView view, int errorCode,
+                                        String description, String failingUrl) {
+                // Handle the error
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                //   view.loadUrl(url);
+                Intent i = new Intent();
+                i.setAction(Intent.ACTION_VIEW);
+                i.addCategory(Intent.CATEGORY_BROWSABLE);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+                return true;
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                Utils.mProgress(MainActivity.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", true).show();
+                super.onPageStarted(view, url, favicon);
+            }
+
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                try {
+                    Utils.mProgress.dismiss();
+                } catch (Exception e) {
+
+                }
+                super.onPageFinished(view, url);
+            }
+
+        });
+
+        dialog_ot.show();
+    }
+*/
+
+
+  /*  public void adds(final LinearLayout layout) {
+        AdView adView = new AdView(MainActivity.this);
+       *//* adView.setAdUnitId("ca-app-pub-4267540560263635/6120401901");
+        adView.setAdSize(AdSize.SMART_BANNER);
+
+        layout.addView(adView);*//*
+
+        adView.setAdUnitId("ca-app-pub-4267540560263635/6291854303");//Native id
+
+        AdSize nativesize = new AdSize(AdSize.FULL_WIDTH,132);
+        adView.setAdSize(nativesize);
+        layout.addView(adView);
+        adView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                layout.setVisibility(View.VISIBLE);
+            }
+             public void onAdFailedToLoad(int errorcode) {
+         *//*       com.facebook.ads.AdView adVieww = new com.facebook.ads.AdView(context, "1746769098928603_1795176057421240", com.facebook.ads.AdSize.BANNER_320_50);
+
+                adVieww.loadAd();
+                ads_lay.addView(adVieww);
+                ads_lay.setVisibility(View.VISIBLE);*//*
+                // Add the ad view to your activity layout
+
+            }
+
+        });
+
+
+        AdRequest request = new AdRequest.Builder().build();
+        adView.loadAd(request);
+    }*/
 
     public void callactivity() {
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
@@ -3533,8 +3809,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         match_the_fallows = (RippleView) findViewById(R.id.match_the_fallows);
 
 
-
-
         adsicon2 = (RelativeLayout) findViewById(R.id.adsicon2);
         ads_logo2 = (CircleImageView) findViewById(R.id.ads_logo2);
 
@@ -3543,7 +3817,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         hintgame = (TextView) findViewById(R.id.hintgame);
         solegame = (TextView) findViewById(R.id.solgame);
         pictgame = (TextView) findViewById(R.id.picgame);
-       // m_settings = (TextView) findViewById(R.id.m_settings);
+        // m_settings = (TextView) findViewById(R.id.m_settings);
         name_main = (TextView) findViewById(R.id.name_main);
 
         p_id = (TextView) findViewById(R.id.p_id);
@@ -3643,16 +3917,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
     }
 
-
-    public static void sharedPrefAdd(String one, String two,
-                                     final SharedPreferences mPreferences) {
-        // TODO Auto-generated method stub
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putString(one, two);
-        editor.commit();
-    }
-
-
     private void dbcreate() {
         Commen_string.dbs_name = "Tamil_Game2.db";
         sp.putString(MainActivity.this, "new_user_db", "on");
@@ -3744,11 +4008,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         final TextView u_para = (TextView) findViewById(R.id.u_para);
 
         a.setVisibility(View.VISIBLE);
-        translateAnimation1 = new TranslateAnimation(
-                TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 1.1f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 0.0f);
+        translateAnimation1 = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 1.1f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f);
         translateAnimation1.setDuration(3000);
         a.startAnimation(translateAnimation1);
         // a.setVisibility(View.INVISIBLE);
@@ -3759,11 +4019,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             public void run() {
                 a.setVisibility(View.INVISIBLE);
                 a_para.setVisibility(View.VISIBLE);
-                translateAnimation2 = new TranslateAnimation(
-                        TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                        TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                        TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                        TranslateAnimation.RELATIVE_TO_PARENT, 1.1f);
+                translateAnimation2 = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 1.1f);
                 translateAnimation2.setDuration(3000);
                 a_para.startAnimation(translateAnimation2);
                 a_para.setVisibility(View.INVISIBLE);
@@ -3777,11 +4033,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             }
         }, 3000);
 
-        translateAnimation3 = new TranslateAnimation(
-                TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 1.1f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 0.0f);
+        translateAnimation3 = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 1.1f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f);
         translateAnimation3.setDuration(4000);
         u.startAnimation(translateAnimation3);
         u.setVisibility(View.INVISIBLE);
@@ -3792,11 +4044,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             public void run() {
                 u.setVisibility(View.INVISIBLE);
                 u_para.setVisibility(View.VISIBLE);
-                translateAnimation4 = new TranslateAnimation(
-                        TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                        TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                        TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                        TranslateAnimation.RELATIVE_TO_PARENT, 1.1f);
+                translateAnimation4 = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 1.1f);
                 translateAnimation4.setDuration(4000);
                 u_para.startAnimation(translateAnimation4);
                 a_para.setVisibility(View.INVISIBLE);
@@ -3809,11 +4057,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             }
         }, 4000);
 
-        translateAnimation5 = new TranslateAnimation(
-                TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 1.1f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 0.0f);
+        translateAnimation5 = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 1.1f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f);
         translateAnimation5.setDuration(3500);
         ee.startAnimation(translateAnimation5);
         ee.setVisibility(View.INVISIBLE);
@@ -3823,11 +4067,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             @Override
             public void run() {
                 ee_para.setVisibility(View.VISIBLE);
-                translateAnimation6 = new TranslateAnimation(
-                        TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                        TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                        TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                        TranslateAnimation.RELATIVE_TO_PARENT, 1.1f);
+                translateAnimation6 = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 1.1f);
                 translateAnimation6.setDuration(3500);
                 ee_para.startAnimation(translateAnimation6);
 
@@ -3840,11 +4080,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
             }
         }, 3500);
-        translateAnimation7 = new TranslateAnimation(
-                TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 1.1f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 0.0f);
+        translateAnimation7 = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 1.1f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f);
         translateAnimation7.setDuration(5000);
         e.startAnimation(translateAnimation7);
         e.setVisibility(View.INVISIBLE);
@@ -3854,11 +4090,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             @Override
             public void run() {
                 ee_para.setVisibility(View.VISIBLE);
-                translateAnimation8 = new TranslateAnimation(
-                        TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                        TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                        TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-                        TranslateAnimation.RELATIVE_TO_PARENT, 1.1f);
+                translateAnimation8 = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 1.1f);
                 translateAnimation8.setDuration(5000);
                 e_para.startAnimation(translateAnimation8);
 
@@ -4222,52 +4454,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         }
     }
 
-
-
- /*   public  void settings()
-    {
-
-        String snd=sps.getString(MainActivity.this, "snd");
-        final Dialog openDialog = new Dialog(MainActivity.this,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        openDialog.setContentView(R.layout.settings);
-
-        toggleButton=(ToggleButton)openDialog.findViewById(R.id.toggle);
-        if (snd.equals("off"))
-        {
-            toggleButton.setChecked(true);
-        }else if (snd.equals("on"))
-        {
-
-            toggleButton.setChecked(false);
-        }
-        Button cancel=(Button)openDialog.findViewById(R.id.cancel);
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog.dismiss();
-
-            }
-        });
-        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked == true) {
-                    play1.setVolume(0, 0);
-                    sps.putString(MainActivity.this, "snd", "off");
-
-
-                }
-                if (isChecked == false) {
-                    play1.setVolume(1, 1);
-                    sps.putString(MainActivity.this, "snd", "on");
-                }
-
-            }
-        });
-
-        openDialog.show();
-    }*/
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -4450,280 +4636,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         sps.putString(getApplicationContext(), "density", metrics.densityDpi + "");
     }
 
-/*
-
-    public void registergcm() {
-
-
-        final String regId = GCMRegistrar.getRegistrationId(this);
-        System.out.println("validdd===" + "=====" + regId);
-
-        if (regId.equals("")) {
-            GCMRegistrar.register(this, SENDER_ID);
-        } else {
-            if (GCMRegistrar.isRegisteredOnServer(this)) {
-
-            } else {
-                if (sps.getInt(getApplicationContext(), "isvalid") == 0) {
-                    ServerUtilities.register(MainActivity.this, "raj", "mohan",
-                            regId);
-                }
-            }
-        }
-
-    }
-
-    private final BroadcastReceiver mHandleMessageReceiverdic = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // String newMessage = intent.getExtras().getString(EXTRA_MESSAGE);
-            WakeLocker.acquire(getApplicationContext());
-
-            WakeLocker.release();
-        }
-    };
-*/
-
-
-   /* public void reggcmfun() {
-
-        final Handler handler = new Handler() {
-            public void handleMessage(Message msg) {
-                Runnable runnable = new Runnable() {
-                    public void run() {
-                        System.out.println("onPostExecute");
-                    }
-                };
-                runOnUiThread(runnable);
-            }
-        };
-        final Thread checkUpdate = new Thread() {
-            public void run() {
-                try {
-                    System.out.println("theardBackground starts");
-
-                    registergcm();
-                    System.out.println("theardBackground ends");
-
-                } catch (Exception e) {
-
-                }
-                handler.sendEmptyMessage(0);
-            }
-        };
-        checkUpdate.start();
-
-    }
-
-    public void updateGCM(final String vcode, final String vname) {
-        final Handler handler = new Handler() {
-            public void handleMessage(Message msg) {
-                Runnable runnable = new Runnable() {
-                    public void run() {
-                        sps.putInt(getApplicationContext(), "vcode", vercode);
-                    }
-                };
-                runOnUiThread(runnable);
-            }
-        };
-        Thread checkUpdate = new Thread() {
-            public void run() {
-                try {
-                    updateGCM1(vcode, vname);
-                } catch (Exception e) {
-
-                }
-                handler.sendEmptyMessage(0);
-            }
-        };
-
-        checkUpdate.start();
-    }
-
-    public void updateGCM1(String vcode, String vname) {
-
-        HttpClient client = new DefaultHttpClient();
-        HttpPost post = new HttpPost("https://www.nithra.mobi/appgcm/gcmtamilgame/update.php");
-        try {
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
-
-            nameValuePairs.add(new BasicNameValuePair("vcode", vcode));
-            nameValuePairs.add(new BasicNameValuePair("vname", vname));
-            nameValuePairs.add(new BasicNameValuePair("email", Utils.android_id(context)));
-
-            post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            HttpResponse response = client.execute(post);
-            BufferedReader rd = new BufferedReader(new InputStreamReader(
-                    response.getEntity().getContent()));
-
-            String line = "";
-            while ((line = rd.readLine()) != null) {
-                Log.e("HttpResponse", line);
-            }
-
-        } catch (IOException e) {
-
-        }
-    }
-
-    public void gcmfun(final String message, final String title, String type, final String date, final String time) {
-
-*//* dialog for show message *//*
-        final Dialog dialog_s = new Dialog(this,
-                android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        dialog_s.setContentView(R.layout.cross_app);
-
-        Button ok = (Button) dialog_s.findViewById(R.id.button1);
-        ok.setText("Ok");
-        TextView textView1 = (TextView) dialog_s.findViewById(R.id.version2);
-        TextView textView2 = (TextView) dialog_s.findViewById(R.id.textView2);
-        textView1.setText("" + title);
-        textView2.setText("" + message);
-        ok.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                // TODO Auto-generated method stub
-                dialog_s.dismiss();
-            }
-        });
-
-*//* dialog for show for web link message *//*
-
-        final Dialog dialog_w = new Dialog(this,
-                android.R.style.Theme_Translucent_NoTitleBar);
-        dialog_w.setContentView(R.layout.notification_url);
-        TextView txtHeading = (TextView) dialog_w.findViewById(R.id.txtHeading);
-        Button btnClkHere = (Button) dialog_w.findViewById(R.id.btnClkHere);
-
-        txtHeading.setText(title);
-        btnClkHere.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                if (Utils.isNetworkAvailable(MainActivity.this)) {
-
-                    otfun(title, message);
-
-                } else {
-                    Utils.toast_normal(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-                dialog_w.dismiss();
-            }
-        });
-        if (type.equals("s")) {
-            dialog_s.show();
-        } else if (type.equals("w")) {
-            dialog_w.show();
-        }
-
-    }
-
-
-    public void otfun(String title, String message) {
-
-
-        final Dialog dialog_ot = new Dialog(this,
-                android.R.style.Theme_Translucent_NoTitleBar);
-        dialog_ot.setContentView(R.layout.otdia);
-        TextView titletxtot = (TextView) dialog_ot.findViewById(R.id.title);
-        //final WebView webView2 = (WebView) dialog_ot.findViewById(R.id.webView2);
-        titletxtot.setText(title);
-        final LinearLayout addview = (LinearLayout) dialog_ot
-                .findViewById(R.id.addview);
-        MainActivity.load_addFromMain(MainActivity.this, addview);
-
-
-        WebView notesWebView = (WebView) dialog_ot
-                .findViewById(R.id.webView2);
-        WebSettings ws = notesWebView.getSettings();
-        ws.setJavaScriptEnabled(true);
-        notesWebView.loadUrl(message);
-
-        notesWebView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                return true;
-            }
-        });
-        notesWebView.setWebViewClient(new WebViewClient() {
-
-            @Override
-            public void onReceivedError(WebView view, int errorCode,
-                                        String description, String failingUrl) {
-                // Handle the error
-            }
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                //   view.loadUrl(url);
-                Intent i = new Intent();
-                i.setAction(Intent.ACTION_VIEW);
-                i.addCategory(Intent.CATEGORY_BROWSABLE);
-                i.setData(Uri.parse(url));
-                startActivity(i);
-                return true;
-            }
-
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                Utils.mProgress(MainActivity.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", true).show();
-                super.onPageStarted(view, url, favicon);
-            }
-
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                try {
-                    Utils.mProgress.dismiss();
-                } catch (Exception e) {
-
-                }
-                super.onPageFinished(view, url);
-            }
-
-        });
-
-        dialog_ot.show();
-    }
-*/
-
-
-  /*  public void adds(final LinearLayout layout) {
-        AdView adView = new AdView(MainActivity.this);
-       *//* adView.setAdUnitId("ca-app-pub-4267540560263635/6120401901");
-        adView.setAdSize(AdSize.SMART_BANNER);
-
-        layout.addView(adView);*//*
-
-        adView.setAdUnitId("ca-app-pub-4267540560263635/6291854303");//Native id
-
-        AdSize nativesize = new AdSize(AdSize.FULL_WIDTH,132);
-        adView.setAdSize(nativesize);
-        layout.addView(adView);
-        adView.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                layout.setVisibility(View.VISIBLE);
-            }
-             public void onAdFailedToLoad(int errorcode) {
-         *//*       com.facebook.ads.AdView adVieww = new com.facebook.ads.AdView(context, "1746769098928603_1795176057421240", com.facebook.ads.AdSize.BANNER_320_50);
-
-                adVieww.loadAd();
-                ads_lay.addView(adVieww);
-                ads_lay.setVisibility(View.VISIBLE);*//*
-                // Add the ad view to your activity layout
-
-            }
-
-        });
-
-
-        AdRequest request = new AdRequest.Builder().build();
-        adView.loadAd(request);
-    }*/
-
     public void bounce_alarm() {
     /*    AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, Bonus.class);
@@ -4734,28 +4646,26 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
     }
 
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_BACK:
-                sps.putInt(MainActivity.this, "addloded", 0);
-                sps.putInt(context, "addloded2", 0);
-                if (drawer.isDrawerOpen(GravityCompat.START) == true) {
-                    drawer.closeDrawer(GravityCompat.START);
-                } else {
-                    if (back_flag == 0) {
-                        backpressed();
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            sps.putInt(MainActivity.this, "addloded", 0);
+            sps.putInt(context, "addloded2", 0);
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+            } else {
+                if (back_flag == 0) {
+                    backpressed();
 
-                    } else {
+                } else {
 
 /*
                         back_flag = back_flag + 1;
                         Utils.toast_normal(MainActivity.this, "செயலியை விட்டு வெளியேற மீண்டும் அழுத்தவும்.");*/
-                    }
                 }
-                return true;
+            }
+            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -4820,7 +4730,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                     sps.putString(MainActivity.this, "ratefun_shown", "yes");
                 } else {
                     if (wee.getInt(MainActivity.this, "INTERSTITIAL_AD_Noti_Exit") == 0) {
-                      finish();
+                        finish();
                     } else {
                         wee.putInt(MainActivity.this, "INTERSTITIAL_AD_Noti_Exit", 0);
                         finish();
@@ -4833,145 +4743,11 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                     }
                 }
 
-           /*     if(Apps_Utils.cross_app_shown(MainActivity.this,db)) {
-
-                    Apps_Utils.date_put(MainActivity.this, "open_date", 3);
-                    Apps_Utils.cross_app(MainActivity.this, db).show();
-                    try {
-                        Apps_Utils.cross_app.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                            @Override
-                            public void onDismiss(DialogInterface dialogInterface) {
-                                if (Apps_Utils.cross_app_shown(MainActivity.this)) {
-
-                                } else {
-
-
-                                    ///15 day 30 day rate function
-                                    if(sps.getString(MainActivity.this,"dat").equals("")){
-                                        rate();
-                                    }else {
-
-                                        try {
-                                            Calendar c = Calendar.getInstance();
-                                            SimpleDateFormat sdf = new SimpleDateFormat("dd:MM:yyyy");
-
-                                            String day = c.get(Calendar.DAY_OF_MONTH) + "";
-                                            String month = (c.get(Calendar.MONTH) + 1) + "";
-                                            String year = c.get(Calendar.YEAR) + "";
-                                            if (day.length() == 1)
-                                                day = "0" + day;
-                                            if (month.length() == 1)
-                                                month = "0" + month;
-
-
-                                            Date date1 = sdf.parse(day + ":" + month + ":" + year);
-                                            Date date2 = sdf.parse(sps.getString(MainActivity.this, "dat"));
-
-
-                                            System.out.println(sdf.format(date1));
-                                            System.out.println(sdf.format(date2));
-
-
-                                            if (date1.compareTo(date2) > 0) {
-                                                System.out.println("Date1 is after Date2");
-
-                                                rate_fun();
-                                                sps.putString(MainActivity.this, "show_rate", "");
-                                                rate();
-                                            } else if (date1.compareTo(date2) < 0) {
-                                                System.out.println("Date1 is before Date2");
-
-                                            } else if (date1.compareTo(date2) == 0) {
-                                                System.out.println("Date1 is equal to Date2");
-                                                rate_fun();
-                                                sps.putString(MainActivity.this, "show_rate", "");
-                                                rate();
-                                            } else {
-                                                System.out.println("How to get here?");
-                                            }
-
-                                        } catch (ParseException ex) {
-                                            ex.printStackTrace();
-                                        }
-                                    }
-                                    ///
-                                    if (wee.getInt(MainActivity.this, "INTERSTITIAL_AD_Noti_Exit") == 0) {
-                                        if (interstitialAd.isLoaded()) {
-                                            interstitialAd.show();
-                                            interstitialAd.setAdListener(new AdListener() {
-                                                @Override
-                                                public void onAdClosed() {
-                                                    exit_dia();
-                                                }
-                                            });
-                                        } else {
-                                            finish();
-                                            Cursor bb1 = myDbHelper.getQry("select * from score ", null);
-                                            bb1.moveToFirst();
-                                            int k1=bb1.getInt(bb1.getColumnIndexOrThrow("coins"));
-                                            if(k1<=20) {
-                                                bounce_alarm();
-                                            }
-                                        }
-                                    } else {
-                                        wee.putInt(MainActivity.this, "INTERSTITIAL_AD_Noti_Exit", 0);
-                                        finish();
-                                        Cursor bb1 = myDbHelper.getQry("select * from score ", null);
-                                        bb1.moveToFirst();
-                                        int k1=bb1.getInt(bb1.getColumnIndexOrThrow("coins"));
-                                        if(k1<=20) {
-                                            bounce_alarm();
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }else {
-                    if (sps.getString(MainActivity.this,"ratefun_shown").equals(""))
-                    {
-                        ratefun();
-                        sps.putString(MainActivity.this,"ratefun_shown","yes");
-                    }else {
-                        if (interstitialAd.isLoaded()) {
-                            interstitialAd.show();
-                            interstitialAd.setAdListener(new AdListener() {
-                                @Override
-                                public void onAdClosed() {
-                                    exit_dia();
-                                    Cursor bb1 = myDbHelper.getQry("select * from score ", null);
-                                    bb1.moveToFirst();
-                                    int k1=bb1.getInt(bb1.getColumnIndexOrThrow("coins"));
-                                    if(k1<=100) {
-                                        bounce_alarm();
-                                    }
-                                }
-                            });
-                        } else {
-                            finish();
-                            Cursor bb1 = myDbHelper.getQry("select * from score ", null);
-                            bb1.moveToFirst();
-                            int k1=bb1.getInt(bb1.getColumnIndexOrThrow("coins"));
-                            if(k1<=100) {
-                                bounce_alarm();
-                            }
-                        }
-                    }
-
-                }
-*/
 
                 openDialog_p.dismiss();
             }
         });
-        no.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openDialog_p.dismiss();
-            }
-        });
+        no.setOnClickListener(view -> openDialog_p.dismiss());
 
         if (sps.getString(getApplicationContext(), "ach11").equals("")) {
             sps.putInt(MainActivity.this, "randomtime1", 0);
@@ -4984,415 +4760,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         }
         openDialog_p.show();
 
-    }
-
-    public void ratefun() {
-
-        final Dialog ratedia = new Dialog(this,
-                android.R.style.Theme_Translucent_NoTitleBar);
-        ratedia.setContentView(R.layout.rate);
-        Button yesbut = (Button) ratedia.findViewById(R.id.button2);
-        Button nobut = (Button) ratedia.findViewById(R.id.button1);
-
-        final Dialog yesratedialog = new Dialog(this,
-                android.R.style.Theme_Translucent_NoTitleBar);
-        yesratedialog.setContentView(R.layout.rate1);
-        Button yesbut1 = (Button) yesratedialog.findViewById(R.id.button2);
-        Button nobut1 = (Button) yesratedialog.findViewById(R.id.button1);
-
-        final Dialog feedratedialog = new Dialog(this,
-                android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth);
-        feedratedialog.setContentView(R.layout.send_feedback);
-        feedratedialog.setCanceledOnTouchOutside(false);
-        Button sentbut1 = (Button) feedratedialog.findViewById(R.id.btnSend);
-        final EditText editText1 = (EditText) feedratedialog
-                .findViewById(R.id.editText1);
-        final EditText ph_no = (EditText) feedratedialog
-                .findViewById(R.id.ph_no);
-        final EditText name = (EditText) feedratedialog
-                .findViewById(R.id.name);
-        final EditText emails = (EditText) feedratedialog
-                .findViewById(R.id.emails);
-        final TextView privacy_policy = (TextView) feedratedialog.findViewById(R.id.privacy_policy);
-        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        privacy_policy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imm.hideSoftInputFromWindow(editText1.getWindowToken(), 0);
-                imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
-                if (isNetworkAvailable()) {
-
-                    showPrivacy();
-                } else {
-                    Toast.makeText(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
-
-                }
-            }
-        });
-        editText1.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before,
-                                      int count) {
-                // TODO Auto-generated method stub
-                editText1.setError(null);
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // TODO Auto-generated method stub
-
-            }
-        });
-        sentbut1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-            /*    if (emails.getText().toString().length() == 0) {
-                    Toast.makeText(MainActivity.this, "Please type your email_id", Toast.LENGTH_SHORT).show();
-                } else if (!Utils.isValidEmail(emails.getText().toString())) {
-                    Utils.toast_center(MainActivity.this, "Please type your correct email_id");
-                } else*/
-                if (editText1.getText().toString().length() == 0) {
-                    Utils.toast_center(MainActivity.this, "உங்களது கருத்துக்களை பதிவு செய்யவும். ");
-                } else {
-                    if (Utils.isNetworkAvailable(MainActivity.this)) {
-
-                        final Handler handler = new Handler() {
-                            public void handleMessage(Message msg) {
-                                Runnable runnable = new Runnable() {
-                                    public void run() {
-
-                                    }
-                                };
-                                runOnUiThread(runnable);
-                            }
-                        };
-                        Thread checkUpdate = new Thread() {
-                            public void run() {
-                                try {
-                                    send_feedback(editText1.getText().toString(), ph_no.getText().toString(), name.getText().toString(), emails.getText().toString());
-                                } catch (Exception e) {
-
-                                }
-                                handler.sendEmptyMessage(0);
-                            }
-                        };
-                        checkUpdate.start();
-
-                        Utils.toast_normal(MainActivity.this, "கருத்துக்கள்  அனுப்பப்பட்டது .நன்றி ");
-                        feedratedialog.dismiss();
-
-                    } else {
-                        Utils.toast_normal(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும் ");
-                    }
-                }
-
-                InputMethodManager imms = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imms.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-
-            }
-
-        });
-
-        yesbut1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                try {
-                    String appPackageName = getPackageName();
-                    Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri
-                            .parse("market://details?id=" + appPackageName));
-                    startActivity(marketIntent);
-                } catch (Exception e) {
-                    System.out.println();
-                }
-                yesratedialog.dismiss();
-                finish();
-            }
-        });
-
-        nobut1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                feedcheck = 1;
-///
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-
-                feedratedialog.show();
-                yesratedialog.dismiss();
-            }
-        });
-
-        yesbut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                // TODO Auto-generated method stub
-                feedcheck = 1;
-                sps.putInt(getApplicationContext(), "ratecheckval", 1);
-                Apps_Utils.date_put(MainActivity.this, "rate_date", 90);
-                ratedia.dismiss();
-                yesratedialog.show();
-            }
-        });
-        nobut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                sps.putInt(getApplicationContext(), "ratecheckval", 1);
-                Apps_Utils.date_put(MainActivity.this, "rate_date", 90);
-                feedcheck = 1;
-                ratedia.dismiss();
-////
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-
-                feedratedialog.show();
-            }
-        });
-        yesratedialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                // TODO Auto-generated method stub
-                if (feedcheck == 0) {
-                    finish();
-                }
-            }
-        });
-
-        ratedia.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                // TODO Auto-generated method stub
-                if (feedcheck == 0) {
-                    finish();
-                }
-            }
-        });
-        feedratedialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                // TODO Auto-generated method stub
-                if (feedcheck == 1) {
-                    finish();
-                }
-            }
-
-            ;
-        });
-
-        if (sps.getInt(getApplicationContext(), "ratecheckval") == 0) {
-            ratedia.show();
-        } else {
-            finish();
-
-        }
-    }
-
-
-    public void exit_dia() {
-        final Dialog exit_dia = new Dialog(MainActivity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        exit_dia.setContentView(R.layout.exit_lay);
-        exit_dia.setCanceledOnTouchOutside(false);
-        exit_dia.setCancelable(false);
-        Handler handel = new Handler();
-        handel.postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                // TODO Auto-generated method stub
-                finish();
-                Cursor bb1 = myDbHelper.getQry("select * from score ");
-                bb1.moveToFirst();
-                int k1 = bb1.getInt(bb1.getColumnIndexOrThrow("coins"));
-                if (k1 <= 20) {
-                    bounce_alarm();
-                }
-                try {
-                    exit_dia.dismiss();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }, 1200);
-
-        exit_dia.show();
-    }
-
-
-    public void send_feedback(String feedback, String ph_no, String name, String Email) {
-
-
-        PackageInfo pInfo = null;
-        try {
-            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        HttpClient client = new DefaultHttpClient();
-        HttpPost post = new HttpPost("https://www.nithra.mobi/apps/appfeedback.php");
-        try {
-            // i=i+5;
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
-            // Get the deviceID
-
-           /* String email = sps.getString(MainActivity.this, "email");
-
-            if (email.equals("")) {
-
-                AccountManager am = AccountManager.get(MainActivity.this);
-                // Account[] accounts =
-                // AccountManager.get(getBaseContext()).getAccounts();
-                Account[] accounts = am.getAccountsByType("com.google");
-
-                if (accounts.length > 0) {
-                    email = accounts[0].name;
-                }
-
-                System.out.println("email ==============" + email);
-            }*/
-            String finalString = URLEncoder.encode(feedback, "UTF-8");
-            nameValuePairs.add(new BasicNameValuePair("type", "Tamil_Odu_Viliyadu"));
-            nameValuePairs.add(new BasicNameValuePair("feedback", finalString));
-
-            nameValuePairs.add(new BasicNameValuePair("email", Email));
-            nameValuePairs.add(new BasicNameValuePair("phno", ph_no));
-            nameValuePairs.add(new BasicNameValuePair("name", name));
-            nameValuePairs.add(new BasicNameValuePair("vcode", pInfo.versionCode + ""));
-            nameValuePairs.add(new BasicNameValuePair("model", Utils.getDeviceName()));
-
-            post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            HttpResponse response = client.execute(post);
-            BufferedReader rd = new BufferedReader(new InputStreamReader(
-                    response.getEntity().getContent()));
-
-            String line = "";
-            while ((line = rd.readLine()) != null) {
-                Log.e("HttpResponse", line);
-            }
-
-        } catch (IOException e) {
-
-        }
-
-    }
-
-    public void rate_fun() {
-        startActivity(new Intent(Intent.ACTION_VIEW,
-                Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
-    }
-
-    public void share_fun() {
-        Intent i = new Intent(Intent.ACTION_SEND);
-        i.setType("text/*");
-        i.putExtra(Intent.EXTRA_SUBJECT,
-                "சொல்லிஅடி");
-        i.putExtra(Intent.EXTRA_TEXT,
-                "தமிழில் புதிர்விளையாட்டு விளையாட ஆர்வமா?\n" +
-                        "உங்களின் எதிர்ப்பார்ப்புகளை பூர்த்தி செய்யும் சொல்லிஅடி செயலி பல்வேறு சிறப்பு அம்சங்களுடன் உங்களுக்காக! உடனே தரவிறக்கம்  செய்யுங்கள். https://goo.gl/mgZCrO");
-        startActivity(Intent.createChooser(i, "Share via"));
-    }
-
-    public void send_feed() {
-
-        final Dialog rating_dialog = new Dialog(MainActivity.this,
-                android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth);
-        rating_dialog.setContentView(R.layout.send_feedback);
-       /* rating_dialog.getWindow().setLayout(android.app.ActionBar.LayoutParams.MATCH_PARENT,
-                android.app.ActionBar.LayoutParams.MATCH_PARENT);*/
-        Button btnSent = (Button) rating_dialog.findViewById(R.id.btnSend);
-        rating_dialog.setCanceledOnTouchOutside(false);
-        final EditText txtFeedBack = (EditText) rating_dialog.findViewById(R.id.editText1);
-        final EditText ph_no = (EditText) rating_dialog.findViewById(R.id.ph_no);
-        final EditText name = (EditText) rating_dialog.findViewById(R.id.name);
-        final EditText emails = (EditText) rating_dialog.findViewById(R.id.emails);
-        final TextView privacy_policy = (TextView) rating_dialog.findViewById(R.id.privacy_policy);
-        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-
-        privacy_policy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imm.hideSoftInputFromWindow(txtFeedBack.getWindowToken(), 0);
-                imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
-                if (isNetworkAvailable()) {
-                    showPrivacy();
-                } else {
-                    Toast.makeText(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
-
-                }
-            }
-        });
-        btnSent.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-
-
-             /*   if (emails.getText().toString().length() == 0) {
-                    Toast.makeText(MainActivity.this, "Please type your email_id", Toast.LENGTH_SHORT).show();
-                } else if (!Utils.isValidEmail(emails.getText().toString())) {
-                    Utils.toast_center(MainActivity.this, "Please type your correct email_id");
-                } else */
-                if (txtFeedBack.getText().toString().length() == 0) {
-                    Utils.toast_center(MainActivity.this, "உங்களது கருத்துக்களை பதிவு செய்யவும். ");
-                }
-                /*if (txtFeedBack.getText().toString().length() == 0) {
-                    Utils.toast_normal(MainActivity.this, "உங்களது கருத்துக்களை பதிவு செய்யவும். ");
-                }*/
-                else {
-
-                    if (Utils.isNetworkAvailable(MainActivity.this)) {
-                        final Handler handler = new Handler() {
-                            public void handleMessage(Message msg) {
-                                Runnable runnable = new Runnable() {
-                                    public void run() {
-                                    }
-                                };
-                                runOnUiThread(runnable);
-                            }
-                        };
-                        Thread checkUpdate = new Thread() {
-                            public void run() {
-                                try {
-                                    send_feedback(txtFeedBack.getText().toString(), ph_no.getText().toString(), name.getText().toString(), emails.getText().toString());
-                                } catch (Exception e) {
-
-                                }
-                                handler.sendEmptyMessage(0);
-                            }
-                        };
-                        checkUpdate.start();
-                        Utils.toast_normal(MainActivity.this, "கருத்துக்கள்  அனுப்பப்பட்டது .நன்றி ");
-                        /*if(getCurrentFocus()!=null) {
-                            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-                        }*/
-
-                        imm.hideSoftInputFromWindow(txtFeedBack.getWindowToken(), 0);
-                        imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
-                        rating_dialog.dismiss();
-                    } else {
-                        Utils.toast_normal(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும் ");
-                    }
-                }
-            }
-        });
-
-        InputMethodManager imms = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imms.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-
-        rating_dialog.show();
     }
 
 /*
@@ -5533,18 +4900,298 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
     }*/
 
+    public void ratefun() {
+
+        final Dialog ratedia = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar);
+        ratedia.setContentView(R.layout.rate);
+        Button yesbut = (Button) ratedia.findViewById(R.id.button2);
+        Button nobut = (Button) ratedia.findViewById(R.id.button1);
+
+        final Dialog yesratedialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar);
+        yesratedialog.setContentView(R.layout.rate1);
+        Button yesbut1 = (Button) yesratedialog.findViewById(R.id.button2);
+        Button nobut1 = (Button) yesratedialog.findViewById(R.id.button1);
+
+        final Dialog feedratedialog = new Dialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth);
+        feedratedialog.setContentView(R.layout.send_feedback);
+        feedratedialog.setCanceledOnTouchOutside(false);
+        Button sentbut1 = (Button) feedratedialog.findViewById(R.id.btnSend);
+        final EditText editText1 = (EditText) feedratedialog.findViewById(R.id.editText1);
+        final EditText ph_no = (EditText) feedratedialog.findViewById(R.id.ph_no);
+        final EditText name = (EditText) feedratedialog.findViewById(R.id.name);
+        final EditText emails = (EditText) feedratedialog.findViewById(R.id.emails);
+        final TextView privacy_policy = (TextView) feedratedialog.findViewById(R.id.privacy_policy);
+        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        privacy_policy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imm.hideSoftInputFromWindow(editText1.getWindowToken(), 0);
+                imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
+                if (isNetworkAvailable()) {
+
+                    showPrivacy();
+                } else {
+                    Toast.makeText(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+        editText1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // TODO Auto-generated method stub
+                editText1.setError(null);
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+        sentbut1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+            /*    if (emails.getText().toString().length() == 0) {
+                    Toast.makeText(MainActivity.this, "Please type your email_id", Toast.LENGTH_SHORT).show();
+                } else if (!Utils.isValidEmail(emails.getText().toString())) {
+                    Utils.toast_center(MainActivity.this, "Please type your correct email_id");
+                } else*/
+                if (editText1.getText().toString().length() == 0) {
+                    Utils.toast_center(MainActivity.this, "உங்களது கருத்துக்களை பதிவு செய்யவும். ");
+                } else {
+                    if (Utils.isNetworkAvailable(MainActivity.this)) {
+                        Utills.INSTANCE.sendFeed(MainActivity.this, name.getText().toString(), emails.getText().toString(), ph_no.getText().toString(), editText1.getText().toString());
+                        feedratedialog.dismiss();
+
+                    } else {
+                        Utils.toast_normal(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும் ");
+                    }
+                }
+
+                InputMethodManager imms = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imms.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+
+            }
+
+        });
+
+        yesbut1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                try {
+                    String appPackageName = getPackageName();
+                    Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName));
+                    startActivity(marketIntent);
+                } catch (Exception e) {
+                    System.out.println();
+                }
+                yesratedialog.dismiss();
+                finish();
+            }
+        });
+
+        nobut1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                feedcheck = 1;
+///
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
+                feedratedialog.show();
+                yesratedialog.dismiss();
+            }
+        });
+
+        yesbut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                // TODO Auto-generated method stub
+                feedcheck = 1;
+                sps.putInt(getApplicationContext(), "ratecheckval", 1);
+                date_put(MainActivity.this, "rate_date", 90);
+                ratedia.dismiss();
+                yesratedialog.show();
+            }
+        });
+        nobut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                sps.putInt(getApplicationContext(), "ratecheckval", 1);
+                date_put(MainActivity.this, "rate_date", 90);
+                feedcheck = 1;
+                ratedia.dismiss();
+////
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
+                feedratedialog.show();
+            }
+        });
+        yesratedialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                // TODO Auto-generated method stub
+                if (feedcheck == 0) {
+                    finish();
+                }
+            }
+        });
+
+        ratedia.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                // TODO Auto-generated method stub
+                if (feedcheck == 0) {
+                    finish();
+                }
+            }
+        });
+        feedratedialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                // TODO Auto-generated method stub
+                if (feedcheck == 1) {
+                    finish();
+                }
+            }
+
+        });
+
+        if (sps.getInt(getApplicationContext(), "ratecheckval") == 0) {
+            ratedia.show();
+        } else {
+            finish();
+
+        }
+    }
+
+    public void exit_dia() {
+        final Dialog exit_dia = new Dialog(MainActivity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        exit_dia.setContentView(R.layout.exit_lay);
+        exit_dia.setCanceledOnTouchOutside(false);
+        exit_dia.setCancelable(false);
+        Handler handel = new Handler();
+        handel.postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                finish();
+                Cursor bb1 = myDbHelper.getQry("select * from score ");
+                bb1.moveToFirst();
+                int k1 = bb1.getInt(bb1.getColumnIndexOrThrow("coins"));
+                if (k1 <= 20) {
+                    bounce_alarm();
+                }
+                try {
+                    exit_dia.dismiss();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, 1200);
+
+        exit_dia.show();
+    }
+
+    public void rate_fun() {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
+    }
+
+    public void share_fun() {
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("text/*");
+        i.putExtra(Intent.EXTRA_SUBJECT, "சொல்லிஅடி");
+        i.putExtra(Intent.EXTRA_TEXT, "தமிழில் புதிர்விளையாட்டு விளையாட ஆர்வமா?\n" + "உங்களின் எதிர்ப்பார்ப்புகளை பூர்த்தி செய்யும் சொல்லிஅடி செயலி பல்வேறு சிறப்பு அம்சங்களுடன் உங்களுக்காக! உடனே தரவிறக்கம்  செய்யுங்கள். https://goo.gl/mgZCrO");
+        startActivity(Intent.createChooser(i, "Share via"));
+    }
+
+    public void send_feed() {
+
+        final Dialog rating_dialog = new Dialog(MainActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth);
+        rating_dialog.setContentView(R.layout.send_feedback);
+       /* rating_dialog.getWindow().setLayout(android.app.ActionBar.LayoutParams.MATCH_PARENT,
+                android.app.ActionBar.LayoutParams.MATCH_PARENT);*/
+        Button btnSent = (Button) rating_dialog.findViewById(R.id.btnSend);
+        rating_dialog.setCanceledOnTouchOutside(false);
+        final EditText txtFeedBack = (EditText) rating_dialog.findViewById(R.id.editText1);
+        final EditText ph_no = (EditText) rating_dialog.findViewById(R.id.ph_no);
+        final EditText name = (EditText) rating_dialog.findViewById(R.id.name);
+        final EditText emails = (EditText) rating_dialog.findViewById(R.id.emails);
+        final TextView privacy_policy = (TextView) rating_dialog.findViewById(R.id.privacy_policy);
+        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        privacy_policy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imm.hideSoftInputFromWindow(txtFeedBack.getWindowToken(), 0);
+                imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
+                if (isNetworkAvailable()) {
+                    showPrivacy();
+                } else {
+                    Toast.makeText(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+        btnSent.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+
+
+             /*   if (emails.getText().toString().length() == 0) {
+                    Toast.makeText(MainActivity.this, "Please type your email_id", Toast.LENGTH_SHORT).show();
+                } else if (!Utils.isValidEmail(emails.getText().toString())) {
+                    Utils.toast_center(MainActivity.this, "Please type your correct email_id");
+                } else */
+                if (txtFeedBack.getText().toString().length() == 0) {
+                    Utils.toast_center(MainActivity.this, "உங்களது கருத்துக்களை பதிவு செய்யவும். ");
+                }
+                /*if (txtFeedBack.getText().toString().length() == 0) {
+                    Utils.toast_normal(MainActivity.this, "உங்களது கருத்துக்களை பதிவு செய்யவும். ");
+                }*/
+                else {
+
+                    if (Utils.isNetworkAvailable(MainActivity.this)) {
+                        Utills.INSTANCE.sendFeed(MainActivity.this, name.getText().toString(), emails.getText().toString(), ph_no.getText().toString(), txtFeedBack.getText().toString());
+                        imm.hideSoftInputFromWindow(txtFeedBack.getWindowToken(), 0);
+                        imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
+                        rating_dialog.dismiss();
+                    } else {
+                        Utils.toast_normal(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும் ");
+                    }
+                }
+            }
+        });
+
+        InputMethodManager imms = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imms.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
+        rating_dialog.show();
+    }
 
     public void tablescreated() {
         String tablenew = "noti_cal";
         int isclose = 0;
-        myDB.execSQL("CREATE TABLE IF NOT EXISTS "
-                + tablenew
-                + " (id integer NOT NULL PRIMARY KEY AUTOINCREMENT,title VARCHAR,message VARCHAR,date VARCHAR,time VARCHAR,isclose INT(4),isshow INT(4) default 0,type VARCHAR," +
-                "bm VARCHAR,ntype VARCHAR,url VARCHAR);");
+        myDB.execSQL("CREATE TABLE IF NOT EXISTS " + tablenew + " (id integer NOT NULL PRIMARY KEY AUTOINCREMENT,title VARCHAR,message VARCHAR,date VARCHAR,time VARCHAR,isclose INT(4),isshow INT(4) default 0,type VARCHAR," + "bm VARCHAR,ntype VARCHAR,url VARCHAR);");
 
 
     }
-
 
     @Override
     public void onSignInFailed() {
@@ -5570,12 +5217,10 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
     }
 
-
     public void createFolder() {
 
         // Create Folder
-        File direct = new File(Environment.getExternalStorageDirectory()
-                + "/Nithra");
+        File direct = new File(Environment.getExternalStorageDirectory() + "/Nithra");
 
         if (!direct.exists()) {
             if (direct.mkdir()) {
@@ -5592,7 +5237,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             }
         }
     }
-
 
     protected void viewBoard() {
         sps.putString(MainActivity.this, "signinagain", "yes");
@@ -5617,7 +5261,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             //ex.printStackTrace();
         }
     }
-
 
     protected void viewBoards() {
         sps.putString(MainActivity.this, "signinagain", "yes");
@@ -5718,7 +5361,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         }
     }
 
-
     protected void viewBoard1s() {
         sps.putString(MainActivity.this, "signinagain", "yes");
         rk = 2;
@@ -5764,6 +5406,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         // uiHelper.onActivityResult(requestCode, resultCode, intent, dialogCallback);
 
+        super.onActivityResult(requestCode, resultCode, intent);
         Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + intent);
         if (requestCode == 200) {
             if (resultCode != RESULT_OK) {
@@ -5805,10 +5448,9 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);                            /*.setTitle("Delete entry")*/
                 alertDialogBuilder.setCancelable(false);
-                alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
-                        .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // continue with delete
+                alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்").setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // continue with delete
                                      /*   try {
                                             startActivityForResult(new Intent(
                                                     Settings.ACTION_WIRELESS_SETTINGS), 0);
@@ -5818,22 +5460,19 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                             startActivityForResult(new Intent(
                                                     Settings.ACTION_SETTINGS), 0);
                                         }*/
-                                startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // do nothing
+                        startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                        dialog.dismiss();
+                    }
+                }).setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
 
-                                finish();
-                                Intent i = new Intent(MainActivity.this, MainActivity.class);
-                                startActivity(i);
-                                dialog.dismiss();
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
+                        finish();
+                        Intent i = new Intent(MainActivity.this, MainActivity.class);
+                        startActivity(i);
+                        dialog.dismiss();
+                    }
+                }).setIcon(android.R.drawable.ic_dialog_alert).show();
 
             }
         }
@@ -5847,7 +5486,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
 
 
                 ///Reward Share
@@ -5928,16 +5566,14 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         }
 
         if (Utils.isNetworkAvailable(getApplicationContext())) {
-            if (requestCode == 1002
-                    && resultCode == GamesActivityResultCodes.RESULT_RECONNECT_REQUIRED) {
+            if (requestCode == 1002 && resultCode == GamesActivityResultCodes.RESULT_RECONNECT_REQUIRED) {
                 // Log.d(LOGTAG, "Disconnection from Play Services called from activity with code: " + requestCode);
                 getApiClient().disconnect();
                 mHelper.disconnect();
             } else {
                 mHelper.onActivityResult(requestCode, resultCode, intent);
             }
-            if (requestCode == 1001
-                    && resultCode == GamesActivityResultCodes.RESULT_RECONNECT_REQUIRED) {
+            if (requestCode == 1001 && resultCode == GamesActivityResultCodes.RESULT_RECONNECT_REQUIRED) {
                 // Log.d(LOGTAG, "Disconnection from Play Services called from activity with code: " + requestCode);
                 getApiClient().disconnect();
                 mHelper.disconnect();
@@ -5987,8 +5623,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         if (intent != null) {
             if (intent.hasExtra(Snapshots.EXTRA_SNAPSHOT_METADATA)) {
                 // Load a snapshot.
-                SnapshotMetadata snapshotMetadata = (SnapshotMetadata)
-                        intent.getParcelableExtra(Snapshots.EXTRA_SNAPSHOT_METADATA);
+                SnapshotMetadata snapshotMetadata = (SnapshotMetadata) intent.getParcelableExtra(Snapshots.EXTRA_SNAPSHOT_METADATA);
                 mCurrentSaveName = snapshotMetadata.getUniqueName();
 
                 // Load the game data from the Snapshot
@@ -6081,7 +5716,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
     }
 
-
     public void timeehr() {
         th = new Timer();
         th.scheduleAtFixedRate(new TimerTask() {
@@ -6114,13 +5748,10 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
     }
 
-
     @Override
     public void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-
-
 
 
         // uiHelper.onPause();
@@ -6132,7 +5763,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         }
 
     }
-
 
     public void dbmovefirst() {
 
@@ -6182,12 +5812,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
             public void onTick(long millisUntilFinished) {
 
-                t_time.setText("" + String.format(FORMAT,
-                        TimeUnit.MILLISECONDS.toHours(millisUntilFinished),
-                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(
-                                TimeUnit.MILLISECONDS.toHours(millisUntilFinished)),
-                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(
-                                TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
+                t_time.setText("" + String.format(FORMAT, TimeUnit.MILLISECONDS.toHours(millisUntilFinished), TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished)), TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
             }
 
             public void onFinish() {
@@ -6266,7 +5891,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
     }
 
-
     public void rate() {
         if ((sps.getString(MainActivity.this, "show_rate").equals(""))) {
             sps.putString(MainActivity.this, "show_rate", "yes");
@@ -6276,10 +5900,8 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                 String day1 = (c.get(Calendar.DAY_OF_MONTH) + 15) + "";
                 String month1 = (c.get(Calendar.MONTH) + 1) + "";
                 String year1 = c.get(Calendar.YEAR) + "";
-                if (day1.length() == 1)
-                    day1 = "0" + day1;
-                if (month1.length() == 1)
-                    month1 = "0" + month1;
+                if (day1.length() == 1) day1 = "0" + day1;
+                if (month1.length() == 1) month1 = "0" + month1;
 
                 sps.putString(MainActivity.this, "dat", day1 + ":" + month1 + ":" + year1);
 
@@ -6288,17 +5910,14 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                 String day1 = (c.get(Calendar.DAY_OF_MONTH) + 30) + "";
                 String month1 = (c.get(Calendar.MONTH) + 1) + "";
                 String year1 = c.get(Calendar.YEAR) + "";
-                if (day1.length() == 1)
-                    day1 = "0" + day1;
-                if (month1.length() == 1)
-                    month1 = "0" + month1;
+                if (day1.length() == 1) day1 = "0" + day1;
+                if (month1.length() == 1) month1 = "0" + month1;
 
                 sps.putString(MainActivity.this, "dat", day1 + ":" + month1 + ":" + year1);
             }
         }
 
     }
-
 
     public void downloadcheck(final String lastid, final String daily) {
         Utils.mProgress(MainActivity.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", false).show();
@@ -6334,7 +5953,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                     Log.e("log_tag", "Error in https connection" + e.toString());
                 }
                 try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
                     String line = "0";
@@ -6375,7 +5994,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                     cv.put("levelid", json_data.getString("levelid"));
                                     cv.put("letters", json_data.getString("letters"));
 
-                                    String newName = json_data.getString("answer").toString().replaceAll(" ", "");
+                                    String newName = json_data.getString("answer").replaceAll(" ", "");
 
                                     cv.put("answer", newName);
                                     cv.put("hints", json_data.getString("hints"));
@@ -6394,7 +6013,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                     }
 
                                     if (i == (jArray.length() - 1)) {
-                                        if (exists("https://nithra.mobi/solliadi/" + sps.getString(MainActivity.this, "email") + "-filename.zip") == true) {
+                                        if (exists("https://nithra.mobi/solliadi/" + sps.getString(MainActivity.this, "email") + "-filename.zip")) {
                                             checkmemory();
                                         } else {
                                             System.out.print("ord image no============");
@@ -6433,7 +6052,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         }.execute();
     }
 
-
     public void downloadcheck1(final String lastid, final String daily) {
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -6463,7 +6081,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                     Log.e("log_tag", "Error in https connection" + e.toString());
                 }
                 try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
                     String line = "0";
@@ -6502,7 +6120,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                     cv.put("gameid", json_data.getString("gameid"));
                                     cv.put("levelid", json_data.getString("levelid"));
                                     cv.put("letters", json_data.getString("letters"));
-                                    String newName = json_data.getString("answer").toString().replaceAll(" ", "");
+                                    String newName = json_data.getString("answer").replaceAll(" ", "");
                                     cv.put("answer", newName);
                                     cv.put("hints", json_data.getString("hints"));
                                     cv.put("imagename", json_data.getString("imagename"));
@@ -6515,7 +6133,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                         myDbHelper.insert_data("dailytest", null, cv);
                                     }
                                     if (i == (jArray.length() - 1)) {
-                                        if (exists("https://nithra.mobi/solliadi/" + sps.getString(MainActivity.this, "email") + "-filename.zip") == true) {
+                                        if (exists("https://nithra.mobi/solliadi/" + sps.getString(MainActivity.this, "email") + "-filename.zip")) {
                                             checkmemory();
                                         } else {
                                             System.out.print("daily image no============");
@@ -6624,30 +6242,22 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                 Utils.mProgress.dismiss();
                 if (downcheck == 2) {
                     new AlertDialog.Builder(MainActivity.this)
-                            /*.setTitle("Delete entry")*/
-                            .setMessage("பதிவுகள் ஏதும் இல்லை .பிறகு முயற்சிக்கவும் ")
-                            .setPositiveButton("சரி", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
+                            /*.setTitle("Delete entry")*/.setMessage("பதிவுகள் ஏதும் இல்லை .பிறகு முயற்சிக்கவும் ").setPositiveButton("சரி", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
 
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
+                        }
+                    }).setIcon(android.R.drawable.ic_dialog_alert).show();
 
                     downcheck = 0;
 
                 } else {
 
                     new AlertDialog.Builder(MainActivity.this)
-                            /*.setTitle("Delete entry")*/
-                            .setMessage("புதிய பதிவுகள் ஏற்றப்பட்டது. விளையாடி மகிழவும்.   ")
-                            .setPositiveButton("சரி", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
+                            /*.setTitle("Delete entry")*/.setMessage("புதிய பதிவுகள் ஏற்றப்பட்டது. விளையாடி மகிழவும்.   ").setPositiveButton("சரி", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
 
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
+                        }
+                    }).setIcon(android.R.drawable.ic_dialog_alert).show();
                     downcheck = 0;
                     downok = "";
                     downnodata = "";
@@ -6658,21 +6268,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
             }
         }.execute();
-    }
-
-    public static boolean exists(String URLName) {
-        try {
-            HttpURLConnection.setFollowRedirects(false);
-            // note : you may also need
-            //        HttpURLConnection.setInstanceFollowRedirects(false)
-            HttpURLConnection con =
-                    (HttpURLConnection) new URL(URLName).openConnection();
-            con.setRequestMethod("HEAD");
-            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     public void checkmemory() {
@@ -6710,8 +6305,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
 
         StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
-        double sdAvailSize = (double) stat.getAvailableBlocks()
-                * (double) stat.getBlockSize();
+        double sdAvailSize = (double) stat.getAvailableBlocks() * (double) stat.getBlockSize();
 
         double gigaAvailable = sdAvailSize / 1073741824;
         double megaaAvailable = sdAvailSize / (1024 * 1024);
@@ -6750,27 +6344,32 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         AlertDialog.Builder builder1 = new AlertDialog.Builder(getBaseContext(), android.R.style.Theme_Dialog);
         builder1.setMessage("No free space clean your storage");
         builder1.setCancelable(true);
-        builder1.setPositiveButton("Ok",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+        builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
 
-                        Intent i = new Intent(Intent.ACTION_MANAGE_PACKAGE_STORAGE);
-                        startActivity(i);
+                Intent i = new Intent(Intent.ACTION_MANAGE_PACKAGE_STORAGE);
+                startActivity(i);
 
-                    }
-                });
-        builder1.setNegativeButton("Later",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+            }
+        });
+        builder1.setNegativeButton("Later", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
 
-                        dialog.cancel();
-                    }
-                });
+                dialog.cancel();
+            }
+        });
         AlertDialog alert11 = builder1.create();
         alert11.show();
 
     }
 
+
+    /*@Override
+    protected void onStart() {
+        super.onStart();
+       // mGoogleApiClient.connect();
+
+    }*/
 
     public void startDownload() {
 
@@ -6786,148 +6385,17 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
     protected Dialog onCreateDialog(int id) {
 
-        switch (id) {
-            case DIALOG_DOWNLOAD_PROGRESS:
-                nProgressDialog = new ProgressDialog(this);
-                nProgressDialog.setMessage("படங்கள் பதிவிறக்கம் செய்யப்படுகிறது காத்திருக்கவும்.... ");
-                nProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                nProgressDialog.setCancelable(false);
-                nProgressDialog.show();
-                // playy();
+        if (id == DIALOG_DOWNLOAD_PROGRESS) {
+            nProgressDialog = new ProgressDialog(this);
+            nProgressDialog.setMessage("படங்கள் பதிவிறக்கம் செய்யப்படுகிறது காத்திருக்கவும்.... ");
+            nProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            nProgressDialog.setCancelable(false);
+            nProgressDialog.show();
+            // playy();
 
-                return nProgressDialog;
-
-            default:
-                return null;
+            return nProgressDialog;
         }
-    }
-
-
-    class DownloadFileAsync extends AsyncTask<String, String, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // showDialog(DIALOG_DOWNLOAD_PROGRESS);
-        }
-
-        @Override
-        protected String doInBackground(String... aurl) {
-            InputStream input = null;
-            OutputStream output = null;
-            HttpURLConnection connection = null;
-            try {
-                URL url = new URL(aurl[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-
-                // expect HTTP 200 OK, so we don't mistakenly save error report
-                // instead of the file
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    return "Server returned HTTP " + connection.getResponseCode()
-                            + " " + connection.getResponseMessage();
-                }
-
-                // this will be useful to display download percentage
-                // might be -1: server did not report the length
-                final int fileLength = connection.getContentLength();
-
-                File SDCardRoot = Environment.getExternalStorageDirectory();
-
-                File fol = new File(SDCardRoot + "/Nithra/solliadi/");
-                if (!fol.exists()) {
-                    fol.mkdirs();
-                }
-
-
-                File file = new File(SDCardRoot + "/Nithra/solliadi/", sps.getString(MainActivity.this, "email") + "-filename.zip");
-
-                // download the file
-                input = connection.getInputStream();
-                output = new FileOutputStream(file);
-
-                byte data[] = new byte[4096];
-                long total = 0;
-                int count;
-                while ((count = input.read(data)) != -1) {
-                    // allow canceling with back button
-                    if (isCancelled()) {
-                        input.close();
-                        return null;
-                    }
-                    total += count;
-                    publishProgress("" + (int) ((total * 100) / fileLength));
-
-                    // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
-                        output.write(data, 0, count);
-                }
-
-                unpackZip(sps.getString(MainActivity.this, "email") + "-filename.zip");
-
-            } catch (Exception e) {
-
-
-                return e.toString();
-            } finally {
-                try {
-                    if (output != null)
-                        output.close();
-                    if (input != null)
-                        input.close();
-                } catch (IOException ignored) {
-                }
-
-                if (connection != null)
-                    connection.disconnect();
-
-
-            }
-            return null;
-
-        }
-
-
-        @Override
-        protected void onPostExecute(String unused) {
-            //  nProgressDialog.dismiss();
-            deletezip();
-
-
-            if (unused != null && unused.equals("ERROR_DOW")) {
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-                alertDialogBuilder.setCancelable(false);
-                alertDialogBuilder.setTitle("Network connection not available, please check it!");
-                alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                        downloadFileAsync.isCancelled();
-                        downloadFileAsync.cancel(true);
-
-                    }
-                });
-                AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
-
-
-            }
-
-
-            try {
-
-            } catch (Exception e) {
-                System.out.println("result=======////==" + e);
-            }
-        }
-     /*   protected void onProgressUpdate(String... progress) {
-            Log.d("ANDRO_ASYNC",progress[0]);
-            nProgressDialog.setProgress(Integer.parseInt(progress[0]));
-			*//*if(!isNetworkAvailable()){
-                downloadFileAsync.isCancelled();
-				//downloadFileAsync.cancel(true);
-
-			}*//*
-        }*/
+        return null;
     }
 
     public void deletezip() {
@@ -6956,7 +6424,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                     Log.e("log_tag", "Error in https connection" + e.toString());
                 }
                 try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
                     String line = "0";
@@ -6990,8 +6458,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         ZipInputStream zis;
         try {
 
-            String fullPath = Environment.getExternalStorageDirectory()
-                    .getAbsolutePath() + "/Nithra/solliadi/";
+            String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/solliadi/";
             is = new FileInputStream(fullPath + ZIP_FILE_NAME);
             zis = new ZipInputStream(new BufferedInputStream(is));
             ZipEntry ze;
@@ -7003,8 +6470,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
                 // zapis do souboru
                 String filename = ze.getName();
-                FileOutputStream fout = new FileOutputStream(fullPath
-                        + filename);
+                FileOutputStream fout = new FileOutputStream(fullPath + filename);
 
                 // cteni zipu a zapis
                 while ((count = zis.read(buffer)) != -1) {
@@ -7029,14 +6495,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         return 1;
     }
 
-
-    /*@Override
-    protected void onStart() {
-        super.onStart();
-       // mGoogleApiClient.connect();
-
-    }*/
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -7044,7 +6502,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             mGoogleApiClient.disconnect();
         }*/
     }
-
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -7055,20 +6512,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
 
         sp.putString(MainActivity.this, "mul_invitation", "");
-        if (bundle != null) {
-            finish();
-            Intent i = new Intent(MainActivity.this, Solli_adi_multiplayer.class);
-            sp.putString(MainActivity.this, "mul_invitation", "start");
-            startActivity(i);
-        }
-
-        if (mutiplayer_siginin == 1) {
-            mutiplayer_siginin = 0;
-            finish();
-            Intent i = new Intent(MainActivity.this, Solli_adi_multiplayer.class);
-            startActivity(i);
-            //TODO Multiplayer
-        }
 
 
     }
@@ -7094,12 +6537,10 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
             // Attempt to resolve the connection failure.
             Log.d(TAG, "onConnectionFailed: begin resolution.");
-            mIsResolving = BaseGameUtils.resolveConnectionFailure(this, mGoogleApiClient,
-                    connectionResult, RC_SIGN_IN, getString(R.string.signin_other_error));
+            mIsResolving = BaseGameUtils.resolveConnectionFailure(this, mGoogleApiClient, connectionResult, RC_SIGN_IN, getString(R.string.signin_other_error));
         }
 
     }
-
 
     /**
      * Load a Snapshot from the Saved Games service based on its unique name.  After load, the UI
@@ -7111,61 +6552,58 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         PendingResult<Snapshots.OpenSnapshotResult> pendingResult = Games.Snapshots.open(mGoogleApiClient, snapshotName, false);
 
         showProgressDialog("சேமித்த தரவுகள் ஏற்றப்படுகின்றது ...");
-        ResultCallback<Snapshots.OpenSnapshotResult> callback =
-                new ResultCallback<Snapshots.OpenSnapshotResult>() {
-                    @Override
-                    public void onResult(Snapshots.OpenSnapshotResult openSnapshotResult) {
-                        if (openSnapshotResult.getStatus().isSuccess()) {
-                            //  displayMessage(getString(R.string.saved_games_load_success), false);
-                            byte[] data = new byte[0];
-                            try {
-                                data = openSnapshotResult.getSnapshot().getSnapshotContents().readFully();
-                            } catch (IOException e) {
-                                //  displayMessage("Exception reading snapshot: " + e.getMessage(), true);
-                            }
-                            setData(new String(data));
-                            displaySnapshotMetadata(openSnapshotResult.getSnapshot().getMetadata());
-                        } else {
-                            //displayMessage(getString(R.string.saved_games_load_failure), true);
-                            // clearDataUI();
-                        }
-                        dismissProgressDialog();
+        ResultCallback<Snapshots.OpenSnapshotResult> callback = new ResultCallback<Snapshots.OpenSnapshotResult>() {
+            @Override
+            public void onResult(Snapshots.OpenSnapshotResult openSnapshotResult) {
+                if (openSnapshotResult.getStatus().isSuccess()) {
+                    //  displayMessage(getString(R.string.saved_games_load_success), false);
+                    byte[] data = new byte[0];
+                    try {
+                        data = openSnapshotResult.getSnapshot().getSnapshotContents().readFully();
+                    } catch (IOException e) {
+                        //  displayMessage("Exception reading snapshot: " + e.getMessage(), true);
                     }
-                };
+                    setData(new String(data));
+                    displaySnapshotMetadata(openSnapshotResult.getSnapshot().getMetadata());
+                } else {
+                    //displayMessage(getString(R.string.saved_games_load_failure), true);
+                    // clearDataUI();
+                }
+                dismissProgressDialog();
+            }
+        };
         pendingResult.setResultCallback(callback);
     }
 
     private void savedgame_dialog() {
 
-        final String snapshotName = "Snapshot-" + String.valueOf(APP_STATE_KEY);
-        PendingResult<Snapshots.OpenSnapshotResult> pendingResult = Games.Snapshots.open(
-                mGoogleApiClient, snapshotName, false);
+        final String snapshotName = "Snapshot-" + APP_STATE_KEY;
+        PendingResult<Snapshots.OpenSnapshotResult> pendingResult = Games.Snapshots.open(mGoogleApiClient, snapshotName, false);
 
-        ResultCallback<Snapshots.OpenSnapshotResult> callback =
-                new ResultCallback<Snapshots.OpenSnapshotResult>() {
-                    @Override
-                    public void onResult(Snapshots.OpenSnapshotResult openSnapshotResult) {
-                        if (openSnapshotResult.getStatus().isSuccess()) {
+        ResultCallback<Snapshots.OpenSnapshotResult> callback = new ResultCallback<Snapshots.OpenSnapshotResult>() {
+            @Override
+            public void onResult(Snapshots.OpenSnapshotResult openSnapshotResult) {
+                if (openSnapshotResult.getStatus().isSuccess()) {
 
-                            //  displayMessage(getString(R.string.saved_games_load_success), false);
-                            byte[] data = new byte[0];
-                            try {
-                                data = openSnapshotResult.getSnapshot().getSnapshotContents().readFully();
-                            } catch (IOException e) {
-                                //  displayMessage("Exception reading snapshot: " + e.getMessage(), true);
-                                //  Toast.makeText(MainActivity.this, "loaded", Toast.LENGTH_SHORT).show();
-                            }
-
-                            setData1(new String(data));
-                            displaySnapshotMetadata(openSnapshotResult.getSnapshot().getMetadata());
-                        } else {
-                            //displayMessage(getString(R.string.saved_games_load_failure), true);
-                            // clearDataUI();
-                        }
-
-                        dismissProgressDialog();
+                    //  displayMessage(getString(R.string.saved_games_load_success), false);
+                    byte[] data = new byte[0];
+                    try {
+                        data = openSnapshotResult.getSnapshot().getSnapshotContents().readFully();
+                    } catch (IOException e) {
+                        //  displayMessage("Exception reading snapshot: " + e.getMessage(), true);
+                        //  Toast.makeText(MainActivity.this, "loaded", Toast.LENGTH_SHORT).show();
                     }
-                };
+
+                    setData1(new String(data));
+                    displaySnapshotMetadata(openSnapshotResult.getSnapshot().getMetadata());
+                } else {
+                    //displayMessage(getString(R.string.saved_games_load_failure), true);
+                    // clearDataUI();
+                }
+
+                dismissProgressDialog();
+            }
+        };
         pendingResult.setResultCallback(callback);
     }
 
@@ -7176,229 +6614,10 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     private void savedGamesSelect() {
         final boolean allowAddButton = false;
         final boolean allowDelete = false;
-        Intent intent = Games.Snapshots.getSelectSnapshotIntent(
-                mGoogleApiClient, "Saved Games", allowAddButton, allowDelete,
-                Snapshots.DISPLAY_LIMIT_NONE);
+        Intent intent = Games.Snapshots.getSelectSnapshotIntent(mGoogleApiClient, "Saved Games", allowAddButton, allowDelete, Snapshots.DISPLAY_LIMIT_NONE);
 
         showProgressDialog("Loading");
         startActivityForResult(intent, RC_SELECT_SNAPSHOT);
-    }
-
-
-    /**
-     * Replace the data displaying in the EditText.
-     *
-     * @param data the String to display.
-     */
-    private void setData(String data) {
-        // EditText dataEditText = (EditText) findViewById(R.id.edit_game_data);
-        newhelper4 = new Newgame_DataBaseHelper4(context);
-        newhelper5 = new Newgame_DataBaseHelper5(context);
-        if (data == null) {
-            // dataEditText.setText("");
-            //  Toast.makeText(context, "சேமித்த தரவுகள் ஏதும் இல்லை ", Toast.LENGTH_SHORT).show();
-        } else {
-
-            //  dataEditText.setText(data);
-            System.out.println("=====================saved data" + data);
-            String[] first = data.split("\\#");
-            int length = first.length;
-            System.out.println("=======================length" + length);
-            // Toast.makeText(MainActivity.this, "length"+length, Toast.LENGTH_SHORT).show();
-            if (length == 6) {
-                if (!first[0].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
-                }
-                if (!first[1].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
-                }
-                if (!first[2].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
-                }
-                if (!first[3].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
-
-                }
-                myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
-                myDbHelper.executeSql("UPDATE score SET l_points='" + first[5] + "'");
-            } else if (length == 10) {
-
-                if (!first[0].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
-                }
-                if (!first[1].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
-                }
-                if (!first[2].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
-                }
-                if (!first[3].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
-                }
-                if (!first[6].equals("no")) {
-                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='5' and questionid<='" + first[6] + "'");
-                }
-                if (!first[7].equals("no")) {
-                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='6' and questionid<='" + first[7] + "'");
-                }
-
-                if (!first[8].equals("no")) {
-                    newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='7' and questionid<='" + first[8] + "'");
-                }
-
-
-                myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
-                myDbHelper.executeSql("UPDATE score SET l_points='" + first[5] + "'");
-
-            } else if (length == 14) {
-
-                if (!first[0].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
-                }
-                if (!first[1].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
-                }
-                if (!first[2].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
-                }
-                if (!first[3].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
-                }
-                if (!first[6].equals("no")) {
-                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='5' and questionid<='" + first[6] + "'");
-                }
-                if (!first[7].equals("no")) {
-                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='6' and questionid<='" + first[7] + "'");
-                }
-                if (!first[8].equals("no")) {
-                    newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='7' and questionid<='" + first[8] + "'");
-                }
-                if (!first[9].equals("no")) {
-                    newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='8' and questionid<='" + first[9] + "'");
-                }
-                if (!first[10].equals("no")) {
-                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='9' and questionid<='" + first[10] + "'");
-                }
-                if (!first[11].equals("no")) {
-                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='10' and questionid<='" + first[11] + "'");
-                }
-                if (!first[12].equals("no")) {
-                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='11' and questionid<='" + first[12] + "'");
-                }
-                if (!first[13].equals("no")) {
-                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='12' and questionid<='" + first[13] + "'");
-                }
-
-                myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
-                myDbHelper.executeSql("UPDATE score SET l_points='" + first[5] + "'");
-            } else if (length == 15) {
-                if (!first[0].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
-                }
-                if (!first[1].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
-                }
-                if (!first[2].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
-                }
-                if (!first[3].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
-                }
-                if (!first[6].equals("no")) {
-                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='5' and questionid<='" + first[6] + "'");
-                }
-                if (!first[7].equals("no")) {
-                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='6' and questionid<='" + first[7] + "'");
-                }
-                if (!first[8].equals("no")) {
-                    newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='7' and questionid<='" + first[8] + "'");
-                }
-                if (!first[9].equals("no")) {
-                    newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='8' and questionid<='" + first[9] + "'");
-                }
-                if (!first[10].equals("no")) {
-                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='9' and questionid<='" + first[10] + "'");
-                }
-                if (!first[11].equals("no")) {
-                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='10' and questionid<='" + first[11] + "'");
-                }
-                if (!first[12].equals("no")) {
-                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='11' and questionid<='" + first[12] + "'");
-                }
-                if (!first[13].equals("no")) {
-                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='12' and questionid<='" + first[13] + "'");
-                }
-                if (!first[14].equals("no")) {
-                    newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE gameid='13' and levelid<='" + first[14] + "'");
-                }
-               /* if (!first[15].equals("no")) {
-                    newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE gameid='14' and levelid<='" + first[15] + "'");
-                }*/
-
-                myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
-                myDbHelper.executeSql("UPDATE score SET l_points='" + first[5] + "'");
-            } else {
-                if (!first[0].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
-                }
-                if (!first[1].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
-                }
-                if (!first[2].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
-                }
-                if (!first[3].equals("no")) {
-                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
-                }
-                if (!first[6].equals("no")) {
-                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='5' and questionid<='" + first[6] + "'");
-                }
-                if (!first[7].equals("no")) {
-                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='6' and questionid<='" + first[7] + "'");
-                }
-                if (!first[8].equals("no")) {
-                    newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='7' and questionid<='" + first[8] + "'");
-                }
-                if (!first[9].equals("no")) {
-                    newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='8' and questionid<='" + first[9] + "'");
-                }
-                if (!first[10].equals("no")) {
-                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='9' and questionid<='" + first[10] + "'");
-                }
-                if (!first[11].equals("no")) {
-                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='10' and questionid<='" + first[11] + "'");
-                }
-                if (!first[12].equals("no")) {
-                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='11' and questionid<='" + first[12] + "'");
-                }
-                if (!first[13].equals("no")) {
-                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='12' and questionid<='" + first[13] + "'");
-                }
-                if (!first[14].equals("no")) {
-                    newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE gameid='13' and levelid<='" + first[14] + "'");
-                }
-               /* if (!first[15].equals("no")) {
-                    newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE gameid='14' and levelid<='" + first[15] + "'");
-                }*/
-                if (!first[15].equals("no")) {
-                    newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE gameid='15' and questionid<='" + first[15] + "'");
-                }
-                if (!first[16].equals("no")) {
-                    newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE gameid='16' and questionid<='" + first[16] + "'");
-                }
-                if (!first[17].equals("no")) {
-                    newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE gameid='17' and questionid<='" + first[17] + "'");
-                }
-
-                myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
-                myDbHelper.executeSql("UPDATE score SET l_points='" + first[5] + "'");
-            }
-
-
-            settext();
-
-            //  Toast.makeText(MainActivity.this, first[0]+"\n"+first[1]+"\n"+first[2]+"\n"+first[3], Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void setData1(String data) {
@@ -7442,7 +6661,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         }
     }
 
-
     /**
      * Display metadata about Snapshot save data.
      *
@@ -7456,12 +6674,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             return;
         }
 
-        String metadataStr = "Source: Saved Games" + '\n'
-                + "Description: " + metadata.getDescription() + '\n'
-                + "Name: " + metadata.getUniqueName() + '\n'
-                + "Last Modified: " + String.valueOf(metadata.getLastModifiedTimestamp()) + '\n'
-                + "Played Time: " + String.valueOf(metadata.getPlayedTime()) + '\n'
-                + "Cover Image URL: " + metadata.getCoverImageUrl();
+        String metadataStr = "Source: Saved Games" + '\n' + "Description: " + metadata.getDescription() + '\n' + "Name: " + metadata.getUniqueName() + '\n' + "Last Modified: " + metadata.getLastModifiedTimestamp() + '\n' + "Played Time: " + metadata.getPlayedTime() + '\n' + "Cover Image URL: " + metadata.getCoverImageUrl();
         //metaDataView.setText(metadataStr);
         // Toast.makeText(context, ""+metadataStr, Toast.LENGTH_SHORT).show();
     }
@@ -7475,6 +6688,12 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     protected boolean isSignedIn() {
         return (mGoogleApiClient != null && mGoogleApiClient.isConnected());
     }
+
+   /* @Override
+    protected void onDestroy() {
+        adView.destroy();
+        super.onDestroy();
+    }*/
 
     /**
      * Show a progress dialog for asynchronous operations.
@@ -7499,7 +6718,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             mProgressDialog.dismiss();
         }
     }
-
 
     public void gamestatus() {
         String level1, level2, level3, level4;
@@ -7584,8 +6802,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             HttpResponse response = client.execute(post);
-            BufferedReader rd = new BufferedReader(new InputStreamReader(
-                    response.getEntity().getContent()));
+            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
             String line = "";
             while ((line = rd.readLine()) != null) {
@@ -7597,255 +6814,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         }
 
 
-    }
-
-   /* @Override
-    protected void onDestroy() {
-        adView.destroy();
-        super.onDestroy();
-    }*/
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 11: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-
-                } else {
-                    if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                        // user rejected the permission
-                        boolean showRationale = false;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            showRationale = shouldShowRequestPermissionRationale(permissions[0]);
-                        }
-                        if (!showRationale) {
-                            // user also CHECKED "never ask again"
-                            // you can either enable some fall back,
-                            // disable features of your app
-                            // or open another dialog explaining
-                            // again the permission and directing to
-                            // the app setting
-                            final Intent i = new Intent();
-                            i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            i.addCategory(Intent.CATEGORY_DEFAULT);
-                            i.setData(Uri.parse("package:nithra.tamil.word.game.solliadi"));
-                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                            i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                            startActivity(i);
-                            ActivityCompat.requestPermissions(MainActivity.this,
-                                    new String[]{Manifest.permission.CAMERA},
-                                    12);
-
-
-                        } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
-                            // showRationale(permissions, R.string.permission_denied_contacts);
-                            // user did NOT check "never ask again"
-                            // this is a good place to explain the user
-                            // why you need the permission and ask if he wants
-                            // to accept it (the rationale)
-                        }
-                    }
-                    return;
-                }
-                return;
-            }
-            // other 'case' lines to check for other
-            // permissions this app might request
-
-            case 151: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    sps.putInt(context, "permission", 1);
-                    downloaddata();
-                } else {
-                    if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                        boolean showRationale = false;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            showRationale = shouldShowRequestPermissionRationale(permissions[0]);
-                        }
-                        if (!showRationale) {
-                            sps.putInt(context, "permission", 2);
-                        } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
-                            sps.putInt(context, "permission", 0);
-                        }
-                    }
-                }
-            }
-            break;
-            case 261: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    sps.putInt(context, "permission", 1);
-                    backup_db();
-
-                } else {
-                    if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                        boolean showRationale = false;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            showRationale = shouldShowRequestPermissionRationale(permissions[0]);
-                        }
-                        if (!showRationale) {
-                            sps.putInt(context, "permission", 2);
-                        } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
-                            sps.putInt(context, "permission", 0);
-                        }
-                    }
-                }
-
-            }
-            break;
-
-            case 171: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    sps.putInt(context, "permission", 1);
-                    restorecheck();
-                } else {
-                    if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                        boolean showRationale = false;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            showRationale = shouldShowRequestPermissionRationale(permissions[0]);
-                        }
-                        if (!showRationale) {
-                            sps.putInt(context, "permission", 2);
-                        } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
-                            sps.putInt(context, "permission", 0);
-                        }
-                    }
-                }
-            }
-            break;
-        }
-    }
-
-
-    public void dialog() {
-        final Dialog openDialog = new Dialog(MainActivity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        openDialog.setContentView(R.layout.earncoin);
-
-
-        RelativeLayout wp = (RelativeLayout) openDialog.findViewById(R.id.earnwa);
-        RelativeLayout fb = (RelativeLayout) openDialog.findViewById(R.id.earnfb);
-        RelativeLayout gplus = (RelativeLayout) openDialog.findViewById(R.id.earngplus);
-
-        TextView cancel = (TextView) openDialog.findViewById(R.id.cancel);
-        TextView ss = (TextView) openDialog.findViewById(R.id.ssss);
-
-        ss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog.cancel();
-            }
-        });
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog.cancel();
-            }
-        });
-
-
-        RelativeLayout video = (RelativeLayout) openDialog.findViewById(R.id.earnvideo);
-        video.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                extra_coin_s = 0;
-                if (isNetworkAvailable()) {
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }
-
-
-            }
-        });
-
-        wp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 12);
-
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-            }
-        });
-        fb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-              /*  if (isNetworkAvailable()) {
-
-
-                    btn_str = "invite";
-                    if (isLoggedIn()) {
-                        Bundle params = new Bundle();
-                        params.putString("message", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        showDialogWithoutNotificationBarInvite("apprequests",
-                                params);
-                        // toast("yes");
-                    } else {
-                       // openFacebookSession();
-                        // toast("no");
-                    }
-
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }   // toast("இணையதள சேவையை சரிபார்க்கவும் ");*/
-            }
-        });
-        gplus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.google.android.apps.plus");
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 15);
-
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-
-            }
-
-        });
-        openDialog.show();
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connec = (ConnectivityManager) this
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 /*    public boolean isLoggedIn() {
@@ -8053,6 +7021,242 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     }
 */
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 11: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+
+                } else {
+                    if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                        // user rejected the permission
+                        boolean showRationale = false;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            showRationale = shouldShowRequestPermissionRationale(permissions[0]);
+                        }
+                        if (!showRationale) {
+                            // user also CHECKED "never ask again"
+                            // you can either enable some fall back,
+                            // disable features of your app
+                            // or open another dialog explaining
+                            // again the permission and directing to
+                            // the app setting
+                            final Intent i = new Intent();
+                            i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            i.addCategory(Intent.CATEGORY_DEFAULT);
+                            i.setData(Uri.parse("package:nithra.tamil.word.game.solliadi"));
+                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                            startActivity(i);
+                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, 12);
+
+
+                        } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                            // showRationale(permissions, R.string.permission_denied_contacts);
+                            // user did NOT check "never ask again"
+                            // this is a good place to explain the user
+                            // why you need the permission and ask if he wants
+                            // to accept it (the rationale)
+                        }
+                    }
+                    return;
+                }
+                return;
+            }
+            // other 'case' lines to check for other
+            // permissions this app might request
+
+            case 151: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    sps.putInt(context, "permission", 1);
+                    downloaddata();
+                } else {
+                    if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                        boolean showRationale = false;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            showRationale = shouldShowRequestPermissionRationale(permissions[0]);
+                        }
+                        if (!showRationale) {
+                            sps.putInt(context, "permission", 2);
+                        } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                            sps.putInt(context, "permission", 0);
+                        }
+                    }
+                }
+            }
+            break;
+            case 261: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    sps.putInt(context, "permission", 1);
+                    backup_db();
+
+                } else {
+                    if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                        boolean showRationale = false;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            showRationale = shouldShowRequestPermissionRationale(permissions[0]);
+                        }
+                        if (!showRationale) {
+                            sps.putInt(context, "permission", 2);
+                        } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                            sps.putInt(context, "permission", 0);
+                        }
+                    }
+                }
+
+            }
+            break;
+
+            case 171: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    sps.putInt(context, "permission", 1);
+                    restorecheck();
+                } else {
+                    if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                        boolean showRationale = false;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            showRationale = shouldShowRequestPermissionRationale(permissions[0]);
+                        }
+                        if (!showRationale) {
+                            sps.putInt(context, "permission", 2);
+                        } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                            sps.putInt(context, "permission", 0);
+                        }
+                    }
+                }
+            }
+            break;
+        }
+    }
+
+    public void dialog() {
+        final Dialog openDialog = new Dialog(MainActivity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog.setContentView(R.layout.earncoin);
+
+
+        RelativeLayout wp = (RelativeLayout) openDialog.findViewById(R.id.earnwa);
+        RelativeLayout fb = (RelativeLayout) openDialog.findViewById(R.id.earnfb);
+        RelativeLayout gplus = (RelativeLayout) openDialog.findViewById(R.id.earngplus);
+
+        TextView cancel = (TextView) openDialog.findViewById(R.id.cancel);
+        TextView ss = (TextView) openDialog.findViewById(R.id.ssss);
+
+        ss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDialog.cancel();
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDialog.cancel();
+            }
+        });
+
+
+        RelativeLayout video = (RelativeLayout) openDialog.findViewById(R.id.earnvideo);
+        video.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                extra_coin_s = 0;
+                if (isNetworkAvailable()) {
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                }
+
+
+            }
+        });
+
+        wp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isNetworkAvailable()) {
+                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                    if (appinstalled) {
+                        Intent i = new Intent(Intent.ACTION_SEND);
+                        i.setType("text/plain");
+                        i.setPackage("com.whatsapp");
+                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                        i.putExtra(Intent.EXTRA_TEXT, msg);
+                        startActivityForResult(Intent.createChooser(i, "Share via"), 12);
+
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+                    }
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                }
+            }
+        });
+        fb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+              /*  if (isNetworkAvailable()) {
+
+
+                    btn_str = "invite";
+                    if (isLoggedIn()) {
+                        Bundle params = new Bundle();
+                        params.putString("message", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
+                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                        showDialogWithoutNotificationBarInvite("apprequests",
+                                params);
+                        // toast("yes");
+                    } else {
+                       // openFacebookSession();
+                        // toast("no");
+                    }
+
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                }   // toast("இணையதள சேவையை சரிபார்க்கவும் ");*/
+            }
+        });
+        gplus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isNetworkAvailable()) {
+                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
+                    if (appinstalled) {
+                        Intent i = new Intent(Intent.ACTION_SEND);
+                        i.setType("text/plain");
+                        i.setPackage("com.google.android.apps.plus");
+                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                        i.putExtra(Intent.EXTRA_TEXT, msg);
+                        startActivityForResult(Intent.createChooser(i, "Share via"), 15);
+
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+                    }
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                }
+
+            }
+
+        });
+        openDialog.show();
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connec = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
     @Override
     public void onDestroy() {
@@ -8075,7 +7279,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         }
         return app_installed;
     }
-
 
     public void achivementunlock() {
 ///1
@@ -8333,7 +7536,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
     }
 
-
     public void userstates_send() {
 
 
@@ -8359,8 +7561,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                 mobileno = sc3.getString(sc3.getColumnIndexOrThrow("phno"));
                 email = sc3.getString(sc3.getColumnIndexOrThrow("email"));
                 reg_id = sc3.getString(sc3.getColumnIndexOrThrow("regid"));
-                android_id = Settings.Secure.getString(getContentResolver(),
-                        Settings.Secure.ANDROID_ID);
+                android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
             }
 
 
@@ -8496,7 +7697,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                     Log.e("log_tag", "Error in https connection" + e.toString());
                 }
                 try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
                     String line = "0";
@@ -8547,196 +7748,19 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
         if (rm == 1) {
 
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=nithra.tamilcalender&hl=en")));
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=nithra.tamilcalender&hl=en")));
         } else if (rm == 2) {
 
 
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=com.bharathdictionary")));
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.bharathdictionary")));
         } else if (rm == 3) {
 
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle")));
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle")));
         } else if (rm == 4) {
 
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=nithra.tnpsc")));
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=nithra.tnpsc")));
         }
 
-    }
-
-    private class GetVersionCode extends AsyncTask<Void, String, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            Utils.mProgress(MainActivity.this, " தகவல்கள் சரிபார்க்கப்படுகிறது காத்திருக்கவும். ....", false).show();
-            Utils.mProgress.setCancelable(false);
-        }
-
-        @Override
-        protected String doInBackground(Void... voids) {
-
-            String newVersion = null;
-            String[] strr = getAppVersionInfo("https://play.google.com/store/apps/details?id=" + getPackageName() + "&hl=it");
-            if (strr != null) {
-                newVersion = strr[0] + "," + strr[1];
-            }
-
-            // newVersion = getAppVersionInfo("https://play.google.com/store/apps/details?id="+getPackageName()+"&hl=it")[0]+","+getAppVersionInfo("https://play.google.com/store/apps/details?id="+getPackageName()+"&hl=it")[1];
-            System.out.println("chcekkk : " + newVersion);
-            return newVersion;
-        }
-
-        @Override
-        protected void onPostExecute(String onlineVersions) {
-            super.onPostExecute(onlineVersions);
-            if (onlineVersions != null && !onlineVersions.isEmpty()) {
-                String onlineVersion = null;
-                try {
-                    System.out.println("chcekkk : " + onlineVersions);
-                    final String str = onlineVersions;
-                    onlineVersion = str;
-                    try {
-                        Utils.mProgress.dismiss();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    if (onlineVersion != null && !onlineVersion.isEmpty()) {
-
-                        if (Float.valueOf(Utils.versionname_get(MainActivity.this)) < Float.valueOf(onlineVersion)) {
-                            //show dialog
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    alert(0, str);
-                                    System.out.println("################new version yes");
-                                }
-                            });
-
-                        } else {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    alert(1, str);
-                                    System.out.println("################new version no");
-                                }
-                            });
-
-                        }
-
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                alert(2, "இணையதள சேவையை சரிபார்க்கவும் ");
-                            }
-                        });
-                    }
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            alert(2, "இணையதள சேவையை சரிபார்க்கவும் ");
-                        }
-                    });
-
-                }
-
-
-                Log.d("update", "Current version " + Utils.versionname_get(MainActivity.this) + "playstore version " + onlineVersion);
-            }
-        }
-
-
-    }
-
-    public void alert(int val, String str) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-        alertDialogBuilder
-                .setTitle("சொல்லிஅடி");
-        if (val == 0) {
-            alertDialogBuilder.setMessage(
-                    "உங்கள் App பழைய Version-ல் உள்ளது.\n" +
-                            "தங்கள் புதிய Version-க்கு மறுக்கிறீர்களா?" + "\n\n" + str)
-                    .setCancelable(true)
-                    .setPositiveButton(
-                            "இல்லை",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(
-                                        DialogInterface dialog,
-                                        int id) {
-                                    dialog.cancel();
-                                }
-                            })
-                    .setNegativeButton(
-                            "ஆம்",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(
-                                        DialogInterface dialog,
-                                        int id) {
-                                    dialog.cancel();
-                                    startActivity(new Intent(Intent.ACTION_VIEW,
-                                            Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
-
-                                }
-                            });
-        } else {
-            alertDialogBuilder.setMessage(
-                    "உங்களது App Latest Version-ல் உள்ளது.\n" +
-                            "நீங்கள் தொடர்ந்து பயன்படுத்துங்கள்")
-                    .setCancelable(true)
-                    .setPositiveButton(
-                            "சரி",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(
-                                        DialogInterface dialog,
-                                        int id) {
-                                    dialog.cancel();
-                                }
-                            });
-
-        }
-
-
-        AlertDialog alertDialog = alertDialogBuilder
-                .create();
-
-        alertDialog.show();
-    }
-
-
-    public static String[] getAppVersionInfo(String playUrl) {
-        HtmlCleaner cleaner = new HtmlCleaner();
-        CleanerProperties props = cleaner.getProperties();
-        props.setAllowHtmlInsideAttributes(true);
-        props.setAllowMultiWordAttributes(true);
-        props.setRecognizeUnicodeChars(true);
-        props.setOmitComments(true);
-        try {
-            URL url = new URL(playUrl);
-            URLConnection conn = url.openConnection();
-            TagNode node = cleaner.clean(new InputStreamReader(conn.getInputStream()));
-            Object[] new_nodes = node.evaluateXPath("//*[@class='recent-change']");
-            Object[] version_nodes = node.evaluateXPath("//*[@itemprop='softwareVersion']");
-
-            String version = "", whatsNew = "";
-            for (Object new_node : new_nodes) {
-                TagNode info_node = (TagNode) new_node;
-                whatsNew += info_node.getAllChildren().get(0).toString().trim()
-                        + "\n";
-            }
-            if (version_nodes.length > 0) {
-                TagNode ver = (TagNode) version_nodes[0];
-                version = ver.getAllChildren().get(0).toString().trim();
-            }
-            return new String[]{version, whatsNew};
-        } catch (IOException | XPatherException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
 
@@ -8783,26 +7807,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         {
             Toast.makeText(listOflevels.this, "Please watch the full video and earn 50 Coins" + mCoinCount, Toast.LENGTH_SHORT).show();
         }*/
-        //loadRewardedVideoAd();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    //loadRewardedVideoAd();
 
 
     //reward videos***********************//
@@ -8889,6 +7894,35 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
     }*/
 
+    public void alert(int val, String str) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        alertDialogBuilder.setTitle("சொல்லிஅடி");
+        if (val == 0) {
+            alertDialogBuilder.setMessage("உங்கள் App பழைய Version-ல் உள்ளது.\n" + "தங்கள் புதிய Version-க்கு மறுக்கிறீர்களா?" + "\n\n" + str).setCancelable(true).setPositiveButton("இல்லை", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            }).setNegativeButton("ஆம்", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
+
+                }
+            });
+        } else {
+            alertDialogBuilder.setMessage("உங்களது App Latest Version-ல் உள்ளது.\n" + "நீங்கள் தொடர்ந்து பயன்படுத்துங்கள்").setCancelable(true).setPositiveButton("சரி", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+
+        }
+
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        alertDialog.show();
+    }
 
     public void backup() {
         final ProgressDialog dialog = ProgressDialog.show(this, "சொல்லிஅடி", "கோப்புகள் சேமிக்கப்பட்டுகிறது காத்திருக்கவும்........", true);
@@ -8903,8 +7937,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             public void run() {
 
                 try {
-                    File dbFile =
-                            new File(Environment.getDataDirectory() + "/data/" + getPackageName() + "/databases/Solli_Adi");
+                    File dbFile = new File(Environment.getDataDirectory() + "/data/" + getPackageName() + "/databases/Solli_Adi");
                     FileInputStream in = new FileInputStream(dbFile);
 
                     File sdCard = Environment.getExternalStorageDirectory();
@@ -8966,23 +7999,17 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         backup5();
         backup6();
         backup7();
-        String fullPath = Environment.getExternalStorageDirectory()
-                .getAbsolutePath()
-                + "/Nithra/Solli_Adi/";
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
 
         final File file = new File(fullPath + "Solli_Adi.db");
         final Handler handler = new Handler() {
             public void handleMessage(Message msg) {
                 new AlertDialog.Builder(MainActivity.this)
-                        /*.setTitle("Delete entry")*/
-                        .setMessage("கோப்புகள் சேமிக்கப்பட்டுவிட்டது!")
-                        .setPositiveButton("சரி", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
+                        /*.setTitle("Delete entry")*/.setMessage("கோப்புகள் சேமிக்கப்பட்டுவிட்டது!").setPositiveButton("சரி", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
 
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
+                    }
+                }).setIcon(android.R.drawable.ic_dialog_alert).show();
                 //  Toast.makeText(MainActivity.this, "கோப்புகள் சேமிக்கப்பட்டுவிட்டது!", Toast.LENGTH_SHORT).show();
             }
         };
@@ -9037,23 +8064,17 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         backup5();
         backup6();
         backup7();
-        String fullPath = Environment.getExternalStorageDirectory()
-                .getAbsolutePath()
-                + "/Nithra/Solli_Adi/";
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
 
         final File file = new File(fullPath + "Tamil_Game2.db");
         final Handler handler = new Handler() {
             public void handleMessage(Message msg) {
                 new AlertDialog.Builder(MainActivity.this)
-                        /*.setTitle("Delete entry")*/
-                        .setMessage("கோப்புகள் சேமிக்கப்பட்டுவிட்டது!")
-                        .setPositiveButton("சரி", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
+                        /*.setTitle("Delete entry")*/.setMessage("கோப்புகள் சேமிக்கப்பட்டுவிட்டது!").setPositiveButton("சரி", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
 
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
+                    }
+                }).setIcon(android.R.drawable.ic_dialog_alert).show();
                 //  Toast.makeText(MainActivity.this, "கோப்புகள் சேமிக்கப்பட்டுவிட்டது!", Toast.LENGTH_SHORT).show();
             }
         };
@@ -9128,9 +8149,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     public void backup2() {
 
 
-        String fullPath = Environment.getExternalStorageDirectory()
-                .getAbsolutePath()
-                + "/Nithra/Solli_Adi/";
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
         final File file = new File(fullPath + "Newgames.db");
         Thread checkUpdate = new Thread() {
             public void run() {
@@ -9204,9 +8223,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     public void backup3() {
 
 
-        String fullPath = Environment.getExternalStorageDirectory()
-                .getAbsolutePath()
-                + "/Nithra/Solli_Adi/";
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
         final File file = new File(fullPath + "Newgames3.db");
         Thread checkUpdate = new Thread() {
             public void run() {
@@ -9280,9 +8297,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     public void backup4() {
 
 
-        String fullPath = Environment.getExternalStorageDirectory()
-                .getAbsolutePath()
-                + "/Nithra/Solli_Adi/";
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
         final File file = new File(fullPath + "Newgames2.db");
         Thread checkUpdate = new Thread() {
             public void run() {
@@ -9356,9 +8371,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     public void backup5() {
 
 
-        String fullPath = Environment.getExternalStorageDirectory()
-                .getAbsolutePath()
-                + "/Nithra/Solli_Adi/";
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
         final File file = new File(fullPath + "Newgames4.db");
         Thread checkUpdate = new Thread() {
             public void run() {
@@ -9432,9 +8445,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     public void backup6() {
 
 
-        String fullPath = Environment.getExternalStorageDirectory()
-                .getAbsolutePath()
-                + "/Nithra/Solli_Adi/";
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
         final File file = new File(fullPath + "Newgames5.db");
         Thread checkUpdate = new Thread() {
             public void run() {
@@ -9505,12 +8516,11 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         };
         checkUpdate.start();
     }
+
     public void backup7() {
 
 
-        String fullPath = Environment.getExternalStorageDirectory()
-                .getAbsolutePath()
-                + "/Nithra/Solli_Adi/";
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
         final File file = new File(fullPath + "Newgames6.db");
         Thread checkUpdate = new Thread() {
             public void run() {
@@ -9583,46 +8593,42 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     public void restore() {
         //sps.putString(MainActivity.this, "alter_table_rtm", "");
         new AlertDialog.Builder(MainActivity.this)
-                /*.setTitle("Delete entry")*/
-                .setMessage("சேமித்த தரவுகளை உள்ளீடு செய்ய விரும்புகிறீர்களா ?")
-                .setPositiveButton("ஆம்", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        restore2();
-                        restore3();
-                        restore4();
-                        restore5();
-                        restore6();
-                        restore7();
-                        String fullPath = Environment.getExternalStorageDirectory()
-                                .getAbsolutePath()
-                                + "/Nithra/Solli_Adi/";
-                        File file = new File(fullPath + "Solli_Adi.db");
-                        if (file.exists()) {
-                            sps.putString(MainActivity.this, "pn_intro", "no");
-                            sps.putString(MainActivity.this, "cn_intro", "no");
-                            sps.putString(MainActivity.this, "sn_intro", "no");
-                            sps.putString(MainActivity.this, "wn_intro", "no");
-                            sps.putString(MainActivity.this, "resume_p", "yes");
-                            sps.putString(MainActivity.this, "resume_c", "yes");
-                            sps.putString(MainActivity.this, "resume_s", "yes");
-                            sps.putString(MainActivity.this, "resume_w", "yes");
-                            sps.putString(MainActivity.this, "picintro_one", "yes");
-                            sps.putString(MainActivity.this, "hintintro_one", "yes");
-                            sps.putString(MainActivity.this, "wordintro_one", "yes");
-                            sps.putString(MainActivity.this, "sosintro_one", "yes");
-                            sps.putString(MainActivity.this, "otpis", "");
-                            sps.putString(MainActivity.this, "otpis2", "");
-                            sps.putInt(MainActivity.this, "randomnumber", 2);
+                /*.setTitle("Delete entry")*/.setMessage("சேமித்த தரவுகளை உள்ளீடு செய்ய விரும்புகிறீர்களா ?").setPositiveButton("ஆம்", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                restore2();
+                restore3();
+                restore4();
+                restore5();
+                restore6();
+                restore7();
+                String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
+                File file = new File(fullPath + "Solli_Adi.db");
+                if (file.exists()) {
+                    sps.putString(MainActivity.this, "pn_intro", "no");
+                    sps.putString(MainActivity.this, "cn_intro", "no");
+                    sps.putString(MainActivity.this, "sn_intro", "no");
+                    sps.putString(MainActivity.this, "wn_intro", "no");
+                    sps.putString(MainActivity.this, "resume_p", "yes");
+                    sps.putString(MainActivity.this, "resume_c", "yes");
+                    sps.putString(MainActivity.this, "resume_s", "yes");
+                    sps.putString(MainActivity.this, "resume_w", "yes");
+                    sps.putString(MainActivity.this, "picintro_one", "yes");
+                    sps.putString(MainActivity.this, "hintintro_one", "yes");
+                    sps.putString(MainActivity.this, "wordintro_one", "yes");
+                    sps.putString(MainActivity.this, "sosintro_one", "yes");
+                    sps.putString(MainActivity.this, "otpis", "");
+                    sps.putString(MainActivity.this, "otpis2", "");
+                    sps.putInt(MainActivity.this, "randomnumber", 2);
 
 
-                            String strrr = "";
-                            final ProgressDialog dialoga = ProgressDialog.show(MainActivity.this, "சொல்லிஅடி", "பதிவேற்றுகிறது காத்திருக்கவும்....", true);
-                            final Handler handler = new Handler() {
-                                public void handleMessage(Message msg) {
-                                    dialoga.dismiss();
-                                    //toast("Restore done successfully!");
-                                    myDbHelper = new DataBaseHelper(context);
-                                    Toast.makeText(MainActivity.this, "பதிவேற்றப்பட்டுவிட்டது!", Toast.LENGTH_SHORT).show();
+                    String strrr = "";
+                    final ProgressDialog dialoga = ProgressDialog.show(MainActivity.this, "சொல்லிஅடி", "பதிவேற்றுகிறது காத்திருக்கவும்....", true);
+                    final Handler handler = new Handler() {
+                        public void handleMessage(Message msg) {
+                            dialoga.dismiss();
+                            //toast("Restore done successfully!");
+                            myDbHelper = new DataBaseHelper(context);
+                            Toast.makeText(MainActivity.this, "பதிவேற்றப்பட்டுவிட்டது!", Toast.LENGTH_SHORT).show();
                                 /*    Cursor c2s = myDbHelper.getQry("select * from maintable where gameid='1' and isfinish='0'");
                                     c2s.moveToFirst();
                                     int cs2s = c2s.getCount();
@@ -9643,80 +8649,74 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                     int cs2s1 = c2s1.getCount();
                                     s_id.setText("(" + cs2s1 + ")");*/
 
-                                    // myDbHelper.executeSql("delete  from  userdetail");
+                            // myDbHelper.executeSql("delete  from  userdetail");
 
-                                }
-                            };
-                            Thread checkUpdate = new Thread() {
-                                public void run() {
-                                    try {
-
-                                        System.out.println("path=====" + "/data/data/" + getPackageName() + "/databases/Solli_Adi");
-                                        //  FileOutputStream myOutput = new FileOutputStream("/data/data/" + getPackageName() + "/databases/Solli_Adi");
-                                        String DB_PATH;
-                                        if (android.os.Build.VERSION.SDK_INT >= 17) {
-                                            DB_PATH = getApplicationInfo().dataDir + "/databases/";
-                                        } else {
-                                            DB_PATH = "/data/data/" + getPackageName() + "/databases/";
-                                        }
-
-                                        FileOutputStream myOutput = new FileOutputStream(DB_PATH + "Solli_Adi");
-
-                                        String fullPath = Environment.getExternalStorageDirectory()
-                                                .getAbsolutePath() + "/Nithra/Solli_Adi/";
-
-                                        System.out.println(fullPath);
-                                        // Set the folder on the SDcard
-                                        File directory = new File(fullPath);
-                                        // Set the input file stream up:
-
-                                        InputStream myInputs = new FileInputStream(directory.getPath() + "/Solli_Adi.db");
-
-                                        System.out.println(directory.getPath() + "/Solli_Adi.db");
-
-
-                                        // Transfer bytes from the input file to the output file
-                                        byte[] buffer = new byte[1024];
-                                        int length;
-                                        while ((length = myInputs.read(buffer)) > 0) {
-                                            myOutput.write(buffer, 0, length);
-                                        }
-
-                                        // Close and clear the streams
-                                        myOutput.flush();
-                                        myOutput.close();
-                                        myInputs.close();
-
-                                    } catch (FileNotFoundException e) {
-                                        //toast("Restore unsuccessful! File not found! Directory does not exist?");
-                                        // Toast.makeText(Main_milk.this, "கோப்பு இல்லை", Toast.LENGTH_SHORT).show();
-                                        e.printStackTrace();
-                                        System.out.println("file not found");
-                                    } catch (IOException e) {
-                                        //toast("Restore unsuccessful!");
-                                        Toast.makeText(MainActivity.this, "பதிவேற்றம் தடைபட்டுவிட்டது!", Toast.LENGTH_SHORT).show();
-                                        e.printStackTrace();
-                                    }
-                                    handler.sendEmptyMessage(0);
-                                }
-                            };
-                            checkUpdate.start();
-                        } else {
-                            String fullPaths = Environment.getExternalStorageDirectory()
-                                    .getAbsolutePath()
-                                    + "/Nithra/Solli_Adi/";
-                            final File files = new File(fullPath + "Solli_Adi.db");
-                            Toast.makeText(MainActivity.this, "சேமித்த தரவு இல்லை", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                })
-                .setNegativeButton("இல்லை", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                    };
+                    Thread checkUpdate = new Thread() {
+                        public void run() {
+                            try {
 
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+                                System.out.println("path=====" + "/data/data/" + getPackageName() + "/databases/Solli_Adi");
+                                //  FileOutputStream myOutput = new FileOutputStream("/data/data/" + getPackageName() + "/databases/Solli_Adi");
+                                String DB_PATH;
+                                if (android.os.Build.VERSION.SDK_INT >= 17) {
+                                    DB_PATH = getApplicationInfo().dataDir + "/databases/";
+                                } else {
+                                    DB_PATH = "/data/data/" + getPackageName() + "/databases/";
+                                }
+
+                                FileOutputStream myOutput = new FileOutputStream(DB_PATH + "Solli_Adi");
+
+                                String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
+
+                                System.out.println(fullPath);
+                                // Set the folder on the SDcard
+                                File directory = new File(fullPath);
+                                // Set the input file stream up:
+
+                                InputStream myInputs = new FileInputStream(directory.getPath() + "/Solli_Adi.db");
+
+                                System.out.println(directory.getPath() + "/Solli_Adi.db");
+
+
+                                // Transfer bytes from the input file to the output file
+                                byte[] buffer = new byte[1024];
+                                int length;
+                                while ((length = myInputs.read(buffer)) > 0) {
+                                    myOutput.write(buffer, 0, length);
+                                }
+
+                                // Close and clear the streams
+                                myOutput.flush();
+                                myOutput.close();
+                                myInputs.close();
+
+                            } catch (FileNotFoundException e) {
+                                //toast("Restore unsuccessful! File not found! Directory does not exist?");
+                                // Toast.makeText(Main_milk.this, "கோப்பு இல்லை", Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                                System.out.println("file not found");
+                            } catch (IOException e) {
+                                //toast("Restore unsuccessful!");
+                                Toast.makeText(MainActivity.this, "பதிவேற்றம் தடைபட்டுவிட்டது!", Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                            }
+                            handler.sendEmptyMessage(0);
+                        }
+                    };
+                    checkUpdate.start();
+                } else {
+                    String fullPaths = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
+                    final File files = new File(fullPath + "Solli_Adi.db");
+                    Toast.makeText(MainActivity.this, "சேமித்த தரவு இல்லை", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).setNegativeButton("இல்லை", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        }).setIcon(android.R.drawable.ic_dialog_alert).show();
 
 
     }
@@ -9725,55 +8725,51 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         // sps.putString(MainActivity.this, "alter_table_rtm", "");
         //Toast.makeText(context, "restores", Toast.LENGTH_SHORT).show();
         new AlertDialog.Builder(MainActivity.this)
-                /*.setTitle("Delete entry")*/
-                .setMessage("சேமித்த தரவுகளை உள்ளீடு செய்ய விரும்புகிறீர்களா ?")
-                .setPositiveButton("ஆம்", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        restore2();
-                        restore3();
-                        restore4();
-                        restore5();
-                        restore6();
-                        restore7();
-                        String fullPath = Environment.getExternalStorageDirectory()
-                                .getAbsolutePath()
-                                + "/Nithra/Tamil_Game2.db/";
-                        File filed = new File(fullPath + "Tamil_Game2.db");
-                        File sdCard = Environment.getExternalStorageDirectory();
-                        File dir = new File(sdCard.getAbsolutePath() + "/Nithra" + "/Tamil_Game2.db/");
-                        dir.mkdirs();
+                /*.setTitle("Delete entry")*/.setMessage("சேமித்த தரவுகளை உள்ளீடு செய்ய விரும்புகிறீர்களா ?").setPositiveButton("ஆம்", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                restore2();
+                restore3();
+                restore4();
+                restore5();
+                restore6();
+                restore7();
+                String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Tamil_Game2.db/";
+                File filed = new File(fullPath + "Tamil_Game2.db");
+                File sdCard = Environment.getExternalStorageDirectory();
+                File dir = new File(sdCard.getAbsolutePath() + "/Nithra" + "/Tamil_Game2.db/");
+                dir.mkdirs();
 
-                        final String file = Environment.getExternalStorageDirectory().getPath() + "/Nithra";
-                        final String file1 = file + "/Tamil_Game2.db";
-                        final File SDCard = new File(file1);
-                        System.out.println("#######SDCARD " + file1);
+                final String file = Environment.getExternalStorageDirectory().getPath() + "/Nithra";
+                final String file1 = file + "/Tamil_Game2.db";
+                final File SDCard = new File(file1);
+                System.out.println("#######SDCARD " + file1);
 
-                        if (filed.exists()) {
+                if (filed.exists()) {
 
-                            sps.putString(MainActivity.this, "pn_intro", "no");
-                            sps.putString(MainActivity.this, "cn_intro", "no");
-                            sps.putString(MainActivity.this, "sn_intro", "no");
-                            sps.putString(MainActivity.this, "wn_intro", "no");
-                            sps.putString(MainActivity.this, "resume_p", "yes");
-                            sps.putString(MainActivity.this, "resume_c", "yes");
-                            sps.putString(MainActivity.this, "resume_s", "yes");
-                            sps.putString(MainActivity.this, "resume_w", "yes");
-                            sps.putString(MainActivity.this, "picintro_one", "yes");
-                            sps.putString(MainActivity.this, "hintintro_one", "yes");
-                            sps.putString(MainActivity.this, "wordintro_one", "yes");
-                            sps.putString(MainActivity.this, "sosintro_one", "yes");
-                            sps.putString(MainActivity.this, "otpis", "");
-                            sps.putString(MainActivity.this, "otpis2", "");
-                            sps.putInt(MainActivity.this, "randomnumber", 2);
+                    sps.putString(MainActivity.this, "pn_intro", "no");
+                    sps.putString(MainActivity.this, "cn_intro", "no");
+                    sps.putString(MainActivity.this, "sn_intro", "no");
+                    sps.putString(MainActivity.this, "wn_intro", "no");
+                    sps.putString(MainActivity.this, "resume_p", "yes");
+                    sps.putString(MainActivity.this, "resume_c", "yes");
+                    sps.putString(MainActivity.this, "resume_s", "yes");
+                    sps.putString(MainActivity.this, "resume_w", "yes");
+                    sps.putString(MainActivity.this, "picintro_one", "yes");
+                    sps.putString(MainActivity.this, "hintintro_one", "yes");
+                    sps.putString(MainActivity.this, "wordintro_one", "yes");
+                    sps.putString(MainActivity.this, "sosintro_one", "yes");
+                    sps.putString(MainActivity.this, "otpis", "");
+                    sps.putString(MainActivity.this, "otpis2", "");
+                    sps.putInt(MainActivity.this, "randomnumber", 2);
 
 
-                            String strrr = "";
-                            //   final ProgressDialog dialoga = ProgressDialog.show(MainActivity.this, "சொல்லிஅடி", "பதிவேற்றுகிறது காத்திருக்கவும்....", true);
-                            final Handler handler = new Handler() {
-                                public void handleMessage(Message msg) {
-                                    // dialoga.dismiss();
-                                    //toast("Restore done successfully!");
-                                    Toast.makeText(MainActivity.this, "பதிவேற்றப்பட்டுவிட்டது!", Toast.LENGTH_SHORT).show();
+                    String strrr = "";
+                    //   final ProgressDialog dialoga = ProgressDialog.show(MainActivity.this, "சொல்லிஅடி", "பதிவேற்றுகிறது காத்திருக்கவும்....", true);
+                    final Handler handler = new Handler() {
+                        public void handleMessage(Message msg) {
+                            // dialoga.dismiss();
+                            //toast("Restore done successfully!");
+                            Toast.makeText(MainActivity.this, "பதிவேற்றப்பட்டுவிட்டது!", Toast.LENGTH_SHORT).show();
                                  /*   Cursor c2s = myDbHelper.getQry("select * from maintable where gameid='1' and isfinish='0'");
                                     c2s.moveToFirst();
                                     int cs2s = c2s.getCount();
@@ -9795,159 +8791,151 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                                     s_id.setText("(" + cs2s1 + ")");*/
 
 
-                                    // myDbHelper.executeSql("delete  from  userdetail");
+                            // myDbHelper.executeSql("delete  from  userdetail");
 
-                                }
-                            };
-                            Thread checkUpdate = new Thread() {
-                                public void run() {
-                                    try {
-
-                                        System.out.println("path=====" + "/data/data/" + getPackageName() + "/databases/Tamil_Game2.db");
-                                        // FileOutputStream myOutput = new FileOutputStream("/data/data/" + getPackageName() + "/databases/Tamil_Game2.db");
-                                        String DB_PATH;
-                                        if (Build.VERSION.SDK_INT >= 17) {
-                                            DB_PATH = getApplicationInfo().dataDir + "/databases/";
-                                        } else {
-                                            DB_PATH = "/data/data/" + getPackageName() + "/databases/";
-                                        }
-
-
-                                        FileOutputStream myOutput = new FileOutputStream(DB_PATH + "Tamil_Game2.db");
-
-                                        String fullPath = Environment.getExternalStorageDirectory()
-                                                .getAbsolutePath() + "/Nithra/Tamil_Game2.db/";
-
-                                        System.out.println(fullPath);
-                                        // Set the folder on the SDcard
-                                        File directory = new File(fullPath);
-                                        // Set the input file stream up:
-                                        System.out.println("Path" + SDCard + "/" + "Tamil_Game2.db");
-                                        InputStream myInputs = new FileInputStream(SDCard + "/" + "Tamil_Game2.db");
-                                        // InputStream myInputs = new FileInputStream(directory.getPath() + "/Tamil_Game2.db");
-
-                                        System.out.println(directory.getPath() + "/Tamil_Game2.db");
-
-
-                                        // Transfer bytes from the input file to the output file
-                                        byte[] buffer = new byte[1024];
-                                        int length;
-                                        while ((length = myInputs.read(buffer)) > 0) {
-                                            myOutput.write(buffer, 0, length);
-                                        }
-
-                                        // Close and clear the streams
-                                        myOutput.flush();
-                                        myOutput.close();
-                                        myInputs.close();
-
-                                    } catch (FileNotFoundException e) {
-                                        //toast("Restore unsuccessful! File not found! Directory does not exist?");
-                                        // Toast.makeText(Main_milk.this, "கோப்பு இல்லை", Toast.LENGTH_SHORT).show();
-                                        e.printStackTrace();
-                                        System.out.println("file not found");
-                                    } catch (IOException e) {
-                                        //toast("Restore unsuccessful!");
-                                        Toast.makeText(MainActivity.this, "பதிவேற்றம் தடைபட்டுவிட்டது!", Toast.LENGTH_SHORT).show();
-                                        e.printStackTrace();
-                                    }
-
-                                    try {
-                                        String DB_PATH;
-                                        if (Build.VERSION.SDK_INT >= 17) {
-                                            DB_PATH = getApplicationInfo().dataDir + "/databases/";
-                                        } else {
-                                            DB_PATH = "/data/data/" + getPackageName() + "/databases/";
-                                        }
-                                        FileOutputStream myOutput = new FileOutputStream(DB_PATH + "Tamil_Game2.db-shm");
-                                        // Set the input file stream up:
-                                        InputStream myInputs = new FileInputStream(SDCard + "/" + "Tamil_Game2-shm");
-                                        // InputStream myInputs = new FileInputStream(directory.getPath() + "/Tamil_Game2.db");
-                                        // Transfer bytes from the input file to the output file
-                                        byte[] buffer = new byte[1024];
-                                        int length;
-                                        while ((length = myInputs.read(buffer)) > 0) {
-                                            myOutput.write(buffer, 0, length);
-                                        }
-                                        // Close and clear the streams
-                                        myOutput.flush();
-                                        myOutput.close();
-                                        myInputs.close();
-
-                                    } catch (FileNotFoundException e) {
-                                        //toast("Restore unsuccessful! File not found! Directory does not exist?");
-                                        // Toast.makeText(Main_milk.this, "கோப்பு இல்லை", Toast.LENGTH_SHORT).show();
-                                        e.printStackTrace();
-                                        System.out.println("file not found");
-                                    } catch (IOException e) {
-                                        //toast("Restore unsuccessful!");
-                                        Toast.makeText(MainActivity.this, "பதிவேற்றம் தடைபட்டுவிட்டது!", Toast.LENGTH_SHORT).show();
-                                        e.printStackTrace();
-                                    }
-                                    try {
-                                        String DB_PATH;
-                                        if (Build.VERSION.SDK_INT >= 17) {
-                                            DB_PATH = getApplicationInfo().dataDir + "/databases/";
-                                        } else {
-                                            DB_PATH = "/data/data/" + getPackageName() + "/databases/";
-                                        }
-                                        FileOutputStream myOutput = new FileOutputStream(DB_PATH + "Tamil_Game2.db-wal");
-                                        // Set the input file stream up:
-                                        InputStream myInputs = new FileInputStream(SDCard + "/" + "Tamil_Game2-wal");
-                                        // InputStream myInputs = new FileInputStream(directory.getPath() + "/Tamil_Game2.db");
-                                        // Transfer bytes from the input file to the output file
-                                        byte[] buffer = new byte[1024];
-                                        int length;
-                                        while ((length = myInputs.read(buffer)) > 0) {
-                                            myOutput.write(buffer, 0, length);
-                                        }
-                                        // Close and clear the streams
-                                        myOutput.flush();
-                                        myOutput.close();
-                                        myInputs.close();
-
-                                    } catch (FileNotFoundException e) {
-                                        //toast("Restore unsuccessful! File not found! Directory does not exist?");
-                                        // Toast.makeText(Main_milk.this, "கோப்பு இல்லை", Toast.LENGTH_SHORT).show();
-                                        e.printStackTrace();
-                                        System.out.println("file not found");
-                                    } catch (IOException e) {
-                                        //toast("Restore unsuccessful!");
-                                        Toast.makeText(MainActivity.this, "பதிவேற்றம் தடைபட்டுவிட்டது!", Toast.LENGTH_SHORT).show();
-                                        e.printStackTrace();
-                                    }
-
-
-                                    handler.sendEmptyMessage(0);
-                                }
-                            };
-                            checkUpdate.start();
-
-
-                        } else {
-                            String fullPaths = Environment.getExternalStorageDirectory()
-                                    .getAbsolutePath()
-                                    + "/Nithra/Tamil_Game2.db/";
-                            final File files = new File(fullPath + "Tamil_Game2.db");
-                            Toast.makeText(MainActivity.this, "சேமித்த தரவு இல்லை", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                })
-                .setNegativeButton("இல்லை", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                    };
+                    Thread checkUpdate = new Thread() {
+                        public void run() {
+                            try {
 
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+                                System.out.println("path=====" + "/data/data/" + getPackageName() + "/databases/Tamil_Game2.db");
+                                // FileOutputStream myOutput = new FileOutputStream("/data/data/" + getPackageName() + "/databases/Tamil_Game2.db");
+                                String DB_PATH;
+                                if (Build.VERSION.SDK_INT >= 17) {
+                                    DB_PATH = getApplicationInfo().dataDir + "/databases/";
+                                } else {
+                                    DB_PATH = "/data/data/" + getPackageName() + "/databases/";
+                                }
+
+
+                                FileOutputStream myOutput = new FileOutputStream(DB_PATH + "Tamil_Game2.db");
+
+                                String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Tamil_Game2.db/";
+
+                                System.out.println(fullPath);
+                                // Set the folder on the SDcard
+                                File directory = new File(fullPath);
+                                // Set the input file stream up:
+                                System.out.println("Path" + SDCard + "/" + "Tamil_Game2.db");
+                                InputStream myInputs = new FileInputStream(SDCard + "/" + "Tamil_Game2.db");
+                                // InputStream myInputs = new FileInputStream(directory.getPath() + "/Tamil_Game2.db");
+
+                                System.out.println(directory.getPath() + "/Tamil_Game2.db");
+
+
+                                // Transfer bytes from the input file to the output file
+                                byte[] buffer = new byte[1024];
+                                int length;
+                                while ((length = myInputs.read(buffer)) > 0) {
+                                    myOutput.write(buffer, 0, length);
+                                }
+
+                                // Close and clear the streams
+                                myOutput.flush();
+                                myOutput.close();
+                                myInputs.close();
+
+                            } catch (FileNotFoundException e) {
+                                //toast("Restore unsuccessful! File not found! Directory does not exist?");
+                                // Toast.makeText(Main_milk.this, "கோப்பு இல்லை", Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                                System.out.println("file not found");
+                            } catch (IOException e) {
+                                //toast("Restore unsuccessful!");
+                                Toast.makeText(MainActivity.this, "பதிவேற்றம் தடைபட்டுவிட்டது!", Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                            }
+
+                            try {
+                                String DB_PATH;
+                                if (Build.VERSION.SDK_INT >= 17) {
+                                    DB_PATH = getApplicationInfo().dataDir + "/databases/";
+                                } else {
+                                    DB_PATH = "/data/data/" + getPackageName() + "/databases/";
+                                }
+                                FileOutputStream myOutput = new FileOutputStream(DB_PATH + "Tamil_Game2.db-shm");
+                                // Set the input file stream up:
+                                InputStream myInputs = new FileInputStream(SDCard + "/" + "Tamil_Game2-shm");
+                                // InputStream myInputs = new FileInputStream(directory.getPath() + "/Tamil_Game2.db");
+                                // Transfer bytes from the input file to the output file
+                                byte[] buffer = new byte[1024];
+                                int length;
+                                while ((length = myInputs.read(buffer)) > 0) {
+                                    myOutput.write(buffer, 0, length);
+                                }
+                                // Close and clear the streams
+                                myOutput.flush();
+                                myOutput.close();
+                                myInputs.close();
+
+                            } catch (FileNotFoundException e) {
+                                //toast("Restore unsuccessful! File not found! Directory does not exist?");
+                                // Toast.makeText(Main_milk.this, "கோப்பு இல்லை", Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                                System.out.println("file not found");
+                            } catch (IOException e) {
+                                //toast("Restore unsuccessful!");
+                                Toast.makeText(MainActivity.this, "பதிவேற்றம் தடைபட்டுவிட்டது!", Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                            }
+                            try {
+                                String DB_PATH;
+                                if (Build.VERSION.SDK_INT >= 17) {
+                                    DB_PATH = getApplicationInfo().dataDir + "/databases/";
+                                } else {
+                                    DB_PATH = "/data/data/" + getPackageName() + "/databases/";
+                                }
+                                FileOutputStream myOutput = new FileOutputStream(DB_PATH + "Tamil_Game2.db-wal");
+                                // Set the input file stream up:
+                                InputStream myInputs = new FileInputStream(SDCard + "/" + "Tamil_Game2-wal");
+                                // InputStream myInputs = new FileInputStream(directory.getPath() + "/Tamil_Game2.db");
+                                // Transfer bytes from the input file to the output file
+                                byte[] buffer = new byte[1024];
+                                int length;
+                                while ((length = myInputs.read(buffer)) > 0) {
+                                    myOutput.write(buffer, 0, length);
+                                }
+                                // Close and clear the streams
+                                myOutput.flush();
+                                myOutput.close();
+                                myInputs.close();
+
+                            } catch (FileNotFoundException e) {
+                                //toast("Restore unsuccessful! File not found! Directory does not exist?");
+                                // Toast.makeText(Main_milk.this, "கோப்பு இல்லை", Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                                System.out.println("file not found");
+                            } catch (IOException e) {
+                                //toast("Restore unsuccessful!");
+                                Toast.makeText(MainActivity.this, "பதிவேற்றம் தடைபட்டுவிட்டது!", Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                            }
+
+
+                            handler.sendEmptyMessage(0);
+                        }
+                    };
+                    checkUpdate.start();
+
+
+                } else {
+                    String fullPaths = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Tamil_Game2.db/";
+                    final File files = new File(fullPath + "Tamil_Game2.db");
+                    Toast.makeText(MainActivity.this, "சேமித்த தரவு இல்லை", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).setNegativeButton("இல்லை", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        }).setIcon(android.R.drawable.ic_dialog_alert).show();
 
 
     }
 
     public void restore2() {
-        String fullPath = Environment.getExternalStorageDirectory()
-                .getAbsolutePath()
-                + "/Nithra/Newgames.db/";
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Newgames.db/";
         File file = new File(fullPath + "Newgames.db");
         if (file.exists()) {
             sps.putString(MainActivity.this, "pn_intro", "no");
@@ -10012,8 +9000,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                         }
                         FileOutputStream myOutput = new FileOutputStream(DB_PATH + "Newgames.db");
 
-                        String fullPath = Environment.getExternalStorageDirectory()
-                                .getAbsolutePath() + "/Nithra/Newgames.db/";
+                        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Newgames.db/";
 
                         System.out.println(fullPath);
                         // Set the folder on the SDcard
@@ -10123,9 +9110,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             };
             checkUpdate.start();
         } else {
-            String fullPaths = Environment.getExternalStorageDirectory()
-                    .getAbsolutePath()
-                    + "/Nithra/Solli_Adi/";
+            String fullPaths = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
             final File files = new File(fullPath + "Newgames.db");
 
         }
@@ -10148,9 +9133,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     }
 
     public void restore3() {
-        String fullPath = Environment.getExternalStorageDirectory()
-                .getAbsolutePath()
-                + "/Nithra/Newgames3.db/";
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Newgames3.db/";
         File file = new File(fullPath + "Newgames3.db");
         if (file.exists()) {
             sps.putString(MainActivity.this, "pn_intro", "no");
@@ -10216,8 +9199,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
                         FileOutputStream myOutput = new FileOutputStream(DB_PATH + "Newgames3.db");
 
-                        String fullPath = Environment.getExternalStorageDirectory()
-                                .getAbsolutePath() + "/Nithra/Newgames3.db/";
+                        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Newgames3.db/";
 
                         System.out.println(fullPath);
                         // Set the folder on the SDcard
@@ -10328,9 +9310,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             };
             checkUpdate.start();
         } else {
-            String fullPaths = Environment.getExternalStorageDirectory()
-                    .getAbsolutePath()
-                    + "/Nithra/Solli_Adi/";
+            String fullPaths = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
             final File files = new File(fullPath + "Newgames3.db");
 
         }
@@ -10353,9 +9333,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     }
 
     public void restore4() {
-        String fullPath = Environment.getExternalStorageDirectory()
-                .getAbsolutePath()
-                + "/Nithra/Newgames2.db/";
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Newgames2.db/";
         File file = new File(fullPath + "Newgames2.db");
         if (file.exists()) {
             sps.putString(MainActivity.this, "pn_intro", "no");
@@ -10418,8 +9396,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
                         FileOutputStream myOutput = new FileOutputStream(DB_PATH + "Newgames2.db");
 
-                        String fullPath = Environment.getExternalStorageDirectory()
-                                .getAbsolutePath() + "/Nithra/Newgames2.db/";
+                        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Newgames2.db/";
 
                         System.out.println(fullPath);
                         // Set the folder on the SDcard
@@ -10528,9 +9505,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             };
             checkUpdate.start();
         } else {
-            String fullPaths = Environment.getExternalStorageDirectory()
-                    .getAbsolutePath()
-                    + "/Nithra/Solli_Adi/";
+            String fullPaths = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
             final File files = new File(fullPath + "Newgames2.db");
 
         }
@@ -10555,9 +9530,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     }
 
     public void restore5() {
-        String fullPath = Environment.getExternalStorageDirectory()
-                .getAbsolutePath()
-                + "/Nithra/Newgames4.db/";
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Newgames4.db/";
         File file = new File(fullPath + "Newgames4.db");
         if (file.exists()) {
             sps.putString(MainActivity.this, "pn_intro", "no");
@@ -10616,8 +9589,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
                         FileOutputStream myOutput = new FileOutputStream(DB_PATH + "Newgames4.db");
 
-                        String fullPath = Environment.getExternalStorageDirectory()
-                                .getAbsolutePath() + "/Nithra/Newgames4.db/";
+                        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Newgames4.db/";
 
                         System.out.println(fullPath);
                         // Set the folder on the SDcard
@@ -10727,9 +9699,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             };
             checkUpdate.start();
         } else {
-            String fullPaths = Environment.getExternalStorageDirectory()
-                    .getAbsolutePath()
-                    + "/Nithra/Solli_Adi/";
+            String fullPaths = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
             final File files = new File(fullPath + "Newgames4.db");
 
         }
@@ -10754,9 +9724,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     }
 
     public void restore6() {
-        String fullPath = Environment.getExternalStorageDirectory()
-                .getAbsolutePath()
-                + "/Nithra/Newgames5.db/";
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Newgames5.db/";
         File file = new File(fullPath + "Newgames5.db");
         if (file.exists()) {
             sps.putString(MainActivity.this, "pn_intro", "no");
@@ -10836,8 +9804,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
                         FileOutputStream myOutput = new FileOutputStream(DB_PATH + "Newgames5.db");
 
-                        String fullPath = Environment.getExternalStorageDirectory()
-                                .getAbsolutePath() + "/Nithra/Newgames5.db/";
+                        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Newgames5.db/";
 
                         System.out.println(fullPath);
                         // Set the folder on the SDcard
@@ -10945,9 +9912,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             };
             checkUpdate.start();
         } else {
-            String fullPaths = Environment.getExternalStorageDirectory()
-                    .getAbsolutePath()
-                    + "/Nithra/Solli_Adi/";
+            String fullPaths = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
             final File files = new File(fullPath + "Newgames5.db");
 
         }
@@ -10972,9 +9937,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     }
 
     public void restore7() {
-        String fullPath = Environment.getExternalStorageDirectory()
-                .getAbsolutePath()
-                + "/Nithra/Newgames6.db/";
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Newgames6.db/";
         File file = new File(fullPath + "Newgames6.db");
         if (file.exists()) {
             sps.putString(MainActivity.this, "pn_intro", "no");
@@ -11054,8 +10017,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
                         FileOutputStream myOutput = new FileOutputStream(DB_PATH + "Newgames6.db");
 
-                        String fullPath = Environment.getExternalStorageDirectory()
-                                .getAbsolutePath() + "/Nithra/Newgames6.db/";
+                        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Newgames6.db/";
 
                         System.out.println(fullPath);
                         // Set the folder on the SDcard
@@ -11163,9 +10125,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             };
             checkUpdate.start();
         } else {
-            String fullPaths = Environment.getExternalStorageDirectory()
-                    .getAbsolutePath()
-                    + "/Nithra/Solli_Adi/";
+            String fullPaths = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Solli_Adi/";
             final File files = new File(fullPath + "Newgames6.db");
 
         }
@@ -11190,9 +10150,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     }
 
     public void restorecheck() {
-        String fullPath = Environment.getExternalStorageDirectory()
-                .getAbsolutePath()
-                + "/Nithra/Tamil_Game2.db/";
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Nithra/Tamil_Game2.db/";
         File file = new File(fullPath + "Tamil_Game2.db");
         if (file.exists()) {
             restore11();
@@ -11207,7 +10165,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             restore();
         }
     }
-
 
     public void newupdate() {
 
@@ -11252,34 +10209,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         }
 
     }
-
-    public static String getAppVersionInfo2(String playUrl) {
-        HtmlCleaner cleaner = new HtmlCleaner();
-        CleanerProperties props = cleaner.getProperties();
-        props.setAllowHtmlInsideAttributes(true);
-        props.setAllowMultiWordAttributes(true);
-        props.setRecognizeUnicodeChars(true);
-        props.setOmitComments(true);
-        try {
-            URL url = new URL(playUrl);
-            URLConnection conn = url.openConnection();
-            TagNode node = cleaner.clean(new InputStreamReader(conn.getInputStream()));
-            Object[] version_nodes = node.evaluateXPath("//*[@class='link']");
-
-
-            String version = "";
-
-            if (version_nodes.length > 0) {
-                TagNode ver = (TagNode) version_nodes[0];
-                version = ver.getAllChildren().get(0).toString().trim();
-            }
-            return version;
-        } catch (IOException | XPatherException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
 
     public void newgamecreate_db() {
         System.out.println("*******inside");
@@ -11597,94 +10526,34 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
     public void downloaddata() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);                            /*.setTitle("Delete entry")*/
-        alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய வேண்டுமா ?")
-                .setPositiveButton("ஆம்", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            //DownLoad Letters and Words
-                            Cursor c1 = myDbHelper.getQry("select id from maintable order by id DESC");
-                            c1.moveToFirst();
-                            if (c1.getCount() != 0) {
-                                System.out.print("Last ID===ord=" + c1.getString(c1.getColumnIndexOrThrow("id")));
-                                downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
-                                dialog.dismiss();
-                            } else {
-                                downloadcheck("0", "ord");
-                                dialog.dismiss();
-                            }
-                        } else {
-                            Toast.makeText(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                })
-                .setNegativeButton("இல்லை", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+        alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய வேண்டுமா ?").setPositiveButton("ஆம்", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                if (Utils.isNetworkAvailable(getApplicationContext())) {
+                    //DownLoad Letters and Words
+                    Cursor c1 = myDbHelper.getQry("select id from maintable order by id DESC");
+                    c1.moveToFirst();
+                    if (c1.getCount() != 0) {
+                        System.out.print("Last ID===ord=" + c1.getString(c1.getColumnIndexOrThrow("id")));
+                        downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
+                        dialog.dismiss();
+                    } else {
+                        downloadcheck("0", "ord");
                         dialog.dismiss();
                     }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
-    }
+                } else {
+                    Toast.makeText(MainActivity.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                }
 
-
-
-
-    public static Boolean clr_chace(Context context) {
-        Boolean aBoolean = false;
-        SharedPreference sharedPreference = new SharedPreference();
-        Calendar calendar = Calendar.getInstance();
-        long next_hour = calendar.getTimeInMillis();
-
-        SimpleDateFormat sdf1 = new SimpleDateFormat("dd/M/yyyy");
-        Date result = new Date(next_hour);
-        String formatted = sdf1.format(result);
-
-        StringTokenizer st2 = new StringTokenizer(formatted, "/");
-        int rep_day = Integer.parseInt(st2.nextToken());
-        int rep_month = Integer.parseInt(st2.nextToken());
-        int rep_year = Integer.parseInt(st2.nextToken());
-
-        rep_month = rep_month - 1;
-
-        String today_date = rep_day + "/" + rep_month + "/" + rep_year;
-
-        Date date_today = null, date_app_update = null;
-
-        try {
-            date_today = sdf1.parse(today_date);
-            if (!sharedPreference.getString(context, "clr_chace").equals("")) {
-                date_app_update = sdf1.parse(sharedPreference.getString(context, "clr_chace"));
-            } else {
-                date_app_update = sdf1.parse(today_date);
-                ;
             }
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-            System.out.println("clr_chace : error");
-        }
-
-
-        if (sharedPreference.getString(context, "clr_chace").equals("")) {
-
-            aBoolean = true;
-            System.out.println("clr_chace : " + aBoolean);
-        } else {
-            if (date_today.compareTo(date_app_update) >= 0) {
-                aBoolean = true;
-                System.out.println("clr_chace : " + aBoolean);
+        }).setNegativeButton("இல்லை", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
             }
-        }
-        return aBoolean;
+        }).setIcon(android.R.drawable.ic_dialog_alert).show();
     }
-
-
-    //*** In Adapter **
-
 
     private void savedGamesUpdate() {
-        final String snapshotName = "Snapshot-" + String.valueOf(APP_STATE_KEY);
+        final String snapshotName = "Snapshot-" + APP_STATE_KEY;
         final boolean createIfMissing = true;
 
         // Use the data from the EditText as the new Snapshot data.
@@ -11702,8 +10571,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
             @Override
             protected Boolean doInBackground(Void... params) {
-                Snapshots.OpenSnapshotResult open = Games.Snapshots.open(
-                        mGoogleApiClient, snapshotName, createIfMissing).await();
+                Snapshots.OpenSnapshotResult open = Games.Snapshots.open(mGoogleApiClient, snapshotName, createIfMissing).await();
 
                 if (!open.getStatus().isSuccess()) {
                     Log.w(TAG, "Could not open Snapshot for update.");
@@ -11720,8 +10588,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                         .setPlayedTimeMillis(playedTimeMillis)
                         .build();*/
 
-                Snapshots.CommitSnapshotResult commit = Games.Snapshots.commitAndClose(
-                        mGoogleApiClient, snapshot, SnapshotMetadataChange.EMPTY_CHANGE).await();
+                Snapshots.CommitSnapshotResult commit = Games.Snapshots.commitAndClose(mGoogleApiClient, snapshot, SnapshotMetadataChange.EMPTY_CHANGE).await();
 
                 if (!commit.getStatus().isSuccess()) {
                     Log.w(TAG, "Failed to commit Snapshot.");
@@ -11746,6 +10613,9 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         };
         updateTask.execute();
     }
+
+
+    //*** In Adapter **
 
     /**
      * Get the data from the EditText.
@@ -11941,11 +10811,226 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         }*/
 
         //String upload = String.valueOf(b1) + "#" + String.valueOf(b2) + "#" + String.valueOf(b3) + "#" + String.valueOf(b4) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("l_points")) + "#" + String.valueOf(b5) + "#" + String.valueOf(b6) + "#" + String.valueOf(b7) + "#" + String.valueOf(b8)));
-        String upload = String.valueOf(b1) + "#" + String.valueOf(b2) + "#" + String.valueOf(b3) + "#" + String.valueOf(b4) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("l_points")) + "#" + String.valueOf(b5) + "#" + String.valueOf(b6) + "#" + String.valueOf(b7) + "#" + String.valueOf(b8) + "#" + String.valueOf(b9) + "#" + String.valueOf(b10) + "#" + String.valueOf(b11) + "#" + String.valueOf(b12) + "#" + String.valueOf(b13) + "#" + String.valueOf(b14) + "#" + String.valueOf(b15) + "#" + String.valueOf(b16)));
+        String upload = b1 + "#" + b2 + "#" + b3 + "#" + b4 + "#" + c1.getInt(c1.getColumnIndexOrThrow("coins")) + "#" + c1.getInt(c1.getColumnIndexOrThrow("l_points")) + "#" + b5 + "#" + b6 + "#" + b7 + "#" + b8 + "#" + b9 + "#" + b10 + "#" + b11 + "#" + b12 + "#" + b13 + "#" + b14 + "#" + b15 + "#" + b16;
         System.out.println("#########################upload data" + upload);
         return upload;
     }
 
+    /**
+     * Replace the data displaying in the EditText.
+     *
+     * @param data the String to display.
+     */
+    private void setData(String data) {
+        // EditText dataEditText = (EditText) findViewById(R.id.edit_game_data);
+        newhelper4 = new Newgame_DataBaseHelper4(context);
+        newhelper5 = new Newgame_DataBaseHelper5(context);
+        if (data == null) {
+            // dataEditText.setText("");
+            //  Toast.makeText(context, "சேமித்த தரவுகள் ஏதும் இல்லை ", Toast.LENGTH_SHORT).show();
+        } else {
+
+            //  dataEditText.setText(data);
+            System.out.println("=====================saved data" + data);
+            String[] first = data.split("\\#");
+            int length = first.length;
+            System.out.println("=======================length" + length);
+            // Toast.makeText(MainActivity.this, "length"+length, Toast.LENGTH_SHORT).show();
+            if (length == 6) {
+                if (!first[0].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
+                }
+                if (!first[1].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
+                }
+                if (!first[2].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
+                }
+                if (!first[3].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
+
+                }
+                myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
+                myDbHelper.executeSql("UPDATE score SET l_points='" + first[5] + "'");
+            } else if (length == 10) {
+
+                if (!first[0].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
+                }
+                if (!first[1].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
+                }
+                if (!first[2].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
+                }
+                if (!first[3].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
+                }
+                if (!first[6].equals("no")) {
+                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='5' and questionid<='" + first[6] + "'");
+                }
+                if (!first[7].equals("no")) {
+                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='6' and questionid<='" + first[7] + "'");
+                }
+
+                if (!first[8].equals("no")) {
+                    newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='7' and questionid<='" + first[8] + "'");
+                }
+
+
+                myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
+                myDbHelper.executeSql("UPDATE score SET l_points='" + first[5] + "'");
+
+            } else if (length == 14) {
+
+                if (!first[0].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
+                }
+                if (!first[1].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
+                }
+                if (!first[2].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
+                }
+                if (!first[3].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
+                }
+                if (!first[6].equals("no")) {
+                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='5' and questionid<='" + first[6] + "'");
+                }
+                if (!first[7].equals("no")) {
+                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='6' and questionid<='" + first[7] + "'");
+                }
+                if (!first[8].equals("no")) {
+                    newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='7' and questionid<='" + first[8] + "'");
+                }
+                if (!first[9].equals("no")) {
+                    newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='8' and questionid<='" + first[9] + "'");
+                }
+                if (!first[10].equals("no")) {
+                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='9' and questionid<='" + first[10] + "'");
+                }
+                if (!first[11].equals("no")) {
+                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='10' and questionid<='" + first[11] + "'");
+                }
+                if (!first[12].equals("no")) {
+                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='11' and questionid<='" + first[12] + "'");
+                }
+                if (!first[13].equals("no")) {
+                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='12' and questionid<='" + first[13] + "'");
+                }
+
+                myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
+                myDbHelper.executeSql("UPDATE score SET l_points='" + first[5] + "'");
+            } else if (length == 15) {
+                if (!first[0].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
+                }
+                if (!first[1].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
+                }
+                if (!first[2].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
+                }
+                if (!first[3].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
+                }
+                if (!first[6].equals("no")) {
+                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='5' and questionid<='" + first[6] + "'");
+                }
+                if (!first[7].equals("no")) {
+                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='6' and questionid<='" + first[7] + "'");
+                }
+                if (!first[8].equals("no")) {
+                    newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='7' and questionid<='" + first[8] + "'");
+                }
+                if (!first[9].equals("no")) {
+                    newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='8' and questionid<='" + first[9] + "'");
+                }
+                if (!first[10].equals("no")) {
+                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='9' and questionid<='" + first[10] + "'");
+                }
+                if (!first[11].equals("no")) {
+                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='10' and questionid<='" + first[11] + "'");
+                }
+                if (!first[12].equals("no")) {
+                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='11' and questionid<='" + first[12] + "'");
+                }
+                if (!first[13].equals("no")) {
+                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='12' and questionid<='" + first[13] + "'");
+                }
+                if (!first[14].equals("no")) {
+                    newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE gameid='13' and levelid<='" + first[14] + "'");
+                }
+               /* if (!first[15].equals("no")) {
+                    newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE gameid='14' and levelid<='" + first[15] + "'");
+                }*/
+
+                myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
+                myDbHelper.executeSql("UPDATE score SET l_points='" + first[5] + "'");
+            } else {
+                if (!first[0].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
+                }
+                if (!first[1].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
+                }
+                if (!first[2].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
+                }
+                if (!first[3].equals("no")) {
+                    myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
+                }
+                if (!first[6].equals("no")) {
+                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='5' and questionid<='" + first[6] + "'");
+                }
+                if (!first[7].equals("no")) {
+                    newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='6' and questionid<='" + first[7] + "'");
+                }
+                if (!first[8].equals("no")) {
+                    newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='7' and questionid<='" + first[8] + "'");
+                }
+                if (!first[9].equals("no")) {
+                    newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='8' and questionid<='" + first[9] + "'");
+                }
+                if (!first[10].equals("no")) {
+                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='9' and questionid<='" + first[10] + "'");
+                }
+                if (!first[11].equals("no")) {
+                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='10' and questionid<='" + first[11] + "'");
+                }
+                if (!first[12].equals("no")) {
+                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='11' and questionid<='" + first[12] + "'");
+                }
+                if (!first[13].equals("no")) {
+                    newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='12' and questionid<='" + first[13] + "'");
+                }
+                if (!first[14].equals("no")) {
+                    newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE gameid='13' and levelid<='" + first[14] + "'");
+                }
+               /* if (!first[15].equals("no")) {
+                    newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE gameid='14' and levelid<='" + first[15] + "'");
+                }*/
+                if (!first[15].equals("no")) {
+                    newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE gameid='15' and questionid<='" + first[15] + "'");
+                }
+                if (!first[16].equals("no")) {
+                    newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE gameid='16' and questionid<='" + first[16] + "'");
+                }
+                if (!first[17].equals("no")) {
+                    newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE gameid='17' and questionid<='" + first[17] + "'");
+                }
+
+                myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
+                myDbHelper.executeSql("UPDATE score SET l_points='" + first[5] + "'");
+            }
+
+
+            settext();
+
+            //  Toast.makeText(MainActivity.this, first[0]+"\n"+first[1]+"\n"+first[2]+"\n"+first[3], Toast.LENGTH_SHORT).show();
+        }
+    }
 
     public void settext() {
        /* db1 = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
@@ -12494,70 +11579,13 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
     public Animation zoomAnim() {
 
-        ScaleAnimation animation = new ScaleAnimation((float) 0.9,
-                (float) 0.83, (float) 0.9, (float) 0.83,
-                Animation.RELATIVE_TO_SELF, (float) 0.5,
-                Animation.RELATIVE_TO_SELF, (float) 0.5);
+        ScaleAnimation animation = new ScaleAnimation((float) 0.9, (float) 0.83, (float) 0.9, (float) 0.83, Animation.RELATIVE_TO_SELF, (float) 0.5, Animation.RELATIVE_TO_SELF, (float) 0.5);
         animation.setInterpolator(new AccelerateDecelerateInterpolator());
         animation.setDuration(500);
         animation.setRepeatCount(Animation.INFINITE);
         animation.setRepeatMode(Animation.REVERSE);
         return animation;
     }
-
-    private class gcmpost_update1 extends AsyncTask<String, String, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... strr) {
-            ServerUtilities.gcmupdate(MainActivity.this, Utils.getversionname(MainActivity.this),
-                    Utils.getversioncode(MainActivity.this), strr[0]);
-            return "";
-        }
-
-        @Override
-        protected void onPostExecute(String onlineVersions) {
-            super.onPostExecute(onlineVersions);
-            SharedPreference sharedPreference = new SharedPreference();
-            sharedPreference.putInt(MainActivity.this, "fcm_update", Utils.getversioncode(MainActivity.this));
-        }
-    }
-
-    private class gcmpost_update2 extends AsyncTask<String, String, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... strr) {
-            ServerUtilities.gcmpost(strr[0], Utils.android_id(MainActivity.this), Utils
-                            .getversionname(MainActivity.this),
-                    Utils.getversioncode(MainActivity.this), MainActivity.this);
-            return "";
-        }
-
-        @Override
-        protected void onPostExecute(String onlineVersions) {
-            super.onPostExecute(onlineVersions);
-            SharedPreference sharedPreference = new SharedPreference();
-            sharedPreference.putInt(MainActivity.this, "fcm_update", Utils.getversioncode(MainActivity.this));
-        }
-    }
-
-    public static boolean determineConnectivity(Context context) {
-        ConnectivityManager manager = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo info = manager.getActiveNetworkInfo();
-        return info != null && info.getState() == NetworkInfo.State.CONNECTED;
-    }
-
-
-    //--------------------------------- Purchase Functions -----------------------------------------
-
 
     public void purchasedialog() {
         final Dialog purchaseDia = new Dialog(MainActivity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -12630,44 +11658,19 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
             }
         });
 
-        data.add(new Item(0, "நான், ஏன் ஆயுள் சந்தா Purchase செய்ய வேண்டும்?",
-                "நித்ரா சொல்லிஅடி செயலியில் ஆயுள் சந்தா Purchase செய்து கொள்வதால் விளம்பரங்கள் (Banner, Full Screen Ads)  அனைத்து " +
-                        "பகுதிகளில் இருந்தும் முற்றிலுமாக நீக்கப்படும்."));
+        data.add(new Item(0, "நான், ஏன் ஆயுள் சந்தா Purchase செய்ய வேண்டும்?", "நித்ரா சொல்லிஅடி செயலியில் ஆயுள் சந்தா Purchase செய்து கொள்வதால் விளம்பரங்கள் (Banner, Full Screen Ads)  அனைத்து " + "பகுதிகளில் இருந்தும் முற்றிலுமாக நீக்கப்படும்."));
 
-        data.add(new Item(0, "Premium Subscription (ஆயுள் சந்தா) செய்வதற்கு நான் எதற்காக E-mail ID-ஐ Play store-ல் Sign-in செய்ய வேண்டும்? " +
-                "அதற்கான அவசியம் என்ன?",
-                "நீங்கள் ஆயுள் சந்தா-வினை Purchase செய்துள்ள தகவல்களை Sign-in செய்து சேமித்து வைப்பதன் வாயிலாக " +
-                        "உங்களுடைய ஸ்மார்ட் போனை நீங்கள் மாற்றினாலோ அல்லது நித்ரா சொல்லிஅடி செயலியை Uninstall செய்து விட்டு திரும்பவும் Install செய்யும் போது  " +
-                        "Subscription-னை பெறலாம். தவறுதலாக போனையோ அல்லது நித்ரா சொல்லிஅடி செயலியோ Premium Subscription வசதியை இழக்கும் போது அதனை " +
-                        "மீண்டும் செயல்பாட்டிற்கு கொண்டு வர மிகப் பயனுள்ளதாக இருக்கும்."
-        ));
+        data.add(new Item(0, "Premium Subscription (ஆயுள் சந்தா) செய்வதற்கு நான் எதற்காக E-mail ID-ஐ Play store-ல் Sign-in செய்ய வேண்டும்? " + "அதற்கான அவசியம் என்ன?", "நீங்கள் ஆயுள் சந்தா-வினை Purchase செய்துள்ள தகவல்களை Sign-in செய்து சேமித்து வைப்பதன் வாயிலாக " + "உங்களுடைய ஸ்மார்ட் போனை நீங்கள் மாற்றினாலோ அல்லது நித்ரா சொல்லிஅடி செயலியை Uninstall செய்து விட்டு திரும்பவும் Install செய்யும் போது  " + "Subscription-னை பெறலாம். தவறுதலாக போனையோ அல்லது நித்ரா சொல்லிஅடி செயலியோ Premium Subscription வசதியை இழக்கும் போது அதனை " + "மீண்டும் செயல்பாட்டிற்கு கொண்டு வர மிகப் பயனுள்ளதாக இருக்கும்."));
 
-        data.add(new Item(0, "நான் எனது மொபைல் போனை தொலைத்துவிட்டேன் அல்லது எனது மொபைல் போனை மாற்றிவிட்டேன். ஆயுள் " +
-                "சந்தா வசதியை எனது புது போனில் பயன்படுத்துவதற்கான வாய்ப்புகள் உள்ளதா?",
-                "நிச்சயமாக உள்ளது. நீங்கள் ஆயுள் சந்தா Purchase செய்ய பயன்படுத்திய Google E-mail ID-ஐ புதிய மொபைலில்  " +
-                        "Sign-in செய்வதன் வாயிலாக  Premium Plan வசதியை Restore செய்து கொள்ளலாம்."
-        ));
+        data.add(new Item(0, "நான் எனது மொபைல் போனை தொலைத்துவிட்டேன் அல்லது எனது மொபைல் போனை மாற்றிவிட்டேன். ஆயுள் " + "சந்தா வசதியை எனது புது போனில் பயன்படுத்துவதற்கான வாய்ப்புகள் உள்ளதா?", "நிச்சயமாக உள்ளது. நீங்கள் ஆயுள் சந்தா Purchase செய்ய பயன்படுத்திய Google E-mail ID-ஐ புதிய மொபைலில்  " + "Sign-in செய்வதன் வாயிலாக  Premium Plan வசதியை Restore செய்து கொள்ளலாம்."));
 
-        data.add(new Item(0, "நான் இரண்டு ஆண்ட்ராய்டு மொபைல் போனை பயன்படுத்திக்கொண்டிருக்கிறேன். ஒரு தடவை ஆயுள் சந்தா-ஐ  " +
-                "Purchase செய்து இரண்டு மொபைல் போனிலும் பயன்படுத்தலாமா?",
-                "தாராளமாக பயன்படுத்திக்கொள்ளலாம். நீங்கள் இரண்டு மொபைல் போனிலும் ஆயுள் சந்தா செய்ய பயன்படுத்திய " +
-                        "Google E-mail ID-ஐ Sign-in செய்வதன் வாயிலாகப் பெறலாம்."
-        ));
+        data.add(new Item(0, "நான் இரண்டு ஆண்ட்ராய்டு மொபைல் போனை பயன்படுத்திக்கொண்டிருக்கிறேன். ஒரு தடவை ஆயுள் சந்தா-ஐ  " + "Purchase செய்து இரண்டு மொபைல் போனிலும் பயன்படுத்தலாமா?", "தாராளமாக பயன்படுத்திக்கொள்ளலாம். நீங்கள் இரண்டு மொபைல் போனிலும் ஆயுள் சந்தா செய்ய பயன்படுத்திய " + "Google E-mail ID-ஐ Sign-in செய்வதன் வாயிலாகப் பெறலாம்."));
 
-        data.add(new Item(0, "எனது Credit/Debit கார்டு பற்றிய தகவல்களை கொடுத்து Purchase செய்கிறேன். உண்மையிலேயே இது பாதுகாப்பானதாக இருக்குமா?",
-                "நிச்சயமாக மிகவும் பாதுகாப்பான முறையாகத்தான் இது இருக்கிறது. நீங்கள்  Google வழியாக கட்டணமுறை மேற்கொள்வதால் உங்களது " +
-                        "பணபரிவர்த்தனைகளையோ, Credit/Debit கார்டு தகவல்களையோ யாரும் அணுக முடியாது."));
+        data.add(new Item(0, "எனது Credit/Debit கார்டு பற்றிய தகவல்களை கொடுத்து Purchase செய்கிறேன். உண்மையிலேயே இது பாதுகாப்பானதாக இருக்குமா?", "நிச்சயமாக மிகவும் பாதுகாப்பான முறையாகத்தான் இது இருக்கிறது. நீங்கள்  Google வழியாக கட்டணமுறை மேற்கொள்வதால் உங்களது " + "பணபரிவர்த்தனைகளையோ, Credit/Debit கார்டு தகவல்களையோ யாரும் அணுக முடியாது."));
 
-        data.add(new Item(0, "Payment முறையில் என்னுடைய Debit கார்டு தகவல்களை சேர்க்கமுடியவில்லை. “Correct this card info or try a different card” என்ற Error message " +
-                "வந்து கொண்டே இருக்கிறது? இப்போது நான் என்ன செய்ய வேண்டும்?",
-                "பொதுவாகவே Debit கார்டானது உள்நாட்டு (Domestic) பணபரிவர்த்தனைக்காக மட்டுமே பயன்பாட்டில் கொடுக்கப்பட்டிருக்கும். நீங்கள் உங்கள் வங்கியை" +
-                        " அணுகி சர்வதேச பயன்பாட்டிற்கான கார்டாக (International) மாற்றிக்கொண்டு பணபரிவர்த்தனையை மேற்கொள்ளலாம்."));
+        data.add(new Item(0, "Payment முறையில் என்னுடைய Debit கார்டு தகவல்களை சேர்க்கமுடியவில்லை. “Correct this card info or try a different card” என்ற Error message " + "வந்து கொண்டே இருக்கிறது? இப்போது நான் என்ன செய்ய வேண்டும்?", "பொதுவாகவே Debit கார்டானது உள்நாட்டு (Domestic) பணபரிவர்த்தனைக்காக மட்டுமே பயன்பாட்டில் கொடுக்கப்பட்டிருக்கும். நீங்கள் உங்கள் வங்கியை" + " அணுகி சர்வதேச பயன்பாட்டிற்கான கார்டாக (International) மாற்றிக்கொண்டு பணபரிவர்த்தனையை மேற்கொள்ளலாம்."));
 
-        data.add(new Item(1, "நான் ஆயுள் சந்தாவினை Purchase செய்துவிட்டேன். ஆனாலும், எனக்கு ஆயுள் சந்தா வசதி activate " +
-                "ஆகவில்லை. இப்போது நான் என்ன செய்ய வேண்டும்?",
-                "நீங்கள் Google-ல் Purchase செய்ததற்கான Order-ஐ எங்களின் feedback@nithra.mobi என்ற மின்னஞ்சல் முகவரிக்கு அனுப்பினால் விரைவாக " +
-                        "கவனத்தில் கொண்டு சரிசெய்யப்படும்."
-        ));
+        data.add(new Item(1, "நான் ஆயுள் சந்தாவினை Purchase செய்துவிட்டேன். ஆனாலும், எனக்கு ஆயுள் சந்தா வசதி activate " + "ஆகவில்லை. இப்போது நான் என்ன செய்ய வேண்டும்?", "நீங்கள் Google-ல் Purchase செய்ததற்கான Order-ஐ எங்களின் feedback@nithra.mobi என்ற மின்னஞ்சல் முகவரிக்கு அனுப்பினால் விரைவாக " + "கவனத்தில் கொண்டு சரிசெய்யப்படும்."));
 
       /*  data.add(new Item(2, "ஆயுள் சந்தா சார்ந்த  சந்தேகங்கள் அல்லது பிரச்சனைகள் ", "ஆயுள் சந்தா சார்ந்த  சந்தேகங்கள் அல்லது பிரச்சனைகளுக்கு தொடர்பு கொள்ள வேண்டிய தொலைப்பேசி எண் : " +
                 "9942267855 (நிறுவனம் இயங்கும் நேரம் : 9.30AM - 5.00PM IST இணையதள முகவரி : https://nithra.mobi/"
@@ -12678,100 +11681,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
         cusCareDia.show();
     }
-
-    public class CustomerCareAdapter extends ArrayAdapter {
-
-        Context context;
-        List<Item> list;
-        LayoutInflater inflater;
-        public TextView title, ans;
-        LinearLayout textLay;
-        Button btn;
-        public int colorArray[] = {R.color.green, R.color.green, R.color.green, R.color.green,
-                R.color.green, R.color.green, R.color.green, R.color.green};
-
-        public CustomerCareAdapter(Context context, int resource, List<Item> list) {
-            super(context, resource, list);
-            this.context = context;
-            this.list = list;
-        }
-
-        public void notifyDataSetChanged() {
-            super.notifyDataSetChanged();
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.cus_care_lay, null);
-            btn = view.findViewById(R.id.btn);
-            title = view.findViewById(R.id.title);
-            title.setText(list.get(position).getItem());
-
-            ans = view.findViewById(R.id.ans);
-            ans.setText(list.get(position).getCount());
-
-            textLay = view.findViewById(R.id.text_lay);
-            textLay.setBackgroundColor(context.getResources().getColor(colorArray[position]));
-
-            btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-
-                    if (list.get(position).getId() == 1) {
-                        if (Utils.isNetworkAvailable(context)) {
-                            final Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                            emailIntent.setType("plain/text");
-                            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Regarding Nithra Solli_Adi Subscription");
-                            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"feedback@nithra.mobi"});
-                            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
-                        } else {
-                            Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
-                        }
-
-
-                    } else if (list.get(position).getId() == 2) {
-                        makeCall("");
-                    }
-                }
-            });
-
-            if (list.get(position).getId() == 1) {
-                btn.setText("EMAIL US");
-                btn.setBackgroundColor(context.getResources().getColor(colorArray[position]));
-            } else if (list.get(position).getId() == 2) {
-                btn.setText("CALL US");
-                btn.setBackgroundColor(context.getResources().getColor(colorArray[position]));
-            } else {
-                btn.setVisibility(View.GONE);
-            }
-            return view;
-        }
-
-    }
-
-
-
-
-/*
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data);
-        if (mnHelper == null) return;
-
-        // Pass on the activity result to the helper for handling
-        if (!mnHelper.handleActivityResult(requestCode, resultCode, data)) {
-            // not handled, so handle it ourselves (here's where you'd
-            // perform any handling of activity results not related to in-app
-            // billing...
-            super.onActivityResult(requestCode, resultCode, data);
-        } else {
-            Log.d(TAG, "onActivityResult handled by IABUtil.");
-        }
-    }
-*/
-
 
     private void successdialog() {
 
@@ -12801,6 +11710,9 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
     }
 
+
+    //--------------------------------- Purchase Functions -----------------------------------------
+
     void complain(String message) {
         alert("Error: " + message);
     }
@@ -12813,13 +11725,33 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     }
 
     public void appRestart() {
-        Intent i = getBaseContext().getPackageManager()
-                .getLaunchIntentForPackage(getBaseContext().getPackageName());
+        Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
         if (i != null) {
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         }
         startActivity(i);
     }
+
+
+
+
+/*
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data);
+        if (mnHelper == null) return;
+
+        // Pass on the activity result to the helper for handling
+        if (!mnHelper.handleActivityResult(requestCode, resultCode, data)) {
+            // not handled, so handle it ourselves (here's where you'd
+            // perform any handling of activity results not related to in-app
+            // billing...
+            super.onActivityResult(requestCode, resultCode, data);
+        } else {
+            Log.d(TAG, "onActivityResult handled by IABUtil.");
+        }
+    }
+*/
 
     private void makeCall(String phone) {
         Intent callIntent = new Intent(Intent.ACTION_VIEW);
@@ -12827,60 +11759,24 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         startActivity(callIntent);
     }
 
-    private class UpdateListener implements BillingUpdateListener {
-
-        @Override
-        public void onPurchasesUpdated(List<Purchase> purchaseList) {
-
-            for (Purchase purchase : purchaseList) {
-                if (BillingManager.SKU_ID.equals(purchase.getProducts().get(0))) {
-
-                    spa.putInt(MainActivity.this, "purchase_ads", 1);
-
-                        System.out.println("purchase status : inside" + spa.getInt(MainActivity.this, "purchase_ads"));
-                        // Log.d(TAG, "We have gas. Consuming it.");
-                        // We should consume the purchase and fill up the tank once it was consumed
-                        //     mActivity.getBillingManager().consumeAsync(purchase.getPurchaseToken());
-                        SharedPreference sharedPreference = new SharedPreference();
-                        //sharedPreference.putInt(MainActivity.this, "pur_type", 2);
-                        // sharedPreference.putBoolean(MainActivity.this, "purchase", true);
-
-
-                }
-            }
-
-            /*ADS LOADED*/
-            if (spa.getInt(context, "purchase_ads") == 0) {
-                //ads_request();
-				/*adds(ads_lay);
-				load_add(add);*/
-            } else {
-
-            }
-        }
-    }
-
     public void leader_bd() {
         final boolean appinstalled = appInstalledOrNot("com.google.android.play.games");
         if (!appinstalled) {
             AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
             alertDialog.setMessage("புள்ளிகளை பார்க்க கூகிள் பிளே கேம்ஸ்யை இன்ஸ்டால் செய்யவும். ");
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ஆம் ",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            startActivity(new Intent(Intent.ACTION_VIEW,
-                                    Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.play.games")));
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ஆம் ", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.play.games")));
 
-                        }
-                    });
+                }
+            });
 
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "இல்லை ",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "இல்லை ", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
             alertDialog.show();
         } else {
             if (Utils.isNetworkAvailable(getApplicationContext())) {
@@ -12903,21 +11799,19 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                         //  First_register("yes");
                         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                         alertDialog.setMessage("புள்ளிகளை பார்க்க  கூகுள் பிளே கேம்ஸ்ல் இணைத்துக்கொள்கிறீர்களா? ");
-                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ஆம் ",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        viewBoards();
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ஆம் ", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                viewBoards();
 
-                                    }
-                                });
+                            }
+                        });
 
-                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "இல்லை ",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
+                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "இல்லை ", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
                         alertDialog.show();
                     } else {
                         if (getApiClient().isConnected()) {
@@ -12960,22 +11854,19 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         if (!appinstalled) {
             AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
             alertDialog.setMessage("விருதுகளை பார்க்க கூகிள் பிளே கேம்ஸ்யை இன்ஸ்டால் செய்யவும். ");
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ஆம் ",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            startActivity(new Intent(Intent.ACTION_VIEW,
-                                    Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.play.games")));
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ஆம் ", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.play.games")));
 
-                        }
-                    });
+                }
+            });
 
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "இல்லை ",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "இல்லை ", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
             alertDialog.show();
         } else {
             if (Utils.isNetworkAvailable(getApplicationContext())) {
@@ -12989,20 +11880,18 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
                     if (sps.getString(MainActivity.this, "signinagain").equals("")) {
                         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                         alertDialog.setMessage("விருதுகளை பார்க்க கூகுள் பிளே கேம்ஸ்ல் இணைத்துக்கொள்கிறீர்களா?");
-                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ஆம் ",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        viewBoard1s();
-                                    }
-                                });
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ஆம் ", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                viewBoard1s();
+                            }
+                        });
 
-                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "இல்லை ",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
+                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "இல்லை ", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
                         alertDialog.show();
                     } else {
                         if (getApiClient().isConnected()) {
@@ -13144,8 +12033,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
 
             } finally {
-                if (update_cursor != null)
-                    update_cursor.close();
+                if (update_cursor != null) update_cursor.close();
                /* Intent main = new Intent(getApplicationContext(), MainActivity.class);
                 finish();
                 startActivity(main);*/
@@ -13164,7 +12052,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
 
     }
-
 
     public void daily_bones() {
         openDialog = new Dialog(MainActivity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -13298,217 +12185,6 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
         }
 
     }
-/*
-    private void checkForInvitation() {
-        Games.getGamesClient(this, GoogleSignIn.getLastSignedInAccount(this))
-                .getActivationHint()
-                .addOnSuccessListener(
-                        new OnSuccessListener<Bundle>() {
-                            @Override
-                            public void onSuccess(Bundle bundle) {
-                                Invitation invitation = bundle.getParcelable(Multiplayer.EXTRA_INVITATION);
-                                if (invitation != null) {
-
-                                }
-                            }
-                        }
-                );
-    }
-*/
-
-
-    public static void prize_data_update(Context context, int score) {
-        Newgame_DataBaseHelper myDbHelper = new Newgame_DataBaseHelper(context);
-        myDbHelper.executeSql("create table if not exists prize_data(id INTEGER PRIMARY KEY AUTOINCREMENT,date varchar,score integer,isfinish integer DEFAULT 0);");
-
-        if (sps.getString(context, "price_registration").equals("com")) {
-            int score_ed = 0;
-            Calendar calendar3 = Calendar.getInstance();
-            int cur_year1 = calendar3.get(Calendar.YEAR);
-            int cur_month1 = calendar3.get(Calendar.MONTH);
-            int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
-
-            String str_month1 = "" + (cur_month1 + 1);
-            if (str_month1.length() == 1) {
-                str_month1 = "0" + str_month1;
-            }
-
-            String str_day1 = "" + cur_day1;
-            if (str_day1.length() == 1) {
-                str_day1 = "0" + str_day1;
-            }
-            price_date = str_month1 + "-" + cur_year1;
-            System.out.println("#################PS_price_date_in" + price_date);
-//////////////////////////////////////////////////////////////////////////////////////PRIZE DATA TABLE///////////////////////////////////////////////////////////////////////////
-            Cursor sc2d = myDbHelper.getQry("select * from prize_data where date ='" + price_date + "'");
-            sc2d.moveToFirst();
-            if (sc2d.getCount() == 0) {
-                System.out.println("#################new insert");
-                ContentValues cv = new ContentValues();
-                cv.put("date", price_date);
-                cv.put("score", score);
-                myDbHelper.insert_data("prize_data", null, cv);
-            } else if (sc2d.getCount() != 0) {
-                Cursor up = myDbHelper.getQry("select * from prize_data where date ='" + price_date + "'");
-                up.moveToFirst();
-                if (up.getCount() != 0) {
-                    score_ed = up.getInt(up.getColumnIndexOrThrow("score"));
-                    score_ed = score_ed + score;
-                    myDbHelper.executeSql("UPDATE prize_data SET score='" + score_ed + "' where date ='" + price_date + "'");
-                    System.out.println("#################old insert");
-                }
-            }
-
-            System.out.println("###################score_ed" + score_ed);
-        }
-
-//////////////////////////////////////////////////////////////////////////////////////PRIZE DATA TABLE///////////////////////////////////////////////////////////////////////////
-    }
-
-    public static void send_prize_data(final Context context) {
-
-        Calendar calendar3 = Calendar.getInstance();
-        price_year_date = String.valueOf(calendar3.get(Calendar.YEAR));
-        int cur_month1 = calendar3.get(Calendar.MONTH);
-        int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
-
-        price_month_date = "" + (cur_month1 + 1);
-        if (price_month_date.length() == 1) {
-            price_month_date = "0" + price_month_date;
-        }
-
-
-        price_date_d = price_month_date + "-" + price_year_date;
-        System.out.println("#################PS_date" + price_date_d);
-
-        price_pre_month_date = "" + (cur_month1);
-        if (price_pre_month_date.length() == 1) {
-            price_pre_month_date = "0" + price_pre_month_date;
-        }
-
-        price_date_dm = price_pre_month_date + "-" + price_year_date;
-        System.out.println("#################PSV_date" + price_date_dm);
-
-        if (sps.getString(context, "price_registration").equals("com")) {
-            Newgame_DataBaseHelper myDbHelper = new Newgame_DataBaseHelper(context);
-            Cursor ol = myDbHelper.getQry("select * from prize_data where date ='" + price_date_dm + "'");
-            ol.moveToFirst();
-            System.out.println("#################PS_count" + ol.getCount());
-            if (ol.getCount() != 0) {
-                old_score_ed = ol.getInt(ol.getColumnIndexOrThrow("score"));
-            }
-
-            Cursor up = myDbHelper.getQry("select * from prize_data where date ='" + price_date_d + "'");
-            up.moveToFirst();
-            System.out.println("#################PS_count" + up.getCount());
-            if (up.getCount() != 0) {
-
-                score_ed = up.getInt(up.getColumnIndexOrThrow("score"));
-                prize_u_id = sps.getString(context, "p_user_id");
-                System.out.println("#################PS" + score_ed);
-                System.out.println("#################PS_id" + prize_u_id);
-                // Showing progress dialog at user registration time.
-                // Creating string request with post method.
-                StringRequest stringRequest = new StringRequest(Request.Method.POST, price_url,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String ServerResponse) {
-                                JSONArray jArray, jArray2;
-                                JSONObject json_data = null;
-                                JSONObject json_data2 = null;
-                                String data = "";
-                                try {
-                                    jArray = new JSONArray(ServerResponse);
-                                    json_data = jArray.getJSONObject(0);
-                                    if (json_data.getString("status").equals("success")) {
-                                        for (int i = 0; i < jArray.length(); i++) {
-                                            String urls = json_data.getString("web");
-                                            String result = json_data.getString("result");
-                                            System.out.println("##############result###########" + result);
-                                            jArray2 = new JSONArray(result);
-                                            json_data2 = jArray2.getJSONObject(0);
-                                            for (int j = 0; j < jArray2.length(); j++) {
-                                                String pos = json_data2.getString("position");
-                                                System.out.println("##############pos###########" + pos);
-                                            }
-
-                                            System.out.println("##############urls###########" + urls);
-                                        }
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                // Hiding the progress dialog after all task complete.
-                                // Showing response message coming from server.
-                                System.out.println("Game Status ServerResponse" + ServerResponse);
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError volleyError) {
-                                // Hiding the progress dialog after all task complete.
-                                // Showing error message if something goes wrong.
-                                Toast.makeText(context, volleyError.toString(), Toast.LENGTH_LONG).show();
-                            }
-                        }) {
-                    @Override
-                    protected Map<String, String> getParams() {
-
-                        // Creating Map String Params.
-                        Map<String, String> params = new HashMap<String, String>();
-                        // Adding All values to Params.
-                        params.put("mode", "GameStatus");
-                        params.put("user_id", prize_u_id);
-                        params.put("month", price_month_date);
-                        params.put("year", price_year_date);
-                        params.put("score", String.valueOf(score_ed));
-                        params.put("pre_month", String.valueOf(price_pre_month_date));
-                        params.put("pre_year", String.valueOf(price_year_date));
-                        params.put("old_score", String.valueOf(old_score_ed));
-                        System.out.println("####Tuser_id" + prize_u_id);
-                        System.out.println("####Tmonth" + price_month_date);
-                        System.out.println("####Tyear" + price_year_date);
-                        System.out.println("####Tscore" + score_ed);
-                        return params;
-                    }
-
-                };
-                // Creating RequestQueue.
-                RequestQueue requestQueue = Volley.newRequestQueue(context);
-                // Adding the StringRequest object into requestQueue.
-                requestQueue.add(stringRequest);
-
-            }
-        }
-
-    }
-
- /*   public void update_check() {
-        appUpdateManager = AppUpdateManagerFactory.create(MainActivity.this);
-
-        Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
-
-        appUpdateInfoTask.addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
-            @Override
-            public void onSuccess(AppUpdateInfo appUpdateInfo) {
-                if (appUpdateInfo.updateAvailability() ==
-                        AppUpdateManager appUpdateManager;
-                UpdateAvailability.UPDATE_AVAILABLE
-                        && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
-
-                    try {
-                        appUpdateManager.startUpdateFlowForResult(
-                                appUpdateInfo,
-                                AppUpdateType.IMMEDIATE,
-                                HomeScreen.this,
-                                200);
-                    } catch (IntentSender.SendIntentException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-    }*/
 
     private void loginRetrofit2Api(String action, String gameid, String lastqid, String android_id) {
         Retrofitstart apiInterface = APIClient.getClient().create(Retrofitstart.class);
@@ -13537,7 +12213,7 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
 
             @Override
             public void onFailure(Call<List<Downloading_pogo>> call, Throwable t) {
-                System.out.println("###############################downloading_pogo" + t.toString());
+                System.out.println("###############################downloading_pogo" + t);
                 Utils.mProgress.dismiss();
             }
         });
@@ -13587,5 +12263,407 @@ public class MainActivity extends BaseGameActivity implements RippleView.OnRippl
     public void didTapButton(RippleView vew) {
         final Animation myAnim = AnimationUtils.loadAnimation(this, R.anim.bounce);
         vew.startAnimation(myAnim);
+    }
+
+    private enum PendingAction {
+        NONE, POST_PHOTO, POST_STATUS_UPDATE
+    }
+
+    class DownloadFileAsync extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // showDialog(DIALOG_DOWNLOAD_PROGRESS);
+        }
+
+        @Override
+        protected String doInBackground(String... aurl) {
+            InputStream input = null;
+            OutputStream output = null;
+            HttpURLConnection connection = null;
+            try {
+                URL url = new URL(aurl[0]);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+
+                // expect HTTP 200 OK, so we don't mistakenly save error report
+                // instead of the file
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    return "Server returned HTTP " + connection.getResponseCode() + " " + connection.getResponseMessage();
+                }
+
+                // this will be useful to display download percentage
+                // might be -1: server did not report the length
+                final int fileLength = connection.getContentLength();
+
+                File SDCardRoot = Environment.getExternalStorageDirectory();
+
+                File fol = new File(SDCardRoot + "/Nithra/solliadi/");
+                if (!fol.exists()) {
+                    fol.mkdirs();
+                }
+
+
+                File file = new File(SDCardRoot + "/Nithra/solliadi/", sps.getString(MainActivity.this, "email") + "-filename.zip");
+
+                // download the file
+                input = connection.getInputStream();
+                output = new FileOutputStream(file);
+
+                byte[] data = new byte[4096];
+                long total = 0;
+                int count;
+                while ((count = input.read(data)) != -1) {
+                    // allow canceling with back button
+                    if (isCancelled()) {
+                        input.close();
+                        return null;
+                    }
+                    total += count;
+                    publishProgress("" + (int) ((total * 100) / fileLength));
+
+                    // publishing the progress....
+                    if (fileLength > 0) // only if total length is known
+                        output.write(data, 0, count);
+                }
+
+                unpackZip(sps.getString(MainActivity.this, "email") + "-filename.zip");
+
+            } catch (Exception e) {
+
+
+                return e.toString();
+            } finally {
+                try {
+                    if (output != null) output.close();
+                    if (input != null) input.close();
+                } catch (IOException ignored) {
+                }
+
+                if (connection != null) connection.disconnect();
+
+
+            }
+            return null;
+
+        }
+
+
+        @Override
+        protected void onPostExecute(String unused) {
+            //  nProgressDialog.dismiss();
+            deletezip();
+
+
+            if (unused != null && unused.equals("ERROR_DOW")) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                alertDialogBuilder.setCancelable(false);
+                alertDialogBuilder.setTitle("Network connection not available, please check it!");
+                alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                        downloadFileAsync.isCancelled();
+                        downloadFileAsync.cancel(true);
+
+                    }
+                });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+
+
+            }
+
+
+            try {
+
+            } catch (Exception e) {
+                System.out.println("result=======////==" + e);
+            }
+        }
+     /*   protected void onProgressUpdate(String... progress) {
+            Log.d("ANDRO_ASYNC",progress[0]);
+            nProgressDialog.setProgress(Integer.parseInt(progress[0]));
+			*//*if(!isNetworkAvailable()){
+                downloadFileAsync.isCancelled();
+				//downloadFileAsync.cancel(true);
+
+			}*//*
+        }*/
+    }
+
+    private class GetVersionCode extends AsyncTask<Void, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Utils.mProgress(MainActivity.this, " தகவல்கள் சரிபார்க்கப்படுகிறது காத்திருக்கவும். ....", false).show();
+            Utils.mProgress.setCancelable(false);
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+
+            String newVersion = null;
+            String[] strr = getAppVersionInfo("https://play.google.com/store/apps/details?id=" + getPackageName() + "&hl=it");
+            if (strr != null) {
+                newVersion = strr[0] + "," + strr[1];
+            }
+
+            // newVersion = getAppVersionInfo("https://play.google.com/store/apps/details?id="+getPackageName()+"&hl=it")[0]+","+getAppVersionInfo("https://play.google.com/store/apps/details?id="+getPackageName()+"&hl=it")[1];
+            System.out.println("chcekkk : " + newVersion);
+            return newVersion;
+        }
+
+        @Override
+        protected void onPostExecute(String onlineVersions) {
+            super.onPostExecute(onlineVersions);
+            if (onlineVersions != null && !onlineVersions.isEmpty()) {
+                String onlineVersion = null;
+                try {
+                    System.out.println("chcekkk : " + onlineVersions);
+                    final String str = onlineVersions;
+                    onlineVersion = str;
+                    try {
+                        Utils.mProgress.dismiss();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    if (onlineVersion != null && !onlineVersion.isEmpty()) {
+
+                        if (Float.valueOf(Utils.versionname_get(MainActivity.this)) < Float.valueOf(onlineVersion)) {
+                            //show dialog
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    alert(0, str);
+                                    System.out.println("################new version yes");
+                                }
+                            });
+
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    alert(1, str);
+                                    System.out.println("################new version no");
+                                }
+                            });
+
+                        }
+
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                alert(2, "இணையதள சேவையை சரிபார்க்கவும் ");
+                            }
+                        });
+                    }
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            alert(2, "இணையதள சேவையை சரிபார்க்கவும் ");
+                        }
+                    });
+
+                }
+
+
+                Log.d("update", "Current version " + Utils.versionname_get(MainActivity.this) + "playstore version " + onlineVersion);
+            }
+        }
+
+
+    }
+/*
+    private void checkForInvitation() {
+        Games.getGamesClient(this, GoogleSignIn.getLastSignedInAccount(this))
+                .getActivationHint()
+                .addOnSuccessListener(
+                        new OnSuccessListener<Bundle>() {
+                            @Override
+                            public void onSuccess(Bundle bundle) {
+                                Invitation invitation = bundle.getParcelable(Multiplayer.EXTRA_INVITATION);
+                                if (invitation != null) {
+
+                                }
+                            }
+                        }
+                );
+    }
+*/
+
+    private class gcmpost_update1 extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... strr) {
+            ServerUtilities.gcmupdate(MainActivity.this, Utils.getversionname(MainActivity.this), Utils.getversioncode(MainActivity.this), strr[0]);
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String onlineVersions) {
+            super.onPostExecute(onlineVersions);
+            SharedPreference sharedPreference = new SharedPreference();
+            sharedPreference.putInt(MainActivity.this, "fcm_update", Utils.getversioncode(MainActivity.this));
+        }
+    }
+
+    private class gcmpost_update2 extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... strr) {
+            ServerUtilities.gcmpost(strr[0], Utils.android_id(MainActivity.this), Utils.getversionname(MainActivity.this), Utils.getversioncode(MainActivity.this), MainActivity.this);
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String onlineVersions) {
+            super.onPostExecute(onlineVersions);
+            SharedPreference sharedPreference = new SharedPreference();
+            sharedPreference.putInt(MainActivity.this, "fcm_update", Utils.getversioncode(MainActivity.this));
+        }
+    }
+
+ /*   public void update_check() {
+        appUpdateManager = AppUpdateManagerFactory.create(MainActivity.this);
+
+        Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+
+        appUpdateInfoTask.addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
+            @Override
+            public void onSuccess(AppUpdateInfo appUpdateInfo) {
+                if (appUpdateInfo.updateAvailability() ==
+                        AppUpdateManager appUpdateManager;
+                UpdateAvailability.UPDATE_AVAILABLE
+                        && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+
+                    try {
+                        appUpdateManager.startUpdateFlowForResult(
+                                appUpdateInfo,
+                                AppUpdateType.IMMEDIATE,
+                                HomeScreen.this,
+                                200);
+                    } catch (IntentSender.SendIntentException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }*/
+
+    public class CustomerCareAdapter extends ArrayAdapter {
+
+        public TextView title, ans;
+        public int[] colorArray = {R.color.green, R.color.green, R.color.green, R.color.green, R.color.green, R.color.green, R.color.green, R.color.green};
+        Context context;
+        List<Item> list;
+        LayoutInflater inflater;
+        LinearLayout textLay;
+        Button btn;
+
+        public CustomerCareAdapter(Context context, int resource, List<Item> list) {
+            super(context, resource, list);
+            this.context = context;
+            this.list = list;
+        }
+
+        public void notifyDataSetChanged() {
+            super.notifyDataSetChanged();
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+            View view = inflater.inflate(R.layout.cus_care_lay, null);
+            btn = view.findViewById(R.id.btn);
+            title = view.findViewById(R.id.title);
+            title.setText(list.get(position).getItem());
+
+            ans = view.findViewById(R.id.ans);
+            ans.setText(list.get(position).getCount());
+
+            textLay = view.findViewById(R.id.text_lay);
+            textLay.setBackgroundColor(context.getResources().getColor(colorArray[position]));
+
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+
+                    if (list.get(position).getId() == 1) {
+                        if (Utils.isNetworkAvailable(context)) {
+                            final Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                            emailIntent.setType("plain/text");
+                            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Regarding Nithra Solli_Adi Subscription");
+                            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"feedback@nithra.mobi"});
+                            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+                        } else {
+                            Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
+                        }
+
+
+                    } else if (list.get(position).getId() == 2) {
+                        makeCall("");
+                    }
+                }
+            });
+
+            if (list.get(position).getId() == 1) {
+                btn.setText("EMAIL US");
+                btn.setBackgroundColor(context.getResources().getColor(colorArray[position]));
+            } else if (list.get(position).getId() == 2) {
+                btn.setText("CALL US");
+                btn.setBackgroundColor(context.getResources().getColor(colorArray[position]));
+            } else {
+                btn.setVisibility(View.GONE);
+            }
+            return view;
+        }
+
+    }
+
+    private class UpdateListener implements BillingUpdateListener {
+
+        @Override
+        public void onPurchasesUpdated(List<Purchase> purchaseList) {
+
+            for (Purchase purchase : purchaseList) {
+                if (BillingManager.SKU_ID.equals(purchase.getProducts().get(0))) {
+
+                    spa.putInt(MainActivity.this, "purchase_ads", 1);
+
+                    System.out.println("purchase status : inside" + spa.getInt(MainActivity.this, "purchase_ads"));
+                    // Log.d(TAG, "We have gas. Consuming it.");
+                    // We should consume the purchase and fill up the tank once it was consumed
+                    //     mActivity.getBillingManager().consumeAsync(purchase.getPurchaseToken());
+                    SharedPreference sharedPreference = new SharedPreference();
+                    //sharedPreference.putInt(MainActivity.this, "pur_type", 2);
+                    // sharedPreference.putBoolean(MainActivity.this, "purchase", true);
+
+
+                }
+            }
+
+            /*ADS LOADED*/
+            if (spa.getInt(context, "purchase_ads") == 0) {
+                //ads_request();
+				/*adds(ads_lay);
+				load_add(add);*/
+            } else {
+
+            }
+        }
     }
 }

@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/back_next2"
-    tools:context="nithra.tamil.word.game.solliadi.My_Multiplayer">
+    android:background="@drawable/back_next2">
 
     <RelativeLayout
         android:id="@+id/head"

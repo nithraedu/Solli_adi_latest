@@ -1,22 +1,16 @@
 package nithra.tamil.word.game.solliadi;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.StrictMode;
-
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 public class Intro_Sc extends AppCompatActivity {
     static SharedPreference sps = new SharedPreference();
@@ -51,7 +45,7 @@ public class Intro_Sc extends AppCompatActivity {
         play_game.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sps.putInt(Intro_Sc.this,"native_banner_ads",0);
+                sps.putInt(Intro_Sc.this, "native_banner_ads", 0);
                 finish();
                 Intent i = new Intent(Intro_Sc.this, New_Main_Activity.class);
                 startActivity(i);

@@ -1,5 +1,9 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Puthayal_Sorkal_Native_Banner;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -17,40 +21,11 @@ import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxAdView;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
-import com.facebook.ads.NativeAdLayout;
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -60,7 +35,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -78,26 +52,25 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/*import com.facebook.FacebookException;
-import com.facebook.FacebookOperationCanceledException;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
-import com.facebook.widget.FacebookDialog;
-import com.facebook.widget.WebDialog;*/
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.FileProvider;
 
-
-
-
-
-
-
-
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.facebook.ads.NativeAdLayout;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-
-
-
+import com.google.android.material.snackbar.Snackbar;
 import com.google.example.games.basegameutils.BaseGameActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -106,7 +79,6 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 
@@ -114,37 +86,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
 import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
-import nithra.tamil.word.game.solliadi.adutils.GameExitUtils;
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Puthayal_Sorkal_Native_Banner;
-
 public class Riddle_game extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Download_completed {
 
-    int fb_reward = 0;
-    //RewardedVideoAd rewardedVideoAd;
-    private MaxRewardedAd rewardedAd;
-    int reward_status = 0;
-    //*********************reward videos process 1***********************
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
-
-
-    private boolean mGameOver;
-    private boolean mGamePaused;
-
-    private long mTimeRemaining;
-    //reward videos process 1***********************
-
+    public static final String TAG = "SavedGames";
 
     /////////native advance////////////
     private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
@@ -155,39 +104,125 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
     /////////Native_Top_Advanced////////////
     /////////Native_BackPress_Advanced////////////
     private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
-    /////////Native_BackPress_Advanced////////////
-
-    public static final String TAG = "SavedGames";
-
     // The AppState slot we are editing.  For simplicity this sample only manipulates a single
     // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
     // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
     private static final int APP_STATE_KEY = 1;
-
+    //reward videos process 1***********************
     // Request code used to invoke sign-in UI.
     private static final int RC_SIGN_IN = 9001;
-
     // Request code used to invoke Snapshot selection UI.
     private static final int RC_SELECT_SNAPSHOT = 9002;
-
-    /// Client used to interact with Google APIs.
-    private GoogleApiClient mGoogleApiClient;
+    public static FrameLayout add, add2, add3;
+    public static LinearLayout add_e;
+    /////////Native_BackPress_Advanced////////////
+    public static LinearLayout add_sc;
+    static SharedPreference spd = new SharedPreference();
+    static int ry;
+    static int rvo = 0;
+    static int mCoinCount = 20;
+    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     // True when the application is attempting to resolve a sign-in error that has a possible
     // resolution,
-    private boolean mIsResolving = false;
-
+    private final boolean mIsResolving = false;
     // True immediately after the user clicks the sign-in button/
-    private boolean mSignInClicked = false;
-
+    private final boolean mSignInClicked = false;
     // True if we want to automatically attempt to sign in the user at application start.
-    private boolean mAutoStartSignIn = true;
-
-
+    private final boolean mAutoStartSignIn = true;
+    private final Riddle_game.PendingAction pendingAction = Riddle_game.PendingAction.NONE;
+    int fb_reward = 0;
+    int reward_status = 0;
     // Facebook variable starts
+    String btn_str = "";
+    TextView c_time, score, to_no, question_txt;
+    SQLiteDatabase exdb, dbs, dbn, dbn2;
+    SharedPreference sps = new SharedPreference();
+    String gameid = "10";
+    String questionid, question, answer, split_word;
+    Chronometer focus;
+    TextView bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9, bt10, bt11, bt12, bt13, bt14, bt15, bt16;
+    RelativeLayout w_head, helpshare_layout;
+    /*  private UiLifecycleHelper uiHelper;
 
-    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
+      private Session.StatusCallback callback = new Session.StatusCallback() {
+          @Override
+          public void call(Session session, SessionState state,
+                           Exception exception) {
+              // onSessionStateChange(session, state, exception);
+          }
+      };
 
-    private Riddle_game.PendingAction pendingAction = Riddle_game.PendingAction.NONE;
+      private FacebookDialog.Callback dialogCallback = new FacebookDialog.Callback() {
+          @Override
+          public void onError(FacebookDialog.PendingCall pendingCall,
+                              Exception error, Bundle data) {
+              Log.d("HelloFacebook", String.format("Error: %s", error.toString()));
+          }
+
+          @Override
+          public void onComplete(FacebookDialog.PendingCall pendingCall,
+                                 Bundle data) {
+              Log.d("HelloFacebook", "Success!");
+          }
+      };*/
+    TextView shareq, h_gplues, h_watts_app, h_facebook;
+    TextView earncoin;
+    TextView c_settings;
+    EditText c_edit;
+    int type = 0;
+    SoundPool click, win, coin, worng;
+    int soundId1, soundId2, soundId3, soundId4;
+    int sv = 0;
+    TextView c_verify, c_clear, ans_high, c_clue;
+    TextView c_ans;
+    TextView c_coin;
+    int e2 = 0;
+    Dialog openDialog_s;
+    int share_name = 0;
+    int setting_access = 0;
+    Context context = this;
+    RelativeLayout adsicon, adsicon2;
+    CircleImageView ads_logo, ads_logo2;
+    int loadaddcontent = 0;
+    TextView next_continue;
+    TextView ttscores;
+    Typeface typ, tyr;
+    String retype = "s";
+    long ttstop;
+    LinearLayout adds, list4;
+    LinearLayout qtw;
+    Dialog openDialog_p;
+    int s = 0;
+    int f_sec;
+    int r = 0;
+    int minmum = 1;
+    int maximum = 3;
+    int randomno;
+    int daily_start = 0;
+    Newgame_DataBaseHelper newhelper;
+    Newgame_DataBaseHelper2 newhelper2;
+    Newgame_DataBaseHelper3 newhelper3;
+    DataBaseHelper myDbHelper;
+    Newgame_DataBaseHelper4 newhelper4;
+    int extra_coin_s = 0;
+    int reward_play_count = 0;
+    int ea = 0;
+    TextView coin_value;
+    int minmumd = 1;
+    int maximumd = 4;
+    int randomnod;
+    Dialog openDialog;
+    int setval_vid;
+    FirebaseAnalytics mFirebaseAnalytics;
+    int dia_dismiss = 0;
+    //RewardedVideoAd rewardedVideoAd;
+    private MaxRewardedAd rewardedAd;
+    private boolean mGameOver;
+    private boolean mGamePaused;
+    private long mTimeRemaining;
+    /// Client used to interact with Google APIs.
+    private GoogleApiClient mGoogleApiClient;
+    private MaxInterstitialAd ins_game, game_exit_ins;
 
     @Override
     public void onSignInFailed() {
@@ -219,10 +254,6 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
 
     }
 
-
-    private enum PendingAction {
-        NONE, POST_PHOTO, POST_STATUS_UPDATE
-    }
     private void backexitnet() {
         if (main_act.equals("")) {
             finish();
@@ -233,108 +264,6 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         }
     }
 
-  /*  private UiLifecycleHelper uiHelper;
-
-    private Session.StatusCallback callback = new Session.StatusCallback() {
-        @Override
-        public void call(Session session, SessionState state,
-                         Exception exception) {
-            // onSessionStateChange(session, state, exception);
-        }
-    };
-
-    private FacebookDialog.Callback dialogCallback = new FacebookDialog.Callback() {
-        @Override
-        public void onError(FacebookDialog.PendingCall pendingCall,
-                            Exception error, Bundle data) {
-            Log.d("HelloFacebook", String.format("Error: %s", error.toString()));
-        }
-
-        @Override
-        public void onComplete(FacebookDialog.PendingCall pendingCall,
-                               Bundle data) {
-            Log.d("HelloFacebook", "Success!");
-        }
-    };*/
-
-    String btn_str = "";
-
-
-    TextView c_time, score, to_no, question_txt;
-    SQLiteDatabase exdb, dbs, dbn, dbn2;
-    SharedPreference sps = new SharedPreference();
-    String gameid = "10";
-    String questionid, question, answer, split_word;
-    Chronometer focus;
-    TextView bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9, bt10, bt11, bt12, bt13, bt14, bt15, bt16;
-    RelativeLayout w_head, helpshare_layout;
-    TextView shareq, h_gplues, h_watts_app, h_facebook;
-    TextView earncoin;
-    TextView c_settings;
-    EditText c_edit;
-    int type = 0;
-    SoundPool click, win, coin, worng;
-    int soundId1, soundId2, soundId3, soundId4;
-    int sv = 0;
-    TextView c_verify, c_clear, ans_high, c_clue;
-    TextView c_ans;
-    TextView c_coin;
-    int e2 = 0;
-    Dialog openDialog_s;
-
-    int share_name = 0;
-    int setting_access = 0;
-    public static FrameLayout add, add2, add3;
-    static SharedPreference spd = new SharedPreference();
-    Context context = this;
-    RelativeLayout adsicon, adsicon2;
-    CircleImageView ads_logo, ads_logo2;
-    int loadaddcontent = 0;
-    TextView next_continue;
-    TextView ttscores;
-    Typeface typ, tyr;
-
-
-    private MaxInterstitialAd ins_game,game_exit_ins;
-    static int ry;
-
-    static int rvo = 0;
-    static int mCoinCount=20;
-    String retype = "s";
-
-    long ttstop;
-    LinearLayout adds, list4;
-    LinearLayout qtw;
-    Dialog openDialog_p;
-
-    int s = 0;
-    int f_sec;
-    int r = 0;
-
-    int minmum = 1;
-    int maximum = 3;
-    int randomno;
-    int daily_start = 0;
-
-    public static LinearLayout add_e;
-    public static LinearLayout add_sc;
-
-    Newgame_DataBaseHelper newhelper;
-    Newgame_DataBaseHelper2 newhelper2;
-    Newgame_DataBaseHelper3 newhelper3;
-    DataBaseHelper myDbHelper;
-    Newgame_DataBaseHelper4 newhelper4;
-    int extra_coin_s = 0;
-    int reward_play_count = 0;
-    int ea=0;
-    TextView coin_value;
-    int minmumd = 1;
-    int maximumd = 4;
-    int randomnod;
-    Dialog openDialog;
-    int setval_vid;
-    FirebaseAnalytics mFirebaseAnalytics;
-    int dia_dismiss=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -349,15 +278,15 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         dbn2 = this.openOrCreateDatabase("Newgames3.db", MODE_PRIVATE, null);
 
 
-        if (sps.getString(Riddle_game.this,"new_user_db").equals("")){
+        if (sps.getString(Riddle_game.this, "new_user_db").equals("")) {
 
-        }else {
-            if (sps.getString(Riddle_game.this,"new_user_db").equals("on")){
-                sps.putString(Riddle_game.this,"db_name_start","Tamil_Game2.db");
-                Commen_string.dbs_name="Tamil_Game2.db";
-            }else {
-                sps.putString(Riddle_game.this,"db_name_start","Solli_Adi");
-                Commen_string.dbs_name="Solli_Adi";
+        } else {
+            if (sps.getString(Riddle_game.this, "new_user_db").equals("on")) {
+                sps.putString(Riddle_game.this, "db_name_start", "Tamil_Game2.db");
+                Commen_string.dbs_name = "Tamil_Game2.db";
+            } else {
+                sps.putString(Riddle_game.this, "db_name_start", "Solli_Adi");
+                Commen_string.dbs_name = "Solli_Adi";
             }
 
         }
@@ -391,16 +320,13 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         coin = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
         soundId4 = coin.load(Riddle_game.this, R.raw.coins, 1);
 ///
-        ImageView prize_logo=(ImageView)findViewById(R.id.prize_logo);
+        ImageView prize_logo = (ImageView) findViewById(R.id.prize_logo);
         if (sps.getInt(Riddle_game.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
             prize_logo.setVisibility(View.GONE);
         }
         //loads_ads_banner();
-
-
-
 
 
         prize_logo.setOnClickListener(new View.OnClickListener() {
@@ -450,12 +376,12 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         adds = (LinearLayout) findViewById(R.id.ads_lay);
 
         if (sps.getInt(context, "purchase_ads") == 0) {
-        if (Utils.isNetworkAvailable(Riddle_game.this)) {
-            Ad_NativieUtils.load_add_facebook(this,getResources().getString(R.string.Puthayal_Sorkal_Native_Banner_new),adds);
-        }else {
-            adds.setVisibility(View.GONE);
-        }
-        }else{
+            if (Utils.isNetworkAvailable(Riddle_game.this)) {
+                Ad_NativieUtils.load_add_facebook(this, getResources().getString(R.string.Puthayal_Sorkal_Native_Banner_new), adds);
+            } else {
+                adds.setVisibility(View.GONE);
+            }
+        } else {
             adds.setVisibility(View.GONE);
         }
 
@@ -463,7 +389,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
         } else {
             //fb_addload_score_screen(context);
-           /**/
+            /**/
         }
 
 
@@ -476,7 +402,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
 
         if (sps.getInt(Riddle_game.this, "purchase_ads") == 1) {
         } else {
-          //  advancads();
+            //  advancads();
         }
 
         ////////
@@ -491,12 +417,9 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         ////////
 
 
-
         //loadRewardedVideoAd();
 
         //uiHelper = new UiLifecycleHelper(this, callback);
-
-
 
 
         String snd = sps.getString(Riddle_game.this, "snd");
@@ -571,10 +494,10 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
 
 
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Riddle_game.this)
-                    .setTarget(helpshare_layout)
-                    .setDismissText("சரி")
-                    .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                    .build())
+                            .setTarget(helpshare_layout)
+                            .setDismissText("சரி")
+                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
+                            .build())
                     .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                         @Override
                         public void onDismiss(MaterialShowcaseView itemView, int position) {
@@ -593,8 +516,8 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
 
         }
 
-        if (sps.getInt(Riddle_game.this,"reward_coin_txt")==0){
-            sps.putInt(Riddle_game.this,"reward_coin_txt",20);
+        if (sps.getInt(Riddle_game.this, "reward_coin_txt") == 0) {
+            sps.putInt(Riddle_game.this, "reward_coin_txt", 20);
         }
 
         bt1.setOnClickListener(new View.OnClickListener() {
@@ -888,7 +811,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                                if (isChecked == true) {
+                                if (isChecked) {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                                 } else {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -1099,14 +1022,14 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
             adds.setVisibility(View.GONE);
             native_banner_ad_container.setVisibility(View.GONE);
         } else {
-            if (Utils.isNetworkAvailable(Riddle_game.this)){
-                fb_native_Puthayal_Sorkal_Native_Banner(Riddle_game.this,native_banner_ad_container);
+            if (Utils.isNetworkAvailable(Riddle_game.this)) {
+                fb_native_Puthayal_Sorkal_Native_Banner(Riddle_game.this, native_banner_ad_container);
                 /* if (sps.getInt(Riddle_game.this,"native_banner_ads")==1){
                     New_Main_Gamelist.inflateAd(Riddle_game.this,native_banner_ad_container);
                 }else {
                     fb_native(Riddle_game.this,native_banner_ad_container);
                 }*/
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
 
@@ -1153,10 +1076,10 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         if (sps.getInt(Riddle_game.this, "purchase_ads") == 1) {
             native_banner_ad_container.setVisibility(View.GONE);
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        }else {
-            if (Utils.isNetworkAvailable(Riddle_game.this)){
+        } else {
+            if (Utils.isNetworkAvailable(Riddle_game.this)) {
                 native_banner_ad_container.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
         }
@@ -1201,8 +1124,8 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
 
         if (sps.getString(Riddle_game.this, str_date1).equals("")) {
 
-          daily_bones();
-          sps.putString(Riddle_game.this, str_date1, "yes");
+            daily_bones();
+            sps.putString(Riddle_game.this, str_date1, "yes");
 
         }
 
@@ -1226,7 +1149,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         } else {
             if (sps.getInt(Riddle_game.this, "purchase_ads") == 1) {
 
-            }else {
+            } else {
                 sps.putInt(context, "addloded_rect_bck", 0);
                 sps.putInt(context, "addloded_rect_mul", 0);
 
@@ -1298,7 +1221,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
 
         } else {
             if (date.equals("0")) {
-               // nextgamesdialog();
+                // nextgamesdialog();
                 downloaddata_regular2();
             } else {
                 newhelper3.executeSql("UPDATE right_order SET daily=1 WHERE gameid='" + gameid + "'");
@@ -1313,7 +1236,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
     }
 
     private void daily_bones() {
-       openDialog = new Dialog(Riddle_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog = new Dialog(Riddle_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.daily_bones_newd2);
         openDialog.setCancelable(false);
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
@@ -1334,18 +1257,17 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         if (str_day1.length() == 1) {
             str_day1 = "0" + str_day1;
         }
-        final String str_date1 =  str_day1 + "-" + str_month1 + "-" + cur_year1;
+        final String str_date1 = str_day1 + "-" + str_month1 + "-" + cur_year1;
 
-        Date date1=new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24));
-        SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
-        final String date=sdf.format(date1);
+        Date date1 = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        final String date = sdf.format(date1);
 
         TextView tomarrow_coin_earn = (TextView) openDialog.findViewById(R.id.tomarrow_coin_earn);
 
         //TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
 
         //TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
-
 
 
         ok_y.setOnClickListener(new View.OnClickListener() {
@@ -1366,13 +1288,13 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
 
         coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
         ea = 100;
-        final int vals=reward_play_count*100;
-        ea=ea+vals;
+        final int vals = reward_play_count * 100;
+        ea = ea + vals;
         coin_value.setText("" + ea);
 
         LinearLayout extra_coin = (LinearLayout) openDialog.findViewById(R.id.extra_coin);
-        System.out.println("############################^^^^^^^^^^^^^^currentdate"+str_date1);
-        System.out.println("############################^^^^^^^^^^^^^^saveddate"+sps.getString(Riddle_game.this, "daily_bonus_date"));
+        System.out.println("############################^^^^^^^^^^^^^^currentdate" + str_date1);
+        System.out.println("############################^^^^^^^^^^^^^^saveddate" + sps.getString(Riddle_game.this, "daily_bonus_date"));
 
         if (str_date1.equals(sps.getString(Riddle_game.this, "daily_bonus_date"))) {
 
@@ -1390,12 +1312,12 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         } else if (sps.getInt(context, "daily_bonus_count") == 4) {
             ea = 300;
         }
-        prize_data_update(context,ea);
+        prize_data_update(context, ea);
         coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
       /*  final int vals = reward_play_count * 100;
         ea = ea + vals;*/
         coin_value.setText("" + ea);
-        setval_vid=ea;
+        setval_vid = ea;
         Random rn = new Random();
         randomnod = rn.nextInt(maximumd - minmumd + 1) + minmumd;
 
@@ -1428,7 +1350,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
                     if (fb_reward == 1) {
                         reward_progressBar.dismiss();
                         rewardedAd.showAd();
-                    }else {
+                    } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -3255,9 +3177,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
             bt14.setText(letter14);
             bt15.setText(letter12);
             bt16.setText(letter13);
-        } else if (type == 2)
-
-        {
+        } else if (type == 2) {
 
             StringTokenizer tokenizer = new StringTokenizer(a, ",");
             StringTokenizer word = new StringTokenizer(split_word, ",");
@@ -3592,7 +3512,6 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         }
     }
 
-
     private void find() {
         to_no = (TextView) findViewById(R.id.c_word_number);
         question_txt = (TextView) findViewById(R.id.question_txt);
@@ -3839,10 +3758,10 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         final LinearLayout vid_earn = (LinearLayout) openDialog_s.findViewById(R.id.vid_earn);
         LinearLayout ads_layout = (LinearLayout) openDialog_s.findViewById(R.id.fl_adplaceholder);
 
-        TextView video_earn=(TextView)openDialog_s.findViewById(R.id.video_earn);
-        video_earn.setText("மேலும் "+sps.getInt(Riddle_game.this,"reward_coin_txt")+"+நாணயங்கள் பெற");
+        TextView video_earn = (TextView) openDialog_s.findViewById(R.id.video_earn);
+        video_earn.setText("மேலும் " + sps.getInt(Riddle_game.this, "reward_coin_txt") + "+நாணயங்கள் பெற");
 
-        ImageView prize_logo=(ImageView)openDialog_s.findViewById(R.id.prize_logo);
+        ImageView prize_logo = (ImageView) openDialog_s.findViewById(R.id.prize_logo);
         if (sps.getInt(Riddle_game.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
@@ -3879,10 +3798,10 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         if (sps.getInt(Riddle_game.this, "purchase_ads") == 1) {
             ads_layout.setVisibility(View.GONE);
         } else {
-          //  New_Main_Activity.load_addFromMain_multiplayer(Riddle_game.this,ads_layout);
-            if (Utils.isNetworkAvailable(context)){
+            //  New_Main_Activity.load_addFromMain_multiplayer(Riddle_game.this,ads_layout);
+            if (Utils.isNetworkAvailable(context)) {
                 //New_Main_Activity.load_add_fb_rect_score_screen(context, ads_layout);
-            }else {
+            } else {
                 ads_layout.setVisibility(View.GONE);
             }
           /*  if (loadaddcontent == 1) {
@@ -3952,7 +3871,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         Animation shake;
         shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulam);
         adsicon.startAnimation(shake);
-      //  final LinearLayout vid_earn = (LinearLayout) openDialog_s.findViewById(R.id.vid_earn);
+        //  final LinearLayout vid_earn = (LinearLayout) openDialog_s.findViewById(R.id.vid_earn);
 
         vid_earn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -3964,7 +3883,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
                         reward_progressBar.dismiss();
                         rewardedAd.showAd();
                         rewardvideo.setVisibility(View.INVISIBLE);
-                    }else {
+                    } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -3999,7 +3918,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
                         reward_progressBar.dismiss();
                         rewardedAd.showAd();
                         rewardvideo.setVisibility(View.INVISIBLE);
-                    }else {
+                    } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -4164,14 +4083,12 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
                     if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
                         sps.putInt(getApplicationContext(), "ins_ad_new", 0);
                         if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if(ins_game == null || !ins_game.isReady()) {
+                            if (ins_game == null || !ins_game.isReady()) {
                                 dia_dismiss = 1;
                                 openDialog_s.dismiss();
                                 next();
                                 industrialload_game();
-                                return;
-                            }
-                            else{
+                            } else {
                                 ins_game.showAd();
                             }
 
@@ -4208,7 +4125,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
                         sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
                     }
                     // advancads_content();
-                  //  advancads();
+                    //  advancads();
                 }
                 //noclue=0;
 
@@ -4235,10 +4152,27 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         openDialog_s.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                if (dia_dismiss!=1){
-                    sps.putString(Riddle_game.this,"game_area","on");
-                        String date = sps.getString(Riddle_game.this, "date");
-                        if (date.equals("0")) {
+                if (dia_dismiss != 1) {
+                    sps.putString(Riddle_game.this, "game_area", "on");
+                    String date = sps.getString(Riddle_game.this, "date");
+                    if (date.equals("0")) {
+                        if (main_act.equals("")) {
+                            finish();
+                            openDialog_s.dismiss();
+                            Intent i = new Intent(Riddle_game.this, New_Main_Activity.class);
+                            startActivity(i);
+                        } else {
+                            finish();
+                            openDialog_s.dismiss();
+                        }
+                    } else {
+                        if (sps.getString(Riddle_game.this, "Exp_list").equals("on")) {
+                            finish();
+                            openDialog_s.dismiss();
+                            Intent i = new Intent(Riddle_game.this, Expandable_List_View.class);
+                            startActivity(i);
+
+                        } else {
                             if (main_act.equals("")) {
                                 finish();
                                 openDialog_s.dismiss();
@@ -4248,29 +4182,12 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
                                 finish();
                                 openDialog_s.dismiss();
                             }
-                        } else {
-                            if (sps.getString(Riddle_game.this, "Exp_list").equals("on")) {
-                                finish();
-                                openDialog_s.dismiss();
-                                Intent i = new Intent(Riddle_game.this, Expandable_List_View.class);
-                                startActivity(i);
-
-                            } else {
-                                if (main_act.equals("")) {
-                                    finish();
-                                    openDialog_s.dismiss();
-                                    Intent i = new Intent(Riddle_game.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    finish();
-                                    openDialog_s.dismiss();
-                                }
-                            }
+                        }
 
 
                     }
-                }else {
-                    dia_dismiss=0;
+                } else {
+                    dia_dismiss = 0;
                 }
 
 
@@ -4291,32 +4208,16 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
 
     }
 
-
-
-
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
-
-
-
-
-
-
 
     private void addCoins(int coins) {
         mCoinCount = coins;
         sps.putInt(Riddle_game.this, "reward_coin_txt", coins);
         //mCoinCountText.setText("Coins: " + mCoinCount);
     }
-
-
-
-
-    //reward videos***********************//
-
-
 
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getPackageManager();
@@ -4329,6 +4230,9 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         }
         return app_installed;
     }
+
+
+    //reward videos***********************//
 
     private boolean appInstalledOrNot(Context context, String uri) {
         PackageManager pm = context.getPackageManager();
@@ -4588,7 +4492,6 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         });
     }
 
-
     public void game_exit_ins_ad() {
 
         game_exit_ins = new MaxInterstitialAd(getResources().getString(R.string.Cat_Exit_Ins), this);
@@ -4616,12 +4519,12 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
 
             @Override
             public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error"+error);
+                System.out.println("check error" + error);
             }
 
             @Override
             public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2"+error);
+                System.out.println("check error2" + error);
             }
         });
         game_exit_ins.loadAd();
@@ -4668,7 +4571,6 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         ins_game.loadAd();
 
     }
-
 
     public void dialog(int i) {
         final Dialog openDialog_earncoin = new Dialog(Riddle_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -5013,7 +4915,6 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         }
     }
 
-
     protected void onResume() {
         super.onResume();
 
@@ -5088,104 +4989,102 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
 
     }
 
-
     public void onBackPressed() {
  /*   public boolean onKeyDown(int keyCode, KeyEvent event) {
         //return super.onKeyDown(keyCode, event);
 
         if(keyCode==KeyEvent.KEYCODE_BACK) {*/
 
-        sps.putString(Riddle_game.this,"game_area","on");
+        sps.putString(Riddle_game.this, "game_area", "on");
         sps.putInt(Riddle_game.this, "addlodedd", 0);
 
-            s = 1;
-            openDialog_p = new Dialog(Riddle_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-            openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+        s = 1;
+        openDialog_p = new Dialog(Riddle_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog_p.setContentView(R.layout.back_pess);
+        TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
+        TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
 
-            yes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-                    String dates = sps.getString(Riddle_game.this, "date");
-                    int pos;
-                    if (dates.equals("0")) {
-                        pos = 1;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                String dates = sps.getString(Riddle_game.this, "date");
+                int pos;
+                if (dates.equals("0")) {
+                    pos = 1;
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
 
-                        //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    } else {
-                        pos = 2;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+                    //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                } else {
+                    pos = 2;
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
 
-                        //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    }
-
-                        String date = sps.getString(Riddle_game.this, "date");
-                        if (date.equals("0")) {
-                            if (main_act.equals("")) {
-                                finish();
-                                Intent i = new Intent(Riddle_game.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                            }
-                        } else {
-                            if (sps.getString(Riddle_game.this, "Exp_list").equals("on")) {
-                                finish();
-                                Intent i = new Intent(Riddle_game.this, Expandable_List_View.class);
-                                startActivity(i);
-                            } else {
-                                if (main_act.equals("")) {
-                                    finish();
-                                    Intent i = new Intent(Riddle_game.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    finish();
-                                }
-                            }
-
-                    }
-
-
-                    //ad
-                    if (sps.getInt(context, "purchase_ads") == 0) {
-                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                    openDialog_p.dismiss();
-                                    game_exit_ins.showAd();
-                                }
-                            }
-                        } else {
-                            openDialog_p.dismiss();
-                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
-                        }
-                    }else{
-                        openDialog_p.dismiss();
-                    }
-                    //ad
+                    //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                 }
-            });
-            no.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+
+                String date = sps.getString(Riddle_game.this, "date");
+                if (date.equals("0")) {
+                    if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Riddle_game.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        finish();
+                    }
+                } else {
+                    if (sps.getString(Riddle_game.this, "Exp_list").equals("on")) {
+                        finish();
+                        Intent i = new Intent(Riddle_game.this, Expandable_List_View.class);
+                        startActivity(i);
+                    } else {
+                        if (main_act.equals("")) {
+                            finish();
+                            Intent i = new Intent(Riddle_game.this, New_Main_Activity.class);
+                            startActivity(i);
+                        } else {
+                            finish();
+                        }
+                    }
+
+                }
+
+
+                //ad
+                if (sps.getInt(context, "purchase_ads") == 0) {
+                    if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
+                        sps.putInt(getApplicationContext(), "game_exit_ins", 0);
+                        if (Utils.isNetworkAvailable(getApplicationContext())) {
+                            if (game_exit_ins != null && game_exit_ins.isReady()) {
+                                openDialog_p.dismiss();
+                                game_exit_ins.showAd();
+                            }
+                        }
+                    } else {
+                        openDialog_p.dismiss();
+                        sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
+                    }
+                } else {
                     openDialog_p.dismiss();
                 }
-            });
-            openDialog_p.show();
+                //ad
+            }
+        });
+        no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDialog_p.dismiss();
+            }
+        });
+        openDialog_p.show();
 
 
         // return super.onKeyDown(keyCode, event);
     }
-
 
     public void permission(final String a) {
         focus.stop();
@@ -5629,6 +5528,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         });
         openDialog.show();
     }
+
     public void vidcoinearn() {
         if (extra_coin_s == 1) {
             extra_coin_s = 0;
@@ -5694,6 +5594,15 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         });
 
         openDialog.show();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //uiHelper.onDestroy();
+        if (openDialog_p != null && openDialog_p.isShowing()) {
+            openDialog_p.dismiss();
+        }
     }
 /*
     public boolean isLoggedIn() {
@@ -5906,16 +5815,6 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         feedDialog.show();
     }
 */
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        //uiHelper.onDestroy();
-        if (openDialog_p != null && openDialog_p.isShowing()) {
-            openDialog_p.dismiss();
-        }
-    }
-
 
     public void nextgamesdialog() {
         final Dialog openDialog = new Dialog(Riddle_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -6340,7 +6239,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
         if (requestCode == 152) {
 
@@ -6373,17 +6272,15 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         }
     }
 
-
-    public void showcase_dismiss(){
+    public void showcase_dismiss() {
         Handler handler30 = new Handler();
         handler30.postDelayed(new Runnable() {
             @Override
             public void run() {
 
-                if (sps.getString(Riddle_game.this,"showcase_dismiss_riddle").equals(""))
-                {
+                if (sps.getString(Riddle_game.this, "showcase_dismiss_riddle").equals("")) {
                     showcase_dismiss();
-                }else {
+                } else {
                     sps.putString(context, "riddle_time_start", "yes");
                     focus.setBase(SystemClock.elapsedRealtime());
                     focus.start();
@@ -6393,7 +6290,8 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
             }
         }, 800);
     }
-    public void price_update(){
+
+    public void price_update() {
         ////////////////Prize//////////////////
         long timeElapsed = SystemClock.elapsedRealtime() - focus.getBase();
         int hours = (int) (timeElapsed / 3600000);
@@ -6424,6 +6322,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         }
         ////////////////Prize//////////////////
     }
+
     public void downloaddata_regular2() {
         NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
         native_banner_ad_container.setVisibility(View.INVISIBLE);
@@ -6469,7 +6368,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
                                         } else {
                                             finish();
                                         }
-                                    }else {
+                                    } else {
                                         if (date.equals("0")) {
                                             backexitnet();
                                         } else {
@@ -6501,7 +6400,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
                     } else {
                         finish();
                     }
-                }else {
+                } else {
                     finish();
                     Intent i = new Intent(Riddle_game.this, New_Main_Activity.class);
                     startActivity(i);
@@ -6522,14 +6421,12 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
             questionid_d = String.valueOf(cz.getInt(cz.getColumnIndexOrThrow("questionid")));
         }
         System.out.println("----------------------Download_server");
-        Download_data_server download_data_server = new Download_data_server(Riddle_game.this, questionid_d, ""+gameid);
+        Download_data_server download_data_server = new Download_data_server(Riddle_game.this, questionid_d, "" + gameid);
         download_data_server.execute();
     }
 
-
-
-    public void rewarded_ad(){
-        rewardedAd = MaxRewardedAd.getInstance( getResources().getString(R.string.Reward_Ins), this );
+    public void rewarded_ad() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
         rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
             public void onRewardedVideoStarted(MaxAd ad) {
@@ -6548,7 +6445,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
 
             @Override
             public void onAdLoaded(MaxAd ad) {
-                fb_reward=1;
+                fb_reward = 1;
             }
 
             @Override
@@ -6559,7 +6456,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
             @Override
             public void onAdHidden(MaxAd ad) {
                 rewarded_ad();
-                if (reward_status==1){
+                if (reward_status == 1) {
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
@@ -6580,7 +6477,7 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
                             }
                         }
                     }, 500);
-                }else {
+                } else {
                     Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                 }
 
@@ -6618,83 +6515,9 @@ public class Riddle_game extends BaseGameActivity implements GoogleApiClient.Con
         rewardedAd.loadAd();
     }
 
-    /*public void reward(final Context context) {
-        rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
-            @Override
-            public void onError(Ad ad, AdError error) {
-                // Rewarded video ad failed to load
 
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-
-
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Rewarded video ad clicked
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Rewarded Video ad impression - the event will fire when the
-                // video starts playing
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-
-                // Rewarded Video View Complete - the video has been played to the end.
-                // You can use this event to initialize your reward
-
-
-                // Call method to give reward
-                // giveReward();
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-        };
-        rewardedVideoAd.loadAd(
-                rewardedVideoAd.buildLoadAdConfig()
-                        .withAdListener(rewardedVideoAdListener)
-                        .build());
-    }*/
+    private enum PendingAction {
+        NONE, POST_PHOTO, POST_STATUS_UPDATE
+    }
 
 }

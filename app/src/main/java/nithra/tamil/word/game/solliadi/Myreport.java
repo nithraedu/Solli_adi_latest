@@ -1,11 +1,12 @@
 package nithra.tamil.word.game.solliadi;
 
 import android.content.Intent;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.WindowManager;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 public class Myreport extends AppCompatActivity {
     ViewPager viewPager;
@@ -21,22 +22,13 @@ public class Myreport extends AppCompatActivity {
         viewPager.setAdapter(new Fragment_adapter(Myreport.this, getSupportFragmentManager()));
 
 
-
-
-
-
-
-
-
-
-
     }
 
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //return super.onKeyDown(keyCode, event);
 
-        if(keyCode==KeyEvent.KEYCODE_BACK) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
 
             finish();
             Intent i = new Intent(Myreport.this, Game_States.class);

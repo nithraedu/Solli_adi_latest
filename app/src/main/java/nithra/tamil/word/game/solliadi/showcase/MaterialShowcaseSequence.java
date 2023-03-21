@@ -11,8 +11,8 @@ public class MaterialShowcaseSequence implements IDetachedListener {
 
     PrefsManager mPrefsManager;
     Queue<MaterialShowcaseView> mShowcaseQueue;
-    private boolean mSingleUse = false;
     Activity mActivity;
+    private boolean mSingleUse = false;
     private ShowcaseConfig mConfig;
     private int mSequencePosition = 0;
 
@@ -70,11 +70,7 @@ public class MaterialShowcaseSequence implements IDetachedListener {
 
     public boolean hasFired() {
 
-        if (mPrefsManager.getSequenceStatus() == PrefsManager.SEQUENCE_FINISHED) {
-            return true;
-        }
-
-        return false;
+        return mPrefsManager.getSequenceStatus() == PrefsManager.SEQUENCE_FINISHED;
     }
 
     public void start() {
@@ -113,11 +109,7 @@ public class MaterialShowcaseSequence implements IDetachedListener {
             MaterialShowcaseView sequenceItem = mShowcaseQueue.remove();
             sequenceItem.setDetachedListener(this);
             System.out.println("mshowview1 " + mShowcaseQueue.size());
-            if (mShowcaseQueue.size() == 0) {
-                sequenceItem.show(mActivity, true);
-            } else {
-                sequenceItem.show(mActivity, false);
-            }
+            sequenceItem.show(mActivity, mShowcaseQueue.size() == 0);
             if (mOnItemShownListener != null) {
                 mOnItemShownListener.onShow(sequenceItem, mSequencePosition);
             }

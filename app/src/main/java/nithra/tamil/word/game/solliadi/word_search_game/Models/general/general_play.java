@@ -1,100 +1,41 @@
 package nithra.tamil.word.game.solliadi.word_search_game.Models.general;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.SystemClock;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/*import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
-import com.facebook.widget.FacebookDialog;*/
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-
-
-
-
-
-import nithra.tamil.word.game.solliadi.New_Main_Activity;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
-import nithra.tamil.word.game.solliadi.Utils;
-import nithra.tamil.word.game.solliadi.adutils.GameExitUtils;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.game_class.game_sub_level_page;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.helpclass.my_dialog;
-
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-
-import com.applovin.mediation.ads.MaxAdView;
 
 
 public class general_play extends AppCompatActivity {
 
-    WordsearchGridFragment wordsearchGridFragment;
-
-    static SharedPreference sp = new SharedPreference();
-
-    SQLiteDatabase mydb;
-
-    String level_category = "", level_id = "";
-
-
-    my_dialog myDialog_class = new my_dialog();
-
-    boolean start_time = false;
-    SharedPreference sps = new SharedPreference();
     /////////native advance////////////
     private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
     private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
     /////////native advance////////////
     public static FrameLayout add3;
-
-
-
-
+    static SharedPreference sp = new SharedPreference();
     // Facebook variable starts
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
-    private enum PendingAction {
-        NONE, POST_PHOTO, POST_STATUS_UPDATE
-    }
-  /*  private UiLifecycleHelper uiHelper;
-    private Session.StatusCallback callback = new Session.StatusCallback() {
-        @Override
-        public void call(Session session, SessionState state,
-                         Exception exception) {
-            // onSessionStateChange(session, state, exception);
-        }
-    };
-    private FacebookDialog.Callback dialogCallback = new FacebookDialog.Callback() {
-        @Override
-        public void onError(FacebookDialog.PendingCall pendingCall,
-                            Exception error, Bundle data) {
-            Log.d("HelloFacebook", String.format("Error: %s", error.toString()));
-        }
-
-        @Override
-        public void onComplete(FacebookDialog.PendingCall pendingCall,
-                               Bundle data) {
-            Log.d("HelloFacebook", "Success!");
-        }
-    };*/
-    // facebook variable ends
+    WordsearchGridFragment wordsearchGridFragment;
+    SQLiteDatabase mydb;
+    String level_category = "", level_id = "";
+    my_dialog myDialog_class = new my_dialog();
+    boolean start_time = false;
+    SharedPreference sps = new SharedPreference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,30 +62,49 @@ public class general_play extends AppCompatActivity {
         fragmentTransaction.commit();
 
 
-
-
         if (sp.getInt(general_play.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
         } else {
-            if (myDialog_class.isNetworkAvailable(general_play.this)) {
+            if (my_dialog.isNetworkAvailable(general_play.this)) {
                 //fb_addload_score_screen(general_play.this);
 
-               /**/
+                /**/
 
             }
         }
-
 
 
         sp.putInt(general_play.this, "animation_id", 0);
 
         if (sp.getInt(general_play.this, "purchase_ads") == 1) {
         } else {
-           // advancads();
+            // advancads();
         }
 
-       // uiHelper = new UiLifecycleHelper(general_play.this, callback);
+        // uiHelper = new UiLifecycleHelper(general_play.this, callback);
     }
+  /*  private UiLifecycleHelper uiHelper;
+    private Session.StatusCallback callback = new Session.StatusCallback() {
+        @Override
+        public void call(Session session, SessionState state,
+                         Exception exception) {
+            // onSessionStateChange(session, state, exception);
+        }
+    };
+    private FacebookDialog.Callback dialogCallback = new FacebookDialog.Callback() {
+        @Override
+        public void onError(FacebookDialog.PendingCall pendingCall,
+                            Exception error, Bundle data) {
+            Log.d("HelloFacebook", String.format("Error: %s", error.toString()));
+        }
+
+        @Override
+        public void onComplete(FacebookDialog.PendingCall pendingCall,
+                               Bundle data) {
+            Log.d("HelloFacebook", "Success!");
+        }
+    };*/
+    // facebook variable ends
 
     @Override
     public void onBackPressed() {
@@ -165,7 +125,7 @@ public class general_play extends AppCompatActivity {
 
         final Dialog dialog = new Dialog(general_play.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         dialog.setContentView(R.layout.dia_exit);
-       // dialog.getWindow().getAttributes().windowAnimations = R.style.win_anim;
+        // dialog.getWindow().getAttributes().windowAnimations = R.style.win_anim;
         TextView cancel_exit = (TextView) dialog.findViewById(R.id.cancel_exit);
         TextView done_exit = (TextView) dialog.findViewById(R.id.done_exit);
         dialog.show();
@@ -203,14 +163,14 @@ public class general_play extends AppCompatActivity {
         });
 
     }
+
     public void exit_function_new() {
 
         start_time = false;
 
         myDialog_class.media_player(getApplicationContext(), R.raw.click, "normal");
-            WordsearchGridFragment.timeWhenStopped = WordsearchGridFragment.chronometer.getBase() - SystemClock.elapsedRealtime();
-            WordsearchGridFragment.chronometer.stop();
-
+        WordsearchGridFragment.timeWhenStopped = WordsearchGridFragment.chronometer.getBase() - SystemClock.elapsedRealtime();
+        WordsearchGridFragment.chronometer.stop();
 
 
         sp.putString(getApplicationContext(), "" + level_category + "_" + level_id, "" + WordsearchGridFragment.timeWhenStopped);
@@ -222,18 +182,16 @@ public class general_play extends AppCompatActivity {
         TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
 
-
-
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 start_time = true;
 
 
-                    openDialog_p.dismiss();
-                    Intent intent = new Intent(general_play.this, game_sub_level_page.class);
-                    finish();
-                    startActivity(intent);
+                openDialog_p.dismiss();
+                Intent intent = new Intent(general_play.this, game_sub_level_page.class);
+                finish();
+                startActivity(intent);
 
             }
         });
@@ -263,14 +221,16 @@ public class general_play extends AppCompatActivity {
         openDialog_p.show();
     }
 
-
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //uiHelper.onActivityResult(requestCode, resultCode, data, dialogCallback);
 
 
+    }
 
+
+    private enum PendingAction {
+        NONE, POST_PHOTO, POST_STATUS_UPDATE
     }
 }

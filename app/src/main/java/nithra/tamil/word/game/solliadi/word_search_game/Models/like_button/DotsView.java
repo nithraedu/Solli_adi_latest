@@ -5,45 +5,48 @@ import android.animation.ArgbEvaluator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import androidx.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.util.Property;
 import android.view.View;
+
+import androidx.annotation.ColorInt;
 
 /**
  * Created by Miroslaw Stanek on 21.12.2015.
  * Modified by Joel Dean
  */
 public class DotsView extends View {
+    public static final Property<DotsView, Float> DOTS_PROGRESS = new Property<DotsView, Float>(Float.class, "dotsProgress") {
+        @Override
+        public Float get(DotsView object) {
+            return object.getCurrentProgress();
+        }
+
+        @Override
+        public void set(DotsView object, Float value) {
+            object.setCurrentProgress(value);
+        }
+    };
     private static final int DOTS_COUNT = 7;
     private static final int OUTER_DOTS_POSITION_ANGLE = 51;
-
+    private final Paint[] circlePaints = new Paint[4];
     private int COLOR_1 = 0xFFFFC107;
     private int COLOR_2 = 0xFFFF9800;
     private int COLOR_3 = 0xFFFF5722;
     private int COLOR_4 = 0xFFF44336;
-
     private int width = 0;
     private int height = 0;
-
-    private final Paint[] circlePaints = new Paint[4];
-
     private int centerX;
     private int centerY;
-
     private float maxOuterDotsRadius;
     private float maxInnerDotsRadius;
     private float maxDotSize;
-
     private float currentProgress = 0;
-
     private float currentRadius1 = 0;
     private float currentDotSize1 = 0;
-
     private float currentDotSize2 = 0;
     private float currentRadius2 = 0;
-
-    private ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+    private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
     public DotsView(Context context) {
         super(context);
@@ -55,11 +58,11 @@ public class DotsView extends View {
         init();
     }
 
+
     public DotsView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
-
 
     private void init() {
         for (int i = 0; i < circlePaints.length; i++) {
@@ -101,6 +104,10 @@ public class DotsView extends View {
         }
     }
 
+    public float getCurrentProgress() {
+        return currentProgress;
+    }
+
     public void setCurrentProgress(float currentProgress) {
         this.currentProgress = currentProgress;
 
@@ -110,10 +117,6 @@ public class DotsView extends View {
         updateDotsAlpha();
 
         postInvalidate();
-    }
-
-    public float getCurrentProgress() {
-        return currentProgress;
     }
 
     private void updateInnerDotsPosition() {
@@ -195,17 +198,4 @@ public class DotsView extends View {
         if (width != 0 && height != 0)
             setMeasuredDimension(width, height);
     }
-
-
-    public static final Property<DotsView, Float> DOTS_PROGRESS = new Property<DotsView, Float>(Float.class, "dotsProgress") {
-        @Override
-        public Float get(DotsView object) {
-            return object.getCurrentProgress();
-        }
-
-        @Override
-        public void set(DotsView object, Float value) {
-            object.setCurrentProgress(value);
-        }
-    };
 }

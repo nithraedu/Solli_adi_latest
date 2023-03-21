@@ -19,15 +19,24 @@ public class Word implements Parcelable, Comparable<Word> {
         }
     };
 
-    private String mWord;
-    private int mRow, mCol;
-    private Direction mDirection;
+    private final String mWord;
+    private final int mRow;
+    private final int mCol;
+    private final Direction mDirection;
 
     public Word(Parcel in) {
         mWord = in.readString();
         mRow = in.readInt();
         mCol = in.readInt();
         mDirection = Direction.valueOf(in.readString());
+    }
+
+    public Word(String word, int row, int col, Direction direction) {
+        super();
+        mWord = word;
+        mRow = row;
+        mCol = col;
+        mDirection = direction;
     }
 
     public int compareTo(Word another) {
@@ -53,14 +62,6 @@ public class Word implements Parcelable, Comparable<Word> {
         dest.writeInt(mRow);
         dest.writeInt(mCol);
         dest.writeString(mDirection.name());
-    }
-
-    public Word(String word, int row, int col, Direction direction) {
-        super();
-        mWord = word;
-        mRow = row;
-        mCol = col;
-        mDirection = direction;
     }
 
     /**
@@ -138,10 +139,7 @@ public class Word implements Parcelable, Comparable<Word> {
         if (mRow != other.mRow)
             return false;
         if (mWord == null) {
-            if (other.mWord != null)
-                return false;
-        } else if (!mWord.equals(other.mWord))
-            return false;
-        return true;
+            return other.mWord == null;
+        } else return mWord.equals(other.mWord);
     }
 }

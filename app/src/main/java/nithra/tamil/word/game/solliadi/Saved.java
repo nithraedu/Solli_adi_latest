@@ -18,8 +18,6 @@ package nithra.tamil.word.game.solliadi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,8 +25,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -253,10 +249,10 @@ public class Saved extends Activity implements View.OnClickListener,
     }
 
 
-
     /**
      * Load a Snapshot from the Saved Games service based on its unique name.  After load, the UI
      * will update to display the Snapshot data and SnapshotMetadata.
+     *
      * @param snapshotName the unique name of the Snapshot.
      */
     private void savedGamesLoad(String snapshotName) {
@@ -266,26 +262,26 @@ public class Saved extends Activity implements View.OnClickListener,
         showProgressDialog("Loading Saved Game");
         ResultCallback<Snapshots.OpenSnapshotResult> callback =
                 new ResultCallback<Snapshots.OpenSnapshotResult>() {
-            @Override
-            public void onResult(Snapshots.OpenSnapshotResult openSnapshotResult) {
-                if (openSnapshotResult.getStatus().isSuccess()) {
-                    displayMessage(getString(R.string.saved_games_load_success), false);
-                    byte[] data = new byte[0];
-                    try {
-                        data = openSnapshotResult.getSnapshot().getSnapshotContents().readFully();
-                    } catch (IOException e) {
-                        displayMessage("Exception reading snapshot: " + e.getMessage(), true);
-                    }
-                    setData(new String(data));
-                    displaySnapshotMetadata(openSnapshotResult.getSnapshot().getMetadata());
-                } else {
-                    displayMessage(getString(R.string.saved_games_load_failure), true);
-                    clearDataUI();
-                }
+                    @Override
+                    public void onResult(Snapshots.OpenSnapshotResult openSnapshotResult) {
+                        if (openSnapshotResult.getStatus().isSuccess()) {
+                            displayMessage(getString(R.string.saved_games_load_success), false);
+                            byte[] data = new byte[0];
+                            try {
+                                data = openSnapshotResult.getSnapshot().getSnapshotContents().readFully();
+                            } catch (IOException e) {
+                                displayMessage("Exception reading snapshot: " + e.getMessage(), true);
+                            }
+                            setData(new String(data));
+                            displaySnapshotMetadata(openSnapshotResult.getSnapshot().getMetadata());
+                        } else {
+                            displayMessage(getString(R.string.saved_games_load_failure), true);
+                            clearDataUI();
+                        }
 
-                dismissProgressDialog();
-            }
-        };
+                        dismissProgressDialog();
+                    }
+                };
         pendingResult.setResultCallback(callback);
     }
 
@@ -366,11 +362,12 @@ public class Saved extends Activity implements View.OnClickListener,
 
     /**
      * Generate a unique Snapshot name from an AppState stateKey.
+     *
      * @param appStateKey the stateKey for the Cloud Save data.
      * @return a unique Snapshot name that maps to the stateKey.
      */
     private String makeSnapshotName(int appStateKey) {
-        return "Snapshot-" + String.valueOf(appStateKey);
+        return "Snapshot-" + appStateKey;
     }
 
     /**
@@ -390,7 +387,18 @@ public class Saved extends Activity implements View.OnClickListener,
     }
 
     /**
+     * Get the data from the EditText.
+     *
+     * @return the String in the EditText, or "" if empty.
+     */
+    private String getData() {
+        EditText dataEditText = (EditText) findViewById(R.id.edit_game_data);
+        return dataEditText.getText().toString();
+    }
+
+    /**
      * Replace the data displaying in the EditText.
+     *
      * @param data the String to display.
      */
     private void setData(String data) {
@@ -404,17 +412,9 @@ public class Saved extends Activity implements View.OnClickListener,
     }
 
     /**
-     * Get the data from the EditText.
-     * @return the String in the EditText, or "" if empty.
-     */
-    private String getData() {
-        EditText dataEditText = (EditText) findViewById(R.id.edit_game_data);
-        return dataEditText.getText().toString();
-    }
-
-    /**
      * Display a status message for the last operation at the bottom of the screen.
-     * @param msg the message to display.
+     *
+     * @param msg   the message to display.
      * @param error true if an error occurred, false otherwise.
      */
     private void displayMessage(String msg, boolean error) {
@@ -432,6 +432,7 @@ public class Saved extends Activity implements View.OnClickListener,
 
     /**
      * Display metadata about AppState save data,
+     *
      * @param stateKey the slot stateKey of the AppState.
      */
     private void displayAppStateMetadata(int stateKey) {
@@ -444,6 +445,7 @@ public class Saved extends Activity implements View.OnClickListener,
 
     /**
      * Display metadata about Snapshot save data.
+     *
      * @param metadata the SnapshotMetadata associated with the saved game.
      */
     private void displaySnapshotMetadata(SnapshotMetadata metadata) {
@@ -457,8 +459,8 @@ public class Saved extends Activity implements View.OnClickListener,
         String metadataStr = "Source: Saved Games" + '\n'
                 + "Description: " + metadata.getDescription() + '\n'
                 + "Name: " + metadata.getUniqueName() + '\n'
-                + "Last Modified: " + String.valueOf(metadata.getLastModifiedTimestamp()) + '\n'
-                + "Played Time: " + String.valueOf(metadata.getPlayedTime()) + '\n'
+                + "Last Modified: " + metadata.getLastModifiedTimestamp() + '\n'
+                + "Played Time: " + metadata.getPlayedTime() + '\n'
                 + "Cover Image URL: " + metadata.getCoverImageUrl();
         metaDataView.setText(metadataStr);
     }
@@ -477,6 +479,7 @@ public class Saved extends Activity implements View.OnClickListener,
 
     /**
      * Determine if the Google API Client is signed in and ready to access Games APIs.
+     *
      * @return true if client exits and is signed in, false otherwise.
      */
     private boolean isSignedIn() {
@@ -485,6 +488,7 @@ public class Saved extends Activity implements View.OnClickListener,
 
     /**
      * Show a progress dialog for asynchronous operations.
+     *
      * @param msg the message to display.
      */
     private void showProgressDialog(String msg) {

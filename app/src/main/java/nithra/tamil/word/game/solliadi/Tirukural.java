@@ -1,5 +1,9 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -17,33 +21,10 @@ import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.os.SystemClock;
-import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.NativeAdLayout;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.FileProvider;
-
-import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -64,8 +45,25 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.FileProvider;
+
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.facebook.ads.NativeAdLayout;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.example.games.basegameutils.BaseGameActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -76,7 +74,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
 import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
@@ -85,25 +82,14 @@ import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-
-public class Tirukural extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
-    private enum PendingAction {
-        NONE, POST_PHOTO, POST_STATUS_UPDATE
-    }
-
-   private void backexitnet() {
-       if (main_act.equals("")) {
-           finish();
-           Intent i = new Intent(Tirukural.this, New_Main_Activity.class);
-           startActivity(i);
-       } else {
-           finish();
-       }
-   }
+public class Tirukural extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    public static FrameLayout add, add2, add3;
+    public static LinearLayout add_e;
+    public static LinearLayout add_sc;
+    static int ry;
+    static int rvo = 0;
+    static int mCoinCount = 20;
+    static SharedPreference spd = new SharedPreference();
     TextView c_button1, c_button2, c_button3, c_button4, c_button5, c_button6, c_button7, c_button8,
             c_button9, c_button10, c_button11, c_button12;
     TextView to_no, question_txt;
@@ -112,16 +98,12 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
     int gameid = 12;
     String questionid, question, answer, split_word;
     String answers;
-
     int minmum = 1;
     int maximum = 3;
     int randomno;
     int daily_start = 0;
     String[] first, first1, start;
-
     TextView word1, word2, word3, word4, word5, word6, word7;
-
-
     RelativeLayout w_head, helpshare_layout;
     TextView shareq, h_gplues, h_watts_app, h_facebook;
     TextView earncoin;
@@ -138,66 +120,35 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
     Chronometer focus;
     LinearLayout adds, list4;
     LinearLayout qtw;
-
-
-    private MaxInterstitialAd ins_game,game_exit_ins;
-
-    static int ry;
-
-    static int rvo = 0;
-    static int mCoinCount=20;
     String retype = "s";
     Typeface typ, tyr;
-
     int fb_reward = 0;
-    //RewardedVideoAd rewardedVideoAd;
-    private MaxRewardedAd rewardedAd;
-
     int reward_status = 0;
-
-    private boolean mGameOver;
-    private boolean mGamePaused;
-
-
-
     Dialog openDialog_s;
     RelativeLayout adsicon, adsicon2;
-
     int share_name = 0;
     int setting_access = 0;
-    public static FrameLayout add, add2, add3;
-    static SharedPreference spd = new SharedPreference();
     Context context = this;
     int loadaddcontent = 0;
-
     Dialog openDialog_p, openDialog_odd_man;
     long ttstop;
     String btn_str = "";
-    private GoogleApiClient mGoogleApiClient;
-
     int s = 0;
     int f_sec;
     int r = 0;
-
     TextView ttscores;
     TextView next_continue;
     String sa = "";
     int e2 = 0;
     Animation myFadeInAnimation;
-
-    public static LinearLayout add_e;
-    public static LinearLayout add_sc;
-
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
     Newgame_DataBaseHelper3 newhelper3;
     DataBaseHelper myDbHelper;
     Newgame_DataBaseHelper4 newhelper4;
-
     int extra_coin_s = 0;
     int reward_play_count = 0;
-    int ea=0;
-
+    int ea = 0;
     Dialog openDialog;
     int minmumd = 1;
     int maximumd = 4;
@@ -205,7 +156,24 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
     int setval_vid;
     TextView coin_value;
     FirebaseAnalytics mFirebaseAnalytics;
-    int dia_dismiss=0;
+    int dia_dismiss = 0;
+    private MaxInterstitialAd ins_game, game_exit_ins;
+    //RewardedVideoAd rewardedVideoAd;
+    private MaxRewardedAd rewardedAd;
+    private boolean mGameOver;
+    private boolean mGamePaused;
+    private GoogleApiClient mGoogleApiClient;
+
+    private void backexitnet() {
+        if (main_act.equals("")) {
+            finish();
+            Intent i = new Intent(Tirukural.this, New_Main_Activity.class);
+            startActivity(i);
+        } else {
+            finish();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -270,7 +238,7 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         coin = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
         soundId4 = coin.load(Tirukural.this, R.raw.coins, 1);
 ///
-        ImageView prize_logo=(ImageView)findViewById(R.id.prize_logo);
+        ImageView prize_logo = (ImageView) findViewById(R.id.prize_logo);
         /*final Animation pendulam;
         pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
         prize_logo.startAnimation(pendulam);*/
@@ -324,20 +292,18 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         find();
         //loads_ads_banner();
         if (sps.getInt(context, "purchase_ads") == 0) {
-        if (Utils.isNetworkAvailable(Tirukural.this)) {
-        adds = (LinearLayout) findViewById(R.id.ads_lay);
-        Ad_NativieUtils.load_add_facebook(this,getResources().getString(R.string.Viliyodu_Vilaiyadu_Native_Banner_new),adds);
-        }else {
-            adds.setVisibility(View.GONE);
-        }
-        }else{
+            if (Utils.isNetworkAvailable(Tirukural.this)) {
+                adds = (LinearLayout) findViewById(R.id.ads_lay);
+                Ad_NativieUtils.load_add_facebook(this, getResources().getString(R.string.Viliyodu_Vilaiyadu_Native_Banner_new), adds);
+            } else {
+                adds.setVisibility(View.GONE);
+            }
+        } else {
             adds.setVisibility(View.GONE);
         }
 
 
         //next();
-
-
 
 
         if (sps.getInt(Tirukural.this, "purchase_ads") == 1) {
@@ -357,8 +323,6 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
             //advancads();
             //advancads_content();
         }
-
-
 
 
         String snd = sps.getString(Tirukural.this, "snd");
@@ -434,10 +398,10 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
 
             //   sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Tirukural.this)
-                    .setTarget(helpshare_layout)
-                    .setDismissText("சரி")
-                    .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                    .build())
+                            .setTarget(helpshare_layout)
+                            .setDismissText("சரி")
+                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
+                            .build())
                     .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                         @Override
                         public void onDismiss(MaterialShowcaseView itemView, int position) {
@@ -933,7 +897,7 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                                if (isChecked == true) {
+                                if (isChecked) {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                                 } else {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -1039,15 +1003,15 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
             adds.setVisibility(View.GONE);
             native_banner_ad_container.setVisibility(View.GONE);
         } else {
-            if (Utils.isNetworkAvailable(Tirukural.this)){
-                fb_native(Tirukural.this,native_banner_ad_container);
+            if (Utils.isNetworkAvailable(Tirukural.this)) {
+                fb_native(Tirukural.this, native_banner_ad_container);
 
                 /*    if (sps.getInt(Tirukural.this,"native_banner_ads")==1){
                     New_Main_Gamelist.inflateAd(Tirukural.this,native_banner_ad_container);
                 }else {
                     fb_native(Tirukural.this,native_banner_ad_container);
                 }*/
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
 
@@ -1146,7 +1110,6 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         }
 
     }
-
 
     private void senddata_toword(String data) {
         if (c_button1.getText().toString().equals("")) {
@@ -1401,7 +1364,7 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
 
         } else {
             if (date.equals("0")) {
-              nextgamesdialog();
+                nextgamesdialog();
              /*   IShowing_dialog iShowing_dialog=(IShowing_dialog)context;
                 iShowing_dialog.dialogs_show(context);*/
             /* Nextgame_dialog nextgame_dialog=new Nextgame_dialog(context);
@@ -1437,11 +1400,11 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         if (str_day1.length() == 1) {
             str_day1 = "0" + str_day1;
         }
-        final String str_date1 =  str_day1 + "-" + str_month1 + "-" + cur_year1;
+        final String str_date1 = str_day1 + "-" + str_month1 + "-" + cur_year1;
 
-        Date date1=new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24));
-        SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
-        final String date=sdf.format(date1);
+        Date date1 = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        final String date = sdf.format(date1);
 
         TextView tomarrow_coin_earn = (TextView) openDialog.findViewById(R.id.tomarrow_coin_earn);
 
@@ -1463,13 +1426,13 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
 
         coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
         ea = 100;
-        final int vals=reward_play_count*100;
-        ea=ea+vals;
+        final int vals = reward_play_count * 100;
+        ea = ea + vals;
         coin_value.setText("" + ea);
 
         LinearLayout extra_coin = (LinearLayout) openDialog.findViewById(R.id.extra_coin);
-        System.out.println("############################^^^^^^^^^^^^^^currentdate"+str_date1);
-        System.out.println("############################^^^^^^^^^^^^^^saveddate"+sps.getString(Tirukural.this, "daily_bonus_date"));
+        System.out.println("############################^^^^^^^^^^^^^^currentdate" + str_date1);
+        System.out.println("############################^^^^^^^^^^^^^^saveddate" + sps.getString(Tirukural.this, "daily_bonus_date"));
 
         if (str_date1.equals(sps.getString(Tirukural.this, "daily_bonus_date"))) {
 
@@ -1487,12 +1450,12 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         } else if (sps.getInt(context, "daily_bonus_count") == 4) {
             ea = 300;
         }
-        prize_data_update(context,ea);
+        prize_data_update(context, ea);
         coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
       /*  final int vals = reward_play_count * 100;
         ea = ea + vals;*/
         coin_value.setText("" + ea);
-        setval_vid=ea;
+        setval_vid = ea;
         Random rn = new Random();
         randomnod = rn.nextInt(maximumd - minmumd + 1) + minmumd;
 
@@ -1525,7 +1488,7 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
                     if (fb_reward == 1) {
                         reward_progressBar.dismiss();
                         rewardedAd.showAd();
-                    }else {
+                    } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -2144,24 +2107,11 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
 
     }
 
-
-
-
-
-
-
     private void addCoins(int coins) {
         mCoinCount = coins;
         sps.putInt(Tirukural.this, "reward_coin_txt", coins);
         //mCoinCountText.setText("Coins: " + mCoinCount);
     }
-
-
-
-
-    //reward videos***********************//
-
-
 
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getPackageManager();
@@ -2174,6 +2124,9 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         }
         return app_installed;
     }
+
+
+    //reward videos***********************//
 
     private boolean appInstalledOrNot(Context context, String uri) {
         PackageManager pm = context.getPackageManager();
@@ -2433,8 +2386,6 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         });
     }
 
-
-
     public void game_exit_ins_ad() {
 
         game_exit_ins = new MaxInterstitialAd(getResources().getString(R.string.Cat_Exit_Ins), this);
@@ -2462,12 +2413,12 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
 
             @Override
             public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error"+error);
+                System.out.println("check error" + error);
             }
 
             @Override
             public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2"+error);
+                System.out.println("check error2" + error);
             }
         });
         game_exit_ins.loadAd();
@@ -2520,10 +2471,10 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
             extra_coin_s = 0;
             reward_play_count = reward_play_count + 1;
             //daily_bones();
-            ea=ea+setval_vid;
+            ea = ea + setval_vid;
             coin_value.setText("" + ea);
             //mCoinCount = 0;
-        }else {
+        } else {
             final Dialog openDialog = new Dialog(Tirukural.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
             openDialog.setContentView(R.layout.share_dialog2);
             openDialog.setCancelable(false);
@@ -2609,7 +2560,7 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
                             // myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                         }
                         reward_progressBar.dismiss();
-                        if (rewardedAd.isReady()){
+                        if (rewardedAd.isReady()) {
                             rewardedAd.showAd();
                         }
 
@@ -2877,7 +2828,6 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         }
     }
 
-
     protected void onResume() {
         super.onResume();
 
@@ -2924,7 +2874,6 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         }*/
 
 
-
         if (sps.getString(Tirukural.this, "Tirukural_time_start").equals("")) {
             sps.putString(Tirukural.this, "Tirukural_time_start", "yes");
         } else {
@@ -2954,7 +2903,6 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
 
     }
 
-
     public void onBackPressed() {
  /*   public boolean onKeyDown(int keyCode, KeyEvent event) {
         //return super.onKeyDown(keyCode, event);
@@ -2963,101 +2911,96 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
 
         sps.putString(Tirukural.this, "game_area", "on");
         sps.putInt(Tirukural.this, "addlodedd", 0);
-            s = 1;
-            openDialog_p = new Dialog(Tirukural.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-            openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+        s = 1;
+        openDialog_p = new Dialog(Tirukural.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog_p.setContentView(R.layout.back_pess);
+        TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
+        TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
 
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                String dates = sps.getString(Tirukural.this, "date");
+                int pos;
+                if (dates.equals("0")) {
+                    pos = 1;
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
 
+                    //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                } else {
+                    pos = 2;
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
 
+                    //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                }
 
-            yes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    String dates = sps.getString(Tirukural.this, "date");
-                    int pos;
-                    if (dates.equals("0")) {
-                        pos = 1;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-
-                        //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                String date = sps.getString(Tirukural.this, "date");
+                if (date.equals("0")) {
+                    if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Tirukural.this, New_Main_Activity.class);
+                        startActivity(i);
                     } else {
-                        pos = 2;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-
-                        //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                        finish();
                     }
-
-                        String date = sps.getString(Tirukural.this, "date");
-                        if (date.equals("0")) {
-                            if (main_act.equals("")) {
-                                finish();
-                                Intent i = new Intent(Tirukural.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                            }
+                } else {
+                    if (sps.getString(Tirukural.this, "Exp_list").equals("on")) {
+                        finish();
+                        Intent i = new Intent(Tirukural.this, Expandable_List_View.class);
+                        startActivity(i);
+                    } else {
+                        if (main_act.equals("")) {
+                            finish();
+                            Intent i = new Intent(Tirukural.this, New_Main_Activity.class);
+                            startActivity(i);
                         } else {
-                            if (sps.getString(Tirukural.this, "Exp_list").equals("on")) {
-                                finish();
-                                Intent i = new Intent(Tirukural.this, Expandable_List_View.class);
-                                startActivity(i);
-                            } else {
-                                if (main_act.equals("")) {
-                                    finish();
-                                    Intent i = new Intent(Tirukural.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    finish();
-                                }
-                            }
-
-                    }
-
-
-                    //ad
-                    if (sps.getInt(context, "purchase_ads") == 0) {
-                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                    openDialog_p.dismiss();
-                                    game_exit_ins.showAd();
-                                }
-                            }
-                        } else {
-                            openDialog_p.dismiss();
-                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
+                            finish();
                         }
-                    }else{
-                        openDialog_p.dismiss();
                     }
-                    //ad
-
 
                 }
-            });
-            no.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
+
+                //ad
+                if (sps.getInt(context, "purchase_ads") == 0) {
+                    if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
+                        sps.putInt(getApplicationContext(), "game_exit_ins", 0);
+                        if (Utils.isNetworkAvailable(getApplicationContext())) {
+                            if (game_exit_ins != null && game_exit_ins.isReady()) {
+                                openDialog_p.dismiss();
+                                game_exit_ins.showAd();
+                            }
+                        }
+                    } else {
+                        openDialog_p.dismiss();
+                        sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
+                    }
+                } else {
                     openDialog_p.dismiss();
                 }
-            });
-            openDialog_p.show();
+                //ad
+
+
+            }
+        });
+        no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                openDialog_p.dismiss();
+            }
+        });
+        openDialog_p.show();
 
 
         // return super.onKeyDown(keyCode, event);
     }
-
 
     public void permission(final String a) {
         focus.stop();
@@ -3501,6 +3444,15 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         openDialog.show();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // uiHelper.onDestroy();
+        if (openDialog_p != null && openDialog_p.isShowing()) {
+            openDialog_p.dismiss();
+        }
+    }
+
 /*    public boolean isLoggedIn() {
         Session session = Session.getActiveSession();
         return (session != null && session.isOpened());
@@ -3711,15 +3663,6 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
     }*/
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        // uiHelper.onDestroy();
-        if (openDialog_p != null && openDialog_p.isShowing()) {
-            openDialog_p.dismiss();
-        }
-    }
-
-    @Override
     public void onSignInFailed() {
 
     }
@@ -3748,7 +3691,7 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         final LinearLayout vid_earn = (LinearLayout) openDialog_s.findViewById(R.id.vid_earn);
 
         LinearLayout ads_layout = (LinearLayout) openDialog_s.findViewById(R.id.fl_adplaceholder);
-        ImageView prize_logo=(ImageView)openDialog_s.findViewById(R.id.prize_logo);
+        ImageView prize_logo = (ImageView) openDialog_s.findViewById(R.id.prize_logo);
         if (sps.getInt(Tirukural.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
@@ -3788,9 +3731,9 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
             ads_layout.setVisibility(View.GONE);
         } else {
             //New_Main_Activity.load_addFromMain_multiplayer(Tirukural.this, ads_layout);
-            if (Utils.isNetworkAvailable(context)){
+            if (Utils.isNetworkAvailable(context)) {
                 //New_Main_Activity.load_add_fb_rect_score_screen(context, ads_layout);
-            }else {
+            } else {
                 ads_layout.setVisibility(View.GONE);
             }
         }
@@ -3851,7 +3794,7 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
                             reward_progressBar.dismiss();
                             rewardedAd.showAd();
                             rewardvideo.setVisibility(View.INVISIBLE);
-                        }else {
+                        } else {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -3892,7 +3835,7 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
                         reward_progressBar.dismiss();
                         rewardedAd.showAd();
                         rewardvideo.setVisibility(View.INVISIBLE);
-                    }else {
+                    } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -4031,18 +3974,15 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
                     if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
                         sps.putInt(getApplicationContext(), "ins_ad_new", 0);
                         if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if(ins_game == null || !ins_game.isReady()) {
+                            if (ins_game == null || !ins_game.isReady()) {
                                 dia_dismiss = 1;
                                 openDialog_s.dismiss();
                                 next();
                                 industrialload_game();
-                                return;
-                            }
-                           else
-                            {
+                            } else {
                                 ins_game.showAd();
                             }
-                                                   } else {
+                        } else {
                             dia_dismiss = 1;
                             openDialog_s.dismiss();
                             next();
@@ -4062,10 +4002,27 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         openDialog_s.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                if (dia_dismiss!=1){
+                if (dia_dismiss != 1) {
                     sps.putString(Tirukural.this, "game_area", "on");
-                        String date = sps.getString(Tirukural.this, "date");
-                        if (date.equals("0")) {
+                    String date = sps.getString(Tirukural.this, "date");
+                    if (date.equals("0")) {
+                        if (main_act.equals("")) {
+                            finish();
+                            openDialog_s.dismiss();
+                            Intent i = new Intent(Tirukural.this, New_Main_Activity.class);
+                            startActivity(i);
+                        } else {
+                            finish();
+                            openDialog_s.dismiss();
+                        }
+                    } else {
+                        if (sps.getString(Tirukural.this, "Exp_list").equals("on")) {
+                            finish();
+                            openDialog_s.dismiss();
+                            Intent i = new Intent(Tirukural.this, Expandable_List_View.class);
+                            startActivity(i);
+
+                        } else {
                             if (main_act.equals("")) {
                                 finish();
                                 openDialog_s.dismiss();
@@ -4075,30 +4032,13 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
                                 finish();
                                 openDialog_s.dismiss();
                             }
-                        } else {
-                            if (sps.getString(Tirukural.this, "Exp_list").equals("on")) {
-                                finish();
-                                openDialog_s.dismiss();
-                                Intent i = new Intent(Tirukural.this, Expandable_List_View.class);
-                                startActivity(i);
-
-                            } else {
-                                if (main_act.equals("")) {
-                                    finish();
-                                    openDialog_s.dismiss();
-                                    Intent i = new Intent(Tirukural.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    finish();
-                                    openDialog_s.dismiss();
-                                }
 
 
                         }
                     }
 
-                }else {
-                    dia_dismiss=0;
+                } else {
+                    dia_dismiss = 0;
                 }
 
             }
@@ -4137,7 +4077,7 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
 
 
         String tfoptions = question;
-        String first2[] = tfoptions.split(",");
+        String[] first2 = tfoptions.split(",");
 
         //  tittle.setText("குறள் பால் : " + first2[1] + "\n" + "குறள் இயல் : " + first2[2] + "\n" + "அதிகாரம் : " + first2[3]);
 
@@ -4163,14 +4103,14 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
             native_banner_ad_container.setVisibility(View.GONE);
         } else {
-            if (Utils.isNetworkAvailable(Tirukural.this)){
-                fb_native(Tirukural.this,native_banner_ad_container);
+            if (Utils.isNetworkAvailable(Tirukural.this)) {
+                fb_native(Tirukural.this, native_banner_ad_container);
                 /* if (sps.getInt(Tirukural.this,"native_banner_ads")==1){
                     New_Main_Gamelist.inflateAd(Tirukural.this,native_banner_ad_container);
                 }else {
                     fb_native(Tirukural.this,native_banner_ad_container);
                 }*/
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
          /*   if (sps.getInt(Tirukural.this, "addlodedd") == 1) {
@@ -4343,7 +4283,7 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
         if (requestCode == 152) {
 
@@ -4376,7 +4316,6 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         }
     }
 
-
     public void showcase_dismiss() {
         Handler handler30 = new Handler();
         handler30.postDelayed(new Runnable() {
@@ -4395,7 +4334,8 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
             }
         }, 800);
     }
-    public void price_update(){
+
+    public void price_update() {
         ////////////////Prize//////////////////
         long timeElapsed = SystemClock.elapsedRealtime() - focus.getBase();
         int hours = (int) (timeElapsed / 3600000);
@@ -4428,9 +4368,8 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         ////////////////Prize//////////////////
     }
 
-
-    public void rewarded_ad(){
-        rewardedAd = MaxRewardedAd.getInstance( getResources().getString(R.string.Reward_Ins), this );
+    public void rewarded_ad() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
         rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
             public void onRewardedVideoStarted(MaxAd ad) {
@@ -4449,7 +4388,7 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
 
             @Override
             public void onAdLoaded(MaxAd ad) {
-                fb_reward=1;
+                fb_reward = 1;
             }
 
             @Override
@@ -4460,7 +4399,7 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
             @Override
             public void onAdHidden(MaxAd ad) {
                 rewarded_ad();
-                if (reward_status==1){
+                if (reward_status == 1) {
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
@@ -4481,11 +4420,12 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
                             }
                         }
                     }, 500);
-                }else {
+                } else {
                     Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                 }
 
-                fb_reward = 0;                rewardedAd.loadAd();
+                fb_reward = 0;
+                rewardedAd.loadAd();
 
 
             }
@@ -4518,83 +4458,9 @@ public class Tirukural extends BaseGameActivity implements GoogleApiClient.Conne
         rewardedAd.loadAd();
     }
 
-    /*public void reward(final Context context) {
-        rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
-            @Override
-            public void onError(Ad ad, AdError error) {
-                // Rewarded video ad failed to load
 
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-
-
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Rewarded video ad clicked
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Rewarded Video ad impression - the event will fire when the
-                // video starts playing
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-
-                // Rewarded Video View Complete - the video has been played to the end.
-                // You can use this event to initialize your reward
-
-
-                // Call method to give reward
-                // giveReward();
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-        };
-        rewardedVideoAd.loadAd(
-                rewardedVideoAd.buildLoadAdConfig()
-                        .withAdListener(rewardedVideoAdListener)
-                        .build());
-    }*/
+    private enum PendingAction {
+        NONE, POST_PHOTO, POST_STATUS_UPDATE
+    }
 
 }

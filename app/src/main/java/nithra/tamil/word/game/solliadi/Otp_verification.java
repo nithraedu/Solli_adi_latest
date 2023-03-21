@@ -1,15 +1,14 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
+
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,9 +17,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.ads.NativeAdLayout;
-
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -37,14 +36,13 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-
 public class Otp_verification extends AppCompatActivity {
+    static SharedPreference sps = new SharedPreference();
     TextView signin, resend;
     EditText otpverify;
-    static SharedPreference sps = new SharedPreference();
     String android_id;
     SQLiteDatabase exdb;
     String isregster, register_id, after_otp, before_time;
@@ -173,7 +171,7 @@ public class Otp_verification extends AppCompatActivity {
             HttpEntity entity = response.getEntity();
             is = entity.getContent();
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
             sb = new StringBuilder();
             sb.append(reader.readLine() + "\n");
             String line = "0";
@@ -241,7 +239,7 @@ public class Otp_verification extends AppCompatActivity {
             Log.e("log_tag", "Error in https connection" + e.toString());
         }
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
             sb = new StringBuilder();
             sb.append(reader.readLine() + "\n");
             String line = "0";

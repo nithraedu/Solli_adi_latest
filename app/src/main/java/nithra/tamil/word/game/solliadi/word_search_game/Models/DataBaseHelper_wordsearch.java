@@ -15,16 +15,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class DataBaseHelper_wordsearch extends SQLiteOpenHelper {
-    private static String TAG = "DataBaseHelper"; // Tag just for the LogCat
+    private static final String TAG = "DataBaseHelper"; // Tag just for the LogCat
     // window
     // destination path (location) of our database on device
     ///private static String DB_PATH = "";
-    private static String DB_NAME = "WS_tamil.db";// Database name
-    private SQLiteDatabase mDataBase;
+    private static final String DB_NAME = "WS_tamil.db";// Database name
+    private static String DB_PATH = "";
     private final Context mContext;
     Cursor c;
-    private static String DB_PATH = "";
     SharedPreferences mPreferences;
+    private SQLiteDatabase mDataBase;
 
     public DataBaseHelper_wordsearch(Context context) {
         super(context, DB_NAME, null, 3);// 1? its Database Version
@@ -204,9 +204,19 @@ public class DataBaseHelper_wordsearch extends SQLiteOpenHelper {
         mInput.close();
     }
 
-  /*  // Open the database, so we can query it
+    /*  // Open the database, so we can query it
+      public boolean openDataBase() throws SQLException {
+          String DB_PATH = "/data/data/" + mContext.getPackageName() + "/databases/";
+          String mPath = DB_PATH + DB_NAME;
+          // Log.v("mPath", mPath);
+          mDataBase = SQLiteDatabase.openDatabase(mPath, null,
+                  SQLiteDatabase.CREATE_IF_NECESSARY);
+          // mDataBase = SQLiteDatabase.openDatabase(mPath, null,
+          // SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+          return mDataBase != null;
+      }*/
+    // Open the database, so we can query it
     public boolean openDataBase() throws SQLException {
-        String DB_PATH = "/data/data/" + mContext.getPackageName() + "/databases/";
         String mPath = DB_PATH + DB_NAME;
         // Log.v("mPath", mPath);
         mDataBase = SQLiteDatabase.openDatabase(mPath, null,
@@ -214,18 +224,7 @@ public class DataBaseHelper_wordsearch extends SQLiteOpenHelper {
         // mDataBase = SQLiteDatabase.openDatabase(mPath, null,
         // SQLiteDatabase.NO_LOCALIZED_COLLATORS);
         return mDataBase != null;
-    }*/
-  // Open the database, so we can query it
-  public boolean openDataBase() throws SQLException {
-      String mPath = DB_PATH + DB_NAME;
-      // Log.v("mPath", mPath);
-      mDataBase = SQLiteDatabase.openDatabase(mPath, null,
-              SQLiteDatabase.CREATE_IF_NECESSARY);
-      // mDataBase = SQLiteDatabase.openDatabase(mPath, null,
-      // SQLiteDatabase.NO_LOCALIZED_COLLATORS);
-      return mDataBase != null;
-  }
-
+    }
 
 
     @Override

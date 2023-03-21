@@ -1,13 +1,12 @@
 package nithra.tamil.word.game.solliadi.word_search_game.Models;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
+
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebView;
@@ -15,42 +14,33 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.ads.NativeAdLayout;
 
-
-import nithra.tamil.word.game.solliadi.Clue_Game_Hard;
-import nithra.tamil.word.game.solliadi.MainActivity;
-import nithra.tamil.word.game.solliadi.Missing_words_levels;
-import nithra.tamil.word.game.solliadi.New_Main_Activity;
-import nithra.tamil.word.game.solliadi.New_Main_Gamelist;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
 import nithra.tamil.word.game.solliadi.Utils;
 import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.chellange.challenge;
-import nithra.tamil.word.game.solliadi.word_search_game.Models.game_class.Word_search_levels;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.game_class.game_level_page;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.helpclass.my_dialog;
 import pl.droidsonroids.gif.GifImageView;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-
 public class Word_search_main extends AppCompatActivity {
+    static String dialog_show_now = "";
     TextView general_play, category_play, challenge_play;
     SharedPreference sp = new SharedPreference();
     my_dialog myDialog_class = new my_dialog();
     LinearLayout ads_lay;
-
     TextView back, intro;
-
-    static String dialog_show_now = "";
     ImageView gif_load;
     TextView intro_gif;
     Dialog dialog;
 
-    int ids=0;
+    int ids = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,8 +134,8 @@ public class Word_search_main extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                    myDialog_class.media_player(Word_search_main.this, R.raw.click, "normal");
-                    challenge_games();
+                myDialog_class.media_player(Word_search_main.this, R.raw.click, "normal");
+                challenge_games();
 
 
             }
@@ -155,19 +145,19 @@ public class Word_search_main extends AppCompatActivity {
         }
 
         LinearLayout adds = (LinearLayout) findViewById(R.id.ads_lay);
-        if (sp.getInt(Word_search_main.this,"purchase_ads")==0){
-        if (Utils.isNetworkAvailable(Word_search_main.this)) {
-            Ad_NativieUtils.load_add_facebook(this, getResources().getString(R.string.Senthamil_Thedal_Native_Banner_new), adds);
-        }else {
-            adds.setVisibility(View.GONE);
-        }
-        }else{
+        if (sp.getInt(Word_search_main.this, "purchase_ads") == 0) {
+            if (Utils.isNetworkAvailable(Word_search_main.this)) {
+                Ad_NativieUtils.load_add_facebook(this, getResources().getString(R.string.Senthamil_Thedal_Native_Banner_new), adds);
+            } else {
+                adds.setVisibility(View.GONE);
+            }
+        } else {
             adds.setVisibility(View.GONE);
         }
 
     }
 
-    private void loads_ads_banner(){
+    private void loads_ads_banner() {
         NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
 
         if (sp.getInt(Word_search_main.this, "purchase_ads") == 1) {
@@ -176,14 +166,14 @@ public class Word_search_main extends AppCompatActivity {
 
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
         } else {
-            if (Utils.isNetworkAvailable(Word_search_main.this)){
-                fb_native(Word_search_main.this,native_banner_ad_container);
+            if (Utils.isNetworkAvailable(Word_search_main.this)) {
+                fb_native(Word_search_main.this, native_banner_ad_container);
                 /*  if (sp.getInt(Word_search_main.this,"native_banner_ads")==1){
                     New_Main_Gamelist.inflateAd(Word_search_main.this,native_banner_ad_container);
                 }else {
                     fb_native(Word_search_main.this,native_banner_ad_container);
                 }*/
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
 
@@ -250,8 +240,8 @@ public class Word_search_main extends AppCompatActivity {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
         } else {
             System.out.println("-----------------------challenge_games() addlodedd : " + sp.getInt(Word_search_main.this, "addlodedd"));
-            NativeAdLayout native_banner_ad_container = (NativeAdLayout)dialog.findViewById(R.id.native_banner_ad_container);
-            if (Utils.isNetworkAvailable(getApplicationContext())){
+            NativeAdLayout native_banner_ad_container = (NativeAdLayout) dialog.findViewById(R.id.native_banner_ad_container);
+            if (Utils.isNetworkAvailable(getApplicationContext())) {
                 native_banner_ad_container.setVisibility(View.GONE);
                 //fb_native(getApplicationContext(),native_banner_ad_container);
 
@@ -260,7 +250,7 @@ public class Word_search_main extends AppCompatActivity {
                 }else {
                     fb_native(getApplicationContext(),native_banner_ad_container);
                 }*/
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
 
@@ -474,8 +464,8 @@ public class Word_search_main extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (ids==0){
-                    ids=1;
+                if (ids == 0) {
+                    ids = 1;
                     dialog_show_now = "dialog_show_now";
                     myDialog_class.media_player(getApplicationContext(), R.raw.click, "normal");
 

@@ -24,7 +24,6 @@ import android.content.Context;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
-import androidx.appcompat.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.InputType;
 import android.view.KeyEvent;
@@ -37,6 +36,8 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import androidx.appcompat.widget.AppCompatEditText;
+
 import java.util.List;
 
 /**
@@ -47,18 +48,21 @@ import java.util.List;
  */
 class CustomKeyboard {
 
-    /** A link to the KeyboardView that is used to render this CustomKeyboard1. */
-    private KeyboardView mKeyboardView;
-    /** A link to the activity that hosts the {@link #mKeyboardView}. */
-    private Activity mHostActivity;
-
-    /** The key (code) handler. */
+    /**
+     * The key (code) handler.
+     */
 
     String str = "";
     int vall = 0;
-
-
-    private OnKeyboardActionListener mOnKeyboardActionListener = new OnKeyboardActionListener() {
+    /**
+     * A link to the KeyboardView that is used to render this CustomKeyboard1.
+     */
+    private final KeyboardView mKeyboardView;
+    /**
+     * A link to the activity that hosts the {@link #mKeyboardView}.
+     */
+    private final Activity mHostActivity;
+    private final OnKeyboardActionListener mOnKeyboardActionListener = new OnKeyboardActionListener() {
 
         public final static int CodeDelete = -5; // Keyboard.KEYCODE_DELETE
 
@@ -77,22 +81,22 @@ class CustomKeyboard {
             if (primaryCode == CodeDelete) {
                 if (editable != null && start > 0) {
                     editable.delete(start - 1, start);
-                  /*  if(edittext.getText().toString().length() == 0){*/
-                        vall = 1;
-                        num_channge1();
-                 /*   }*/
-                }else {
+                    /*  if(edittext.getText().toString().length() == 0){*/
+                    vall = 1;
+                    num_channge1();
+                    /*   }*/
+                } else {
                     vall = 1;
                     num_channge1();
                 }
             } else if (primaryCode == 32) {
                 editable.insert(start, Character.toString((char) primaryCode));
-            }else if (primaryCode == 66) {
+            } else if (primaryCode == 66) {
                 hideCustomKeyboard();
                 /*Noti_Search.done(mHostActivity);*/
             } else if (primaryCode == -55000) {
                 num_channge();
-            }else if ( primaryCode == -55001) {
+            } else if (primaryCode == -55001) {
                 num_channge1();
             } else if (primaryCode == 46 || primaryCode == 44 || primaryCode == 48 || primaryCode == 49 || primaryCode == 50 || primaryCode == 126 || primaryCode == 96 || primaryCode == 33
                     || primaryCode == 64 || primaryCode == 35 || primaryCode == 36 || primaryCode == 51 || primaryCode == 52 || primaryCode == 53 || primaryCode == 37 || primaryCode == 94
@@ -105,7 +109,7 @@ class CustomKeyboard {
                         || primaryCode == -10009 || primaryCode == -10010 || primaryCode == -10011 || primaryCode == -10012 || primaryCode == -10013 || primaryCode == -10014 || primaryCode == -10041
                         || primaryCode == -10042 || primaryCode == -10043 || primaryCode == -10044 || primaryCode == -10045 || primaryCode == -10046 || primaryCode == -10047 || primaryCode == -10048 || primaryCode == -10049
                         || primaryCode == -10050 || primaryCode == -10051 || primaryCode == -10052 || primaryCode == -10053 || primaryCode == -10054 || primaryCode == -10055 || primaryCode == -10056 || primaryCode == -10057
-                        || primaryCode == -10058 || primaryCode == -10059 || primaryCode == -10060 || primaryCode == -10061 || primaryCode == -10062 || primaryCode == -10063|| primaryCode == -10402) {
+                        || primaryCode == -10058 || primaryCode == -10059 || primaryCode == -10060 || primaryCode == -10061 || primaryCode == -10062 || primaryCode == -10063 || primaryCode == -10402) {
                     edittext.getEditableText().insert(start, word_return(primaryCode));
                 } else {
                     edittext.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
@@ -120,11 +124,11 @@ class CustomKeyboard {
 
         @Override
         public void onPress(int primaryCode) {
-            if(vall == 1){
+            if (vall == 1) {
                 vall = 0;
                 num_channge1();
 
-            }else {
+            } else {
                 letter_change(primaryCode);
             }
 
@@ -135,13 +139,13 @@ class CustomKeyboard {
 
             if (primaryCode == -55000) {
                 num_channge();
-            }else if (primaryCode == -55001) {
+            } else if (primaryCode == -55001) {
                 num_channge1();
             } else {
-                if(vall == 1){
+                if (vall == 1) {
                     vall = 0;
                     num_channge1();
-                }else {
+                } else {
                     letter_change(primaryCode);
                 }
 
@@ -178,15 +182,15 @@ class CustomKeyboard {
      * Note that the keyboard layout xml file may include key codes forword navigation; see the constants in this class forword their values.
      * Note that to enable EditText's to use this custom keyboard, call the {@link #registerEditText(int)}.
      *
-     * @param host The hosting activity.
-     * @param viewid The id of the KeyboardView.
+     * @param host     The hosting activity.
+     * @param viewid   The id of the KeyboardView.
      * @param layoutid The id of the xml file containing the keyboard layout.
      */
     public CustomKeyboard(Activity host, int viewid, int layoutid) {
         mHostActivity = host;
         mKeyboardView = (KeyboardView) mHostActivity.findViewById(viewid);
         mKeyboardView.setKeyboard(new Keyboard(mHostActivity, layoutid));
-          mKeyboardView.setPreviewEnabled(false); // NOTE Do not show the preview balloons
+        mKeyboardView.setPreviewEnabled(false); // NOTE Do not show the preview balloons
         mKeyboardView.setOnKeyboardActionListener(mOnKeyboardActionListener);
         // Hide the standard keyboard initially
         mHostActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -194,12 +198,16 @@ class CustomKeyboard {
 
     }
 
-    /** Returns whether the CustomKeyboard1 is visible. */
+    /**
+     * Returns whether the CustomKeyboard1 is visible.
+     */
     public boolean isCustomKeyboardVisible() {
         return mKeyboardView.getVisibility() == View.VISIBLE;
     }
 
-    /** Make the CustomKeyboard1 visible, and hide the system keyboard for view v. */
+    /**
+     * Make the CustomKeyboard1 visible, and hide the system keyboard for view v.
+     */
     public void showCustomKeyboard(View v) {
         mKeyboardView.setVisibility(View.VISIBLE);
         mKeyboardView.setEnabled(true);
@@ -207,7 +215,9 @@ class CustomKeyboard {
             ((InputMethodManager) mHostActivity.getSystemService(Activity.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
-    /** Make the CustomKeyboard1 invisible. */
+    /**
+     * Make the CustomKeyboard1 invisible.
+     */
     public void hideCustomKeyboard() {
         mKeyboardView.setVisibility(View.GONE);
         mKeyboardView.setEnabled(false);
@@ -887,7 +897,7 @@ class CustomKeyboard {
             return "க்ஷோ";
         } else if (val == -10346) {
             return "க்ஷெ";// 18. last verified
-        }else if (val == -10402) {
+        } else if (val == -10402) {
             return "ௐ";// 18. last verified
         }
         return "";
@@ -1796,9 +1806,9 @@ class CustomKeyboard {
             Keyboard currentKeyboard1 = mKeyboardView.getKeyboard();
             List<Keyboard.Key> keys1 = currentKeyboard1.getKeys();
             mKeyboardView.invalidateKey(0);
-            if (keys1.get(0).label == "0"){
+            if (keys1.get(0).label == "0") {
 
-            }else {
+            } else {
                 Keyboard currentKeyboard = mKeyboardView.getKeyboard();
                 List<Keyboard.Key> keys = currentKeyboard.getKeys();
                 mKeyboardView.invalidateKey(0);
@@ -1843,57 +1853,57 @@ class CustomKeyboard {
 
     }
 
-    public void letter_del_change(String str){
-        if(str.equals("க")){
+    public void letter_del_change(String str) {
+        if (str.equals("க")) {
             letter_change(-10041);
-        }else if(str.equals("ங")){
+        } else if (str.equals("ங")) {
             letter_change(-10042);
-        }else if(str.equals("ச")){
+        } else if (str.equals("ச")) {
             letter_change(-10043);
-        }else if(str.equals("ஞ")){
+        } else if (str.equals("ஞ")) {
             letter_change(-10044);
-        }else if(str.equals("ட")){
+        } else if (str.equals("ட")) {
             letter_change(-10045);
-        }else if(str.equals("ண")){
+        } else if (str.equals("ண")) {
             letter_change(-10046);
-        }else if(str.equals("த")){
+        } else if (str.equals("த")) {
             letter_change(-10047);
-        }else if(str.equals("ந")){
+        } else if (str.equals("ந")) {
             letter_change(-10048);
-        }else if(str.equals("ப")){
+        } else if (str.equals("ப")) {
             letter_change(-10049);
-        }else if(str.equals("ம")){
+        } else if (str.equals("ம")) {
             letter_change(-10050);
-        }else if(str.equals("ய")){
+        } else if (str.equals("ய")) {
             letter_change(-10051);
-        }else if(str.equals("ர")){
+        } else if (str.equals("ர")) {
             letter_change(-10052);
-        }else if(str.equals("ல")){
+        } else if (str.equals("ல")) {
             letter_change(-10053);
-        }else if(str.equals("வ")){
+        } else if (str.equals("வ")) {
             letter_change(-10054);
-        }else if(str.equals("ழ")){
+        } else if (str.equals("ழ")) {
             letter_change(-10055);
-        }else if(str.equals("ள")){
+        } else if (str.equals("ள")) {
             letter_change(-10056);
-        }else if(str.equals("ற")){
+        } else if (str.equals("ற")) {
             letter_change(-10057);
-        }else if(str.equals("ன")){
+        } else if (str.equals("ன")) {
             letter_change(-10058);
-        }else if(str.equals("ஜ")){
+        } else if (str.equals("ஜ")) {
             letter_change(-10059);
-        }else if(str.equals("ஷ")){
+        } else if (str.equals("ஷ")) {
             letter_change(-10060);
-        }else if(str.equals("ஸ")){
+        } else if (str.equals("ஸ")) {
             letter_change(-10061);
-        }else if(str.equals("ஹ")){
+        } else if (str.equals("ஹ")) {
             letter_change(-10062);
-        }else if(str.equals("க்ஷ")){
+        } else if (str.equals("க்ஷ")) {
             letter_change(-10063);
         }
     }
 
-    public void num_channge(){
+    public void num_channge() {
         Keyboard currentKeyboard = mKeyboardView.getKeyboard();
         List<Keyboard.Key> keys = currentKeyboard.getKeys();
         mKeyboardView.invalidateKey(0);
@@ -2009,7 +2019,7 @@ class CustomKeyboard {
         keys.get(36).codes[0] = -55001;
     }
 
-    public void num_channge1(){
+    public void num_channge1() {
         Keyboard currentKeyboard = mKeyboardView.getKeyboard();
         List<Keyboard.Key> keys = currentKeyboard.getKeys();
         mKeyboardView.invalidateKey(0);

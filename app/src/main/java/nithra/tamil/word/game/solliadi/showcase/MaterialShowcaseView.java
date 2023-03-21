@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nithra.tamil.word.game.solliadi.AnimationFactory;
-import nithra.tamil.word.game.solliadi.Picture_Game_Hard;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
 import nithra.tamil.word.game.solliadi.showcase.shape.CircleShape;
@@ -46,6 +45,8 @@ import nithra.tamil.word.game.solliadi.showcase.target.ViewTarget;
  */
 public class MaterialShowcaseView extends FrameLayout implements View.OnTouchListener, View.OnClickListener {
 
+    List<IShowcaseListener> mListeners; // external listeners who want to observe when we show and dismiss
+    SharedPreference sps = new SharedPreference();
     private int mOldHeight;
     private int mOldWidth;
     private Bitmap mBitmap;// = new WeakReference<>(null);
@@ -57,7 +58,6 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
     private int mYPosition;
     private boolean mWasDismissed = false;
     private int mShapePadding = ShowcaseConfig.DEFAULT_SHAPE_PADDING;
-
     private View mContentBox;
     private TextView mContentTextView;
     private Button mDismissButton;
@@ -70,18 +70,15 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
     private boolean mShouldRender = false; // flag to decide when we should actually render
     private int mMaskColour;
     private AnimationFactory mAnimationFactory;
-    private boolean mShouldAnimate = true;
+    private final boolean mShouldAnimate = true;
     private long mFadeDurationInMillis = ShowcaseConfig.DEFAULT_FADE_TIME;
     private Handler mHandler;
     private long mDelayInMillis = ShowcaseConfig.DEFAULT_DELAY;
     private int mBottomMargin = 0;
     private boolean mSingleUse = false; // should display only once
     private PrefsManager mPrefsManager; // used to store state doe single use mode
-    List<IShowcaseListener> mListeners; // external listeners who want to observe when we show and dismiss
     private UpdateOnGlobalLayout mLayoutListener;
     private IDetachedListener mDetachedListener;
-
-    SharedPreference sps=new SharedPreference();
 
     public MaterialShowcaseView(Context context) {
         super(context);
@@ -104,6 +101,40 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
         init(context);
     }
 
+    /**
+     * Static helper method for resetting single use flag
+     *
+     * @param context
+     * @param showcaseID
+     */
+    public static void resetSingleUse(Context context, String showcaseID) {
+        PrefsManager.resetShowcase(context, showcaseID);
+    }
+
+    /**
+     * Static helper method for resetting all single use flags
+     *
+     * @param context
+     */
+    public static void resetAll(Context context) {
+        PrefsManager.resetAll(context);
+    }
+
+    public static int getSoftButtonsBarSizePort(Activity activity) {
+        // getRealMetrics is only available with API 17 and +
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            DisplayMetrics metrics = new DisplayMetrics();
+            activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            int usableHeight = metrics.heightPixels;
+            activity.getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+            int realHeight = metrics.heightPixels;
+            if (realHeight > usableHeight)
+                return realHeight - usableHeight;
+            else
+                return 0;
+        }
+        return 0;
+    }
 
     private void init(final Context context) {
         setWillNotDraw(false);
@@ -133,80 +164,100 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
         mExitButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (sps.getString(context,"pn_intro").equals("no")){
+                if (sps.getString(context, "pn_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_p", "yes");
                     System.out.println("---------------------showcase_dismiss_p");
-                } if (sps.getString(context,"cn_intro").equals("no")){
+                }
+                if (sps.getString(context, "cn_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_c", "yes");
                     System.out.println("---------------------showcase_dismiss_c");
-                } if (sps.getString(context,"sn_intro").equals("no")){
+                }
+                if (sps.getString(context, "sn_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_sos", "yes");
                     System.out.println("---------------------showcase_dismiss_sos");
-                } if (sps.getString(context,"wn_intro").equals("no")){
+                }
+                if (sps.getString(context, "wn_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_wd", "yes");
                     System.out.println("---------------------showcase_dismiss_wd");
-                } if (sps.getString(context,"odd_intro").equals("no")){
+                }
+                if (sps.getString(context, "odd_intro").equals("no")) {
                     System.out.println("---------------------showcase_dismiss_odd");
                     sps.putString(context, "showcase_dismiss_odd", "yes");
-                } if (sps.getString(context,"Tirukural_game_intro").equals("no")){
+                }
+                if (sps.getString(context, "Tirukural_game_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_tir", "yes");
                     System.out.println("---------------------showcase_dismiss_tir");
-                } if (sps.getString(context,"opp_intro").equals("no")){
+                }
+                if (sps.getString(context, "opp_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_opp", "yes");
                     System.out.println("---------------------showcase_dismiss_opp");
-                } if (sps.getString(context,"ote_intro").equals("no")){
+                }
+                if (sps.getString(context, "ote_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_ote", "yes");
                     System.out.println("---------------------showcase_dismiss_ote");
-                } if (sps.getString(context,"mk_word_intro").equals("no")){
+                }
+                if (sps.getString(context, "mk_word_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_ro", "yes");
                     System.out.println("---------------------showcase_dismiss_ro");
-                } if (sps.getString(context,"Riddle_game_intro").equals("no")){
+                }
+                if (sps.getString(context, "Riddle_game_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_riddle", "yes");
                     System.out.println("---------------------showcase_dismiss_riddle");
-                } if (sps.getString(context,"WordError_correction_game_intro").equals("no")){
+                }
+                if (sps.getString(context, "WordError_correction_game_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_errc", "yes");
                     System.out.println("---------------------showcase_dismiss_errc");
-                } if (sps.getString(context,"mtcs_intro").equals("no")){
+                }
+                if (sps.getString(context, "mtcs_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_mw", "yes");
                     System.out.println("---------------------showcase_dismiss_mw");
-                }if (sps.getString(context,"ws_challenge_intro").equals("")){
+                }
+                if (sps.getString(context, "ws_challenge_intro").equals("")) {
                     sps.putString(context, "ws_challenge_showcase_intro", "yes");
                     System.out.println("---------------------showcase_dismiss_mw");
-                }if (sps.getString(context,"ws_general_intro").equals("")){
+                }
+                if (sps.getString(context, "ws_general_intro").equals("")) {
                     sps.putString(context, "ws_general_showcase_intro", "yes");
                     System.out.println("---------------------showcase_dismiss_mw");
-                }if (sps.getString(context,"fill_to_intro").equals("no")){
+                }
+                if (sps.getString(context, "fill_to_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_fill_intro", "yes");
                     System.out.println("---------------------showcase_dismiss_mw");
-                }if (sps.getString(context,"en_to_intro").equals("no")){
+                }
+                if (sps.getString(context, "en_to_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_fill_intro", "yes");
                     System.out.println("---------------------showcase_dismiss_mw");
-                }if (sps.getString(context,"fn_intro").equals("no")){
+                }
+                if (sps.getString(context, "fn_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_fn_intro", "yes");
                     System.out.println("---------------------showcase_dismiss_mw");
-                }if (sps.getString(context,"mf_intro").equals("no")){
+                }
+                if (sps.getString(context, "mf_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_mf", "yes");
                     System.out.println("---------------------showcase_dismiss_mmf");
-                }if (sps.getString(context,"qz_intro").equals("no")){
+                }
+                if (sps.getString(context, "qz_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_qz", "yes");
                     System.out.println("---------------------showcase_dismiss_mmf");
-                }if (sps.getString(context,"mw_intro").equals("no")){
+                }
+                if (sps.getString(context, "mw_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_mw", "yes");
                     System.out.println("---------------------showcase_dismiss_mmf");
-                }if (sps.getString(context,"6f_intro").equals("no")){
+                }
+                if (sps.getString(context, "6f_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_6f_intro", "yes");
                     System.out.println("---------------------showcase_dismiss_mw");
-                }if (sps.getString(context,"jam_intro").equals("no")){
+                }
+                if (sps.getString(context, "jam_intro").equals("no")) {
                     sps.putString(context, "showcase_dismiss_jam_intro", "yes");
                     System.out.println("---------------------showcase_dismiss_mw");
                 }
-                System.out.println("##############################mWasDismissed"+mWasDismissed);
-                mWasDismissed=false;
+                System.out.println("##############################mWasDismissed" + mWasDismissed);
+                mWasDismissed = false;
                 fadeOut1();
             }
         });
     }
-
 
     /**
      * Interesting drawing stuff.
@@ -287,7 +338,6 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
         }
         return true;
     }
-
 
     private void notifyOnDisplayed() {
         for (IShowcaseListener listener : mListeners) {
@@ -479,9 +529,7 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
     }
 
     public void removeShowcaseListener(MaterialShowcaseSequence showcaseListener) {
-        if (mListeners.contains(showcaseListener)) {
-            mListeners.remove(showcaseListener);
-        }
+        mListeners.remove(showcaseListener);
     }
 
     void setDetachedListener(IDetachedListener detachedListener) {
@@ -515,11 +563,9 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
                 mExitButton.setVisibility(GONE);
             } else {
                 mDismissButton.setVisibility(VISIBLE);
-                if (last_id)
-                {
-                mExitButton.setVisibility(INVISIBLE);}
-                else
-                {
+                if (last_id) {
+                    mExitButton.setVisibility(INVISIBLE);
+                } else {
                     mExitButton.setVisibility(VISIBLE);
                 }
             }
@@ -530,17 +576,135 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
         return mPrefsManager.hasFired();
     }
 
-    /**
-     * REDRAW LISTENER - this ensures we redraw after activity finishes laying out
-     */
-    private class UpdateOnGlobalLayout implements ViewTreeObserver.OnGlobalLayoutListener {
+    private void singleUse(String showcaseID) {
+        mSingleUse = true;
+        mPrefsManager = new PrefsManager(getContext(), showcaseID);
+    }
 
-        @Override
-        public void onGlobalLayout() {
-            setTarget(mTarget);
+    public void removeFromWindow() {
+        if (getParent() != null && getParent() instanceof ViewGroup) {
+            ((ViewGroup) getParent()).removeView(this);
+        }
+
+        if (mBitmap != null) {
+            mBitmap.recycle();
+            mBitmap = null;
+        }
+
+        mEraser = null;
+        mAnimationFactory = null;
+        mCanvas = null;
+        mHandler = null;
+
+        getViewTreeObserver().removeGlobalOnLayoutListener(mLayoutListener);
+        mLayoutListener = null;
+
+        if (mPrefsManager != null)
+            mPrefsManager.close();
+
+        mPrefsManager = null;
+
+
+    }
+
+    /**
+     * Reveal the showcaseview. Returns a boolean telling us whether we actually did show anything
+     *
+     * @param activity
+     * @return
+     */
+    public boolean show(final Activity activity, boolean last_id1) {
+
+        /**
+         * if we're in single use mode and have already shot our bolt then do nothing
+         */
+        if (mSingleUse) {
+            if (mPrefsManager.hasFired()) {
+                return false;
+            } else {
+                mPrefsManager.setFired();
+            }
+        }
+        last_id = last_id1;
+        ((ViewGroup) activity.getWindow().getDecorView()).addView(this);
+
+        setShouldRender(true);
+
+        mHandler = new Handler();
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                if (mShouldAnimate) {
+                    fadeIn();
+                } else {
+                    setVisibility(VISIBLE);
+                    notifyOnDisplayed();
+                }
+            }
+        }, mDelayInMillis);
+
+        updateDismissButton();
+
+
+        return true;
+    }
+
+    public void hide() {
+
+        /**
+         * This flag is used to indicate to onDetachedFromWindow that the showcase view was dismissed purposefully (by the user or programmatically)
+         */
+        mWasDismissed = true;
+
+        if (mShouldAnimate) {
+            fadeOut();
+        } else {
+            removeFromWindow();
         }
     }
 
+    public void fadeIn() {
+        setVisibility(INVISIBLE);
+
+        mAnimationFactory.fadeInView(this, mFadeDurationInMillis,
+                new IAnimationFactory.AnimationStartListener() {
+                    @Override
+                    public void onAnimationStart() {
+                        setVisibility(View.VISIBLE);
+                        notifyOnDisplayed();
+                    }
+                }
+        );
+    }
+
+    public void fadeOut() {
+
+        mAnimationFactory.fadeOutView(this, mFadeDurationInMillis, new IAnimationFactory.AnimationEndListener() {
+            @Override
+            public void onAnimationEnd() {
+                setVisibility(INVISIBLE);
+                removeFromWindow();
+            }
+        });
+    }
+
+    public void fadeOut1() {
+
+        mAnimationFactory.fadeOutView(this, mFadeDurationInMillis, new IAnimationFactory.AnimationEndListener() {
+            @Override
+            public void onAnimationEnd() {
+                setVisibility(INVISIBLE);
+                //removeFromWindow();
+
+                notifyOnDismissed();
+            }
+        });
+    }
+
+    public void resetSingleUse() {
+        if (mSingleUse && mPrefsManager != null) mPrefsManager.resetShowcase();
+    }
 
     /**
      * BUILDER CLASS
@@ -550,13 +714,10 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
         private static final int CIRCLE_SHAPE = 0;
         private static final int RECTANGLE_SHAPE = 1;
         private static final int NO_SHAPE = 2;
-
+        final MaterialShowcaseView showcaseView;
+        private final Activity activity;
         private boolean fullWidth = false;
         private int shapeType = CIRCLE_SHAPE;
-
-        final MaterialShowcaseView showcaseView;
-
-        private final Activity activity;
 
         public Builder(Activity activity) {
             this.activity = activity;
@@ -694,176 +855,21 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
         }
 
         public MaterialShowcaseView show() {
-            build().show(activity,false);
+            build().show(activity, false);
             return showcaseView;
         }
 
     }
 
-    private void singleUse(String showcaseID) {
-        mSingleUse = true;
-        mPrefsManager = new PrefsManager(getContext(), showcaseID);
-    }
-
-    public void removeFromWindow() {
-        if (getParent() != null && getParent() instanceof ViewGroup) {
-            ((ViewGroup) getParent()).removeView(this);
-        }
-
-        if (mBitmap != null) {
-            mBitmap.recycle();
-            mBitmap = null;
-        }
-
-        mEraser = null;
-        mAnimationFactory = null;
-        mCanvas = null;
-        mHandler = null;
-
-        getViewTreeObserver().removeGlobalOnLayoutListener(mLayoutListener);
-        mLayoutListener = null;
-
-        if (mPrefsManager != null)
-            mPrefsManager.close();
-
-        mPrefsManager = null;
-
-
-    }
-
-
     /**
-     * Reveal the showcaseview. Returns a boolean telling us whether we actually did show anything
-     *
-     * @param activity
-     * @return
+     * REDRAW LISTENER - this ensures we redraw after activity finishes laying out
      */
-    public boolean show(final Activity activity,boolean last_id1) {
+    private class UpdateOnGlobalLayout implements ViewTreeObserver.OnGlobalLayoutListener {
 
-        /**
-         * if we're in single use mode and have already shot our bolt then do nothing
-         */
-        if (mSingleUse) {
-            if (mPrefsManager.hasFired()) {
-                return false;
-            } else {
-                mPrefsManager.setFired();
-            }
+        @Override
+        public void onGlobalLayout() {
+            setTarget(mTarget);
         }
-        last_id=last_id1;
-        ((ViewGroup) activity.getWindow().getDecorView()).addView(this);
-
-        setShouldRender(true);
-
-        mHandler = new Handler();
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                if (mShouldAnimate) {
-                    fadeIn();
-                } else {
-                    setVisibility(VISIBLE);
-                    notifyOnDisplayed();
-                }
-            }
-        }, mDelayInMillis);
-
-        updateDismissButton();
-
-
-        return true;
-    }
-
-
-    public void hide() {
-
-        /**
-         * This flag is used to indicate to onDetachedFromWindow that the showcase view was dismissed purposefully (by the user or programmatically)
-         */
-        mWasDismissed = true;
-
-        if (mShouldAnimate) {
-            fadeOut();
-        } else {
-            removeFromWindow();
-        }
-    }
-
-    public void fadeIn() {
-        setVisibility(INVISIBLE);
-
-        mAnimationFactory.fadeInView(this, mFadeDurationInMillis,
-                new IAnimationFactory.AnimationStartListener() {
-                    @Override
-                    public void onAnimationStart() {
-                        setVisibility(View.VISIBLE);
-                        notifyOnDisplayed();
-                    }
-                }
-        );
-    }
-
-    public void fadeOut() {
-
-        mAnimationFactory.fadeOutView(this, mFadeDurationInMillis, new IAnimationFactory.AnimationEndListener() {
-            @Override
-            public void onAnimationEnd() {
-                setVisibility(INVISIBLE);
-                removeFromWindow();
-            }
-        });
-    }
-public void fadeOut1() {
-
-        mAnimationFactory.fadeOutView(this, mFadeDurationInMillis, new IAnimationFactory.AnimationEndListener() {
-            @Override
-            public void onAnimationEnd() {
-                setVisibility(INVISIBLE);
-                //removeFromWindow();
-
-                notifyOnDismissed();
-            }
-        });
-    }
-
-    public void resetSingleUse() {
-        if (mSingleUse && mPrefsManager != null) mPrefsManager.resetShowcase();
-    }
-
-    /**
-     * Static helper method for resetting single use flag
-     *
-     * @param context
-     * @param showcaseID
-     */
-    public static void resetSingleUse(Context context, String showcaseID) {
-        PrefsManager.resetShowcase(context, showcaseID);
-    }
-
-    /**
-     * Static helper method for resetting all single use flags
-     *
-     * @param context
-     */
-    public static void resetAll(Context context) {
-        PrefsManager.resetAll(context);
-    }
-
-    public static int getSoftButtonsBarSizePort(Activity activity) {
-        // getRealMetrics is only available with API 17 and +
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            DisplayMetrics metrics = new DisplayMetrics();
-            activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-            int usableHeight = metrics.heightPixels;
-            activity.getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
-            int realHeight = metrics.heightPixels;
-            if (realHeight > usableHeight)
-                return realHeight - usableHeight;
-            else
-                return 0;
-        }
-        return 0;
     }
 
 }

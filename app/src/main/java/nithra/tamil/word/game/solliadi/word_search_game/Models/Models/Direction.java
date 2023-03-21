@@ -16,7 +16,7 @@ public enum Direction {
 
     private static final float RADIAN_SNAP = 0.785398f;
 
-    private float mAngleDegree;
+    private final float mAngleDegree;
     private int mPositionShift;
 
     ///**
@@ -24,7 +24,7 @@ public enum Direction {
     // * @param positionShift
     // */
 
-    private Direction(float angleDegree) {
+    Direction(float angleDegree) {
         mAngleDegree = angleDegree;
     }
 

@@ -1,47 +1,25 @@
 package nithra.tamil.word.game.solliadi;
 
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Typeface;
-import android.os.Handler;
-import android.os.SystemClock;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-
-
-import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
-import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
-
-import static nithra.tamil.word.game.solliadi.Jamble_word_game.ry;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
 
 public class Jamble_word_game_functions {
     DataBaseHelper myDbHelper;
-    
-    public void Jamble_word_game_functions(TextView tx1, TextView tx2, TextView tx3, TextView tx4, TextView tx5, TextView tx6, TextView tx7, TextView tx8, TextView tx9, TextView tx10) {
 
-    }
-
-    public static int score(Context context,int val) {
+    public static int score(Context context, int val) {
         DataBaseHelper myDbHelper;
         myDbHelper = new DataBaseHelper(context);
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
         int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
-        val=skq+val;
+        val = skq + val;
         myDbHelper.executeSql("UPDATE score SET coins='" + val + "'");
         return val;
+    }
+
+    public void Jamble_word_game_functions(TextView tx1, TextView tx2, TextView tx3, TextView tx4, TextView tx5, TextView tx6, TextView tx7, TextView tx8, TextView tx9, TextView tx10) {
+
     }
 /*
     public static void  scorescreen(final Context context){
