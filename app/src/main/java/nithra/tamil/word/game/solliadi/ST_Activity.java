@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -26,10 +25,6 @@ import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.AdListener;
-import com.facebook.ads.InterstitialAdListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import nit_app.CodetoTamilUtil;
@@ -39,19 +34,15 @@ import nithra.tamil.word.game.solliadi.adutils.AdUtils;
 public class ST_Activity extends Activity {
 
 
+    static SharedPreference spa = new SharedPreference();
+    static com.facebook.ads.AdView adView_fb;
+    static LinearLayout add_fb;
     SharedPreference sharedPreference;
-
-
     String str_title = "";
     Context context = this;
     SQLiteDatabase myDB;
     String tablenew = "noti_cal";
     String title, message, msgType, date, time;
-
-
-    static SharedPreference spa = new SharedPreference();
-
-
     int idd;
     String urls;
     LinearLayout ads_lay;
@@ -60,13 +51,22 @@ public class ST_Activity extends Activity {
     FloatingActionButton share_but;
     TextView sticky;
     int show_id, show_ads;
-
-    static com.facebook.ads.AdView adView_fb;
-    static LinearLayout add_fb;
     LinearLayout native_banner_ad_container;
     com.facebook.ads.InterstitialAd interstitialAd_notid;
 
     private MaxInterstitialAd interstitialAd;
+
+    public static void share_txt(Context context, String str) {
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("text/plain");
+        i.putExtra(Intent.EXTRA_SUBJECT,
+                "சொல்லிஅடி");
+        i.putExtra(
+                Intent.EXTRA_TEXT,
+                str + "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
+                        "விளையாட இங்கே கிளிக் செய்யவும் \n https://goo.gl/6hFhIy");
+        context.startActivity(Intent.createChooser(i, "Share via"));
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,34 +93,32 @@ public class ST_Activity extends Activity {
 
         myDB.execSQL("CREATE TABLE IF NOT EXISTS share_noti (id integer NOT NULL PRIMARY KEY AUTOINCREMENT,title VARCHAR,sahre_msg VARCHAR,date VARCHAR,time VARCHAR);");
 
-            sharedPreference.putInt(context,"Content_ads_shown_neww",2);
-           // if (spa.getInt(context, "purchase_ads") == 0) {
-                // Make sure to set the mediation provider value to "max" to ensure proper functionality
-                AppLovinSdk.getInstance(context).setMediationProvider("max");
-                AppLovinSdk.initializeSdk(context, new AppLovinSdk.SdkInitializationListener() {
-                    @Override
-                    public void onSdkInitialized(final AppLovinSdkConfiguration configuration) {
-                        // AppLovin SDK is initialized, start loading ads
-                        loads_ads_banner();
-                        System.out.println("---Content_ads_shown_neww : " + sharedPreference.getInt(context, "Content_ads_shown_neww"));
+        sharedPreference.putInt(context, "Content_ads_shown_neww", 2);
+        // if (spa.getInt(context, "purchase_ads") == 0) {
+        // Make sure to set the mediation provider value to "max" to ensure proper functionality
+        AppLovinSdk.getInstance(context).setMediationProvider("max");
+        AppLovinSdk.initializeSdk(context, new AppLovinSdk.SdkInitializationListener() {
+            @Override
+            public void onSdkInitialized(final AppLovinSdkConfiguration configuration) {
+                // AppLovin SDK is initialized, start loading ads
+                loads_ads_banner();
+                System.out.println("---Content_ads_shown_neww : " + sharedPreference.getInt(context, "Content_ads_shown_neww"));
 
-                        if (sharedPreference.getInt(context, "Content_ads_shown_neww") == 2) {
-                            industrialload();
-                        } else {
-                            sharedPreference.putInt(context, "Content_ads_shown_neww",
-                                    sharedPreference.getInt(context, "Content_ads_shown_neww") + 1);
-                        }
-                    }
-                });
-          //  }
+                if (sharedPreference.getInt(context, "Content_ads_shown_neww") == 2) {
+                    industrialload();
+                } else {
+                    sharedPreference.putInt(context, "Content_ads_shown_neww",
+                            sharedPreference.getInt(context, "Content_ads_shown_neww") + 1);
+                }
+            }
+        });
+        //  }
 
         //industrial();
 
 
-
         spa.putInt(ST_Activity.this, "addlodedd", 0);
         spa.putInt(ST_Activity.this, "native_banner_ads", 0);
-
 
 
         Bundle extras;
@@ -245,20 +243,20 @@ public class ST_Activity extends Activity {
                         //interstitialAd.showAd();
                         back_press();
                     } else {
-                        if (show_ads==1) {
+                        if (show_ads == 1) {
                             finish();
                             Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
                             startActivity(i);
-                        }else {
+                        } else {
                             finish();
                         }
                     }
                 } else {
-                    if (show_ads==1) {
+                    if (show_ads == 1) {
                         finish();
                         Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
                         startActivity(i);
-                    }else {
+                    } else {
                         finish();
                     }
 
@@ -317,8 +315,6 @@ public class ST_Activity extends Activity {
 
     }
 
-
-
     public void loads_ads_banner() {
         System.out.println("print_Ad");
 
@@ -326,13 +322,14 @@ public class ST_Activity extends Activity {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
             ads_lay.setVisibility(View.GONE);
         } else {
-                if (Utils.isNetworkAvailable(ST_Activity.this)) {
-                    AdUtils.load_add_facebook(this,getResources().getString(R.string.Noti_Banner),ads_lay);
-                } else {
-                    ads_lay.setVisibility(View.GONE);
-                }
+            if (Utils.isNetworkAvailable(ST_Activity.this)) {
+                AdUtils.load_add_facebook(this, getResources().getString(R.string.Noti_Banner), ads_lay);
+            } else {
+                ads_lay.setVisibility(View.GONE);
+            }
         }
     }
+
     public void industrialload() {
 
         interstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Noti_Exit_INS), this);
@@ -350,11 +347,11 @@ public class ST_Activity extends Activity {
             @Override
             public void onAdHidden(MaxAd ad) {
                 sharedPreference.putInt(context, "Content_ads_shown_neww", 0);
-                if (show_ads==1) {
+                if (show_ads == 1) {
                     finish();
                     Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
                     startActivity(i);
-                }else {
+                } else {
                     finish();
                 }
 
@@ -379,19 +376,6 @@ public class ST_Activity extends Activity {
 
     }
 
-
-    public static void share_txt(Context context, String str) {
-        Intent i = new Intent(Intent.ACTION_SEND);
-        i.setType("text/plain");
-        i.putExtra(Intent.EXTRA_SUBJECT,
-                "சொல்லிஅடி");
-        i.putExtra(
-                Intent.EXTRA_TEXT,
-                str + "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                        "விளையாட இங்கே கிளிக் செய்யவும் \n https://goo.gl/6hFhIy");
-        context.startActivity(Intent.createChooser(i, "Share via"));
-    }
-
     @Override
     public void onBackPressed() {
 
@@ -399,20 +383,20 @@ public class ST_Activity extends Activity {
             if (interstitialAd != null && interstitialAd.isReady()) {
                 back_press();
             } else {
-                if (show_ads==1) {
+                if (show_ads == 1) {
                     finish();
                     Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
                     startActivity(i);
-                }else {
+                } else {
                     finish();
                 }
             }
         } else {
-            if (show_ads==1) {
+            if (show_ads == 1) {
                 finish();
                 Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
                 startActivity(i);
-            }else {
+            } else {
                 finish();
             }
 
@@ -437,11 +421,11 @@ public class ST_Activity extends Activity {
             public void onClick(View v) {
                 openDialog_p.dismiss();
                 if (spa.getInt(context, "purchase_ads") == 0) {
-                        if (interstitialAd!=null && interstitialAd.isReady()) {
-                            interstitialAd.showAd();
-                        } else {
-                            finish();
-                        }
+                    if (interstitialAd != null && interstitialAd.isReady()) {
+                        interstitialAd.showAd();
+                    } else {
+                        finish();
+                    }
 
                 }
             }

@@ -130,7 +130,7 @@
                                 android:layout_centerInParent="true"
                                 android:orientation="vertical">
 
-                                <de.hdodenhof.circleimageview.CircleImageView
+                                <ImageView
                                     android:id="@+id/user_img"
                                     android:layout_width="@dimen/wh_40"
                                     android:layout_height="@dimen/wh_40"

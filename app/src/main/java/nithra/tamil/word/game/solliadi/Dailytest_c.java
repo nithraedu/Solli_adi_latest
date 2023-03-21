@@ -1,25 +1,17 @@
 package nithra.tamil.word.game.solliadi;
 
 import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
-import androidx.core.app.NotificationCompat;
 import android.text.format.Time;
-import android.widget.RemoteViews;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Random;
-import java.util.StringTokenizer;
 
 
 public class Dailytest_c extends BroadcastReceiver {
@@ -33,33 +25,43 @@ public class Dailytest_c extends BroadcastReceiver {
     int random;
     NotificationHelper_offline noti;
 
+    public static String armTodayOrTomo1(String selectedHour, String selectedMinute) throws ParseException {
+        String defti = selectedHour + ":" + selectedMinute;
+
+        Time time = new Time();
+        time.setToNow();
+
+        String armTodayOrTomo1 = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        Date time1 = sdf.parse(time.hour + ":" + time.minute);
+        Date time2 = sdf.parse(selectedHour + ":" + selectedMinute);
+
+        System.out.println("curTime 2 : " + time.hour + ":" + time.minute);
+        System.out.println("newTime 2 : " + selectedHour + ":" + selectedMinute);
+        if (time1.compareTo(time2) >= 0) {
+            armTodayOrTomo1 = "tomo";
+        } else {
+            armTodayOrTomo1 = "today";
+        }
+        System.out.println("A2----------" + armTodayOrTomo1);
+        return armTodayOrTomo1;
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         noti = new NotificationHelper_offline(context);
-        exdb = context.openOrCreateDatabase("Solli_Adi", context.MODE_PRIVATE, null);
+        exdb = context.openOrCreateDatabase("Solli_Adi", Context.MODE_PRIVATE, null);
 
         Boolean isBooted = false;
 
         final String BOOT_ACTION = "android.intent.action.BOOT_COMPLETED";
 
         String action = intent.getAction();
-        if (action != null && action.equalsIgnoreCase(BOOT_ACTION)) {
-            isBooted = true;
-
-        } else {
-            isBooted = false;
-        }
+        isBooted = action != null && action.equalsIgnoreCase(BOOT_ACTION);
 
 
         if (!isBooted) {
             try {
-                //	createNotification2(context);
-
-                //sps.putInt(context,"daily_test_order",sps.getInt(context,"daily_test_order")+1);
-
-
-                //noti.createNotification_double_clue(context);
-                //noti.createNotification_double_find_diffward(context);
 
                 if (sps.getString(context, "newgame_notification").equals("start")) {
                     if (sps.getInt(context, "notification_order") == 0) {
@@ -138,11 +140,9 @@ public class Dailytest_c extends BroadcastReceiver {
         }
     }
 
-
     public void SetAlarm1(Context context, String armTodayOrTomo1) {
 
-        AlarmManager am = (AlarmManager) context
-                .getSystemService(Context.ALARM_SERVICE);
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, Dailytest_c.class);
         intent.putExtra(ONE_TIME, Boolean.FALSE);
 
@@ -161,29 +161,6 @@ public class Dailytest_c extends BroadcastReceiver {
         am.set(AlarmManager.RTC, calendar.getTimeInMillis(), pi);
         //am.setAlarmClock(new AlarmManager.AlarmClockInfo(calendar.getTimeInMillis(),pi),pi);
 
-    }
-
-    public static String armTodayOrTomo1(String selectedHour,
-                                         String selectedMinute) throws ParseException {
-        String defti = selectedHour + ":" + selectedMinute;
-
-        Time time = new Time();
-        time.setToNow();
-
-        String armTodayOrTomo1 = "";
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        Date time1 = sdf.parse(time.hour + ":" + time.minute);
-        Date time2 = sdf.parse(selectedHour + ":" + selectedMinute);
-
-        System.out.println("curTime 2 : " + time.hour + ":" + time.minute);
-        System.out.println("newTime 2 : " + selectedHour + ":" + selectedMinute);
-        if (time1.compareTo(time2) >= 0) {
-            armTodayOrTomo1 = "tomo";
-        } else {
-            armTodayOrTomo1 = "today";
-        }
-        System.out.println("A2----------" + armTodayOrTomo1);
-        return armTodayOrTomo1;
     }
 
     public void CancelAlarm(Context context) {

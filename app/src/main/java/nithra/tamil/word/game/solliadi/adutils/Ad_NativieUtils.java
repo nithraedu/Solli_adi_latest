@@ -18,7 +18,6 @@ import nithra.tamil.word.game.solliadi.R;
 public class Ad_NativieUtils {
 
     private static MaxNativeAdLoader nativeAdLoader;
-    private static ViewGroup nativeAdContainerView;
     private static MaxAd loadedNativeAd;
     private static Context c;
 

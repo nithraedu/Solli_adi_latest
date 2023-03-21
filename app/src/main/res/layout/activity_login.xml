@@ -21,7 +21,7 @@
             android:layout_margin="@dimen/lrtbp_10">
 
 
-            <de.hdodenhof.circleimageview.CircleImageView
+            <ImageView
                 android:id="@+id/login_txt"
                 android:layout_width="@dimen/wh_70"
                 android:layout_height="@dimen/wh_70"

@@ -345,7 +345,7 @@
                 android:layout_width="@dimen/wh_35"
                 android:layout_height="@dimen/wh_35" />
 
-            <pl.droidsonroids.gif.GifImageView
+            <ImageView
                 android:layout_width="@dimen/lrtbp_25"
                 android:visibility="gone"
                 android:layout_height="@dimen/lrtbp_25"

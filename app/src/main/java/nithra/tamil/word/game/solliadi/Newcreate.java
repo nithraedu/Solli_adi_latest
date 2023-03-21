@@ -1,7 +1,8 @@
 package nithra.tamil.word.game.solliadi;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class Newcreate extends AppCompatActivity {
 

@@ -1,5 +1,9 @@
 package nithra.tamil.word.game.solliadi.match_tha_fallows;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -7,7 +11,6 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,41 +24,10 @@ import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxAdView;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
-import com.facebook.ads.NativeAdLayout;
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -82,10 +54,24 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.FileProvider;
 
-import com.google.android.gms.common.ConnectionResult;
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.facebook.ads.NativeAdLayout;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.example.games.basegameutils.BaseGameActivity;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -103,11 +89,10 @@ import nithra.tamil.word.game.solliadi.Find_difference_between_pictures;
 import nithra.tamil.word.game.solliadi.Find_words_from_picture;
 import nithra.tamil.word.game.solliadi.Jamble_word_game;
 import nithra.tamil.word.game.solliadi.LoginActivity;
-import nithra.tamil.word.game.solliadi.Missing_Words;
-import nithra.tamil.word.game.solliadi.New_Main_Activity;
 import nithra.tamil.word.game.solliadi.Makeword_Rightorder;
 import nithra.tamil.word.game.solliadi.Match_Word;
-import nithra.tamil.word.game.solliadi.New_Main_Gamelist;
+import nithra.tamil.word.game.solliadi.Missing_Words;
+import nithra.tamil.word.game.solliadi.New_Main_Activity;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper2;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper3;
@@ -122,7 +107,6 @@ import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
 import nithra.tamil.word.game.solliadi.Quiz_Game;
 import nithra.tamil.word.game.solliadi.R;
-import nithra.tamil.word.game.solliadi.Result_List;
 import nithra.tamil.word.game.solliadi.Riddle_game;
 import nithra.tamil.word.game.solliadi.SharedPreference;
 import nithra.tamil.word.game.solliadi.Solukul_Sol;
@@ -130,63 +114,35 @@ import nithra.tamil.word.game.solliadi.Tirukural;
 import nithra.tamil.word.game.solliadi.Utils;
 import nithra.tamil.word.game.solliadi.WordError_correction;
 import nithra.tamil.word.game.solliadi.Word_Game_Hard;
-import nithra.tamil.word.game.solliadi.adutils.GameExitUtils;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
 
+public class Match_tha_fallows_game extends AppCompatActivity implements View.OnClickListener, Download_completed {
 
-public class Match_tha_fallows_game extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener, Download_completed {
-
-    int fb_reward = 0;
-    //RewardedVideoAd rewardedVideoAd;
-    private MaxRewardedAd rewardedAd;
-
-    int reward_status = 0;
     //SQLiteDatabase database;
-    //*********************reward videos process 1***********************
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
 
-
-    private boolean mGameOver;
-    private boolean mGamePaused;
-
-    private long mTimeRemaining;
-    //reward videos process 1***********************
-
+    static int mCoinCount = 20;
+    static int rvo = 0;
+    int fb_reward = 0;
+    int reward_status = 0;
     SharedPreference sp = new SharedPreference();
-
     ArrayList<MyData> data_list = new ArrayList<>();
-
+    //reward videos process 1***********************
     TextView qus_txt1, qus_txt2, qus_txt3, qus_txt4, qus_txt5, qus_txt6, qus_txt7, qus_txt8, qus_txt9, qus_txt10,
             ans_txt1, ans_txt2, ans_txt3, ans_txt4, ans_txt5, ans_txt6, ans_txt7, ans_txt8, ans_txt9, ans_txt10,
             ans_num_txt1, ans_num_txt2, ans_num_txt3, ans_num_txt4, ans_num_txt5, ans_num_txt6, ans_num_txt7, ans_num_txt8, ans_num_txt9, ans_num_txt10,
             qus_num_txt1, qus_num_txt2, qus_num_txt3, qus_num_txt4, qus_num_txt5, qus_num_txt6, qus_num_txt7, qus_num_txt8, qus_num_txt9, qus_num_txt10;
-
     ImageView show_all_ans_img;
     ArrowLayout arrow_layout;
-
     TextView nodata_txt, moveans_txt, FROMVIEW, TOVIEW, QUSNUMVIEW;
-
     ScrollView qus_scrool, ans_scrool;
-
     int FROM_POS = 0, TO_POS = 0;
-
     Boolean scroll_act = false, hint_act = false, arrow_move;
-
-
     ArrayList<String> maintain_ans = new ArrayList<>();
     ArrayList<Integer> find_qus_list = new ArrayList<>();
     ArrayList<Integer> find_ans_list = new ArrayList<>();
-
     Toast toastMessage;
     Newgame_DataBaseHelper5 newhelper5;
     int gameid = 15;
@@ -202,10 +158,8 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
     TextView next_continue;
     TextView ttscores;
     TextView tx1, tx2, p_facebook, p_settings, p_watts_app, p_coins_red, p_coins;
-    static int mCoinCount = 20;
     int extra_coin_s = 0;
     int reward_play_count = 0;
-    static int rvo = 0;
     Typeface tyr;
     int dia_dismiss = 0;
     int spxdr = 0;
@@ -217,15 +171,11 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
     int rdvalu;
     int answerlength;
     int case2 = 0, tot2 = 30, tt_case2, tt_tot2;
-
-
-    private MaxInterstitialAd ins_game,game_exit_ins;
     int y;
     int ea = 0;
     int setval_vid;
     TextView coin_value;
     Long ttstop;
-    private GoogleApiClient mGoogleApiClient;
     Dialog openDialog_p;
     int share_name = 0;
     RelativeLayout head;
@@ -236,6 +186,14 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
     Newgame_DataBaseHelper4 newhelper4;
     int e2;
     TextView c_coin, p_coins_2;
+    boolean flip_boolean, flip_animcancel;
+    Handler vali_handler = null;
+    //RewardedVideoAd rewardedVideoAd;
+    private MaxRewardedAd rewardedAd;
+    private boolean mGameOver;
+    private boolean mGamePaused;
+    private long mTimeRemaining;
+    private MaxInterstitialAd ins_game, game_exit_ins;
 
     private void backexitnet() {
         if (main_act.equals("")) {
@@ -536,10 +494,10 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
             sequence.addSequenceItem(qus_txt1, "விடையை பார்க்க கேள்விக்குறி பொத்தானை அழுத்தி விடை காணலாம்.", "அடுத்து");
             //  sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Match_tha_fallows_game.this)
-                    .setTarget(p_facebook)
-                    .setDismissText("சரி")
-                    .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                    .build())
+                            .setTarget(p_facebook)
+                            .setDismissText("சரி")
+                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
+                            .build())
                     .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                         @Override
                         public void onDismiss(MaterialShowcaseView itemView, int position) {
@@ -558,10 +516,6 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
             sequence.start();
 
         }
-
-
-
-
 
 
         if (sps.getInt(Match_tha_fallows_game.this, "purchase_ads") == 1) {
@@ -611,7 +565,6 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
         return animation;
     }
 
-
     public void anim_move(String ans_value) {
         moveans_txt.setText(ans_value);
 
@@ -630,7 +583,6 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
         }, animation.getDuration());
 
     }
-
 
     public void next() {
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
@@ -736,7 +688,6 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
 
 
     }
-
 
     public void set_value_fun(String my_maintain) {
         qus_txt1.setText(data_list.get(0).get_qus());
@@ -881,7 +832,6 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
 
     }
 
-
     private void rotateStart(View view) {
         ObjectAnimator animator = ObjectAnimator.ofFloat(view, "rotation", 0f, 360f);
         // set animator instance as view's tag
@@ -899,8 +849,6 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
             animator.cancel();
         }
     }
-
-    boolean flip_boolean, flip_animcancel;
 
     public void flip_anim(final TextView view, final boolean b, final boolean animcancel) {
 
@@ -1315,8 +1263,6 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
 
     }
 
-    Handler vali_handler = null;
-
     public void validate() {
 
         Cursor cf = myDbHelper.getQry("SELECT * FROM score ");
@@ -1592,42 +1538,6 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
 
     }
 
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onSignInFailed() {
-
-    }
-
-    @Override
-    public void onSignInSucceeded() {
-
-    }
-
-    //*********************reward videos process 3***********************
-
-
-    private void addCoins(int coins) {
-        mCoinCount = coins;
-        sps.putInt(Match_tha_fallows_game.this, "reward_coin_txt", coins);
-        //mCoinCountText.setText("Coins: " + mCoinCount);
-    }
-
-
     @Override
     public void download_completed(String status) {
         System.out.println("#############################status" + status);
@@ -1639,32 +1549,6 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
     }
 
     //reward videos***********************//
-
-
-    public class MyData {
-
-        private final String split_qus;
-        private final String suf;
-        private final String split_ans;
-
-        public String get_qus() {
-            return split_qus;
-        }
-
-        public String get_Suf() {
-            return suf;
-        }
-
-        public String get_ans() {
-            return split_ans;
-        }
-
-        public MyData(String split_qus, String suf, String split_ans) {
-            this.split_qus = split_qus;
-            this.suf = suf;
-            this.split_ans = split_ans;
-        }
-    }
 
     public void custom_toast(String validation, String type) {
 
@@ -1763,7 +1647,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                            if (isChecked == true) {
+                            if (isChecked) {
                                 sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                             } else {
                                 sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -1903,50 +1787,6 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
         all_ans_list.setAdapter(ans_adapter);
 
     }
-
-    public class ans_adapter extends BaseAdapter {
-        @Override
-        public int getCount() {
-            return data_list.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return position;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-           /* LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.list_design, null);*/
-
-
-            LayoutInflater inflater = getLayoutInflater();
-            View view = inflater.inflate(R.layout.list_design, null);
-
-            TextView allqus_txt = (TextView) view.findViewById(R.id.allqus_txt);
-            TextView allans_txt = (TextView) view.findViewById(R.id.allans_txt);
-            allqus_txt.setText(data_list.get(position).get_qus());
-
-            System.out.println("------find_qus_list " + find_qus_list);
-
-            if (find_qus_list.contains(position + 1)) {
-                allans_txt.setText(data_list.get(position).get_ans());
-            } else {
-                allans_txt.setText("?");
-            }
-
-
-            return view;
-        }
-    }
-
 
     public void setSc() {
 
@@ -2439,7 +2279,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                                         return;
                                     }
                                     // Check if ad is already expired or invalidated, and do not show ad if that is the case. You will not get paid to show an invalidated ad.
-                                    else{
+                                    else {
                                         ins_game.showAd();
                                     }
 
@@ -2524,23 +2364,6 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                         // advancads_content();
 
 
-
-
-
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-                                    int k1 = 0;
-                                    Cursor sc2 = myDbHelper.getQry("select * from score ");
-                                    sc2.moveToFirst();
-                                    if (sc2.getCount() != 0) {
-                                        k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
-                                    }
-                                    //Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
-                                }
-                            }
-                        }
-
                     }
                 });
             } else {
@@ -2597,9 +2420,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                                 if (ins_game == null || !ins_game.isReady()) {
                                     dia_dismiss = 1;
                                     openDialog_s.dismiss();
-                                    return;
-                                }
-                                else{
+                                } else {
                                     ins_game.showAd();
                                 }
 
@@ -2737,9 +2558,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                             if (ins_game == null || !ins_game.isReady()) {
                                 dia_dismiss = 1;
                                 openDialog_s.dismiss();
-                                return;
-                            }
-                            else{
+                            } else {
                                 ins_game.showAd();
                             }
 
@@ -2996,12 +2815,12 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
 
             @Override
             public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error"+error);
+                System.out.println("check error" + error);
             }
 
             @Override
             public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2"+error);
+                System.out.println("check error2" + error);
             }
         });
         game_exit_ins.loadAd();
@@ -3052,11 +2871,6 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
     @Override
     protected void onPause() {
         super.onPause();
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
-
-
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
         focus.stop();
 
@@ -3142,7 +2956,6 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
         }
     }
 
-
     public void showcase_dismiss() {
         Handler handler30 = new Handler();
         handler30.postDelayed(new Runnable() {
@@ -3170,33 +2983,46 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
 
     private void back() {
 
-            openDialog_p = new Dialog(Match_tha_fallows_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-            openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+        openDialog_p = new Dialog(Match_tha_fallows_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog_p.setContentView(R.layout.back_pess);
+        TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
+        TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
 
-            yes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    sps.putString(Match_tha_fallows_game.this, "game_area", "on");
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sps.putString(Match_tha_fallows_game.this, "game_area", "on");
 
-                    focus.stop();
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
 
-                    String date = sps.getString(Match_tha_fallows_game.this, "date");
-                    int pos;
-                    if (date.equals("0")) {
-                        pos = 1;
+                String date = sps.getString(Match_tha_fallows_game.this, "date");
+                int pos;
+                if (date.equals("0")) {
+                    pos = 1;
+                } else {
+                    pos = 2;
+                }
+
+                newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+
+                // String date = sps.getString(Match_tha_fallows_game.this, "date");
+                if (date.equals("0")) {
+                    if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Match_tha_fallows_game.this, New_Main_Activity.class);
+                        startActivity(i);
                     } else {
-                        pos = 2;
+                        finish();
                     }
-
-                    newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-
-                    // String date = sps.getString(Match_tha_fallows_game.this, "date");
-                    if (date.equals("0")) {
+                } else {
+                    if (sps.getString(Match_tha_fallows_game.this, "Exp_list").equals("on")) {
+                        finish();
+                        Intent i = new Intent(Match_tha_fallows_game.this, Expandable_List_View.class);
+                        startActivity(i);
+                    } else {
                         if (main_act.equals("")) {
                             finish();
                             Intent i = new Intent(Match_tha_fallows_game.this, New_Main_Activity.class);
@@ -3204,52 +3030,39 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                         } else {
                             finish();
                         }
-                    } else {
-                        if (sps.getString(Match_tha_fallows_game.this, "Exp_list").equals("on")) {
-                            finish();
-                            Intent i = new Intent(Match_tha_fallows_game.this, Expandable_List_View.class);
-                            startActivity(i);
-                        } else {
-                            if (main_act.equals("")) {
-                                finish();
-                                Intent i = new Intent(Match_tha_fallows_game.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                            }
-                        }
-
                     }
-
-                    //ad
-                    if (sps.getInt(Match_tha_fallows_game.this, "purchase_ads") == 0) {
-                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                    openDialog_p.dismiss();
-                                    game_exit_ins.showAd();
-                                }
-                            }
-                        } else {
-                            openDialog_p.dismiss();
-                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
-                        }
-                    }else{
-                        openDialog_p.dismiss();
-                    }
-                    //ad
 
                 }
-            });
-            no.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
+                //ad
+                if (sps.getInt(Match_tha_fallows_game.this, "purchase_ads") == 0) {
+                    if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
+                        sps.putInt(getApplicationContext(), "game_exit_ins", 0);
+                        if (Utils.isNetworkAvailable(getApplicationContext())) {
+                            if (game_exit_ins != null && game_exit_ins.isReady()) {
+                                openDialog_p.dismiss();
+                                game_exit_ins.showAd();
+                            }
+                        }
+                    } else {
+                        openDialog_p.dismiss();
+                        sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
+                    }
+                } else {
                     openDialog_p.dismiss();
                 }
-            });
-            openDialog_p.show();
+                //ad
+
+            }
+        });
+        no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                openDialog_p.dismiss();
+            }
+        });
+        openDialog_p.show();
 
 
     }
@@ -4664,8 +4477,9 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 150) {
 
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -4674,7 +4488,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
             } else {
                 if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                     boolean showRationale = false;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         showRationale = shouldShowRequestPermissionRationale(permissions[0]);
                     }
                     if (!showRationale) {
@@ -4682,7 +4496,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                         finish();
                         Intent i = new Intent(Match_tha_fallows_game.this, New_Main_Activity.class);
                         startActivity(i);
-                    } else if (android.Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
                         sps.putInt(Match_tha_fallows_game.this, "permission", 0);
                         finish();
                         Intent i = new Intent(Match_tha_fallows_game.this, New_Main_Activity.class);
@@ -4709,12 +4523,12 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
             } else {
                 if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                     boolean showRationale = false;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         showRationale = shouldShowRequestPermissionRationale(permissions[0]);
                     }
                     if (!showRationale) {
                         sps.putInt(Match_tha_fallows_game.this, "permission", 2);
-                    } else if (android.Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
                         sps.putInt(Match_tha_fallows_game.this, "permission", 0);
                     }
                 }
@@ -4722,9 +4536,8 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
         }
     }
 
-
-    public void rewarded_ad(){
-        rewardedAd = MaxRewardedAd.getInstance( getResources().getString(R.string.Reward_Ins), this );
+    public void rewarded_ad() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
         rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
             public void onRewardedVideoStarted(MaxAd ad) {
@@ -4743,7 +4556,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
 
             @Override
             public void onAdLoaded(MaxAd ad) {
-                fb_reward=1;
+                fb_reward = 1;
             }
 
             @Override
@@ -4754,7 +4567,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
             @Override
             public void onAdHidden(MaxAd ad) {
                 rewarded_ad();
-                if (reward_status==1){
+                if (reward_status == 1) {
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
@@ -4775,7 +4588,7 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
                             }
                         }
                     }, 500);
-                }else {
+                } else {
                     Toast.makeText(Match_tha_fallows_game.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                 }
 
@@ -4813,144 +4626,71 @@ public class Match_tha_fallows_game extends BaseGameActivity implements GoogleAp
         rewardedAd.loadAd();
     }
 
+    public class MyData {
 
-    /*public void reward(final Context context) {
-        rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-      *//*  rewardedVideoAd.setAdListener(new RewardedVideoAdListener() {
+        private final String split_qus;
+        private final String suf;
+        private final String split_ans;
 
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
+        public MyData(String split_qus, String suf, String split_ans) {
+            this.split_qus = split_qus;
+            this.suf = suf;
+            this.split_ans = split_ans;
+        }
+
+        public String get_qus() {
+            return split_qus;
+        }
+
+        public String get_Suf() {
+            return suf;
+        }
+
+        public String get_ans() {
+            return split_ans;
+        }
+    }
+
+    public class ans_adapter extends BaseAdapter {
+        @Override
+        public int getCount() {
+            return data_list.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return position;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+           /* LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+            View view = inflater.inflate(R.layout.list_design, null);*/
+
+
+            LayoutInflater inflater = getLayoutInflater();
+            View view = inflater.inflate(R.layout.list_design, null);
+
+            TextView allqus_txt = (TextView) view.findViewById(R.id.allqus_txt);
+            TextView allans_txt = (TextView) view.findViewById(R.id.allans_txt);
+            allqus_txt.setText(data_list.get(position).get_qus());
+
+            System.out.println("------find_qus_list " + find_qus_list);
+
+            if (find_qus_list.contains(position + 1)) {
+                allans_txt.setText(data_list.get(position).get_ans());
+            } else {
+                allans_txt.setText("?");
             }
 
-            @Override
-            public void onLoggingImpression(Ad ad) {
 
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-
-            @Override
-            public void onError(Ad ad, AdError adError) {
-                //Toast.makeText(context, ""+adError.getErrorCode(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-
-            }
-        });
-        rewardedVideoAd.loadAd();*//*
-        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
-            @Override
-            public void onError(Ad ad, AdError error) {
-                // Rewarded video ad failed to load
-
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-
-
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Rewarded video ad clicked
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Rewarded Video ad impression - the event will fire when the
-                // video starts playing
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-
-                // Rewarded Video View Complete - the video has been played to the end.
-                // You can use this event to initialize your reward
-
-
-                // Call method to give reward
-                // giveReward();
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-        };
-        rewardedVideoAd.loadAd(
-                rewardedVideoAd.buildLoadAdConfig()
-                        .withAdListener(rewardedVideoAdListener)
-                        .build());
-    }*/
-
+            return view;
+        }
+    }
 }

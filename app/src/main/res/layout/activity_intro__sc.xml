@@ -76,14 +76,7 @@
                          android:layout_marginRight="@dimen/lrtbp_10"
                          />-->
 
-            <com.google.android.gms.plus.PlusOneButton xmlns:plus="http://schemas.android.com/apk/lib/com.google.android.gms.plus"
-                android:id="@+id/plus_one_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="@dimen/lrtbp_10"
-                app:annotation="bubble"
-                plus:size="home_icon" />
+
 
             <TextView
                 android:id="@+id/checkupdate"
@@ -279,7 +272,7 @@
                     android:layout_below="@+id/rating"
                     android:layout_marginTop="@dimen/lrtbp_5"
                     android:background="@color/white"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:id="@+id/leader_bd"
@@ -314,7 +307,7 @@
                     android:layout_below="@+id/leader_bd"
                     android:layout_marginTop="@dimen/lrtbp_5"
                     android:background="@color/white"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:id="@+id/achivements_d"
@@ -374,21 +367,21 @@
                 </LinearLayout>
 
                 <TextView
-                    android:visibility="gone"
                     android:id="@+id/tdssddf"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/word_search_d"
                     android:layout_marginTop="@dimen/lrtbp_5"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:visibility="gone" />
 
 
                 <LinearLayout
-                    android:visibility="gone"
                     android:id="@+id/multi_d"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/tdssddf">
+                    android:layout_below="@+id/tdssddf"
+                    android:visibility="gone">
 
                     <ImageView
                         android:id="@+id/multi_d_img"
@@ -417,7 +410,6 @@
                     android:background="@color/white" />
 
 
-
                 <TextView
                     android:id="@+id/eds"
                     android:layout_width="match_parent"
@@ -427,11 +419,11 @@
                     android:background="@color/white" />
 
                 <LinearLayout
-                    android:visibility="gone"
                     android:id="@+id/nithra"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/eds">
+                    android:layout_below="@+id/eds"
+                    android:visibility="gone">
 
                     <ImageView
                         android:id="@+id/nithra_img"
@@ -454,12 +446,12 @@
 
                 <TextView
                     android:id="@+id/weq"
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_below="@+id/nithra"
                     android:layout_marginTop="@dimen/lrtbp_5"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:id="@+id/share"
@@ -593,7 +585,7 @@
                     android:layout_below="@+id/r_ads"
                     android:layout_marginTop="@dimen/lrtbp_5"
                     android:background="@color/white"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
 
                 <LinearLayout
@@ -609,7 +601,7 @@
                         android:layout_width="@dimen/txt_25"
                         android:layout_height="@dimen/txt_25"
                         android:layout_marginTop="@dimen/wh_2"
-                        android:background="@drawable/daily_icon"/>
+                        android:background="@drawable/daily_icon" />
 
                     <TextView
                         android:id="@+id/daily_txt"
@@ -764,8 +756,6 @@
                     android:layout_below="@+id/privacy_pl"
                     android:layout_marginTop="@dimen/lrtbp_5"
                     android:background="@color/white" />
-
-
 
 
                 <TextView

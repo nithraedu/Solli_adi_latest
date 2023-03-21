@@ -12,7 +12,7 @@ import nithra.tamil.word.game.solliadi.SharedPreference;
 
 public class MyTextView extends TextView {
 
-    SharedPreference sp=new SharedPreference();
+    SharedPreference sp = new SharedPreference();
 
 
     public MyTextView(Context context, AttributeSet attrs, int defStyle) {

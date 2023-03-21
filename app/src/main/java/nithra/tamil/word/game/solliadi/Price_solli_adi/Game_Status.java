@@ -1,5 +1,8 @@
 package nithra.tamil.word.game.solliadi.Price_solli_adi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
+import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.price_url;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -7,9 +10,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -22,6 +22,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
@@ -44,10 +47,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.facebook.ads.NativeAdLayout;
 
-
-
-
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,25 +55,14 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-import nithra.tamil.word.game.solliadi.Clue_Game_Hard;
-import nithra.tamil.word.game.solliadi.Clue_Levels;
-import nithra.tamil.word.game.solliadi.Game_States;
 import nithra.tamil.word.game.solliadi.LoginActivity;
 import nithra.tamil.word.game.solliadi.New_Main_Activity;
-import nithra.tamil.word.game.solliadi.New_Main_Gamelist;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
 import nithra.tamil.word.game.solliadi.Utils;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.price_url;
-
 public class Game_Status extends AppCompatActivity {
-    TextView back;
-    ImageView profile;
     static SharedPreference sp = new SharedPreference();
     static String price_date = "";
     static String price_date_d = "";
@@ -84,10 +72,12 @@ public class Game_Status extends AppCompatActivity {
     static int score_ed = 0;
     static int old_score_ed = 0;
     static String pos = "";
+    static String price_pre_month_date = "";
+    static String price_date_dm = "";
+    TextView back;
     TextView your_pos;
     WebView loading_data;
     String urls_status, pre_month_url, pre_month_my_url, winner_url;
-
     TextView retry;
     LinearLayout adds;
     TextView intros, your_score;
@@ -95,8 +85,6 @@ public class Game_Status extends AppCompatActivity {
     String month, year, score;
     String show_txt = "";
     TextView name_txt, winner_list;
-    static String price_pre_month_date = "";
-    static String price_date_dm = "";
     TextView u_nilai, u_pulli;
     LinearLayout pf_edit;
     String u_status = "";
@@ -108,7 +96,6 @@ public class Game_Status extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         Newgame_DataBaseHelper myDbHelper = new Newgame_DataBaseHelper(Game_Status.this);
         myDbHelper.executeSql("create table if not exists prize_data(id INTEGER PRIMARY KEY AUTOINCREMENT,date varchar,score integer,isfinish integer DEFAULT 0);");
-        profile = (CircleImageView) findViewById(R.id.profile);
         back = (TextView) findViewById(R.id.back);
         intros = (TextView) findViewById(R.id.intros);
         your_pos = (TextView) findViewById(R.id.your_pos);
@@ -227,42 +214,7 @@ public class Game_Status extends AppCompatActivity {
 
         send_prize_data(Game_Status.this);
 
-        Glide.with(Game_Status.this)
-                .setDefaultRequestOptions(requestOptions)
-                .load(urls)
-                .apply(new RequestOptions()
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .skipMemoryCache(true))
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        //on load failed
-                        profile.setImageResource(R.drawable.price_pf);
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        //on load success
-                        return false;
-                    }
-                })
-
-                .into(profile);
         pf_edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Utils.isNetworkAvailable(getApplicationContext())) {
-                    finish();
-                    Intent i = new Intent(Game_Status.this, LoginActivity.class);
-                    startActivity(i);
-                } else {
-                    Toast.makeText(Game_Status.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
-        profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (Utils.isNetworkAvailable(getApplicationContext())) {
@@ -291,7 +243,7 @@ public class Game_Status extends AppCompatActivity {
             public void onClick(View v) {
                 sp.putString(Game_Status.this, "game_area", "on");
                 if (sp.getString(Game_Status.this, "sd_prize_st").equals("yes")) {
-                    sp.putString(Game_Status.this,"sd_prize_st","");
+                    sp.putString(Game_Status.this, "sd_prize_st", "");
                     System.out.println("###########DDDDDDD 1");
                     finish();
                     Intent i = new Intent(Game_Status.this, New_Main_Activity.class);
@@ -304,17 +256,17 @@ public class Game_Status extends AppCompatActivity {
                             finish();
                             Intent i = new Intent(Game_Status.this, New_Main_Activity.class);
                             startActivity(i);
-                        }else {
+                        } else {
                             System.out.println("###########DDDDDDD 3");
                             finish();
                         }
-                    }else {
+                    } else {
                         if (main_act.equals("")) {
                             System.out.println("###########DDDDDDD 2");
                             finish();
                             Intent i = new Intent(Game_Status.this, New_Main_Activity.class);
                             startActivity(i);
-                        }else {
+                        } else {
                             System.out.println("###########DDDDDDD 3");
                             finish();
                         }
@@ -331,7 +283,7 @@ public class Game_Status extends AppCompatActivity {
     public void onBackPressed() {
         sp.putString(Game_Status.this, "game_area", "on");
         if (sp.getString(Game_Status.this, "sd_prize_st").equals("yes")) {
-            sp.putString(Game_Status.this,"sd_prize_st","");
+            sp.putString(Game_Status.this, "sd_prize_st", "");
             finish();
             Intent i = new Intent(Game_Status.this, New_Main_Activity.class);
             startActivity(i);
@@ -342,16 +294,16 @@ public class Game_Status extends AppCompatActivity {
                     finish();
                     Intent i = new Intent(Game_Status.this, New_Main_Activity.class);
                     startActivity(i);
-                }else {
+                } else {
                     finish();
                 }
-            }else {
+            } else {
                 if (main_act.equals("")) {
                     System.out.println("###########DDDDDDD 2");
                     finish();
                     Intent i = new Intent(Game_Status.this, New_Main_Activity.class);
                     startActivity(i);
-                }else {
+                } else {
                     System.out.println("###########DDDDDDD 3");
                     finish();
                 }
@@ -526,7 +478,7 @@ public class Game_Status extends AppCompatActivity {
                             user_inactive_dia("wrong_date");
                         }
                         //Toast.makeText(Game_Status.this, ""+error.toString(), Toast.LENGTH_LONG).show();
-                        System.out.println("###############errors" + error.toString());
+                        System.out.println("###############errors" + error);
 
                     }
                 }) {
@@ -696,7 +648,7 @@ public class Game_Status extends AppCompatActivity {
                     mProgress = new ProgressDialog(Game_Status.this);
                     mProgress.show();
                 }
-                mProgress.setMessage("காத்திருக்கவும் " + String.valueOf(progress) + "%");
+                mProgress.setMessage("காத்திருக்கவும் " + progress + "%");
                 if (progress == 100) {
                     mProgress.dismiss();
                     mProgress = null;

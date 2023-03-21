@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".MainActivity">
+    tools:context=".New_Main_Activity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -50,7 +50,7 @@
                     android:layout_toLeftOf="@+id/intros"
                     android:visibility="gone">
 
-                    <de.hdodenhof.circleimageview.CircleImageView
+                    <ImageView
                         android:id="@+id/ads_logo2"
                         android:layout_width="33dp"
                         android:layout_height="33dp" />

@@ -46,7 +46,7 @@ public class RectangleShape implements Shape {
     }
 
     private void init() {
-        rect = new Rect(- width / 2, - height / 2, width / 2, height / 2);
+        rect = new Rect(-width / 2, -height / 2, width / 2, height / 2);
     }
 
     @Override

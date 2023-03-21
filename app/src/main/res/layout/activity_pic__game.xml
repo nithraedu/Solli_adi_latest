@@ -100,11 +100,6 @@
                             android:gravity="center"
                             android:visibility="gone">
 
-                            <de.hdodenhof.circleimageview.CircleImageView
-                                android:id="@+id/ads_logo2"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp" />
-
                             <ImageView
                                 android:id="@+id/adlogo"
                                 android:layout_width="10dp"
@@ -407,7 +402,7 @@
                 android:textColor="@color/dark_yellow"
                 android:textStyle="bold" />
 
-            <pl.droidsonroids.gif.GifImageView
+            <ImageView
                 android:layout_width="@dimen/lrtbp_25"
                 android:layout_height="@dimen/lrtbp_25"
                 android:visibility="gone" />

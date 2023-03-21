@@ -30,12 +30,16 @@ public class CircleShape implements Shape {
         this(target.getBounds());
     }
 
-    public void setAdjustToTarget(boolean adjustToTarget) {
-        this.adjustToTarget = adjustToTarget;
+    public static int getPreferredRadius(Rect bounds) {
+        return Math.max(bounds.width(), bounds.height()) / 2;
     }
 
     public boolean isAdjustToTarget() {
         return adjustToTarget;
+    }
+
+    public void setAdjustToTarget(boolean adjustToTarget) {
+        this.adjustToTarget = adjustToTarget;
     }
 
     public int getRadius() {
@@ -67,9 +71,5 @@ public class CircleShape implements Shape {
     @Override
     public int getHeight() {
         return radius * 2;
-    }
-
-    public static int getPreferredRadius(Rect bounds) {
-        return Math.max(bounds.width(), bounds.height()) / 2;
     }
 }

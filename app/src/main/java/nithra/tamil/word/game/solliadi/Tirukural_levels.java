@@ -10,8 +10,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -25,21 +23,18 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.facebook.ads.NativeAdLayout;
 
 
-
-
-
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-
-
 public class Tirukural_levels extends AppCompatActivity {
+    public static SharedPreferences mPreferences;
     TextView time1, time2, time3, score1, score2, score3, levelid, levelname;
     Typeface typ, tyr;
     DataBaseHelper myDbHelper;
     TextView levela, levelb, levelc;
-    public static SharedPreferences mPreferences;
     SQLiteDatabase exdb;
     TextView action;
     TextView intro;
@@ -219,8 +214,8 @@ public class Tirukural_levels extends AppCompatActivity {
         if (spa.getInt(Tirukural_levels.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
             native_banner_ad_container.setVisibility(View.GONE);
-        }else {
-            if (Utils.isNetworkAvailable(Tirukural_levels.this)){
+        } else {
+            if (Utils.isNetworkAvailable(Tirukural_levels.this)) {
                 native_banner_ad_container.setVisibility(View.GONE);
                 //fb_native(Tirukural_levels.this,native_banner_ad_container);
 
@@ -229,7 +224,7 @@ public class Tirukural_levels extends AppCompatActivity {
                 }else {
                     fb_native(Tirukural_levels.this,native_banner_ad_container);
                 }*/
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
          /*   if (spa.getInt(Tirukural_levels.this, "addlodedd") == 1) {

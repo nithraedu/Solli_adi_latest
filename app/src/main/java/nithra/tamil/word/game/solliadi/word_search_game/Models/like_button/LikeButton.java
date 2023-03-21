@@ -7,10 +7,6 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.ColorInt;
-import androidx.annotation.ColorRes;
-import androidx.annotation.DrawableRes;
-import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -20,6 +16,11 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class LikeButton extends FrameLayout implements View.OnClickListener {
     private static final DecelerateInterpolator DECCELERATE_INTERPOLATOR = new DecelerateInterpolator();
     private static final AccelerateDecelerateInterpolator ACCELERATE_DECELERATE_INTERPOLATOR = new AccelerateDecelerateInterpolator();
     private static final OvershootInterpolator OVERSHOOT_INTERPOLATOR = new OvershootInterpolator(4);
-
+    SharedPreference sp = new SharedPreference();
     private ImageView icon;
     private DotsView dotsView;
     private CircleView circleView;
@@ -41,16 +42,10 @@ public class LikeButton extends FrameLayout implements View.OnClickListener {
     private int circleStartColor;
     private int circleEndColor;
     private int iconSize;
-
-
     private float animationScaleFactor;
-
     private boolean isChecked;
-
-
     private boolean isEnabled;
     private AnimatorSet animatorSet;
-
     private Drawable likeDrawable;
     private Drawable unLikeDrawable;
 
@@ -65,10 +60,10 @@ public class LikeButton extends FrameLayout implements View.OnClickListener {
     public LikeButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        if(!isInEditMode())
-        init(context, attrs, defStyleAttr);
+        if (!isInEditMode())
+            init(context, attrs, defStyleAttr);
     }
-SharedPreference sp=new SharedPreference();
+
     /**
      * Does all the initial setup of the button such as retrieving all the attributes that were
      * set in xml and inflating the like button's view and initial state.
@@ -226,11 +221,12 @@ SharedPreference sp=new SharedPreference();
                     icon.setScaleY(1);
                 }
 
-                @Override public void onAnimationEnd(Animator animation) {
-                    if(animationEndListener != null) {
-                      animationEndListener.onAnimationEnd(LikeButton.this);
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    if (animationEndListener != null) {
+                        animationEndListener.onAnimationEnd(LikeButton.this);
 
-                        sp.putInt(getContext(),"animation_id",0);
+                        sp.putInt(getContext(), "animation_id", 0);
                     }
 
                 }
@@ -411,7 +407,7 @@ SharedPreference sp=new SharedPreference();
         List<Icon> icons = Utils.getIcons();
 
         for (Icon icon : icons) {
-            if (icon.getIconType().name().toLowerCase().equals(iconType.toLowerCase())) {
+            if (icon.getIconType().name().equalsIgnoreCase(iconType)) {
                 return icon;
             }
         }
@@ -504,6 +500,15 @@ SharedPreference sp=new SharedPreference();
     }
 
     /**
+     * Returns current like state
+     *
+     * @return current like state
+     */
+    public boolean isLiked() {
+        return isChecked;
+    }
+
+    /**
      * Sets the initial state of the button to liked
      * or unliked.
      *
@@ -517,15 +522,6 @@ SharedPreference sp=new SharedPreference();
             isChecked = false;
             icon.setImageDrawable(unLikeDrawable);
         }
-    }
-
-    /**
-     * Returns current like state
-     *
-     * @return current like state
-     */
-    public boolean isLiked() {
-        return isChecked;
     }
 
     @Override

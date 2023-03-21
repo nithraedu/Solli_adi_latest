@@ -63,7 +63,7 @@ android:visibility="gone"
                     android:layout_width="match_parent"
                     android:gravity="center"
                     android:layout_height="match_parent">
-                    <de.hdodenhof.circleimageview.CircleImageView
+                    <ImageView
                         android:id="@+id/ads_logo2"
                         android:layout_width="30dp"
                         android:layout_height="30dp"

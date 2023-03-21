@@ -12,7 +12,6 @@
         android:id="@+id/r_head"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/fl_adplaceholder"
         android:background="@drawable/new_background">
 
         <TextView

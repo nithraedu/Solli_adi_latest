@@ -12,7 +12,8 @@ public class Item {
     String validity;
     Boolean isSelected;
 
-    public Item() {}
+    public Item() {
+    }
 
     public Item(int id, String item, String count) {
         this.id = id;

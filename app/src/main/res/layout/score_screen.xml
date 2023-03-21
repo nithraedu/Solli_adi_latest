@@ -79,7 +79,7 @@
             android:layout_marginBottom="@dimen/lrtbp_10">
 
 
-            <de.hdodenhof.circleimageview.CircleImageView
+            <ImageView
                 android:id="@+id/ads_logo"
                 android:layout_width="45dp"
                 android:layout_height="45dp"

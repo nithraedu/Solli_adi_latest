@@ -29,7 +29,7 @@ import nithra.tamil.word.game.solliadi.word_search_game.Models.Models.Word;
 
 public class TinyDB {
 
-    private SharedPreferences preferences;
+    private final SharedPreferences preferences;
     private String DEFAULT_APP_IMAGEDATA_DIRECTORY;
     private String lastImagePath = "";
 
@@ -37,6 +37,26 @@ public class TinyDB {
         preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
     }
 
+    /**
+     * Check if external storage is writable or not
+     *
+     * @return true if writable, false otherwise
+     */
+    public static boolean isExternalStorageWritable() {
+        return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
+    }
+
+    /**
+     * Check if external storage is readable or not
+     *
+     * @return true if readable, false otherwise
+     */
+    public static boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+
+        return Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
+    }
 
     /**
      * Decodes the Bitmap from 'path' and returns it
@@ -57,7 +77,6 @@ public class TinyDB {
         return bitmapFromPath;
     }
 
-
     /**
      * Returns the String path of the last saved image
      *
@@ -66,7 +85,6 @@ public class TinyDB {
     public String getSavedImagePath() {
         return lastImagePath;
     }
-
 
     /**
      * Saves 'theBitmap' into folder 'theFolder' with the name 'theImageName'
@@ -91,7 +109,6 @@ public class TinyDB {
         return mFullPath;
     }
 
-
     /**
      * Saves 'theBitmap' into 'fullPath'
      *
@@ -102,6 +119,8 @@ public class TinyDB {
     public boolean putImageWithFullPath(String fullPath, Bitmap theBitmap) {
         return !(fullPath == null || theBitmap == null) && saveBitmap(fullPath, theBitmap);
     }
+
+    // Getters
 
     /**
      * Creates the path for the image with name 'imageName' in DEFAULT_APP.. directory
@@ -176,8 +195,6 @@ public class TinyDB {
         return (fileCreated && bitmapCompressed && streamClosed);
     }
 
-    // Getters
-
     public int getInt(String key) {
         return preferences.getInt(key, 0);
     }
@@ -193,16 +210,13 @@ public class TinyDB {
         return newList;
     }
 
-
     public long getLong(String key, long defaultValue) {
         return preferences.getLong(key, defaultValue);
     }
 
-
     public float getFloat(String key) {
         return preferences.getFloat(key, 0);
     }
-
 
     public double getDouble(String key, double defaultValue) {
         String number = getString(key);
@@ -215,7 +229,6 @@ public class TinyDB {
         }
     }
 
-
     public ArrayList<Double> getListDouble(String key) {
         String[] myList = TextUtils.split(preferences.getString(key, ""), "‚‗‚");
         ArrayList<String> arrayToList = new ArrayList<String>(Arrays.asList(myList));
@@ -227,22 +240,18 @@ public class TinyDB {
         return newList;
     }
 
-
     public String getString(String key) {
         return preferences.getString(key, "");
     }
-
 
     public ArrayList<String> getListString(String key) {
         System.out.println("excepkey:" + preferences.getString(key, ""));
         return new ArrayList<String>(Arrays.asList(TextUtils.split(preferences.getString(key, ""), "‚‗‚")));
     }
 
-
     public boolean getBoolean(String key) {
         return preferences.getBoolean(key, false);
     }
-
 
     public ArrayList<Boolean> getListBoolean(String key) {
         ArrayList<String> myList = getListString(key);
@@ -259,6 +268,17 @@ public class TinyDB {
         return newList;
     }
 
+//    public  Object getObject(String key, Class<?> classOfT){
+//
+//        String json = getString(key);
+//        Object value = new Gson().fromJson(json, classOfT);
+//        if (value == null)
+//            throw new NullPointerException();
+//        return value;
+//    }
+
+
+    // Put methods
 
     public List<Word> getListObject(String key, Class<?> mClass) {
         Gson gson = new Gson();
@@ -274,7 +294,6 @@ public class TinyDB {
         return objects;
     }
 
-
     public List<String> getList(String key, Class<?> mClass) {
         Gson gson = new Gson();
 
@@ -288,23 +307,10 @@ public class TinyDB {
         return objects;
     }
 
-//    public  Object getObject(String key, Class<?> classOfT){
-//
-//        String json = getString(key);
-//        Object value = new Gson().fromJson(json, classOfT);
-//        if (value == null)
-//            throw new NullPointerException();
-//        return value;
-//    }
-
-
-    // Put methods
-
     public void putInt(String key, int value) {
         checkForNullKey(key);
         preferences.edit().putInt(key, value).apply();
     }
-
 
     public void putListInt(String key, ArrayList<Integer> intList) {
         checkForNullKey(key);
@@ -312,24 +318,20 @@ public class TinyDB {
         preferences.edit().putString(key, TextUtils.join("‚‗‚", myIntList)).apply();
     }
 
-
     public void putLong(String key, long value) {
         checkForNullKey(key);
         preferences.edit().putLong(key, value).apply();
     }
-
 
     public void putFloat(String key, float value) {
         checkForNullKey(key);
         preferences.edit().putFloat(key, value).apply();
     }
 
-
     public void putDouble(String key, double value) {
         checkForNullKey(key);
         putString(key, String.valueOf(value));
     }
-
 
     public void putListDouble(String key, ArrayList<Double> doubleList) {
         checkForNullKey(key);
@@ -337,13 +339,11 @@ public class TinyDB {
         preferences.edit().putString(key, TextUtils.join("‚‗‚", myDoubleList)).apply();
     }
 
-
     public void putString(String key, String value) {
         checkForNullKey(key);
         checkForNullValue(value);
         preferences.edit().putString(key, value).apply();
     }
-
 
     public void putListString(String key, ArrayList<String> stringList) {
         checkForNullKey(key);
@@ -351,12 +351,10 @@ public class TinyDB {
         preferences.edit().putString(key, TextUtils.join("‚‗‚", myStringList)).apply();
     }
 
-
     public void putBoolean(String key, boolean value) {
         checkForNullKey(key);
         preferences.edit().putBoolean(key, value).apply();
     }
-
 
     public void putListBoolean(String key, ArrayList<Boolean> boolList) {
         checkForNullKey(key);
@@ -372,7 +370,6 @@ public class TinyDB {
 
         putListString(key, newList);
     }
-
 
     public void putObject(String key, Object obj) {
         checkForNullKey(key);
@@ -390,7 +387,6 @@ public class TinyDB {
         putListString(key, objStrings);
     }
 
-
     public void putList(String key, List<String> objArray) {
         checkForNullKey(key);
         Gson gson = new Gson();
@@ -405,21 +401,17 @@ public class TinyDB {
         preferences.edit().remove(key).apply();
     }
 
-
     public boolean deleteImage(String path) {
         return new File(path).delete();
     }
-
 
     public void clear() {
         preferences.edit().clear().apply();
     }
 
-
     public Map<String, ?> getAll() {
         return preferences.getAll();
     }
-
 
     public void registerOnSharedPreferenceChangeListener(
             SharedPreferences.OnSharedPreferenceChangeListener listener) {
@@ -427,33 +419,10 @@ public class TinyDB {
         preferences.registerOnSharedPreferenceChangeListener(listener);
     }
 
-
     public void unregisterOnSharedPreferenceChangeListener(
             SharedPreferences.OnSharedPreferenceChangeListener listener) {
 
         preferences.unregisterOnSharedPreferenceChangeListener(listener);
-    }
-
-
-    /**
-     * Check if external storage is writable or not
-     *
-     * @return true if writable, false otherwise
-     */
-    public static boolean isExternalStorageWritable() {
-        return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
-    }
-
-    /**
-     * Check if external storage is readable or not
-     *
-     * @return true if readable, false otherwise
-     */
-    public static boolean isExternalStorageReadable() {
-        String state = Environment.getExternalStorageState();
-
-        return Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
     /**

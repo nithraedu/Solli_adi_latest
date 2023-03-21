@@ -2,7 +2,6 @@ package nithra.tamil.word.game.solliadi.match_tha_fallows;
 
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -21,13 +20,11 @@ public class ArrowLayout extends RelativeLayout {
 
     private final static double ARROW_ANGLE = Math.PI / 6;
     private final static double ARROW_SIZE = 30;
-
+    int duration = 0;
     private Paint mPaint;
-    int duration=0;
-
     private boolean mDrawArrow = false, ans_check;
-    private Point mPointFrom = new Point();   // current (during animation) arrow start point
-    private Point mPointTo = new Point();
+    private final Point mPointFrom = new Point();   // current (during animation) arrow start point
+    private final Point mPointTo = new Point();
 
     // current (during animation)  arrow end point
 
@@ -46,24 +43,18 @@ public class ArrowLayout extends RelativeLayout {
         init();
     }
 
-    @SuppressLint("NewApi")
-    public ArrowLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init();
-    }
 
     private void init() {
         setWillNotDraw(false);
         mPaint = new Paint();
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setAntiAlias(true);
-        if (duration==0)
-        {
+        if (duration == 0) {
             mPaint.setColor(Color.parseColor("#BD3939"));
             if (ans_check) {
                 mPaint.setColor(Color.parseColor("#3DAD0A"));
             }
-        }else {
+        } else {
             mPaint.setColor(Color.parseColor("#FF9800"));
         }
 
@@ -93,7 +84,7 @@ public class ArrowLayout extends RelativeLayout {
         canvas.restore();
     }*/
 
-    private Point calcPointFromleft(Rect fromViewBounds, Rect toViewBounds) {
+    private Point calcPointFromleft(Rect fromViewBounds) {
         Point pointFrom = new Point();
 
         pointFrom.x = fromViewBounds.right;
@@ -103,7 +94,7 @@ public class ArrowLayout extends RelativeLayout {
     }
 
 
-    private Point calcPointToleft(Rect fromViewBounds, Rect toViewBounds) {
+    private Point calcPointToleft(Rect toViewBounds) {
         Point pointTo = new Point();
 
         pointTo.x = toViewBounds.left;
@@ -112,7 +103,7 @@ public class ArrowLayout extends RelativeLayout {
         return pointTo;
     }
 
-    private Point calcPointFromright(Rect fromViewBounds, Rect toViewBounds) {
+    private Point calcPointFromright(Rect fromViewBounds) {
         Point pointFrom = new Point();
 
         pointFrom.x = fromViewBounds.left;
@@ -121,7 +112,7 @@ public class ArrowLayout extends RelativeLayout {
         return pointFrom;
     }
 
-    private Point calcPointToright(Rect fromViewBounds, Rect toViewBounds) {
+    private Point calcPointToright(Rect toViewBounds) {
         Point pointTo = new Point();
 
         pointTo.x = toViewBounds.right;
@@ -152,7 +143,7 @@ public class ArrowLayout extends RelativeLayout {
         mDrawArrow = mDrawArrow1;
         ans_check = ans_check1;
 
-        duration=duration1;
+        duration = duration1;
 
         View from_view = null, to_view = null;
 /*
@@ -182,11 +173,11 @@ public class ArrowLayout extends RelativeLayout {
         Point pointTo = null;
 
         if (arrow_move) {
-            pointFrom = calcPointFromright(toViewBounds, fromViewBounds);
-            pointTo = calcPointToright(toViewBounds, fromViewBounds);
+            pointFrom = calcPointFromright(toViewBounds);
+            pointTo = calcPointToright(fromViewBounds);
         } else {
-            pointFrom = calcPointFromleft(fromViewBounds, toViewBounds);
-            pointTo = calcPointToleft(fromViewBounds, toViewBounds);
+            pointFrom = calcPointFromleft(fromViewBounds);
+            pointTo = calcPointToleft(toViewBounds);
         }
 
 

@@ -1,9 +1,12 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+
+import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -17,92 +20,64 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxAdView;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
-import com.facebook.ads.NativeAdLayout;
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
-import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.FileProvider;
 
-
-
-
-
-
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.example.games.basegameutils.BaseGameActivity;
+import com.facebook.ads.NativeAdLayout;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.FileOutputStream;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
-import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
-import nithra.tamil.word.game.solliadi.adutils.GameExitUtils;
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
+public class Quiz_Game extends AppCompatActivity implements View.OnClickListener, Download_completed {
+    //*********************reward videos process 1***********************
 
-public class Quiz_Game extends BaseGameActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,  Download_completed {
+    static int vs = 0;
+    static int rvo = 0;
+    static int mCoinCount = 20;
     TextView question_txt, c_ans, c_button1, c_button2, c_button3, c_button4, score, c_word_number;
     Chronometer focus;
-
     SharedPreference sps = new SharedPreference();
     String gameid = "17";
     String question_id = "", question = "", answer = "";
@@ -116,50 +91,27 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     long ttstop;
     Dialog openDialog_s, openDialog_p, openDialog_odd_man;
     RelativeLayout adsicon, adsicon2;
-    CircleImageView ads_logo, ads_logo2;
     LinearLayout ads_layout;
     int s = 0;
     TextView next_continue;
     TextView ttscores;
     Typeface typ, tyr;
-    static int vs = 0;
-    static int rvo = 0;
-    static int mCoinCount = 20;
     int f_sec;
     int r = 0;
     int dia_dismiss = 0;
-
-    private MaxInterstitialAd ins_game,game_exit_ins;
-
-
     int extra_coin_s = 0;
     TextView s_word_number, s_score_edit, hint, p_coins, p_coins_red, earncoin, to_no, discription, c_settings, ch_facebook, ch_watts_app;
     int reward_play_count = 0;
     int ea = 0;
     int setval_vid;
     TextView coin_value;
-    private GoogleApiClient mGoogleApiClient;
     RelativeLayout head;
     int share_name = 0;
     int e2;
     int fb_reward = 0;
-    //RewardedVideoAd rewardedVideoAd;
-    private MaxRewardedAd rewardedAd;
     int reward_status = 0;
-    //*********************reward videos process 1***********************
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
-
-
-    private boolean mGameOver;
-    private boolean mGamePaused;
-
-    private long mTimeRemaining;
     //reward videos process 1***********************
     LinearLayout qwt;
-
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
     Newgame_DataBaseHelper3 newhelper3;
@@ -167,6 +119,9 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     Newgame_DataBaseHelper5 newhelper5;
     TextView word1, word2, word3, word4, word5, word6, ans, dis, close;
     LinearLayout ads_lay;
+    private InterstitialAd mInterstitialAd;
+    private RewardedAd rewardedAd;
+
     private void backexitnet() {
         if (main_act.equals("")) {
             finish();
@@ -232,56 +187,27 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         }
         openDialog_s = new Dialog(Quiz_Game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
-        ads_logo = (CircleImageView) openDialog_s.findViewById(R.id.ads_logo);
-        adsicon = (RelativeLayout) openDialog_s.findViewById(R.id.adsicon);
-        ads_layout = (LinearLayout) openDialog_s.findViewById(R.id.fl_adplaceholder);
-
-
-
-
-        if (sps.getInt(Quiz_Game.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
-        } else {
-            //fb_addload_score_screen(Quiz_Game.this);
-           /**/
-        }
+        adsicon = openDialog_s.findViewById(R.id.adsicon);
+        ads_layout = openDialog_s.findViewById(R.id.fl_adplaceholder);
 
 
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
 
 
         //reward(Quiz_Game.this);
-        rewarded_ad();
+        rewarded_adnew();
         if (sps.getInt(Quiz_Game.this, "purchase_ads") == 0) {
             // Make sure to set the mediation provider value to "max" to ensure proper functionality
-            AppLovinSdk.getInstance(Quiz_Game.this).setMediationProvider("max");
-            AppLovinSdk.initializeSdk(Quiz_Game.this, new AppLovinSdk.SdkInitializationListener() {
-                @Override
-                public void onSdkInitialized(final AppLovinSdkConfiguration configuration) {
-                    // AppLovin SDK is initialized, start loading ads
-                    industrialload_game();
-                    game_exit_ins_ad();
-
-                }
-            });
+            MobileAds.initialize(this);
+            industrialload();
         }
 
         find();
         next();
         soundset();
-       // loads_ads_banner();
-        ads_lay = (LinearLayout) findViewById(R.id.ads_lay);
-        if (sps.getInt(Quiz_Game.this, "purchase_ads") == 0) {
-        if (Utils.isNetworkAvailable(Quiz_Game.this)) {
+        // loads_ads_banner();
+        ads_lay = findViewById(R.id.ads_lay);
 
-        Ad_NativieUtils.load_add_facebook(this,getResources().getString(R.string.Viliyodu_Vilaiyadu_Native_Banner_new),ads_lay);
-        }
-        else {
-            ads_lay.setVisibility(View.GONE);
-        }
-        }else{
-            ads_lay.setVisibility(View.GONE);
-        }
 
         if (sps.getString(Quiz_Game.this, "qz_intro").equals("")) {
             showcase_dismiss();
@@ -291,64 +217,37 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             sequence.setConfig(config);
             sequence.addSequenceItem(c_ans, "விடையை பார்க்க கேள்விக்குறி பொத்தானை அழுத்தி விடை காணலாம்.", "அடுத்து");
             //  sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
-            sequence.addSequenceItem(new MaterialShowcaseView.Builder(Quiz_Game.this)
-                    .setTarget(ch_facebook)
-                    .setDismissText("சரி")
-                    .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                    .build())
-                    .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
-                        @Override
-                        public void onDismiss(MaterialShowcaseView itemView, int position) {
-                            if (position == 1) {
-                                sps.putString(Quiz_Game.this, "qz_time_start", "yes");
-                                sps.putString(Quiz_Game.this, "showcase_dismiss_qz", "yes");
-                                focus.setBase(SystemClock.elapsedRealtime());
-                                focus.start();
-                            }
-                        }
-                    });
+            sequence.addSequenceItem(new MaterialShowcaseView.Builder(Quiz_Game.this).setTarget(ch_facebook).setDismissText("சரி").setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.").build()).setOnItemDismissedListener((itemView, position) -> {
+                if (position == 1) {
+                    sps.putString(Quiz_Game.this, "qz_time_start", "yes");
+                    sps.putString(Quiz_Game.this, "showcase_dismiss_qz", "yes");
+                    focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();
+                }
+            });
             sps.putString(Quiz_Game.this, "qz_intro", "no");
             sequence.start();
         }
 
     }
 
-    private void loads_ads_banner() {
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-
-        ads_lay = (LinearLayout) findViewById(R.id.ads_lay);
-        if (sps.getInt(Quiz_Game.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            ads_lay.setVisibility(View.GONE);
-            native_banner_ad_container.setVisibility(View.GONE);
-
-        } else {
-            if (Utils.isNetworkAvailable(Quiz_Game.this)) {
-                fb_native(Quiz_Game.this, native_banner_ad_container);
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-        }
-
-    }
-
     private void find() {
-        question_txt = (TextView) findViewById(R.id.question_txt);
-        c_ans = (TextView) findViewById(R.id.c_ans);
-        c_button1 = (TextView) findViewById(R.id.c_button1);
-        c_button2 = (TextView) findViewById(R.id.c_button2);
-        c_button3 = (TextView) findViewById(R.id.c_button3);
-        c_button4 = (TextView) findViewById(R.id.c_button4);
-        c_settings = (TextView) findViewById(R.id.c_settings);
-        score = (TextView) findViewById(R.id.c_score_edit);
-        p_coins = (TextView) findViewById(R.id.p_coins);
-        c_word_number = (TextView) findViewById(R.id.c_word_number);
-        ch_facebook = (TextView) findViewById(R.id.ch_facebook);
-        ch_watts_app = (TextView) findViewById(R.id.ch_watts_app);
-        focus = (Chronometer) findViewById(R.id.c_time_edit);
-        head = (RelativeLayout) findViewById(R.id.head);
-        qwt = (LinearLayout) findViewById(R.id.qwt);
-        p_coins_red = (TextView) findViewById(R.id.p_coins_red);
+        question_txt = findViewById(R.id.question_txt);
+        c_ans = findViewById(R.id.c_ans);
+        c_button1 = findViewById(R.id.c_button1);
+        c_button2 = findViewById(R.id.c_button2);
+        c_button3 = findViewById(R.id.c_button3);
+        c_button4 = findViewById(R.id.c_button4);
+        c_settings = findViewById(R.id.c_settings);
+        score = findViewById(R.id.c_score_edit);
+        p_coins = findViewById(R.id.p_coins);
+        c_word_number = findViewById(R.id.c_word_number);
+        ch_facebook = findViewById(R.id.ch_facebook);
+        ch_watts_app = findViewById(R.id.ch_watts_app);
+        focus = findViewById(R.id.c_time_edit);
+        head = findViewById(R.id.head);
+        qwt = findViewById(R.id.qwt);
+        p_coins_red = findViewById(R.id.p_coins_red);
 
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
@@ -366,49 +265,46 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         qwt.setOnClickListener(Quiz_Game.this);
         c_ans.setOnClickListener(Quiz_Game.this);
         c_settings.setOnClickListener(Quiz_Game.this);
-        ImageView prize_logo = (ImageView) findViewById(R.id.prize_logo);
+        ImageView prize_logo = findViewById(R.id.prize_logo);
 
         if (sps.getInt(Quiz_Game.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
             prize_logo.setVisibility(View.GONE);
         }
-        prize_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Utils.isNetworkAvailable(Quiz_Game.this)) {
-                    if (sps.getString(Quiz_Game.this, "price_registration").equals("com")) {
+        prize_logo.setOnClickListener(v -> {
+            if (Utils.isNetworkAvailable(Quiz_Game.this)) {
+                if (sps.getString(Quiz_Game.this, "price_registration").equals("com")) {
+                    finish();
+                    Intent i = new Intent(Quiz_Game.this, Game_Status.class);
+                    startActivity(i);
+                } else {
+                    if (sps.getString(Quiz_Game.this, "otp_verify").equals("yes")) {
                         finish();
-                        Intent i = new Intent(Quiz_Game.this, Game_Status.class);
+                        Intent i = new Intent(Quiz_Game.this, LoginActivity.class);
                         startActivity(i);
                     } else {
-                        if (sps.getString(Quiz_Game.this, "otp_verify").equals("yes")) {
-                            finish();
-                            Intent i = new Intent(Quiz_Game.this, LoginActivity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            Intent i = new Intent(Quiz_Game.this, Price_Login.class);
-                            startActivity(i);
-                        }
+                        finish();
+                        Intent i = new Intent(Quiz_Game.this, Price_Login.class);
+                        startActivity(i);
                     }
-                } else {
-                    Toast.makeText(Quiz_Game.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(Quiz_Game.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void next() {
         reset();
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
+        NativeAdLayout native_banner_ad_container = findViewById(R.id.native_banner_ad_container);
         if (sps.getInt(Quiz_Game.this, "purchase_ads") == 1) {
             native_banner_ad_container.setVisibility(View.GONE);
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        }else {
-            if (Utils.isNetworkAvailable(Quiz_Game.this)){
+        } else {
+            if (Utils.isNetworkAvailable(Quiz_Game.this)) {
                 native_banner_ad_container.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
 
@@ -518,13 +414,13 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             case R.id.ch_facebook: {
                 share_name = 1;
                 final String a = "com.facebook.katana";
-                permission(a);
+                helpshare(a);
             }
             break;
             case R.id.ch_watts_app: {
                 share_name = 1;
                 final String a = "com.whatsapp";
-                permission(a);
+                helpshare(a);
             }
             break;
             case R.id.c_ans: {
@@ -563,41 +459,32 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             } else {
                 final Dialog openDialog = new Dialog(Quiz_Game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
-                TextView yes = (TextView) openDialog.findViewById(R.id.yes);
-                TextView no = (TextView) openDialog.findViewById(R.id.no);
-                TextView txt_ex2 = (TextView) openDialog.findViewById(R.id.txt_ex2);
-                TextView txt_ex = (TextView) openDialog.findViewById(R.id.txt_ex);
+                TextView yes = openDialog.findViewById(R.id.yes);
+                TextView no = openDialog.findViewById(R.id.no);
+                TextView txt_ex2 = openDialog.findViewById(R.id.txt_ex2);
+                TextView txt_ex = openDialog.findViewById(R.id.txt_ex);
                 txt_ex.setText("விடைகளை பார்க்க வேண்டுமா ?");
                 txt_ex2.setText("மொத்த நாணயங்களில் 50 குறைக்கப்படும்");
-                CheckBox checkbox_ans = (CheckBox) openDialog.findViewById(R.id.checkbox_ans);
-                checkbox_ans.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-                        if (isChecked == true) {
-                            sps.putString(getApplicationContext(), "checkbox_ans", "yes");
-                        } else {
-                            sps.putString(getApplicationContext(), "checkbox_ans", "");
-                        }
-                    }
-                });
-
-                yes.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-
-                        ans_checked();
-
-                        openDialog.dismiss();
-                    }
-                });
-                no.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                    if (isChecked) {
+                        sps.putString(getApplicationContext(), "checkbox_ans", "yes");
+                    } else {
                         sps.putString(getApplicationContext(), "checkbox_ans", "");
-                        openDialog.dismiss();
                     }
+                });
+
+                yes.setOnClickListener(v -> {
+
+
+                    ans_checked();
+
+                    openDialog.dismiss();
+                });
+                no.setOnClickListener(v -> {
+                    sps.putString(getApplicationContext(), "checkbox_ans", "");
+                    openDialog.dismiss();
                 });
                 openDialog.show();
             }
@@ -663,12 +550,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             c_button3.setPadding(20, 20, 20, 20);
             c_button4.setPadding(20, 20, 20, 20);
             Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    setSc();
-                }
-            }, 2300);
+            handler.postDelayed(() -> adShow(), 2300);
         }
     }
 
@@ -726,12 +608,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
                 coinanim();
 
                 Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        setSc();
-                    }
-                }, 2300);
+                handler.postDelayed(() -> adShow(), 2300);
             } else {
 
               /*  Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
@@ -789,12 +666,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
                 c_ans.setEnabled(false);
                 coinanim_red();
                 Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        setSc();
-                    }
-                }, 2300);
+                handler.postDelayed(() -> adShow(), 2300);
             }
         } else {
             dialog(1);
@@ -815,49 +687,46 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             s = 0;
         }
 
-        next_continue = (TextView) openDialog_s.findViewById(R.id.continues2);
-        ttscores = (TextView) openDialog_s.findViewById(R.id.tts_score2);
-        final TextView wtp = (TextView) openDialog_s.findViewById(R.id.wtp);
-        final TextView fbs = (TextView) openDialog_s.findViewById(R.id.fbp);
-        final TextView kuduthal = (TextView) openDialog_s.findViewById(R.id.tt22);
-        final TextView gplus = (TextView) openDialog_s.findViewById(R.id.gplus2);
-        final TextView word = (TextView) openDialog_s.findViewById(R.id.arputham2);
-        TextView extracoin2 = (TextView) openDialog_s.findViewById(R.id.extracoin2);
-        final LinearLayout vid_earn = (LinearLayout) openDialog_s.findViewById(R.id.vid_earn);
-        final LinearLayout rewardvideo = (LinearLayout) openDialog_s.findViewById(R.id.rewardvideo);
-        LinearLayout ads_layout = (LinearLayout) openDialog_s.findViewById(R.id.fl_adplaceholder);
+        next_continue = openDialog_s.findViewById(R.id.continues2);
+        ttscores = openDialog_s.findViewById(R.id.tts_score2);
+        final TextView wtp = openDialog_s.findViewById(R.id.wtp);
+        final TextView fbs = openDialog_s.findViewById(R.id.fbp);
+        final TextView kuduthal = openDialog_s.findViewById(R.id.tt22);
+        final TextView gplus = openDialog_s.findViewById(R.id.gplus2);
+        final TextView word = openDialog_s.findViewById(R.id.arputham2);
+        TextView extracoin2 = openDialog_s.findViewById(R.id.extracoin2);
+        final LinearLayout vid_earn = openDialog_s.findViewById(R.id.vid_earn);
+        final LinearLayout rewardvideo = openDialog_s.findViewById(R.id.rewardvideo);
+        LinearLayout ads_layout = openDialog_s.findViewById(R.id.fl_adplaceholder);
 
-        TextView video_earn = (TextView) openDialog_s.findViewById(R.id.video_earn);
+        TextView video_earn = openDialog_s.findViewById(R.id.video_earn);
         video_earn.setText("மேலும் " + sps.getInt(Quiz_Game.this, "reward_coin_txt") + "+நாணயங்கள் பெற");
 
-        ImageView prize_logo = (ImageView) openDialog_s.findViewById(R.id.prize_logo);
+        ImageView prize_logo = openDialog_s.findViewById(R.id.prize_logo);
         if (sps.getInt(Quiz_Game.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
             prize_logo.setVisibility(View.GONE);
         }
-        prize_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isNetworkAvailable()) {
-                    if (sps.getString(Quiz_Game.this, "price_registration").equals("com")) {
+        prize_logo.setOnClickListener(v -> {
+            if (isNetworkAvailable()) {
+                if (sps.getString(Quiz_Game.this, "price_registration").equals("com")) {
+                    finish();
+                    Intent i = new Intent(Quiz_Game.this, Game_Status.class);
+                    startActivity(i);
+                } else {
+                    if (sps.getString(Quiz_Game.this, "otp_verify").equals("yes")) {
                         finish();
-                        Intent i = new Intent(Quiz_Game.this, Game_Status.class);
+                        Intent i = new Intent(Quiz_Game.this, LoginActivity.class);
                         startActivity(i);
                     } else {
-                        if (sps.getString(Quiz_Game.this, "otp_verify").equals("yes")) {
-                            finish();
-                            Intent i = new Intent(Quiz_Game.this, LoginActivity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            Intent i = new Intent(Quiz_Game.this, Price_Login.class);
-                            startActivity(i);
-                        }
+                        finish();
+                        Intent i = new Intent(Quiz_Game.this, Price_Login.class);
+                        startActivity(i);
                     }
-                } else {
-                    Toast.makeText(Quiz_Game.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(Quiz_Game.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -900,7 +769,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         }
 
 
-        TextView discription = (TextView) openDialog_s.findViewById(R.id.discription);
+        TextView discription = openDialog_s.findViewById(R.id.discription);
         discription.setText("கேள்விக்கான பதில்");
         discription.setVisibility(View.VISIBLE);
 
@@ -947,144 +816,112 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         final Animation shake;
         shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulam);
         adsicon.startAnimation(shake);
-        ads_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //
-            }
-        });
+
         //discription.startAnimation(myFadeInAnimation);
-        discription.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog_dicription();
-            }
-        });
+        discription.setOnClickListener(view -> dialog_dicription());
 
-        vid_earn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 2;
-                if (Utils.isNetworkAvailable(Quiz_Game.this)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Quiz_Game.this, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
+        vid_earn.setOnClickListener(v -> {
+            rvo = 2;
+            if (Utils.isNetworkAvailable(Quiz_Game.this)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Quiz_Game.this, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    rewardvideo.setVisibility(View.INVISIBLE);
+                } else {
+                    new Handler().postDelayed(() -> {
                         reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        rewardvideo.setVisibility(View.INVISIBLE);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward(Quiz_Game.this);
-                                    rewarded_ad();
-                                    Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-                    }
-                } else {
-
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
+                        if (fb_reward == 1) {
+                            show_reward();
+                            // mShowVideoButton.setVisibility(View.VISIBLE);
+                        } else {
+                            //reward(Quiz_Game.this);
+                            rewarded_adnew();
+                            Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
                 }
+            } else {
+
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
             }
+
         });
 
-        rewardvideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 2;
-                if (Utils.isNetworkAvailable(Quiz_Game.this)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Quiz_Game.this, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
+        rewardvideo.setOnClickListener(v -> {
+            rvo = 2;
+            if (Utils.isNetworkAvailable(Quiz_Game.this)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Quiz_Game.this, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    rewardvideo.setVisibility(View.INVISIBLE);
+                } else {
+                    new Handler().postDelayed(() -> {
                         reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        rewardvideo.setVisibility(View.INVISIBLE);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward(Quiz_Game.this);
-                                    rewarded_ad();
-                                    Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-                    }
-                } else {
-
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
+                        if (fb_reward == 1) {
+                            show_reward();
+                            // mShowVideoButton.setVisibility(View.VISIBLE);
+                        } else {
+                            //reward(Quiz_Game.this);
+                            rewarded_adnew();
+                            Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
                 }
-            }
-        });
-        wtp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
+            } else {
 
-                        String msg = ("நான் சொல்லிஅடி செயலியில் வினாடி வினா நிலை " + c_word_number.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivity(Intent.createChooser(i, "Share via"));
-
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 21);
-
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-            }
-        });
-        fbs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
             }
         });
-        gplus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.google.android.apps.plus");
+        wtp.setOnClickListener(view -> {
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.whatsapp");
 
-                        String msg = ("நான் சொல்லிஅடி செயலியில் வினாடி வினாி நிலை " + c_word_number.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 16);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
+                    String msg = ("நான் சொல்லிஅடி செயலியில் வினாடி வினா நிலை " + c_word_number.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivity(Intent.createChooser(i, "Share via"));
+
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 21);
+
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
                 }
 
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+            }
+        });
+        fbs.setOnClickListener(view -> {
+
+
+        });
+        gplus.setOnClickListener(view -> {
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.google.android.apps.plus");
+
+                    String msg = ("நான் சொல்லிஅடி செயலியில் வினாடி வினாி நிலை " + c_word_number.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 16);
+                } else {
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+                }
+
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             }
 
         });
@@ -1106,87 +943,30 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             r = 0;
         }
 
-        next_continue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (sps.getInt(Quiz_Game.this, "purchase_ads") == 1) {
-                    dia_dismiss = 1;
-                    openDialog_s.dismiss();
-                    next();
-                }else {
-                    if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
-                        sps.putInt(getApplicationContext(), "ins_ad_new", 0);
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (ins_game == null || !ins_game.isReady()) {
-                                dia_dismiss = 1;
-                                openDialog_s.dismiss();
-                                next();
-                                industrialload_game();
-                                System.out.println("##################################FB INDUSTRIAL onLoggingImpression2");
+        next_continue.setOnClickListener(view -> {
+            dia_dismiss = 1;
+            openDialog_s.dismiss();
+            next();
 
-                                return;
-                            } else {
-                                ins_game.showAd();
 
-                            }
-                        } else {
-                            dia_dismiss = 1;
-                            openDialog_s.dismiss();
-                            next();
-                        }
-
-                    } else {
-                        dia_dismiss = 1;
-                        openDialog_s.dismiss();
-                        next();
-
-                        sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
-                    }
-                }
-                if (Utils.isNetworkAvailable(getApplicationContext())) {
-                    if (getApiClient().isConnected()) {
-                        if (isSignedIn()) {
-                            int k1 = 0;
-                            Cursor sc2 = myDbHelper.getQry("select * from score ");
-                            sc2.moveToFirst();
-                            if (sc2.getCount() != 0) {
-                                k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
-                            }
-                            //Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
-                        }
-                    }
-                }
-
-                if (sps.getInt(Quiz_Game.this, "purchase_ads") == 1) {
-
-                } else {
-                    // advancads();
-                    //advancads_content();
-                }
-               /* dia_dismiss = 1;
-                openDialog_s.dismiss();*/
-            }
         });
-        openDialog_s.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (dia_dismiss != 1) {
-                    sps.putString(Quiz_Game.this, "game_area", "on");
-                        if (main_act.equals("")) {
-                            finish();
-                            openDialog_s.dismiss();
-                            Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            openDialog_s.dismiss();
-                        }
-
+        openDialog_s.setOnDismissListener(dialog -> {
+            if (dia_dismiss != 1) {
+                sps.putString(Quiz_Game.this, "game_area", "on");
+                if (main_act.equals("")) {
+                    finish();
+                    openDialog_s.dismiss();
+                    Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
+                    startActivity(i);
                 } else {
-                    dia_dismiss = 0;
+                    finish();
+                    openDialog_s.dismiss();
                 }
 
+            } else {
+                dia_dismiss = 0;
             }
+
         });
         if (!isFinishing()) {
             openDialog_s.show();
@@ -1206,149 +986,89 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     }
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager connec = (ConnectivityManager) this
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connec = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
 
-    }
+    public void industrialload() {
+        Log.i("TAG", "onAdLoadedCalled");
+        AdRequest adRequest = new AdRequest.Builder().build();
 
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    //*********************reward videos process 3***********************
-
-
-
-
-
-
-
-
-
-
-    private void addCoins(int coins) {
-        mCoinCount = coins;
-        sps.putInt(Quiz_Game.this, "reward_coin_txt", coins);
-        //mCoinCountText.setText("Coins: " + mCoinCount);
-    }
-
-
-
-
-    //reward videos***********************//
-
-
-
-    public void game_exit_ins_ad() {
-
-        game_exit_ins = new MaxInterstitialAd(getResources().getString(R.string.Cat_Exit_Ins), this);
-        game_exit_ins.setListener(new MaxAdListener() {
+        InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
             @Override
-            public void onAdLoaded(MaxAd ad) {
-
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                interstiallistener();
+                Log.i("TAG", "onAdLoaded");
             }
 
             @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                openDialog_p.dismiss();
-                game_exit_ins_ad();
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error"+error);
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2"+error);
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.d("TAG", loadAdError.toString());
+                mInterstitialAd = null;
+                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
             }
         });
-        game_exit_ins.loadAd();
 
     }
 
-
-    public void industrialload_game() {
-
-        ins_game = new MaxInterstitialAd(getResources().getString(R.string.Viliyodu_Vilaiyadu_Ins), this);
-        ins_game.setListener(new MaxAdListener() {
+    public void interstiallistener() {
+        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
             @Override
-            public void onAdLoaded(MaxAd ad) {
-
+            public void onAdDismissedFullScreenContent() {
+                // Called when ad is dismissed.
+                // Set the ad reference to null so you don't show the ad a second time.
+                Log.d("TAG", "Ad dismissed fullscreen content.");
+                mInterstitialAd = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                setSc();
+                industrialload();
             }
 
             @Override
-            public void onAdDisplayed(MaxAd ad) {
-
+            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                // Called when ad fails to show.
+                Log.e("TAG", "Ad failed to show fullscreen content.");
+                mInterstitialAd = null;
             }
 
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                dia_dismiss = 1;
-                openDialog_s.dismiss();
-                next();
-                industrialload_game();
-            }
 
             @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-
+            public void onAdShowedFullScreenContent() {
+                // Called when ad is shown.
+                Log.d("TAG", "Ad showed fullscreen content.");
             }
         });
-        ins_game.loadAd();
+    }
+
+    public void adShow() {
+        if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") == Utills.interstitialadCount && mInterstitialAd != null) {
+            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+            Utills.INSTANCE.Loading_Dialog(this);
+            Handler handler = new Handler();
+            handler.postDelayed(() -> {
+                mInterstitialAd.show(this);
+            }, 2500);
+        } else {
+            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
+            setSc();
+        }
 
     }
 
-    @Override
-    public void onSignInFailed() {
-
-    }
-
-    @Override
-    public void onSignInSucceeded() {
-
-    }
 
     public void share_earn2(int a) {
         final Dialog openDialog = new Dialog(Quiz_Game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.share_dialog2);
         openDialog.setCancelable(false);
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView b_scores = openDialog.findViewById(R.id.b_scores);
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
@@ -1358,14 +1078,11 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         b_scores.setText("" + a);
 
 
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ttscores.setText("" + skx);
-                score.setText("" + skx);
-                openDialog.dismiss();
-                //mCoinCount = 0;
-            }
+        ok_y.setOnClickListener(v -> {
+            ttscores.setText("" + skx);
+            score.setText("" + skx);
+            openDialog.dismiss();
+            //mCoinCount = 0;
         });
 
         openDialog.show();
@@ -1384,8 +1101,8 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             openDialog.setContentView(R.layout.share_dialog2);
             openDialog.setCancelable(false);
             // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-            TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-            TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+            TextView ok_y = openDialog.findViewById(R.id.ok_y);
+            TextView b_scores = openDialog.findViewById(R.id.b_scores);
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
@@ -1395,13 +1112,10 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
 
 
             b_scores.setText("" + mCoinCount);
-            ok_y.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    score.setText("" + skx);
-                    openDialog.dismiss();
-                    //mCoinCount = 0;
-                }
+            ok_y.setOnClickListener(v -> {
+                score.setText("" + skx);
+                openDialog.dismiss();
+                //mCoinCount = 0;
             });
             openDialog.show();
         }
@@ -1412,10 +1126,6 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     protected void onPause() {
         super.onPause();
         System.out.println("#################OnStop");
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
-
 
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
         focus.stop();
@@ -1459,20 +1169,17 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
 
     public void showcase_dismiss() {
         Handler handler30 = new Handler();
-        handler30.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        handler30.postDelayed(() -> {
 
-                if (sps.getString(Quiz_Game.this, "showcase_dismiss_qz").equals("")) {
-                    showcase_dismiss();
-                } else {
-                    sps.putString(Quiz_Game.this, "qz_time_start", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
-
-                }
+            if (sps.getString(Quiz_Game.this, "showcase_dismiss_qz").equals("")) {
+                showcase_dismiss();
+            } else {
+                sps.putString(Quiz_Game.this, "qz_time_start", "yes");
+                focus.setBase(SystemClock.elapsedRealtime());
+                focus.start();
 
             }
+
         }, 800);
     }
 
@@ -1484,89 +1191,60 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
 
     private void back() {
         sps.putString(Quiz_Game.this, "game_area", "on");
-            openDialog_p = new Dialog(Quiz_Game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-            openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+        openDialog_p = new Dialog(Quiz_Game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog_p.setContentView(R.layout.back_pess);
+        TextView yes = openDialog_p.findViewById(R.id.yes);
+        TextView no = openDialog_p.findViewById(R.id.no);
 
-            yes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    focus.stop();
+        yes.setOnClickListener(v -> {
+            focus.stop();
 
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
 
-                        String date = sps.getString(Quiz_Game.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                        } else {
-                            pos = 2;
-                        }
+            String date = sps.getString(Quiz_Game.this, "date");
+            int pos;
+            if (date.equals("0")) {
+                pos = 1;
+            } else {
+                pos = 2;
+            }
 
-                        newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
+            newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
 
-                        // String date = sps.getString(Quiz_Game.this, "date");
-                        if (date.equals("0")) {
-                            if (main_act.equals("")) {
-                                finish();
-                                Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                            }
-                        } else {
-                            if (sps.getString(Quiz_Game.this, "Exp_list").equals("on")) {
-                                finish();
-                                Intent i = new Intent(Quiz_Game.this, Expandable_List_View.class);
-                                startActivity(i);
-                            } else {
-                                if (main_act.equals("")) {
-                                    finish();
-                                    Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    finish();
-                                }
-                            }
-
-                    }
-
-
-
-
-                    //ad
-                    if (sps.getInt(Quiz_Game.this, "purchase_ads") == 0) {
-                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                    openDialog_p.dismiss();
-                                    game_exit_ins.showAd();
-                                }
-                            }
-                        } else {
-                            openDialog_p.dismiss();
-                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
-                        }
-                    }else{
-                        openDialog_p.dismiss();
-                    }
-                    //ad
-
+            // String date = sps.getString(Quiz_Game.this, "date");
+            if (date.equals("0")) {
+                if (main_act.equals("")) {
+                    finish();
+                    Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
+                    startActivity(i);
+                } else {
+                    finish();
                 }
-            });
-            no.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    openDialog_p.dismiss();
+            } else {
+                if (sps.getString(Quiz_Game.this, "Exp_list").equals("on")) {
+                    finish();
+                    Intent i = new Intent(Quiz_Game.this, Expandable_List_View.class);
+                    startActivity(i);
+                } else {
+                    if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        finish();
+                    }
                 }
-            });
 
-            openDialog_p.show();
+            }
+            //ad
+            openDialog_p.dismiss();
+
+        });
+        no.setOnClickListener(v -> openDialog_p.dismiss());
+
+        openDialog_p.show();
 
 
     }
@@ -1577,11 +1255,12 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         if (openDialog_p != null && openDialog_p.isShowing()) {
             openDialog_p.cancel();
         }
+        mInterstitialAd = null;
     }
 
     private void soundset() {
         String snd = sps.getString(Quiz_Game.this, "snd");
-        c_settings = (TextView) findViewById(R.id.c_settings);
+        c_settings = findViewById(R.id.c_settings);
         if (snd.equals("off")) {
             c_settings.setBackgroundResource(R.drawable.sound_off);
             // toggleButton.setBackgroundResource(R.drawable.off);
@@ -1593,109 +1272,6 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         }
     }
 
-    public void permission(final String a) {
-
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-            focus.stop();
-
-            String date = sps.getString(Quiz_Game.this, "date");
-            int pos;
-            if (date.equals("0")) {
-                pos = 1;
-                newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
-            } else {
-                pos = 2;
-                newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
-            }
-            if ((ContextCompat.checkSelfPermission(Quiz_Game.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                helpshare(a);
-            } else {
-                if (sps.getString(Quiz_Game.this, "permission_grand").equals("")) {
-                    sps.putString(Quiz_Game.this, "permission_grand", "yes");
-                    //  First_register("yes");
-                    AlertDialog alertDialog = new AlertDialog.Builder(Quiz_Game.this).create();
-                    alertDialog.setMessage("இந்த நிலையை உங்களது நண்பருக்கு பகிர  பின்வரும் permission-யை  allow செய்யவேண்டும்");
-                    alertDialog.setCancelable(false);
-                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    if ((ContextCompat.checkSelfPermission(Quiz_Game.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                        ActivityCompat.requestPermissions(Quiz_Game.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                                    } else {
-                                        helpshare(a);
-                                    }
-                                }
-                            });
-
-                    alertDialog.show();
-
-                } else {
-                    if ((ContextCompat.checkSelfPermission(Quiz_Game.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                        if (sps.getInt(Quiz_Game.this, "permission") == 2) {
-                            AlertDialog alertDialog = new AlertDialog.Builder(Quiz_Game.this).create();
-                            alertDialog.setMessage("இந்த நிலையை உங்களது நண்பருக்கு பகிர settingsல் உள்ள permission-யை allow செய்யவேண்டும்");
-                            alertDialog.setCancelable(false);
-                            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                            Intent intent = new Intent();
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                            Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                            intent.setData(uri);
-                                            getApplicationContext().startActivity(intent);
-                                        }
-                                    });
-
-                            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            String date = sps.getString(Quiz_Game.this, "date");
-                                            int pos;
-                                            if (date.equals("0")) {
-                                                pos = 1;
-                                            } else {
-                                                pos = 2;
-                                            }
-                                            Cursor cs = newhelper5.getQry("select * from newgames5 where gameid='" + gameid + "' and questionid='" + question_id + "'");
-                                            cs.moveToFirst();
-                                            long dscore = 0;
-                                            if (cs.getCount() != 0) {
-                                                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-                                            }
-                                            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-                                            focus.start();
-                                            dialog.dismiss();
-                                        }
-                                    });
-
-
-                            alertDialog.show();
-                        } else {
-                            if ((ContextCompat.checkSelfPermission(Quiz_Game.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                ActivityCompat.requestPermissions(Quiz_Game.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                            } else {
-                                helpshare(a);
-                            }
-                        }
-                    } else {
-                        if ((ContextCompat.checkSelfPermission(Quiz_Game.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                            ActivityCompat.requestPermissions(Quiz_Game.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 151);
-                        } else {
-                            helpshare(a);
-                        }
-                    }
-                }
-            }
-
-        } else {
-            helpshare(a);
-        }*/
-        helpshare(a);
-    }
 
     private void helpshare(String a) {
 
@@ -1763,17 +1339,16 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
 
                     share.putExtra(Intent.EXTRA_STREAM, uri);
                     share.putExtra(Intent.EXTRA_TEXT, " நித்ராவின் சொல்லிஅடி செயலியை விளையாடிக் கொண்டிருக்கிறேன் இதற்கான விடையை என்னோடு பகிர்ந்து கொள்ளுங்கள்  https://goo.gl/bRqmah");
-                    share.putExtra(Intent.EXTRA_SUBJECT,
-                            "Solli_adi");
+                    share.putExtra(Intent.EXTRA_SUBJECT, "Solli_adi");
                     //  share.putExtra(android.content.Intent.EXTRA_TEXT,"Shared via Tamil Calendar Offline.\nClick here to download"+ "\nhttps://goo.gl/ITvWGu");
                     startActivity(Intent.createChooser(share, "Share Card Using"));
 
                 } else {
 
-                    CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout);
+                    CoordinatorLayout coordinatorLayout = findViewById(R.id.myCoordinatorLayout);
                     Snackbar snackbar = Snackbar.make(coordinatorLayout, "இந்த செயலி தங்களிடம் இல்லை", Snackbar.LENGTH_SHORT);
                     final View view = snackbar.getView();
-                    TextView textView = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+                    TextView textView = view.findViewById(com.google.android.material.R.id.snackbar_text);
                     view.setBackgroundResource(R.drawable.answershow);
                     textView.setTextColor(Color.parseColor("#FFFFFF"));
                     textView.setGravity(Gravity.CENTER | Gravity.BOTTOM);
@@ -1798,188 +1373,115 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         openDialog_earncoin.setContentView(R.layout.earncoin);
 
 
-        RelativeLayout wp = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnwa);
-        RelativeLayout fb = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnfb);
-        RelativeLayout gplus = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earngplus);
-        TextView cancel = (TextView) openDialog_earncoin.findViewById(R.id.cancel);
-        TextView ss = (TextView) openDialog_earncoin.findViewById(R.id.ssss);
+        RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
+        RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
+        RelativeLayout gplus = openDialog_earncoin.findViewById(R.id.earngplus);
+        TextView cancel = openDialog_earncoin.findViewById(R.id.cancel);
+        TextView ss = openDialog_earncoin.findViewById(R.id.ssss);
 
-        ss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_earncoin.cancel();
-            }
-        });
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_earncoin.cancel();
-            }
-        });
+        ss.setOnClickListener(v -> openDialog_earncoin.cancel());
+        cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
 
 
-        RelativeLayout video = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnvideo);
-        TextView wpro = (TextView) openDialog_earncoin.findViewById(R.id.wpro);
+        RelativeLayout video = openDialog_earncoin.findViewById(R.id.earnvideo);
+        TextView wpro = openDialog_earncoin.findViewById(R.id.wpro);
         if (i == 1) {
             cancel.setVisibility(View.INVISIBLE);
             wpro.setText("இந்த விளையாட்டை தொடர குறைந்தபட்சம் 50  - க்கும் மேற்பட்ட நாணயங்கள் தேவை. எனவே கூடுதல் நாணயங்கள் பெற பகிரவும்.");
         }
-        video.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 1;
-                extra_coin_s = 0;
-                if (isNetworkAvailable()) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Quiz_Game.this, "" + "Reward video", "Loading...");
+        video.setOnClickListener(v -> {
+            rvo = 1;
+            extra_coin_s = 0;
+            if (isNetworkAvailable()) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Quiz_Game.this, "" + "Reward video", "Loading...");
 
-                    if (fb_reward == 1) {
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
+                if (fb_reward == 1) {
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
 
-                        String date = sps.getString(Quiz_Game.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                            newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
-                        }
+                    String date = sps.getString(Quiz_Game.this, "date");
+                    int pos;
+                    if (date.equals("0")) {
+                        pos = 1;
+                        newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
+                    } else {
+                        pos = 2;
+                        newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
+                    }
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    openDialog_earncoin.cancel();
+
+                    // mShowVideoButton.setVisibility(View.VISIBLE);
+                } else {
+                    fb_reward = 0;
+                    // reward(Quiz_Game.this);
+                    rewarded_adnew();
+                    new Handler().postDelayed(() -> {
                         reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        openDialog_earncoin.cancel();
 
-                        // mShowVideoButton.setVisibility(View.VISIBLE);
-                    } else {
-                        fb_reward = 0;
-                       // reward(Quiz_Game.this);
-                        rewarded_ad();
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
+                        Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
 
-                                Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-
-                            }
-                        }, 2000);
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                    }, 2000);
                 }
-                /*rvo = 1;
-                extra_coin_s = 0;
-                if (Utils.isNetworkAvailable(Quiz_Game.this)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Quiz_Game.this, "" + "Reward video", "Loading...");
-
-                    if (mRewardedVideoAd.isLoaded()) {
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-
-                        String date = sps.getString(Quiz_Game.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                            newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
-                        }
-                        reward_progressBar.dismiss();
-                        showRewardedVideo();
-                        openDialog_earncoin.cancel();
-
-                        // mShowVideoButton.setVisibility(View.VISIBLE);
-                    } else {
-                        startGame();
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (mRewardedVideoAd.isLoaded()) {
-                                    showRewardedVideo();
-                                    openDialog_earncoin.cancel();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    startGame();
-                                    Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-                    }
-                } else {
-
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
-                }*/
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
             }
         });
 
-        wp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utils.isNetworkAvailable(Quiz_Game.this)) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        openDialog_earncoin.cancel();
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 12);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
+        wp.setOnClickListener(view -> {
+            if (Utils.isNetworkAvailable(Quiz_Game.this)) {
+                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                if (appinstalled) {
+                    openDialog_earncoin.cancel();
+                    Intent i12 = new Intent(Intent.ACTION_SEND);
+                    i12.setType("text/plain");
+                    i12.setPackage("com.whatsapp");
+                    String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                    i12.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i12, "Share via"), 12);
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-            }
-        });
-        fb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-        gplus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utils.isNetworkAvailable(Quiz_Game.this)) {
-
-                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
-                    if (appinstalled) {
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        String date = sps.getString(Quiz_Game.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                        } else {
-                            pos = 2;
-                        }
-                        newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-
-                        openDialog_earncoin.cancel();
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.google.android.apps.plus");
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 15);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
                 }
 
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+            }
+        });
+        fb.setOnClickListener(view -> {
+
+        });
+        gplus.setOnClickListener(view -> {
+            if (Utils.isNetworkAvailable(Quiz_Game.this)) {
+
+                final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
+                if (appinstalled) {
+                    focus.stop();
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    String date = sps.getString(Quiz_Game.this, "date");
+                    int pos;
+                    if (date.equals("0")) {
+                        pos = 1;
+                    } else {
+                        pos = 2;
+                    }
+                    newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+
+                    openDialog_earncoin.cancel();
+                    Intent i1 = new Intent(Intent.ACTION_SEND);
+                    i1.setType("text/plain");
+                    i1.setPackage("com.google.android.apps.plus");
+                    String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                    i1.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i1, "Share via"), 15);
+                } else {
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+                }
+
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             }
 
         });
@@ -2014,108 +1516,77 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
         transAnimation.setDuration(700);
         p_coins.startAnimation(transAnimation);
-        p_coins.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                p_coins.setVisibility(View.INVISIBLE);
-            }
-        }, transAnimation.getDuration());
+        p_coins.postDelayed(() -> p_coins.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
 
         ////
 
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //play1.start();
-                spz4.play(soundId4, sv, sv, 0, 0, sv);
-                p_coins.setVisibility(View.VISIBLE);
-                int[] locationInWindow = new int[2];
-                p_coins.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                p_coins.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                score.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                score.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
-                transAnimation.setDuration(1000);
-                p_coins.startAnimation(transAnimation);
-                p_coins.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        p_coins.setVisibility(View.INVISIBLE);
-                    }
-                }, transAnimation.getDuration());
-            }
+        handler.postDelayed(() -> {
+            //play1.start();
+            spz4.play(soundId4, sv, sv, 0, 0, sv);
+            p_coins.setVisibility(View.VISIBLE);
+            int[] locationInWindow1 = new int[2];
+            p_coins.getLocationInWindow(locationInWindow1);
+            int[] locationOnScreen1 = new int[2];
+            p_coins.getLocationOnScreen(locationOnScreen1);
+            float sourceX1 = locationOnScreen1[0];
+            float sourceY1 = locationOnScreen1[1];
+            int[] locationInWindowSecond1 = new int[2];
+            score.getLocationInWindow(locationInWindowSecond1);
+            int[] locationOnScreenSecond1 = new int[2];
+            score.getLocationOnScreen(locationOnScreenSecond1);
+            float destinationX1 = locationOnScreenSecond1[0];
+            float destinationY1 = locationOnScreenSecond1[1];
+            TranslateAnimation transAnimation1 = new TranslateAnimation(0f, (destinationX1 - sourceX1), 0f, (destinationY1 - sourceY1));
+            transAnimation1.setDuration(1000);
+            p_coins.startAnimation(transAnimation1);
+            p_coins.postDelayed(() -> p_coins.setVisibility(View.INVISIBLE), transAnimation1.getDuration());
         }, 1000);
 
-        new Thread(new Runnable() {
-
-            public void run() {
-                int es = e2 + 20;
-                while (e2 < es) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    score.post(new Runnable() {
-
-                        public void run() {
-
-                            score.setText("" + e2);
-
-                        }
-
-                    });
-                    e2++;
+        new Thread(() -> {
+            int es = e2 + 20;
+            while (e2 < es) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
-
+                score.post(() -> score.setText("" + e2));
+                e2++;
             }
 
         }).start();
 
         Handler handler30 = new Handler();
-        handler30.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
-                score.startAnimation(levels1);
-            }
+        handler30.postDelayed(() -> {
+            Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
+            score.startAnimation(levels1);
         }, 2200);
 
         Handler handler21 = new Handler();
-        handler21.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                if (cfx.getCount() != 0) {
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + 20;
-                    String aStringx = Integer.toString(spx);
-                    score.setText(aStringx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                }
-
-
-                Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
-                ch.moveToFirst();
-                if (ch.getCount() != 0) {
-                    int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
-                    int shh = sh + 50;
-                    myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
-
-                }
-                // setSc();
+        handler21.postDelayed(() -> {
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            if (cfx.getCount() != 0) {
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                int spx = skx + 20;
+                String aStringx = Integer.toString(spx);
+                score.setText(aStringx);
+                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
             }
+
+
+            Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
+            ch.moveToFirst();
+            if (ch.getCount() != 0) {
+                int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
+                int shh = sh + 50;
+                myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
+
+            }
+            // setSc();
         }, 1200);
 
     }
@@ -2123,13 +1594,13 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     public void nextgamesdialog() {
         final Dialog openDialog = new Dialog(Quiz_Game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.nextgame_find);
-        TextView next_game = (TextView) openDialog.findViewById(R.id.next_game);
-        TextView p_game = (TextView) openDialog.findViewById(R.id.picgame);
-        TextView c_game = (TextView) openDialog.findViewById(R.id.hintgame);
-        TextView s_game = (TextView) openDialog.findViewById(R.id.solgame);
-        TextView w_game = (TextView) openDialog.findViewById(R.id.wordgame);
+        TextView next_game = openDialog.findViewById(R.id.next_game);
+        TextView p_game = openDialog.findViewById(R.id.picgame);
+        TextView c_game = openDialog.findViewById(R.id.hintgame);
+        TextView s_game = openDialog.findViewById(R.id.solgame);
+        TextView w_game = openDialog.findViewById(R.id.wordgame);
 
-        TextView exit = (TextView) openDialog.findViewById(R.id.exit);
+        TextView exit = openDialog.findViewById(R.id.exit);
         openDialog.setCancelable(false);
 
         String date = sps.getString(Quiz_Game.this, "date");
@@ -2139,51 +1610,36 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             next_game.setText("வினாடி வினா புதிய  பதிவுகள் இல்லை. மேலும் நீங்கள் சிறப்பாக விளையாட  காத்திருக்கும் விளையாட்டுக்கள். ");
         }
 
-        c_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Clue_Game_Hard.class);
-                startActivity(i);
-            }
+        c_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Clue_Game_Hard.class);
+            startActivity(i);
         });
-        s_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Solukul_Sol.class);
-                startActivity(i);
-            }
+        s_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Solukul_Sol.class);
+            startActivity(i);
         });
-        w_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Word_Game_Hard.class);
-                startActivity(i);
-            }
+        w_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Word_Game_Hard.class);
+            startActivity(i);
         });
-        p_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Picture_Game_Hard.class);
-                startActivity(i);
-            }
+        p_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Picture_Game_Hard.class);
+            startActivity(i);
         });
 
-        exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
-                startActivity(i);
-            }
+        exit.setOnClickListener(v -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
+            startActivity(i);
         });
 
         Cursor ct;
@@ -2221,25 +1677,19 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             exit.setVisibility(View.VISIBLE);
         }
 
-        TextView odd_man_out = (TextView) openDialog.findViewById(R.id.odd_man_out);
-        TextView matchword = (TextView) openDialog.findViewById(R.id.matchword);
-        matchword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Match_Word.class);
-                startActivity(i);
-            }
+        TextView odd_man_out = openDialog.findViewById(R.id.odd_man_out);
+        TextView matchword = openDialog.findViewById(R.id.matchword);
+        matchword.setOnClickListener(view -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Match_Word.class);
+            startActivity(i);
         });
-        odd_man_out.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Odd_man_out.class);
-                startActivity(i);
-            }
+        odd_man_out.setOnClickListener(view -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Odd_man_out.class);
+            startActivity(i);
         });
         Cursor cts;
         cts = newhelper.getQry("select * from newmaintable where isfinish='0' order by id limit 1");
@@ -2260,25 +1710,19 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         }
 
 
-        TextView opposite_word = (TextView) openDialog.findViewById(R.id.opposite_word);
-        TextView ote_to_tamil = (TextView) openDialog.findViewById(R.id.ote_to_tamil);
-        opposite_word.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Opposite_word.class);
-                startActivity(i);
-            }
+        TextView opposite_word = openDialog.findViewById(R.id.opposite_word);
+        TextView ote_to_tamil = openDialog.findViewById(R.id.ote_to_tamil);
+        opposite_word.setOnClickListener(view -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Opposite_word.class);
+            startActivity(i);
         });
-        ote_to_tamil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Ote_to_Tamil.class);
-                startActivity(i);
-            }
+        ote_to_tamil.setOnClickListener(view -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Ote_to_Tamil.class);
+            startActivity(i);
         });
 
         Cursor ctd;
@@ -2299,10 +1743,10 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             }
         }
 
-        TextView seerpaduthu = (TextView) openDialog.findViewById(R.id.seerpaduthu);
-        TextView puthir = (TextView) openDialog.findViewById(R.id.puthir);
-        TextView tirukural = (TextView) openDialog.findViewById(R.id.tirukural);
-        TextView pilaithiruthu = (TextView) openDialog.findViewById(R.id.pilaithiruthu);
+        TextView seerpaduthu = openDialog.findViewById(R.id.seerpaduthu);
+        TextView puthir = openDialog.findViewById(R.id.puthir);
+        TextView tirukural = openDialog.findViewById(R.id.tirukural);
+        TextView pilaithiruthu = openDialog.findViewById(R.id.pilaithiruthu);
 
         Cursor ctds;
         ctds = newhelper3.getQry("select * from right_order where isfinish='0' order by id limit 1");
@@ -2336,46 +1780,34 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         }
 
 
-        seerpaduthu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Makeword_Rightorder.class);
-                startActivity(i);
-            }
+        seerpaduthu.setOnClickListener(view -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Makeword_Rightorder.class);
+            startActivity(i);
         });
-        puthir.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Riddle_game.class);
-                startActivity(i);
-            }
+        puthir.setOnClickListener(view -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Riddle_game.class);
+            startActivity(i);
         });
-        tirukural.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Tirukural.class);
-                startActivity(i);
-            }
+        tirukural.setOnClickListener(view -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Tirukural.class);
+            startActivity(i);
         });
-        pilaithiruthu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, WordError_correction.class);
-                startActivity(i);
-            }
+        pilaithiruthu.setOnClickListener(view -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, WordError_correction.class);
+            startActivity(i);
         });
 
 
-        TextView fill_in_blanks = (TextView) openDialog.findViewById(R.id.fill_in_blanks);
-        TextView eng_to_tamil = (TextView) openDialog.findViewById(R.id.eng_to_tamil);
+        TextView fill_in_blanks = openDialog.findViewById(R.id.fill_in_blanks);
+        TextView eng_to_tamil = openDialog.findViewById(R.id.eng_to_tamil);
 
         Cursor scds;
         scds = newhelper4.getQry("select * from newgamesdb4 where gameid='13' and isfinish='0' order by id limit 1");
@@ -2391,28 +1823,22 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             eng_to_tamil.setVisibility(View.VISIBLE);
         }
 
-        fill_in_blanks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Fill_in_blanks.class);
-                startActivity(i);
-            }
+        fill_in_blanks.setOnClickListener(v -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Fill_in_blanks.class);
+            startActivity(i);
         });
-        eng_to_tamil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, English_to_tamil.class);
-                startActivity(i);
-            }
+        eng_to_tamil.setOnClickListener(v -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, English_to_tamil.class);
+            startActivity(i);
         });
 
-        TextView quiz = (TextView) openDialog.findViewById(R.id.quiz);
-        TextView find_words_from_pictures = (TextView) openDialog.findViewById(R.id.find_words_from_pictures);
-        TextView match_words = (TextView) openDialog.findViewById(R.id.match_words);
+        TextView quiz = openDialog.findViewById(R.id.quiz);
+        TextView find_words_from_pictures = openDialog.findViewById(R.id.find_words_from_pictures);
+        TextView match_words = openDialog.findViewById(R.id.match_words);
         Newgame_DataBaseHelper5 newhelper5 = new Newgame_DataBaseHelper5(Quiz_Game.this);
         Cursor cn28ws = newhelper5.getQry("select * from newgames5 where gameid='15' and isfinish='0'");
         cn28ws.moveToFirst();
@@ -2431,37 +1857,28 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             quiz.setVisibility(View.VISIBLE);
         }
 
-        match_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Match_tha_fallows_game.class);
-                startActivity(i);
+        match_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Match_tha_fallows_game.class);
+            startActivity(i);
 
-            }
         });
-        find_words_from_pictures.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Quiz_Game.class);
-                startActivity(i);
-            }
+        find_words_from_pictures.setOnClickListener(v -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Quiz_Game.class);
+            startActivity(i);
         });
-        quiz.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Quiz_Game.class);
-                startActivity(i);
-            }
+        quiz.setOnClickListener(v -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Quiz_Game.class);
+            startActivity(i);
         });
 
         Newgame_DataBaseHelper6 newhelper6 = new Newgame_DataBaseHelper6(Quiz_Game.this);
-        TextView jamble_words = (TextView) openDialog.findViewById(R.id.jamble_words);
+        TextView jamble_words = openDialog.findViewById(R.id.jamble_words);
         Cursor jmp;
         jmp = newhelper6.getQry("select * from newgames5 where gameid='18' and isfinish='0' order by id limit 1");
         jmp.moveToFirst();
@@ -2469,74 +1886,62 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             jamble_words.setVisibility(View.VISIBLE);
         }
 
-        jamble_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Jamble_word_game.class);
-                startActivity(i);
-            }
+        jamble_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Jamble_word_game.class);
+            startActivity(i);
         });
-        TextView missing_words = (TextView) openDialog.findViewById(R.id.missing_words);
+        TextView missing_words = openDialog.findViewById(R.id.missing_words);
         Cursor jmps;
         jmps = newhelper6.getQry("select * from newgames5 where gameid='19' and isfinish='0' order by id limit 1");
         jmps.moveToFirst();
         if (jmps.getCount() != 0) {
             missing_words.setVisibility(View.VISIBLE);
         }
-        missing_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Missing_Words.class);
-                startActivity(i);
-            }
+        missing_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Missing_Words.class);
+            startActivity(i);
         });
-        TextView six_differences = (TextView) openDialog.findViewById(R.id.six_differences);
+        TextView six_differences = openDialog.findViewById(R.id.six_differences);
         Cursor dif;
         dif = newhelper6.getQry("select * from newgames5 where gameid='20' and isfinish='0' order by id limit 1");
         dif.moveToFirst();
         if (dif.getCount() != 0) {
             six_differences.setVisibility(View.VISIBLE);
         }
-        six_differences.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Quiz_Game.this, "date", "0");
-                Intent i = new Intent(Quiz_Game.this, Find_difference_between_pictures.class);
-                startActivity(i);
-            }
+        six_differences.setOnClickListener(v -> {
+            finish();
+            sps.putString(Quiz_Game.this, "date", "0");
+            Intent i = new Intent(Quiz_Game.this, Find_difference_between_pictures.class);
+            startActivity(i);
         });
         openDialog.show();
 
-        openDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+        openDialog.setOnKeyListener((dialog, keyCode, event) -> {
 
-                if (main_act.equals("")) {
+            if (main_act.equals("")) {
 
-                    finish();
-                    //     openDialog_s.dismiss();
-                    Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else {
-                    sps.putString(Quiz_Game.this, "game_area", "on");
-                    finish();
-                }
-                openDialog.dismiss();
-                sps.putString(Quiz_Game.this, "date", "0");
-
-
-              /*  finish();
-                openDialog.dismiss();
-                //sps.putString(Odd_man_out.this, "date", "0");
-                Intent i = new Intent(Odd_man_out.this, New_Main_Activity.class);
-                startActivity(i);*/
-                return keyCode == KeyEvent.KEYCODE_BACK;
+                finish();
+                //     openDialog_s.dismiss();
+                Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
+                startActivity(i);
+            } else {
+                sps.putString(Quiz_Game.this, "game_area", "on");
+                finish();
             }
+            openDialog.dismiss();
+            sps.putString(Quiz_Game.this, "date", "0");
+
+
+          /*  finish();
+            openDialog.dismiss();
+            //sps.putString(Odd_man_out.this, "date", "0");
+            Intent i = new Intent(Odd_man_out.this, New_Main_Activity.class);
+            startActivity(i);*/
+            return keyCode == KeyEvent.KEYCODE_BACK;
         });
     }
 
@@ -2586,63 +1991,51 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     }
 
     public void downloaddata_regular2() {
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
+        NativeAdLayout native_banner_ad_container = findViewById(R.id.native_banner_ad_container);
         native_banner_ad_container.setVisibility(View.INVISIBLE);
         head.setVisibility(View.INVISIBLE);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Quiz_Game.this);
         // alertDialogBuilder.setTitle("Update available");
         alertDialogBuilder.setMessage("மேலும் விளையாட வினாக்களை பதிவிறக்கம் செய்ய விரும்புகிறீர்களா ?");
         alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setNegativeButton("ஆம்", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //DownLoad Letters and Words
+        alertDialogBuilder.setNegativeButton("ஆம்", (dialog, id) -> {
+            //DownLoad Letters and Words
 
-                if (Utils.isNetworkAvailable(Quiz_Game.this)) {
-                    download_datas();
-                } else {
-                    NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-                    native_banner_ad_container.setVisibility(View.INVISIBLE);
-                    head.setVisibility(View.INVISIBLE);
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Quiz_Game.this);                           /* .setTitle("Delete entry")*/
-                    alertDialogBuilder.setCancelable(false);
-                    alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
-                            .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // continue with delete
+            if (Utils.isNetworkAvailable(Quiz_Game.this)) {
+                download_datas();
+            } else {
+                NativeAdLayout native_banner_ad_container1 = findViewById(R.id.native_banner_ad_container);
+                native_banner_ad_container1.setVisibility(View.INVISIBLE);
+                head.setVisibility(View.INVISIBLE);
+                AlertDialog.Builder alertDialogBuilder1 = new AlertDialog.Builder(Quiz_Game.this);                           /* .setTitle("Delete entry")*/
+                alertDialogBuilder1.setCancelable(false);
+                alertDialogBuilder1.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்").setPositiveButton("அமைப்பு", (dialog12, which) -> {
+                    // continue with delete
 
-                                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                                    sps.putInt(Quiz_Game.this, "goto_sett", 1);
+                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                    sps.putInt(Quiz_Game.this, "goto_sett", 1);
 
 
-                                    dialog.dismiss();
-                                }
-                            })
-                            .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // do nothing
-                                    sps.putString(Quiz_Game.this, "game_area", "on");
-                                    String date = sps.getString(Quiz_Game.this, "date");
-                                    if (date.equals("0")) {
-                                        backexitnet();
-                                    } else {
-                                        backexitnet();
-                                    }
-                                    dialog.dismiss();
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
-                }
-
+                    dialog12.dismiss();
+                }).setNegativeButton("பின்னர்", (dialog1, which) -> {
+                    // do nothing
+                    sps.putString(Quiz_Game.this, "game_area", "on");
+                    String date = sps.getString(Quiz_Game.this, "date");
+                    if (date.equals("0")) {
+                        backexitnet();
+                    } else {
+                        backexitnet();
+                    }
+                    dialog1.dismiss();
+                }).setIcon(android.R.drawable.ic_dialog_alert).show();
             }
+
         });
-        alertDialogBuilder.setPositiveButton("இல்லை ", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-               /* Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
-                startActivity(i);*/
-                sps.putString(Quiz_Game.this, "game_area", "on");
-                finish();
-            }
+        alertDialogBuilder.setPositiveButton("இல்லை ", (dialog, id) -> {
+           /* Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
+            startActivity(i);*/
+            sps.putString(Quiz_Game.this, "game_area", "on");
+            finish();
         });
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
@@ -2670,27 +2063,19 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
             if (Utils.isNetworkAvailable(Quiz_Game.this)) {
                 download_datas();
             } else {
-                NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
+                NativeAdLayout native_banner_ad_container = findViewById(R.id.native_banner_ad_container);
                 native_banner_ad_container.setVisibility(View.INVISIBLE);
                 head.setVisibility(View.INVISIBLE);
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Quiz_Game.this);
                 alertDialogBuilder.setCancelable(false);
-                alertDialogBuilder.setMessage("புதிய வினாக்களை பதிவிறக்கம் செய்ய இணையத்தை ஆன் செய்யவும்")
-                        .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                                sps.putInt(Quiz_Game.this, "goto_sett", 1);
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                finish();
-                                dialog.dismiss();
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
+                alertDialogBuilder.setMessage("புதிய வினாக்களை பதிவிறக்கம் செய்ய இணையத்தை ஆன் செய்யவும்").setPositiveButton("அமைப்பு", (dialog, which) -> {
+                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                    sps.putInt(Quiz_Game.this, "goto_sett", 1);
+                    dialog.dismiss();
+                }).setNegativeButton("பின்னர்", (dialog, which) -> {
+                    finish();
+                    dialog.dismiss();
+                }).setIcon(android.R.drawable.ic_dialog_alert).show();
             }
         }
 
@@ -2718,8 +2103,8 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         openDialog.setContentView(R.layout.share_dialog2);
         openDialog.setCancelable(false);
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView b_scores = openDialog.findViewById(R.id.b_scores);
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
@@ -2727,13 +2112,10 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
      /*   int spx = skx + a;
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                score.setText("" + skx);
-                openDialog.dismiss();
-                //mCoinCount = 0;
-            }
+        ok_y.setOnClickListener(v -> {
+            score.setText("" + skx);
+            openDialog.dismiss();
+            //mCoinCount = 0;
         });
         openDialog.show();
     }
@@ -2741,18 +2123,18 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     private void dialog_dicription() {
         openDialog_odd_man = new Dialog(Quiz_Game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_odd_man.setContentView(R.layout.answer_discription_quiz);
-        word1 = (TextView) openDialog_odd_man.findViewById(R.id.word1);
-        word2 = (TextView) openDialog_odd_man.findViewById(R.id.word2);
-        word3 = (TextView) openDialog_odd_man.findViewById(R.id.word3);
-        word4 = (TextView) openDialog_odd_man.findViewById(R.id.word4);
-        word5 = (TextView) openDialog_odd_man.findViewById(R.id.word5);
-        word6 = (TextView) openDialog_odd_man.findViewById(R.id.word6);
-        ans = (TextView) openDialog_odd_man.findViewById(R.id.ans);
-        dis = (TextView) openDialog_odd_man.findViewById(R.id.discription);
-        close = (TextView) openDialog_odd_man.findViewById(R.id.close);
-        TextView questions = (TextView) openDialog_odd_man.findViewById(R.id.questions);
-        TextView diss = (TextView) openDialog_odd_man.findViewById(R.id.dis);
-        TextView answer = (TextView) openDialog_odd_man.findViewById(R.id.answer);
+        word1 = openDialog_odd_man.findViewById(R.id.word1);
+        word2 = openDialog_odd_man.findViewById(R.id.word2);
+        word3 = openDialog_odd_man.findViewById(R.id.word3);
+        word4 = openDialog_odd_man.findViewById(R.id.word4);
+        word5 = openDialog_odd_man.findViewById(R.id.word5);
+        word6 = openDialog_odd_man.findViewById(R.id.word6);
+        ans = openDialog_odd_man.findViewById(R.id.ans);
+        dis = openDialog_odd_man.findViewById(R.id.discription);
+        close = openDialog_odd_man.findViewById(R.id.close);
+        TextView questions = openDialog_odd_man.findViewById(R.id.questions);
+        TextView diss = openDialog_odd_man.findViewById(R.id.dis);
+        TextView answer = openDialog_odd_man.findViewById(R.id.answer);
 
 
         //  word1.setVisibility(View.GONE);
@@ -2763,24 +2145,13 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         word6.setVisibility(View.GONE);
         diss.setVisibility(View.GONE);
         dis.setVisibility(View.GONE);
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        close.setOnClickListener(view -> openDialog_odd_man.dismiss());
+
+        openDialog_odd_man.setOnCancelListener(dialog -> {
+            // dialog dismiss without button press
+            // load_addcontent2(context,ads_layout);
 
 
-                openDialog_odd_man.dismiss();
-
-            }
-        });
-
-        openDialog_odd_man.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                // dialog dismiss without button press
-                // load_addcontent2(context,ads_layout);
-
-
-            }
         });
         Cursor cs;
         cs = newhelper5.getQry("select * from newgames5 where gameid='" + gameid + "' and questionid='" + question_id + "'");
@@ -2840,102 +2211,72 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
         TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
         transAnimation.setDuration(700);
         p_coins_red.startAnimation(transAnimation);
-        p_coins_red.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                p_coins_red.setVisibility(View.INVISIBLE);
-            }
-        }, transAnimation.getDuration());
+        p_coins_red.postDelayed(() -> p_coins_red.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
 
         ////
 
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //play1.start();
-                spz4.play(soundId4, sv, sv, 0, 0, sv);
-                p_coins_red.setVisibility(View.VISIBLE);
-                int[] locationInWindow = new int[2];
-                p_coins_red.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                p_coins_red.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                p_coins.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                p_coins.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
-                transAnimation.setDuration(1000);
-                p_coins_red.startAnimation(transAnimation);
-                p_coins_red.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        p_coins_red.setVisibility(View.INVISIBLE);
-                    }
-                }, transAnimation.getDuration());
-            }
+        handler.postDelayed(() -> {
+            //play1.start();
+            spz4.play(soundId4, sv, sv, 0, 0, sv);
+            p_coins_red.setVisibility(View.VISIBLE);
+            int[] locationInWindow1 = new int[2];
+            p_coins_red.getLocationInWindow(locationInWindow1);
+            int[] locationOnScreen1 = new int[2];
+            p_coins_red.getLocationOnScreen(locationOnScreen1);
+            float sourceX1 = locationOnScreen1[0];
+            float sourceY1 = locationOnScreen1[1];
+            int[] locationInWindowSecond1 = new int[2];
+            p_coins.getLocationInWindow(locationInWindowSecond1);
+            int[] locationOnScreenSecond1 = new int[2];
+            p_coins.getLocationOnScreen(locationOnScreenSecond1);
+            float destinationX1 = locationOnScreenSecond1[0];
+            float destinationY1 = locationOnScreenSecond1[1];
+            TranslateAnimation transAnimation1 = new TranslateAnimation(0f, (destinationX1 - sourceX1), 0f, (destinationY1 - sourceY1));
+            transAnimation1.setDuration(1000);
+            p_coins_red.startAnimation(transAnimation1);
+            p_coins_red.postDelayed(() -> p_coins_red.setVisibility(View.INVISIBLE), transAnimation1.getDuration());
         }, 1000);
 
-        new Thread(new Runnable() {
-
-            public void run() {
-                int es = e2 - 50;
-                while (e2 < es) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    score.post(new Runnable() {
-
-                        public void run() {
-
-                            score.setText("" + e2);
-
-                        }
-
-                    });
-                    e2++;
+        new Thread(() -> {
+            int es = e2 - 50;
+            while (e2 < es) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
-
+                score.post(() -> score.setText("" + e2));
+                e2++;
             }
 
         }).start();
 
         Handler handler30 = new Handler();
-        handler30.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
-                score.startAnimation(levels1);
-            }
+        handler30.postDelayed(() -> {
+            Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
+            score.startAnimation(levels1);
         }, 2200);
 
         Handler handler21 = new Handler();
-        handler21.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                int spx = skx - 50;
-                String aStringx = Integer.toString(spx);
-                score.setText(aStringx);
-                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                // setSc();
-            }
+        handler21.postDelayed(() -> {
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            int spx = skx - 50;
+            String aStringx = Integer.toString(spx);
+            score.setText(aStringx);
+            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+            // setSc();
         }, 1300);
 
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 151) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 sps.putInt(Quiz_Game.this, "permission", 1);
@@ -2951,7 +2292,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
                         finish();
                         Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
                         startActivity(i);
-                    } else if (android.Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
                         sps.putInt(Quiz_Game.this, "permission", 0);
                         finish();
                         Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
@@ -2983,7 +2324,7 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
                     }
                     if (!showRationale) {
                         sps.putInt(Quiz_Game.this, "permission", 2);
-                    } else if (android.Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
                         sps.putInt(Quiz_Game.this, "permission", 0);
                     }
                 }
@@ -2993,39 +2334,35 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
     }
 
 
-
-    public void rewarded_ad(){
-        rewardedAd = MaxRewardedAd.getInstance( getResources().getString(R.string.Reward_Ins), this );
-        rewardedAd.setListener(new MaxRewardedAdListener() {
+    public void rewarded_adnew() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedAd.load(this, "ca-app-pub-3940256099942544/5224354917", adRequest, new RewardedAdLoadCallback() {
             @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error.
+                Log.d("TAG", loadAdError.toString());
+                rewardedAd = null;
             }
 
             @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
+            public void onAdLoaded(@NonNull RewardedAd ad) {
+                rewardedAd = ad;
+                fb_reward = 1;
+                adslisner();
+                Log.d("TAG", "Ad was loaded.");
             }
+        });
+
+
+    }
+
+    public void adslisner() {
+        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
 
             @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward=1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_ad();
-                if (reward_status==1){
+            public void onAdDismissedFullScreenContent() {
+                rewarded_adnew();
+                if (reward_status == 1) {
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
@@ -3036,131 +2373,37 @@ public class Quiz_Game extends BaseGameActivity implements View.OnClickListener,
 
                     }
                     Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
+                    handler.postDelayed(() -> {
+                        if (rvo == 2) {
+                            share_earn2(mCoinCount);
+                        } else {
+                            vidcoinearn();
                         }
                     }, 500);
-                }else {
+                } else {
                     Toast.makeText(Quiz_Game.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                 }
 
                 fb_reward = 0;
-                rewardedAd.loadAd();
-
 
             }
 
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                /*retryAttempt++;
-                long delayMillis = TimeUnit.SECONDS.toMillis( (long) Math.pow( 2, Math.min( 6, retryAttempt ) ) );
-
-                new Handler().postDelayed( new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        rewardedAd.loadAd();
-                    }
-                }, delayMillis );*/
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
         });
-        rewardedAd.loadAd();
     }
 
-    /*public void reward(final Context context) {
-        rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
-            @Override
-            public void onError(Ad ad, AdError error) {
-                // Rewarded video ad failed to load
-
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-
-
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Rewarded video ad clicked
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Rewarded Video ad impression - the event will fire when the
-                // video starts playing
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted() {
+    public void show_reward() {
+        if (rewardedAd != null) {
+            rewardedAd.show(this, rewardItem -> {
+                // Handle the reward.
+                Log.d("TAG", "The user earned the reward.");
+                int rewardAmount = rewardItem.getAmount();
+                String rewardType = rewardItem.getType();
                 reward_status = 1;
+            });
+        } else {
+            Log.d("TAG", "The rewarded ad wasn't ready yet.");
+        }
+    }
 
-                // Rewarded Video View Complete - the video has been played to the end.
-                // You can use this event to initialize your reward
-
-
-                // Call method to give reward
-                // giveReward();
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-        };
-        rewardedVideoAd.loadAd(
-                rewardedVideoAd.buildLoadAdConfig()
-                        .withAdListener(rewardedVideoAdListener)
-                        .build());
-    }*/
 
 }

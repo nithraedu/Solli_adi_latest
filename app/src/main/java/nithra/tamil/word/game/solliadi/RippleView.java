@@ -35,7 +35,6 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
-import androidx.annotation.ColorRes;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -44,12 +43,12 @@ import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.RelativeLayout;
 
-
+import androidx.annotation.ColorRes;
 
 
 /**
  * RippleView custom layout
- *
+ * <p>
  * Custom Layout that allows to use Ripple UI pattern above API 21
  *
  * @author Chutaux Robin
@@ -57,6 +56,12 @@ import android.widget.RelativeLayout;
  */
 public class RippleView extends RelativeLayout {
 
+    private final Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            invalidate();
+        }
+    };
     private int WIDTH;
     private int HEIGHT;
     private int frameRate = 10;
@@ -81,13 +86,6 @@ public class RippleView extends RelativeLayout {
     private int rippleColor;
     private int ripplePadding;
     private GestureDetector gestureDetector;
-    private final Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            invalidate();
-        }
-    };
-
     private OnRippleCompleteListener onCompletionListener;
 
     public RippleView(Context context) {
@@ -108,7 +106,7 @@ public class RippleView extends RelativeLayout {
      * Method that initializes all fields and sets listeners
      *
      * @param context Context used to create this view
-     * @param attrs Attribute used to initialize fields
+     * @param attrs   Attribute used to initialize fields
      */
     private void init(final Context context, final AttributeSet attrs) {
         if (isInEditMode())
@@ -169,7 +167,7 @@ public class RippleView extends RelativeLayout {
                 timerEmpty = 0;
                 // There is problem on Android M where canvas.restore() seems to be called automatically
                 // For now, don't call canvas.restore() manually on Android M (API 23)
-                if(Build.VERSION.SDK_INT != 23) {
+                if (Build.VERSION.SDK_INT != 23) {
                     canvas.restore();
                 }
                 invalidate();
@@ -203,8 +201,7 @@ public class RippleView extends RelativeLayout {
                     paint.setAlpha((int) (rippleAlpha - ((rippleAlpha) * (((float) timerEmpty * frameRate) / (durationEmpty)))));
                 else
                     paint.setAlpha(rippleAlpha);
-            }
-            else
+            } else
                 paint.setAlpha((int) (rippleAlpha - ((rippleAlpha) * (((float) timer * frameRate) / rippleDuration))));
 
             timer++;
@@ -316,7 +313,7 @@ public class RippleView extends RelativeLayout {
         final Bitmap output = Bitmap.createBitmap(originBitmap.getWidth(), originBitmap.getHeight(), Bitmap.Config.ARGB_8888);
         final Canvas canvas = new Canvas(output);
         final Paint paint = new Paint();
-        final Rect rect = new Rect((int)(x - radius), (int)(y - radius), (int)(x + radius), (int)(y + radius));
+        final Rect rect = new Rect((int) (x - radius), (int) (y - radius), (int) (x + radius), (int) (y + radius));
 
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
@@ -328,22 +325,21 @@ public class RippleView extends RelativeLayout {
         return output;
     }
 
+    public int getRippleColor() {
+        return rippleColor;
+    }
+
     /**
      * Set Ripple color, default is #FFFFFF
      *
      * @param rippleColor New color resource
      */
     @ColorRes
-	public void setRippleColor(int rippleColor) {
-		this.rippleColor = getResources().getColor(rippleColor);
-	}
+    public void setRippleColor(int rippleColor) {
+        this.rippleColor = getResources().getColor(rippleColor);
+    }
 
-	public int getRippleColor() {
-		return rippleColor;
-	}
-
-    public RippleType getRippleType()
-    {
+    public RippleType getRippleType() {
         return RippleType.values()[rippleType];
     }
 
@@ -352,13 +348,11 @@ public class RippleView extends RelativeLayout {
      *
      * @param rippleType New Ripple type for next animation
      */
-    public void setRippleType(final RippleType rippleType)
-    {
+    public void setRippleType(final RippleType rippleType) {
         this.rippleType = rippleType.ordinal();
     }
 
-    public Boolean isCentered()
-    {
+    public Boolean isCentered() {
         return isCentered;
     }
 
@@ -367,13 +361,11 @@ public class RippleView extends RelativeLayout {
      *
      * @param isCentered
      */
-    public void setCentered(final Boolean isCentered)
-    {
+    public void setCentered(final Boolean isCentered) {
         this.isCentered = isCentered;
     }
 
-    public int getRipplePadding()
-    {
+    public int getRipplePadding() {
         return ripplePadding;
     }
 
@@ -382,13 +374,11 @@ public class RippleView extends RelativeLayout {
      *
      * @param ripplePadding New Ripple padding in pixel, default is 0px
      */
-    public void setRipplePadding(int ripplePadding)
-    {
+    public void setRipplePadding(int ripplePadding) {
         this.ripplePadding = ripplePadding;
     }
 
-    public Boolean isZooming()
-    {
+    public Boolean isZooming() {
         return hasToZoom;
     }
 
@@ -397,13 +387,11 @@ public class RippleView extends RelativeLayout {
      *
      * @param hasToZoom Do the child views have to zoom ? default is False
      */
-    public void setZooming(Boolean hasToZoom)
-    {
+    public void setZooming(Boolean hasToZoom) {
         this.hasToZoom = hasToZoom;
     }
 
-    public float getZoomScale()
-    {
+    public float getZoomScale() {
         return zoomScale;
     }
 
@@ -412,13 +400,11 @@ public class RippleView extends RelativeLayout {
      *
      * @param zoomScale Value of scale animation, default is 1.03f
      */
-    public void setZoomScale(float zoomScale)
-    {
+    public void setZoomScale(float zoomScale) {
         this.zoomScale = zoomScale;
     }
 
-    public int getZoomDuration()
-    {
+    public int getZoomDuration() {
         return zoomDuration;
     }
 
@@ -427,13 +413,11 @@ public class RippleView extends RelativeLayout {
      *
      * @param zoomDuration Duration, default is 200ms
      */
-    public void setZoomDuration(int zoomDuration)
-    {
+    public void setZoomDuration(int zoomDuration) {
         this.zoomDuration = zoomDuration;
     }
 
-    public int getRippleDuration()
-    {
+    public int getRippleDuration() {
         return rippleDuration;
     }
 
@@ -442,13 +426,11 @@ public class RippleView extends RelativeLayout {
      *
      * @param rippleDuration Duration, default is 400ms
      */
-    public void setRippleDuration(int rippleDuration)
-    {
+    public void setRippleDuration(int rippleDuration) {
         this.rippleDuration = rippleDuration;
     }
 
-    public int getFrameRate()
-    {
+    public int getFrameRate() {
         return frameRate;
     }
 
@@ -457,13 +439,11 @@ public class RippleView extends RelativeLayout {
      *
      * @param frameRate New framerate value, default is 10
      */
-    public void setFrameRate(int frameRate)
-    {
+    public void setFrameRate(int frameRate) {
         this.frameRate = frameRate;
     }
 
-    public int getRippleAlpha()
-    {
+    public int getRippleAlpha() {
         return rippleAlpha;
     }
 
@@ -472,20 +452,12 @@ public class RippleView extends RelativeLayout {
      *
      * @param rippleAlpha Alpha value between 0 and 255, default is 90
      */
-    public void setRippleAlpha(int rippleAlpha)
-    {
+    public void setRippleAlpha(int rippleAlpha) {
         this.rippleAlpha = rippleAlpha;
     }
 
     public void setOnRippleCompleteListener(OnRippleCompleteListener listener) {
         this.onCompletionListener = listener;
-    }
-
-    /**
-     * Defines a callback called at the end of the Ripple effect
-     */
-    public interface OnRippleCompleteListener {
-        void onComplete(RippleView rippleView);
     }
 
     public enum RippleType {
@@ -495,9 +467,15 @@ public class RippleView extends RelativeLayout {
 
         int type;
 
-        RippleType(int type)
-        {
+        RippleType(int type) {
             this.type = type;
         }
+    }
+
+    /**
+     * Defines a callback called at the end of the Ripple effect
+     */
+    public interface OnRippleCompleteListener {
+        void onComplete(RippleView rippleView);
     }
 }

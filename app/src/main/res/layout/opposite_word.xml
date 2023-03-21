@@ -62,7 +62,7 @@
                     android:layout_height="@dimen/croll_insbut_height"
                     android:src="@drawable/gift" />
 
-                <de.hdodenhof.circleimageview.CircleImageView
+                <ImageView
                     android:visibility="gone"
                     android:id="@+id/ads_logo2"
                     android:layout_width="30dp"

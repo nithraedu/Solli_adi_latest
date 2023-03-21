@@ -1,13 +1,14 @@
 package nithra.tamil.word.game.solliadi.Price_solli_adi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
+import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.price_url;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.CountDownTimer;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import androidx.appcompat.widget.AppCompatEditText;
+import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -22,6 +23,9 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatEditText;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -38,14 +42,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import nithra.tamil.word.game.solliadi.LoginActivity;
-import nithra.tamil.word.game.solliadi.New_Main_Activity;
 import nithra.tamil.word.game.solliadi.Main_policy;
+import nithra.tamil.word.game.solliadi.New_Main_Activity;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
 import nithra.tamil.word.game.solliadi.Utils;
-
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.price_url;
 
 public class Price_Login extends AppCompatActivity {
     SharedPreference sp = new SharedPreference();
@@ -138,13 +139,14 @@ public class Price_Login extends AppCompatActivity {
                     TextView done_exit = (TextView) openDialog.findViewById(R.id.done_exit);
                     intros.setWebChromeClient(new WebChromeClient() {
                         private ProgressDialog mProgress;
+
                         @Override
                         public void onProgressChanged(WebView view, int progress) {
                             if (mProgress == null) {
                                 mProgress = new ProgressDialog(Price_Login.this);
                                 mProgress.show();
                             }
-                            mProgress.setMessage("காத்திருக்கவும் " + String.valueOf(progress) + "%");
+                            mProgress.setMessage("காத்திருக்கவும் " + progress + "%");
                             if (progress == 100) {
                                 mProgress.dismiss();
                                 mProgress = null;
@@ -556,59 +558,6 @@ public class Price_Login extends AppCompatActivity {
 
     }
 
-    public class MyCountDownTimer extends CountDownTimer {
-
-        public MyCountDownTimer(long millisInFuture, long countDownInterval) {
-            super(millisInFuture, countDownInterval);
-        }
-
-        @Override
-        public void onTick(long millisUntilFinished) {
-            long seconds = millisUntilFinished / 1000;
-            int progress = (int) (millisUntilFinished);
-            progress_bar.setProgress(progress);
-            time_limit.setText(String.format("%02d", seconds / 60)
-                    + ":" + String.format("%02d", seconds % 60));
-        }
-
-        @Override
-        public void onFinish() {
-            //time_limit.setText(Html.fromHtml("<U>Resend OTP</U>"));
-            progress_bar.setProgress(0);
-            time_limit.setVisibility(View.GONE);
-            progress_bar.setVisibility(View.GONE);
-
-            resend_otp.setVisibility(View.VISIBLE);
-          /*  if (redail_count==1)
-            {
-                timer_relay_call.setVisibility(View.VISIBLE);
-                condition_timing .setVisibility(View.VISIBLE);
-                condition_timing_text.setVisibility(View.VISIBLE);
-                condition_timing_text.setText(Html.fromHtml("* வேலை நாட்கள் மட்டும் <br> காலை 10.00 முதல் மாலை 5.00 வரை"));
-                timer_relay_call.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Uri calling = Uri.parse("tel:8760255699");
-
-                        Intent i = new Intent(Intent.ACTION_DIAL);
-                        i.setData(calling);
-                        startActivity(i);
-                    }
-                });
-            }*/
-           /* time_limit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    redail_count=1;
-                    type = "resend";
-                    phone_number = mobile_no.getText().toString();
-                    new GetContacts_user_status().execute();
-                }
-            });*/
-        }
-
-    }
-
     @Override
     public void onBackPressed() {
         sp.putString(Price_Login.this, "game_area", "on");
@@ -627,19 +576,19 @@ public class Price_Login extends AppCompatActivity {
                     finish();
                     Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
                     startActivity(i);
-                }else {
+                } else {
                     System.out.println("######################## D3");
                     finish();
                 }
 
-            }else {
+            } else {
                 System.out.println("######################## D4");
                 if (main_act.equals("")) {
                     System.out.println("######################## D2");
                     finish();
                     Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
                     startActivity(i);
-                }else {
+                } else {
                     System.out.println("######################## D3");
                     finish();
                 }
@@ -666,7 +615,7 @@ public class Price_Login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 sp.putString(Price_Login.this, "game_area", "on");
-                if (sp.getString(Price_Login.this,"activity_call").equals("main")){
+                if (sp.getString(Price_Login.this, "activity_call").equals("main")) {
 
                     if (main_act.equals("")) {
                         System.out.println("################### D1");
@@ -677,24 +626,24 @@ public class Price_Login extends AppCompatActivity {
                             Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
                             startActivity(i);
 
-                        }else {
+                        } else {
                             System.out.println("################### D3");
                             if (main_act.equals("")) {
                                 System.out.println("################### D6");
                                 finish();
                                 Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
                                 startActivity(i);
-                            }else {
+                            } else {
                                 System.out.println("################### D7");
                                 finish();
                             }
                         }
 
-                    }else {
+                    } else {
                         System.out.println("################### D4");
                         finish();
                     }
-                }else {
+                } else {
                     String date = sp.getString(Price_Login.this, "date");
                     if (date.equals("0")) {
                         if (sp.getString(Price_Login.this, "sd_prize_st").equals("yes")) {
@@ -703,33 +652,33 @@ public class Price_Login extends AppCompatActivity {
                             finish();
                             Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
                             startActivity(i);
-                        }else {
+                        } else {
                             if (main_act.equals("")) {
                                 System.out.println("################### D6");
                                 finish();
                                 Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
                                 startActivity(i);
-                            }else {
+                            } else {
                                 System.out.println("################### D7");
                                 finish();
                             }
 
                         }
 
-                    }else {
+                    } else {
                         if (main_act.equals("")) {
                             System.out.println("################### D8");
                             finish();
                             Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
                             startActivity(i);
-                        }else {
+                        } else {
                             if (sp.getString(Price_Login.this, "sd_prize_st").equals("yes")) {
                                 System.out.println("################### D9");
                                 sp.putString(Price_Login.this, "sd_prize_st", "");
                                 finish();
                                 Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
                                 startActivity(i);
-                            }else {
+                            } else {
                                 System.out.println("################### D10");
                                 finish();
                             }
@@ -737,7 +686,6 @@ public class Price_Login extends AppCompatActivity {
                         }
                     }
                 }
-
 
 
             }
@@ -823,6 +771,59 @@ public class Price_Login extends AppCompatActivity {
             }
         });
         openDialog.show();
+    }
+
+    public class MyCountDownTimer extends CountDownTimer {
+
+        public MyCountDownTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            long seconds = millisUntilFinished / 1000;
+            int progress = (int) (millisUntilFinished);
+            progress_bar.setProgress(progress);
+            time_limit.setText(String.format("%02d", seconds / 60)
+                    + ":" + String.format("%02d", seconds % 60));
+        }
+
+        @Override
+        public void onFinish() {
+            //time_limit.setText(Html.fromHtml("<U>Resend OTP</U>"));
+            progress_bar.setProgress(0);
+            time_limit.setVisibility(View.GONE);
+            progress_bar.setVisibility(View.GONE);
+
+            resend_otp.setVisibility(View.VISIBLE);
+          /*  if (redail_count==1)
+            {
+                timer_relay_call.setVisibility(View.VISIBLE);
+                condition_timing .setVisibility(View.VISIBLE);
+                condition_timing_text.setVisibility(View.VISIBLE);
+                condition_timing_text.setText(Html.fromHtml("* வேலை நாட்கள் மட்டும் <br> காலை 10.00 முதல் மாலை 5.00 வரை"));
+                timer_relay_call.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Uri calling = Uri.parse("tel:8760255699");
+
+                        Intent i = new Intent(Intent.ACTION_DIAL);
+                        i.setData(calling);
+                        startActivity(i);
+                    }
+                });
+            }*/
+           /* time_limit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    redail_count=1;
+                    type = "resend";
+                    phone_number = mobile_no.getText().toString();
+                    new GetContacts_user_status().execute();
+                }
+            });*/
+        }
+
     }
 
 }

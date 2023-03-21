@@ -1,5 +1,9 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+
+import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -16,20 +20,11 @@ import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.FileProvider;
-
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -52,41 +47,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/*import com.facebook.FacebookException;
-import com.facebook.FacebookOperationCanceledException;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
-import com.facebook.widget.FacebookDialog;
-import com.facebook.widget.WebDialog;*/
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxAdView;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.applovin.mediation.ads.MaxRewardedAd;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
 import com.facebook.ads.NativeAdLayout;
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
-
-
-
-
-
-
-
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-
-import com.google.example.games.basegameutils.BaseGameActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.File;
@@ -94,101 +68,59 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
-import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
-import nithra.tamil.word.game.solliadi.adutils.GameExitUtils;
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Puthayal_Sorkal_Native_Banner;
+public class Opposite_word extends AppCompatActivity implements Download_completed {
 
-public class Opposite_word extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Download_completed {
-
-    int fb_reward = 0;
+    public static final String TAG = "SavedGames";
     //RewardedVideoAd rewardedVideoAd;
-
-    private MaxRewardedAd rewardedAd;
-    int reward_status = 0;
     //*********************reward videos process 1***********************
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
-
-
-    private boolean mGameOver;
-    private boolean mGamePaused;
-
-    private long mTimeRemaining;
+    // The AppState slot we are editing.  For simplicity this sample only manipulates a single
+    // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
+    // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
+    private static final int APP_STATE_KEY = 1;
+    // Request code used to invoke sign-in UI.
+    private static final int RC_SIGN_IN = 9001;
+    // Request code used to invoke Snapshot selection UI.
+    private static final int RC_SELECT_SNAPSHOT = 9002;
+    /////////native advance////////////
+    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
+    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
     //reward videos process 1***********************
-
+    /////////native advance////////////
+    /////////Native_Top_Advanced////////////
+    private static final String ADMOB_AD_UNIT_ID_Top = "ca-app-pub-4267540560263635/2303543680";
+    /////////Native_Top_Advanced////////////
+    /////////Native_BackPress_Advanced////////////
+    private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
+    public static FrameLayout add, add2, add3;
+    public static LinearLayout add_e;
+    public static LinearLayout add_sc;
     // Facebook variable starts
     static int vs = 0;
     static int f;
+    static int rvo = 0;
+    static int mCoinCount = 20;
+    static SharedPreference spd = new SharedPreference();
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
-
-    private PendingAction pendingAction = PendingAction.NONE;
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onSignInFailed() {
-
-    }
-
-    @Override
-    public void onSignInSucceeded() {
-
-    }
-
-    @Override
-    public void download_completed(String status) {
-        System.out.println("#############################status"+status);
-        if (status.equals("nodata")){
-            nextgamesdialog();
-        }else {
-            next();
-        }
-    }
-
-
-    private enum PendingAction {
-        NONE, POST_PHOTO, POST_STATUS_UPDATE
-    }
-    private void backexitnet() {
-        if (main_act.equals("")) {
-            finish();
-            Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
-            startActivity(i);
-        } else {
-            finish();
-        }
-    }
+    private final PendingAction pendingAction = PendingAction.NONE;
+    // True when the application is attempting to resolve a sign-in error that has a possible
+    // resolution,
+    private final boolean mIsResolving = false;
+    // True immediately after the user clicks the sign-in button/
+    private final boolean mSignInClicked = false;
+    // True if we want to automatically attempt to sign in the user at application start.
+    private final boolean mAutoStartSignIn = true;
+    int fb_reward = 0;
+    int reward_status = 0;
     String btn_str = "";
     // facebook variable ends
     TextView s_word_number, s_score_edit, hint, p_coins, p_coins_red, earncoin, to_no, discription;
@@ -201,10 +133,8 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
     String question, answer;
     RelativeLayout sixcat, fourcat, below, bottom;
     SharedPreference sps = new SharedPreference();
-
     Animation clickzoom, clickzoom2;
     int ans_position;
-
     int q_type = 0;
     int min = 1;
     int max = 3;
@@ -220,11 +150,8 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
     Dialog openDialog_earncoin;
     String retype = "s";
     Context context = this;
-    static int rvo = 0;
-    static int mCoinCount=20;
     TextView next_continue;
     TextView ttscores;
-    public static final String TAG = "SavedGames";
     Typeface typ, tyr;
     int f_sec;
     int r = 0;
@@ -234,75 +161,27 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
     TextView p_setting;
     LinearLayout qwt;
     FrameLayout frame_layout2;
-    // The AppState slot we are editing.  For simplicity this sample only manipulates a single
-    // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
-    // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
-    private static final int APP_STATE_KEY = 1;
-
-    // Request code used to invoke sign-in UI.
-    private static final int RC_SIGN_IN = 9001;
-
-    // Request code used to invoke Snapshot selection UI.
-    private static final int RC_SELECT_SNAPSHOT = 9002;
-
-    /// Client used to interact with Google APIs.
-    private GoogleApiClient mGoogleApiClient;
-
-
-    // True when the application is attempting to resolve a sign-in error that has a possible
-    // resolution,
-    private boolean mIsResolving = false;
-
-    // True immediately after the user clicks the sign-in button/
-    private boolean mSignInClicked = false;
-
-    // True if we want to automatically attempt to sign in the user at application start.
-    private boolean mAutoStartSignIn = true;
-
-
-    private MaxInterstitialAd ins_game,game_exit_ins;
-
-    /////////native advance////////////
-    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
-    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
-
     Dialog openDialog_s, openDialog_p, openDialog_odd_man;
-    ;
     RelativeLayout adsicon, adsicon2;
-    CircleImageView ads_logo, ads_logo2;
     LinearLayout helpshare_layout;
-    /////////native advance////////////
-    /////////Native_Top_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_Top = "ca-app-pub-4267540560263635/2303543680";
-    /////////Native_Top_Advanced////////////
-    /////////Native_BackPress_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
     /////////Native_BackPress_Advanced////////////
     TextView word1, word2, word3, word4, word5, word6, ans, dis, close;
     Animation myFadeInAnimation;
     int share_name = 0;
     LinearLayout ads_layout;
-    public static FrameLayout add, add2, add3;
-    static SharedPreference spd = new SharedPreference();
     int loadaddcontent = 0;
     FrameLayout ads_layout_bottom;
     TextView question_txt;
     int rdvalu = 2;
     int daily_start = 0;
-
-
-    public static LinearLayout add_e;
-    public static LinearLayout add_sc;
-
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
     Newgame_DataBaseHelper3 newhelper3;
     DataBaseHelper myDbHelper;
     Newgame_DataBaseHelper4 newhelper4;
-
     int extra_coin_s = 0;
     int reward_play_count = 0;
-    int ea=0;
+    int ea = 0;
     Dialog openDialog;
     int minmumd = 1;
     int maximumd = 4;
@@ -310,7 +189,33 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
     int setval_vid;
     TextView coin_value;
     FirebaseAnalytics mFirebaseAnalytics;
-    int dia_dismiss=0;
+    int dia_dismiss = 0;
+    private MaxRewardedAd rewardedAd;
+    private boolean mGameOver;
+    private boolean mGamePaused;
+    private long mTimeRemaining;
+    /// Client used to interact with Google APIs.
+    private MaxInterstitialAd ins_game, game_exit_ins;
+
+    @Override
+    public void download_completed(String status) {
+        System.out.println("#############################status" + status);
+        if (status.equals("nodata")) {
+            nextgamesdialog();
+        } else {
+            next();
+        }
+    }
+
+    private void backexitnet() {
+        if (main_act.equals("")) {
+            finish();
+            Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
+            startActivity(i);
+        } else {
+            finish();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -323,15 +228,15 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         dbn2 = this.openOrCreateDatabase("Newgames3.db", MODE_PRIVATE, null);
 
 
-        if (sps.getString(Opposite_word.this,"new_user_db").equals("")){
+        if (sps.getString(Opposite_word.this, "new_user_db").equals("")) {
 
-        }else {
-            if (sps.getString(Opposite_word.this,"new_user_db").equals("on")){
-                sps.putString(Opposite_word.this,"db_name_start","Tamil_Game2.db");
-                Commen_string.dbs_name="Tamil_Game2.db";
-            }else {
-                sps.putString(Opposite_word.this,"db_name_start","Solli_Adi");
-                Commen_string.dbs_name="Solli_Adi";
+        } else {
+            if (sps.getString(Opposite_word.this, "new_user_db").equals("on")) {
+                sps.putString(Opposite_word.this, "db_name_start", "Tamil_Game2.db");
+                Commen_string.dbs_name = "Tamil_Game2.db";
+            } else {
+                sps.putString(Opposite_word.this, "db_name_start", "Solli_Adi");
+                Commen_string.dbs_name = "Solli_Adi";
             }
 
         }
@@ -364,13 +269,11 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         //uiHelper = new UiLifecycleHelper(this, callback);
 
 
-
-
         if (sps.getInt(Opposite_word.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
         } else {
             //fb_addload_score_screen(context);
-          /* */
+            /* */
         }
 
 
@@ -392,20 +295,6 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         }
 
         find();
-        // next();
-        //loads_ads_banner();
-        /*adds = (LinearLayout) findViewById(R.id.ads_lay);
-        if (sps.getInt(context, "purchase_ads") == 0) {
-        if (Utils.isNetworkAvailable(Opposite_word.this)) {
-
-        Ad_NativieUtils.load_add_facebook(this,getResources().getString(R.string.Puthayal_Sorkal_Native_Banner_new),adds);
-        }else {
-            adds.setVisibility(View.GONE);
-        }
-        }else{
-            adds.setVisibility(View.GONE);
-        }*/
-
 
         Bundle extras;
         extras = getIntent().getExtras();
@@ -445,10 +334,10 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             // sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
 
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Opposite_word.this)
-                    .setTarget(helpshare_layout)
-                    .setDismissText("சரி")
-                    .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                    .build())
+                            .setTarget(helpshare_layout)
+                            .setDismissText("சரி")
+                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
+                            .build())
                     .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                         @Override
                         public void onDismiss(MaterialShowcaseView itemView, int position) {
@@ -469,12 +358,11 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
         }
 
-        if (sps.getInt(Opposite_word.this,"reward_coin_txt")==0){
-            sps.putInt(Opposite_word.this,"reward_coin_txt",20);
+        if (sps.getInt(Opposite_word.this, "reward_coin_txt") == 0) {
+            sps.putInt(Opposite_word.this, "reward_coin_txt", 20);
         }
         openDialog_s = new Dialog(Opposite_word.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
-        ads_logo = (CircleImageView) openDialog_s.findViewById(R.id.ads_logo);
         adsicon = (RelativeLayout) openDialog_s.findViewById(R.id.adsicon);
         ads_layout = (LinearLayout) openDialog_s.findViewById(R.id.fl_adplaceholder);
 
@@ -500,7 +388,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         // install_ads_doalug();
 
 
-        ImageView prize_logo=(ImageView)findViewById(R.id.prize_logo);
+        ImageView prize_logo = (ImageView) findViewById(R.id.prize_logo);
         /*final Animation pendulam;
         pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
         prize_logo.startAnimation(pendulam);*/
@@ -576,13 +464,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
      /*   final Animation pendulam;
         pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
         adsicon2.startAnimation(pendulam);*/
-        ads_logo2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                adsicon2.setVisibility(View.INVISIBLE);
 
-            }
-        });
 
         bt1.setOnTouchListener(new View.OnTouchListener() {
 
@@ -925,7 +807,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                                if (isChecked == true) {
+                                if (isChecked) {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                                 } else {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -1010,23 +892,6 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
     }
 
-   /* private void loads_ads_banner() {
-
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-
-        if (sps.getInt(Opposite_word.this, "purchase_ads") == 1) {
-            adds.setVisibility(View.GONE);
-            native_banner_ad_container.setVisibility(View.GONE);
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        } else {
-            if (Utils.isNetworkAvailable(Opposite_word.this)){
-                fb_native_Puthayal_Sorkal_Native_Banner(Opposite_word.this,native_banner_ad_container);
-            }else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-        }
-    }*/
-
     private void next() {
 
         myFadeInAnimation = AnimationUtils.loadAnimation(Opposite_word.this, R.anim.blink_animation);
@@ -1097,7 +962,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
         if (sps.getString(Opposite_word.this, str_date1).equals("")) {
 
-          daily_bones();
+            daily_bones();
             sps.putString(Opposite_word.this, str_date1, "yes");
 
         }
@@ -1126,7 +991,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             }
             if (sps.getInt(Opposite_word.this, "purchase_ads") == 1) {
 
-            }else {
+            } else {
                 sps.putInt(context, "addloded_rect_bck", 0);
                 sps.putInt(context, "addloded_rect_mul", 0);
 
@@ -1153,10 +1018,10 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             if (sps.getInt(Opposite_word.this, "purchase_ads") == 1) {
                 native_banner_ad_container.setVisibility(View.GONE);
                 System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            }else {
-                if (Utils.isNetworkAvailable(Opposite_word.this)){
-                   // native_banner_ad_container.setVisibility(View.VISIBLE);
-                }else {
+            } else {
+                if (Utils.isNetworkAvailable(Opposite_word.this)) {
+                    // native_banner_ad_container.setVisibility(View.VISIBLE);
+                } else {
                     native_banner_ad_container.setVisibility(View.GONE);
                 }
             }
@@ -1318,14 +1183,13 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             }
         } else {
             downloaddata_regular();
-           // nextgamesdialog();
+            // nextgamesdialog();
         }
 
     }
 
     private void find() {
         adsicon2 = (RelativeLayout) findViewById(R.id.adsicon2);
-        ads_logo2 = (CircleImageView) findViewById(R.id.ads_logo2);
         clickzoom = AnimationUtils.loadAnimation(this, R.anim.click_zoom);
         clickzoom2 = AnimationUtils.loadAnimation(this, R.anim.click_zoom2);
         s_word_number = (TextView) findViewById(R.id.s_word_number);
@@ -1384,8 +1248,8 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         String dates = sps.getString(Opposite_word.this, "date");
         Cursor cs = null;
         if (dates.equals("0")) {
-             cs = newhelper2.getQry("select * from newmaintable2 where answer LIKE'" + ans + "'and isfinish='0' and questionid=" + questionid + " and gameid=" + gameid + "");
-        }else {
+            cs = newhelper2.getQry("select * from newmaintable2 where answer LIKE'" + ans + "'and isfinish='0' and questionid=" + questionid + " and gameid=" + gameid + "");
+        } else {
             cs = newhelper2.getQry("select * from newmaintable2 where answer LIKE'" + ans + "'and daily='0' and questionid=" + questionid + " and gameid=" + gameid + "");
         }
         cs.moveToFirst();
@@ -1424,7 +1288,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             Cursor c1 = null;
             if (dates.equals("0")) {
                 c1 = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + questionid + "' and isfinish='0'");
-            }else {
+            } else {
                 c1 = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + questionid + "' and daily='0'");
 
             }
@@ -1556,70 +1420,69 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
     }
 
     public void onBackPressed() {
-        sps.putString(Opposite_word.this,"game_area","on");
+        sps.putString(Opposite_word.this, "game_area", "on");
         sps.putString(Opposite_word.this, "odd_time_start", "yes");
         if (popupWindow.isShowing()) {
             popupWindow.dismiss();
         } else {
             sps.putInt(Opposite_word.this, "addlodedd", 0);
 
-                s = 1;
-                openDialog_p = new Dialog(Opposite_word.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                openDialog_p.setContentView(R.layout.back_pess);
-                TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-                TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+            s = 1;
+            openDialog_p = new Dialog(Opposite_word.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+            openDialog_p.setContentView(R.layout.back_pess);
+            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
+            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
-                yes.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                        newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                            if (main_act.equals("")) {
-                                finish();
-                                openDialog_s.dismiss();
+            yes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                    newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                    if (main_act.equals("")) {
+                        finish();
+                        openDialog_s.dismiss();
 
-                                Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                                openDialog_s.dismiss();
-                            }
-
-                        //ad
-                        if (sps.getInt(context, "purchase_ads") == 0) {
-                            if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                                sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                                if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                    if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                        openDialog_p.dismiss();
-                                        game_exit_ins.showAd();
-                                    }
-                                }
-                            } else {
-                                openDialog_p.dismiss();
-                                sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
-                            }
-                        }else{
-                            openDialog_p.dismiss();
-                        }
-                        //ad
+                        Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        finish();
+                        openDialog_s.dismiss();
                     }
-                });
-                no.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
 
+                    //ad
+                    if (sps.getInt(context, "purchase_ads") == 0) {
+                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
+                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
+                            if (Utils.isNetworkAvailable(getApplicationContext())) {
+                                if (game_exit_ins != null && game_exit_ins.isReady()) {
+                                    openDialog_p.dismiss();
+                                    game_exit_ins.showAd();
+                                }
+                            }
+                        } else {
+                            openDialog_p.dismiss();
+                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
+                        }
+                    } else {
                         openDialog_p.dismiss();
                     }
-                });
-                openDialog_p.show();
+                    //ad
+                }
+            });
+            no.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    openDialog_p.dismiss();
+                }
+            });
+            openDialog_p.show();
 
 
         }
     }
-
 
     @Override
     protected void onPause() {
@@ -1627,7 +1490,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         focus.stop();
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
         String date = sps.getString(Opposite_word.this, "date");
-        System.out.println("######################Timer ttstop"+ttstop);
+        System.out.println("######################Timer ttstop" + ttstop);
         int pos;
         if (date.equals("0")) {
             pos = 1;
@@ -1689,13 +1552,12 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
             System.out.println("######################Timer not");
         } else {
-            System.out.println("######################Timer start"+dscore);
+            System.out.println("######################Timer start" + dscore);
             focus.setBase(SystemClock.elapsedRealtime() + dscore);
             focus.start();
         }
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Opposite_word.this);
         mFirebaseAnalytics.setCurrentScreen(this, "Find the Opposite Words", null);
-
 
 
     }
@@ -2626,7 +2488,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             public void run() {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
-                if (cfx.getCount()!=0){
+                if (cfx.getCount() != 0) {
                     int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                     int spx = skx + 20;
                     String aStringx = Integer.toString(spx);
@@ -2637,7 +2499,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
                 Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                 ch.moveToFirst();
-                if (ch.getCount()!=0){
+                if (ch.getCount() != 0) {
                     int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
                     int shh = sh + 50;
                     myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
@@ -2659,8 +2521,8 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
         cfq.moveToFirst();
-        int skq=0;
-        if (cfq.getCount()!=0){
+        int skq = 0;
+        if (cfq.getCount() != 0) {
             skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
             String tr = String.valueOf(skq);
         }
@@ -2780,7 +2642,6 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
     }
 
-
     private void helpshare(String a) {
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
@@ -2884,7 +2745,6 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-
     public void dialog(int i) {
         openDialog_earncoin = new Dialog(Opposite_word.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_earncoin.setContentView(R.layout.earncoin);
@@ -2929,7 +2789,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                         focus.stop();
                         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                         String date = sps.getString(Opposite_word.this, "date");
-                        System.out.println("######################Timer ttstop"+ttstop);
+                        System.out.println("######################Timer ttstop" + ttstop);
                         int pos;
                         if (date.equals("0")) {
                             pos = 1;
@@ -3146,6 +3006,35 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         });
         openDialog_earncoin.show();
     }
+
+    public void share_earn2(int a) {
+        final Dialog openDialog = new Dialog(Opposite_word.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog.setContentView(R.layout.share_dialog2);
+        openDialog.setCancelable(false);
+        // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
+        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
+        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+        // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
+        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+        cfx.moveToFirst();
+        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+     /*   int spx = skx + a;
+        final String aStringx = Integer.toString(spx);*/
+        b_scores.setText("" + a);
+
+
+        ok_y.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ttscores.setText("" + skx);
+                s_score_edit.setText("" + skx);
+                openDialog.dismiss();
+                //mCoinCount = 0;
+            }
+        });
+
+        openDialog.show();
+    }
 /*
     private void openFacebookSession() {
         Session.openActiveSession(this, true, Arrays.asList("email",
@@ -3270,33 +3159,11 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         feedDialog.show();
     }*/
 
-    public void share_earn2(int a) {
-        final Dialog openDialog = new Dialog(Opposite_word.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        openDialog.setContentView(R.layout.share_dialog2);
-        openDialog.setCancelable(false);
-        // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
-        // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
-        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-        cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-     /*   int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
-        b_scores.setText("" + a);
-
-
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ttscores.setText("" + skx);
-                s_score_edit.setText("" + skx);
-                openDialog.dismiss();
-                //mCoinCount = 0;
-            }
-        });
-
-        openDialog.show();
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //uiHelper.onSaveInstanceState(outState);
+        outState.putString(PENDING_ACTION_BUNDLE_KEY, pendingAction.name());
     }
 
    /* private void showDialogWithoutNotificationBarInvite(String action, Bundle params) {
@@ -3384,14 +3251,6 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         dialog.show();
     }*/
 
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        //uiHelper.onSaveInstanceState(outState);
-        outState.putString(PENDING_ACTION_BUNDLE_KEY, pendingAction.name());
-    }
-
     public void share_earn(int a) {
         final Dialog openDialog = new Dialog(Opposite_word.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.share_dialog2);
@@ -3420,24 +3279,6 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         openDialog.show();
     }
 
-
-    //*********************reward videos process 3***********************
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private void addCoins(int coins) {
         mCoinCount = coins;
         sps.putInt(Opposite_word.this, "reward_coin_txt", coins);
@@ -3445,17 +3286,14 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
     }
 
 
-
-
-    //reward videos***********************//
-
+    //*********************reward videos process 3***********************
 
     public void vidcoinearn() {
         if (extra_coin_s == 1) {
             extra_coin_s = 0;
             reward_play_count = reward_play_count + 1;
             //daily_bones();
-            ea=ea+setval_vid;
+            ea = ea + setval_vid;
             coin_value.setText("" + ea);
             //mCoinCount = 0;
         } else {
@@ -3487,9 +3325,12 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
     }
 
+
+    //reward videos***********************//
+
     private void daily_bones() {
 
-    openDialog = new Dialog(Opposite_word.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog = new Dialog(Opposite_word.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.daily_bones_newd2);
         openDialog.setCancelable(false);
         //  TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
@@ -3510,11 +3351,11 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         if (str_day1.length() == 1) {
             str_day1 = "0" + str_day1;
         }
-        final String str_date1 =  str_day1 + "-" + str_month1 + "-" + cur_year1;
+        final String str_date1 = str_day1 + "-" + str_month1 + "-" + cur_year1;
 
-        Date date1=new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24));
-        SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
-        final String date=sdf.format(date1);
+        Date date1 = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        final String date = sdf.format(date1);
 
         TextView tomarrow_coin_earn = (TextView) openDialog.findViewById(R.id.tomarrow_coin_earn);
 
@@ -3538,13 +3379,13 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         });
         coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
         ea = 100;
-        final int vals=reward_play_count*100;
-        ea=ea+vals;
+        final int vals = reward_play_count * 100;
+        ea = ea + vals;
         coin_value.setText("" + ea);
 
         LinearLayout extra_coin = (LinearLayout) openDialog.findViewById(R.id.extra_coin);
-        System.out.println("############################^^^^^^^^^^^^^^currentdate"+str_date1);
-        System.out.println("############################^^^^^^^^^^^^^^saveddate"+sps.getString(Opposite_word.this, "daily_bonus_date"));
+        System.out.println("############################^^^^^^^^^^^^^^currentdate" + str_date1);
+        System.out.println("############################^^^^^^^^^^^^^^saveddate" + sps.getString(Opposite_word.this, "daily_bonus_date"));
 
         if (str_date1.equals(sps.getString(Opposite_word.this, "daily_bonus_date"))) {
 
@@ -3562,12 +3403,12 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         } else if (sps.getInt(context, "daily_bonus_count") == 4) {
             ea = 300;
         }
-        prize_data_update(context,ea);
+        prize_data_update(context, ea);
         coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
       /*  final int vals = reward_play_count * 100;
         ea = ea + vals;*/
         coin_value.setText("" + ea);
-        setval_vid=ea;
+        setval_vid = ea;
         Random rn = new Random();
         randomnod = rn.nextInt(maximumd - minmumd + 1) + minmumd;
 
@@ -3601,7 +3442,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                     if (fb_reward == 1) {
                         reward_progressBar.dismiss();
                         rewardedAd.showAd();
-                    }else {
+                    } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -3638,7 +3479,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-       // uiHelper.onActivityResult(requestCode, resultCode, data, dialogCallback);
+        // uiHelper.onActivityResult(requestCode, resultCode, data, dialogCallback);
         if (requestCode == 0) {
             if (Utils.isNetworkAvailable(Opposite_word.this)) {
                 download_datas();
@@ -3850,7 +3691,6 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
     }
 
-
     public void setSc() {
         if (s == 1) {
             openDialog_p.dismiss();
@@ -3870,9 +3710,9 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         LinearLayout ads_layout = (LinearLayout) openDialog_s.findViewById(R.id.fl_adplaceholder);
 
         TextView video_earn = (TextView) openDialog_s.findViewById(R.id.video_earn);
-        video_earn.setText("மேலும் "+sps.getInt(Opposite_word.this,"reward_coin_txt")+"+நாணயங்கள் பெற");
+        video_earn.setText("மேலும் " + sps.getInt(Opposite_word.this, "reward_coin_txt") + "+நாணயங்கள் பெற");
 
-        ImageView prize_logo=(ImageView)openDialog_s.findViewById(R.id.prize_logo);
+        ImageView prize_logo = (ImageView) openDialog_s.findViewById(R.id.prize_logo);
         if (sps.getInt(Opposite_word.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
@@ -3910,9 +3750,9 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             ads_layout.setVisibility(View.GONE);
         } else {
             //New_Main_Activity.load_addFromMain_multiplayer(Opposite_word.this,ads_layout);
-            if (Utils.isNetworkAvailable(Opposite_word.this)){
+            if (Utils.isNetworkAvailable(Opposite_word.this)) {
                 //New_Main_Activity.load_add_fb_rect_score_screen(Opposite_word.this, ads_layout);
-            }else {
+            } else {
                 ads_layout.setVisibility(View.GONE);
             }
             /*  if (loadaddcontent == 1) {
@@ -3987,12 +3827,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         final Animation shake;
         shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulam);
         adsicon.startAnimation(shake);
-        ads_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-            }
-        });
         //discription.startAnimation(myFadeInAnimation);
         discription.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -4011,7 +3846,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                         reward_progressBar.dismiss();
                         rewardedAd.showAd();
                         rewardvideo.setVisibility(View.INVISIBLE);
-                    }else {
+                    } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -4046,7 +3881,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                         reward_progressBar.dismiss();
                         rewardedAd.showAd();
                         rewardvideo.setVisibility(View.INVISIBLE);
-                    }else {
+                    } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -4187,7 +4022,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                     dia_dismiss = 1;
                     openDialog_s.dismiss();
                     next();
-                }else {
+                } else {
                     System.out.println("#############@@@@@@@@@@@@SP" + sps.getInt(getApplicationContext(), "ins_ad_new"));
                     if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
                         sps.putInt(getApplicationContext(), "ins_ad_new", 0);
@@ -4236,225 +4071,26 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                         sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
                     }
                 }
-                if (Utils.isNetworkAvailable(getApplicationContext())) {
-                    if (getApiClient().isConnected()) {
-                        if (isSignedIn()) {
-                            int k1 = 0;
-                            Cursor sc2 = myDbHelper.getQry("select * from score ");
-                            sc2.moveToFirst();
-                            if (sc2.getCount() != 0) {
-                                k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
-                            }
-                            //Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
-                        }
-                    }
-                }
-/*
-                if (sps.getString(getApplicationContext(), "1st_achiv").equals("")) {
-                    if (Utils.isNetworkAvailable(getApplicationContext())) {
-                        if (getApiClient().isConnected()) {
-                            if (isSignedIn()) {
-
-                                Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___1));
-                                sps.putString(getApplicationContext(), "1st_achiv", "yes");
-                            } else {
-                                sps.putString(getApplicationContext(), "1st_achiv", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "1st_achiv", "yes");
-                        }
-                    } else {
-                        sps.putString(getApplicationContext(), "1st_achiv", "yes");
-                    }
-
-                }
-
-                if (sps.getString(getApplicationContext(), "pic_a1").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "pic") >= 5) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement__4));
-                                    sps.putString(getApplicationContext(), "pic_a1", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "pic_a1", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "pic_a1", "yes");
-                            }
-
-
-
-
-
-              } else {
-                            sps.putString(getApplicationContext(), "pic_a1", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "pic", (sps.getInt(getApplicationContext(), "pic") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "pic", (sps.getInt(getApplicationContext(), "pic") + 1));
-                    }
-
-
-                }
-                if (sps.getString(getApplicationContext(), "ach9").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "ach9_a1") >= 25) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement______9));
-                                    sps.putString(getApplicationContext(), "ach9", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach9", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach9", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "ach9", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "ach9_a1", (sps.getInt(getApplicationContext(), "ach9_a1") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "ach9_a1", (sps.getInt(getApplicationContext(), "ach9_a1") + 1));
-                    }
-
-
-                }
-
-                if (sps.getString(getApplicationContext(), "ach13").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "ach13_a1") >= 50) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___13));
-                                    sps.putString(getApplicationContext(), "ach13", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach13", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach13", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "ach13", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "ach13_a1", (sps.getInt(getApplicationContext(), "ach13_a1") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "ach13_a1", (sps.getInt(getApplicationContext(), "ach13_a1") + 1));
-                    }
-
-
-                }
-
-                if (sps.getString(getApplicationContext(), "ach16").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "ach16_a1") >= 50) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement__16));
-                                    sps.putString(getApplicationContext(), "ach16", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach16", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach16", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "ach16", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "ach16_a1", (sps.getInt(getApplicationContext(), "ach16_a1") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "ach16_a1", (sps.getInt(getApplicationContext(), "ach16_a1") + 1));
-                    }
-
-
-                }
-
-                if (sps.getString(getApplicationContext(), "ach18").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "ach18_a1") >= 100) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement____18));
-                                    sps.putString(getApplicationContext(), "ach18", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach18", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach18", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "ach18", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "ach18_a1", (sps.getInt(getApplicationContext(), "ach18_a1") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "ach18_a1", (sps.getInt(getApplicationContext(), "ach18_a1") + 1));
-                    }
-
-
-                }
-
-                if (sps.getString(getApplicationContext(), "ach19").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "ach19_a1") >= 250) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___19));
-                                    sps.putString(getApplicationContext(), "ach19", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach19", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach19", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "ach19", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "ach19_a1", (sps.getInt(getApplicationContext(), "ach19_a1") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "ach19_a1", (sps.getInt(getApplicationContext(), "ach19_a1") + 1));
-                    }
-                }*/
-
-                if (sps.getInt(Opposite_word.this, "purchase_ads") == 1) {
-
-                } else {
-                    // advancads();
-                    //advancads_content();
-                }
-              /*  dia_dismiss=1;
-                openDialog_s.dismiss();*/
             }
         });
         openDialog_s.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                if (dia_dismiss!=1){
-                    sps.putString(Opposite_word.this,"game_area","on");
-                        if (main_act.equals("")) {
-                            finish();
-                            openDialog_s.dismiss();
-                            Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            openDialog_s.dismiss();
-                        }
+                if (dia_dismiss != 1) {
+                    sps.putString(Opposite_word.this, "game_area", "on");
+                    if (main_act.equals("")) {
+                        finish();
+                        openDialog_s.dismiss();
+                        Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        finish();
+                        openDialog_s.dismiss();
+                    }
 
 
-                }else {
-                    dia_dismiss=0;
+                } else {
+                    dia_dismiss = 0;
                 }
 
             }
@@ -4547,12 +4183,12 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
             @Override
             public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error"+error);
+                System.out.println("check error" + error);
             }
 
             @Override
             public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2"+error);
+                System.out.println("check error2" + error);
             }
         });
         game_exit_ins.loadAd();
@@ -4599,7 +4235,6 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         ins_game.loadAd();
 
     }
-
 
     private void dialog_dicription() {
 
@@ -4728,7 +4363,6 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
         openDialog_odd_man.show();
     }
-
 
     public void nextgamesdialog() {
         final Dialog openDialog = new Dialog(Opposite_word.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -5155,7 +4789,6 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         });
     }
 
-
     public void showpopup() {
 
         LayoutInflater layoutInflater
@@ -5207,7 +4840,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         focus.stop();
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
         String date = sps.getString(Opposite_word.this, "date");
-        System.out.println("######################Timer ttstop"+ttstop);
+        System.out.println("######################Timer ttstop" + ttstop);
         int pos;
         if (date.equals("0")) {
             pos = 1;
@@ -5323,7 +4956,8 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 152) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 sps.putInt(Opposite_word.this, "permission", 1);
@@ -5342,16 +4976,13 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                     boolean showRationale = shouldShowRequestPermissionRationale(permissions[0]);
                     if (!showRationale) {
                         sps.putInt(Opposite_word.this, "permission", 2);
-                    } else if (android.Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
                         sps.putInt(Opposite_word.this, "permission", 0);
                     }
                 }
             }
         }
     }
-
-
-
 
     public void ins_app(final Context context, View view1, int vall) {
         TextView titt = (TextView) view1.findViewById(R.id.txtlist);
@@ -5604,27 +5235,25 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         return app_installed;
     }
 
-
     //*** In ad area **
     @Override
     public void onDestroy() {
         super.onDestroy();
-       // uiHelper.onDestroy();
+        // uiHelper.onDestroy();
         if (openDialog_p != null && openDialog_p.isShowing()) {
             openDialog_p.dismiss();
         }
     }
 
-    public void showcase_dismiss(){
+    public void showcase_dismiss() {
         Handler handler30 = new Handler();
         handler30.postDelayed(new Runnable() {
             @Override
             public void run() {
 
-                if (sps.getString(Opposite_word.this,"showcase_dismiss_opp").equals(""))
-                {
+                if (sps.getString(Opposite_word.this, "showcase_dismiss_opp").equals("")) {
                     showcase_dismiss();
-                }else {
+                } else {
                     sps.putString(Opposite_word.this, "odd_time_start", "yes");
                     sps.putString(Opposite_word.this, "opp_intro", "yes");
                     focus.setBase(SystemClock.elapsedRealtime());
@@ -5635,6 +5264,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             }
         }, 800);
     }
+
     public void price_update() {
         ////////////////Prize//////////////////
         //Time Setting For Clue Game
@@ -5651,7 +5281,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         String date = sps.getString(Opposite_word.this, "date");
         if (date.equals("0")) {
             if (timeElapsed <= 91300) {
-                System.out.println("###################random"+random);
+                System.out.println("###################random" + random);
                 if (random == 0) {
                     prize_data_update(Opposite_word.this, 75);
                 } else {
@@ -5685,6 +5315,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
         }
         ////////////////Prize//////////////////
     }
+
     public void downloaddata_regular() {
         NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
         native_banner_ad_container.setVisibility(View.INVISIBLE);
@@ -5730,7 +5361,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                                         } else {
                                             finish();
                                         }
-                                    }else {
+                                    } else {
                                         if (date.equals("0")) {
                                             backexitnet();
                                         } else {
@@ -5762,7 +5393,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                     } else {
                         finish();
                     }
-                }else {
+                } else {
                     finish();
                     Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
                     startActivity(i);
@@ -5777,20 +5408,18 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
     private void download_datas() {
         Cursor cz = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "'order by questionid desc limit 1");
-        String questionid_d="";
+        String questionid_d = "";
         cz.moveToFirst();
-        if (cz.getCount()!=0){
+        if (cz.getCount() != 0) {
             questionid_d = String.valueOf(cz.getInt(cz.getColumnIndexOrThrow("questionid")));
         }
         System.out.println("----------------------Download_server");
-        Download_data_server download_data_server = new Download_data_server(Opposite_word.this,questionid_d,gameid);
+        Download_data_server download_data_server = new Download_data_server(Opposite_word.this, questionid_d, gameid);
         download_data_server.execute();
     }
 
-
-
-    public void rewarded_ad(){
-        rewardedAd = MaxRewardedAd.getInstance( getResources().getString(R.string.Reward_Ins), this );
+    public void rewarded_ad() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
         rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
             public void onRewardedVideoStarted(MaxAd ad) {
@@ -5809,7 +5438,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
 
             @Override
             public void onAdLoaded(MaxAd ad) {
-                fb_reward=1;
+                fb_reward = 1;
             }
 
             @Override
@@ -5820,7 +5449,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
             @Override
             public void onAdHidden(MaxAd ad) {
                 rewarded_ad();
-                if (reward_status==1){
+                if (reward_status == 1) {
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
@@ -5841,7 +5470,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
                             }
                         }
                     }, 500);
-                }else {
+                } else {
                     Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                 }
 
@@ -5869,143 +5498,7 @@ public class Opposite_word extends BaseGameActivity implements GoogleApiClient.C
     }
 
 
-   /* public void reward(final Context context) {
-        rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-       *//* rewardedVideoAd.setAdListener(new RewardedVideoAdListener() {
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status=1;
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-
-            @Override
-            public void onError(Ad ad, AdError adError) {
-                //Toast.makeText(context, ""+adError.getErrorCode(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-
-            }
-        });
-        rewardedVideoAd.loadAd();*//*
-        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
-            @Override
-            public void onError(Ad ad, AdError error) {
-                // Rewarded video ad failed to load
-
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-
-
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Rewarded video ad clicked
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Rewarded Video ad impression - the event will fire when the
-                // video starts playing
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-
-                // Rewarded Video View Complete - the video has been played to the end.
-                // You can use this event to initialize your reward
-
-
-                // Call method to give reward
-                // giveReward();
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-        };
-        rewardedVideoAd.loadAd(
-                rewardedVideoAd.buildLoadAdConfig()
-                        .withAdListener(rewardedVideoAdListener)
-                        .build());
-    }*/
-
+    private enum PendingAction {
+        NONE, POST_PHOTO, POST_STATUS_UPDATE
+    }
 }

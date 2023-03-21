@@ -1,5 +1,10 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Senthamil_Thedal_Native_Banner;
+
+import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -23,39 +28,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.StatFs;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
-
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxAdView;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
-import com.facebook.ads.NativeAdLayout;
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.FileProvider;
-
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -84,33 +62,22 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/*import com.facebook.AppEventsLogger;
-import com.facebook.FacebookException;
-import com.facebook.FacebookOperationCanceledException;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.FileProvider;
 
-import com.facebook.widget.FacebookDialog;
-import com.facebook.widget.WebDialog;
-import com.facebook.widget.WebDialog.OnCompleteListener;*/
-
-
-
-
-
-
-
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.snapshot.Snapshot;
-import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
-import com.google.android.gms.games.snapshot.Snapshots;
-import com.google.example.games.basegameutils.BaseGameActivity;
-import com.google.example.games.basegameutils.BaseGameUtils;
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.facebook.ads.NativeAdLayout;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.apache.http.HttpEntity;
@@ -125,10 +92,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -141,6 +106,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -150,94 +116,55 @@ import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
 import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
-import nithra.tamil.word.game.solliadi.adutils.GameExitUtils;
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Senthamil_Thedal_Native_Banner;
-
-public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-
-    int fb_reward = 0;
-    int val=0;
-   // RewardedVideoAd rewardedVideoAd;
-   private MaxRewardedAd rewardedAd;
-    int reward_status = 0;
-    //*********************reward videos process 1***********************
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
-
-
-    private boolean mGameOver;
-    private boolean mGamePaused;
-
-    private long mTimeRemaining;
-    //reward videos process 1***********************
+public class Solukul_Sol extends AppCompatActivity {
 
     public static final String TAG = "SavedGames";
+    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
+    //*********************reward videos process 1***********************
 
     // The AppState slot we are editing.  For simplicity this sample only manipulates a single
     // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
     // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
     private static final int APP_STATE_KEY = 1;
-
     // Request code used to invoke sign-in UI.
     private static final int RC_SIGN_IN = 9001;
-
     // Request code used to invoke Snapshot selection UI.
     private static final int RC_SELECT_SNAPSHOT = 9002;
-
-    /// Client used to interact with Google APIs.
-    private GoogleApiClient mGoogleApiClient;
-
-
-    // True when the application is attempting to resolve a sign-in error that has a possible
-    // resolution,
-    private boolean mIsResolving = false;
-
-    // True immediately after the user clicks the sign-in button/
-    private boolean mSignInClicked = false;
-
-    // True if we want to automatically attempt to sign in the user at application start.
-    private boolean mAutoStartSignIn = true;
+    /////////native advance////////////
+    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
+    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
+    //reward videos process 1***********************
+    /////////native advance////////////
+    /////////Native_Top_Advanced////////////
+    private static final String ADMOB_AD_UNIT_ID_Top = "ca-app-pub-4267540560263635/2303543680";
+    /////////Native_Top_Advanced////////////
+    /////////Native_BackPress_Advanced////////////
+    private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
+    public static FrameLayout add, add2, add3;
+    public static LinearLayout add_e;
+    public static LinearLayout add_sc;
+    static int mCoinCount = 20;
+    static int rvo = 0;
+    static SharedPreference spd = new SharedPreference();
 
 
     // Facebook variable starts
-
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
-
-    private PendingAction pendingAction = PendingAction.NONE;
-
-    @Override
-    public void onSignInFailed() {
-
-    }
-
-    @Override
-    public void onSignInSucceeded() {
-
-    }
-
-    private enum PendingAction {
-        NONE, POST_PHOTO, POST_STATUS_UPDATE
-    }
-
+    private final PendingAction pendingAction = PendingAction.NONE;
+    int fb_reward = 0;
+    int val = 0;
+    int reward_status = 0;
     /* private UiLifecycleHelper uiHelper;
 
      private Session.StatusCallback callback = new Session.StatusCallback() {
@@ -262,10 +189,8 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
          }
      };*/
     String btn_str = "";
-    // facebook variable ends
-
-
     TextView vl1, vl2, vl3, vl4, vl5, vl6, vl7, vl8, s_verify;
+    // facebook variable ends
     TextView sb1, sb2, sb3, sb4, sb5, sb6, sb7, sb8;
     Typeface typ;
     Button s_clear;
@@ -282,13 +207,11 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
     String answertype;
     int gameid = 3;
     SharedPreference sps = new SharedPreference();
+    SoundPool click, win, coin, worng, cr_ans;
     //MediaPlayer c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20;
     //MediaPlayer r1,play1,play2,play3,cr_ans=new MediaPlayer();
-
-    SoundPool click, win, coin, worng, cr_ans;
     int soundId1, soundId2, soundId3, soundId4, soundId5;
     int sv = 0;
-
     TextView s_coin;
     int e2;
     RadioButton fn1, fn2, fn3;
@@ -299,23 +222,16 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
     TextView tx1, tx2;
     int skxw;
     int case2 = 0, tot2 = 30, tt_case2, tt_tot2;
-
     PopupWindow popupWindow;
     int k = 1;
-
     JSONArray warray, warray2, carray, sarray, sarray2;
     String str_vpcont;
     String email = "";
-
     RelativeLayout w_head, helpshare_layout;
     TextView shareq, h_gplues, h_watts_app, h_facebook;
-
     Timer t1, th;
     int t, t2;
     TextView earncoin;
-
-    private MaxInterstitialAd ins_game,game_exit_ins;
-
     TextView feedback;
     EditText usertxt;
     RelativeLayout s_head;
@@ -328,7 +244,6 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
     String downok = "", downnodata = "";
     DownloadFileAsync downloadFileAsync;
     ProgressDialog mProgressDialog;
-    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
     TextView ttscores;
     long ttstop;
     int rdvalu;
@@ -336,41 +251,17 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
     TextView ex_bones, bs_points;
     int ry;
     String retype = "s";
-    static int mCoinCount = 20;
-    static int rvo = 0;
     Dialog openDialog_p;
     int s = 0;
-
-
-    /////////native advance////////////
-    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
-    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
-
-    /////////native advance////////////
-    /////////Native_Top_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_Top = "ca-app-pub-4267540560263635/2303543680";
-    /////////Native_Top_Advanced////////////
-    /////////Native_BackPress_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
-    /////////Native_BackPress_Advanced////////////
-
     Dialog openDialog_s;
     int share_name = 0;
     int setting_access = 0;
-
-    public static FrameLayout add, add2, add3;
-    static SharedPreference spd = new SharedPreference();
     Context context = this;
     RelativeLayout adsicon, adsicon2;
-    CircleImageView ads_logo, ads_logo2;
     int loadaddcontent = 0;
-
-
-    public static LinearLayout add_e;
-    public static LinearLayout add_sc;
-
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
+    /////////Native_BackPress_Advanced////////////
     Newgame_DataBaseHelper3 newhelper3;
     Newgame_DataBaseHelper4 newhelper4;
     int extra_coin_s = 0;
@@ -387,6 +278,35 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
     int randomnod;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
+    // RewardedVideoAd rewardedVideoAd;
+    private MaxRewardedAd rewardedAd;
+    private boolean mGameOver;
+    private boolean mGamePaused;
+    private long mTimeRemaining;
+    /// Client used to interact with Google APIs.
+
+    private boolean mIsResolving = false;
+    // True immediately after the user clicks the sign-in button/
+    private boolean mSignInClicked = false;
+    // True if we want to automatically attempt to sign in the user at application start.
+    private boolean mAutoStartSignIn = true;
+    private MaxInterstitialAd ins_game, game_exit_ins;
+
+    public static boolean exists(String URLName) {
+        try {
+            HttpURLConnection.setFollowRedirects(false);
+            // note : you may also need
+            //        HttpURLConnection.setInstanceFollowRedirects(false)
+            HttpURLConnection con =
+                    (HttpURLConnection) new URL(URLName).openConnection();
+            con.setRequestMethod("HEAD");
+            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -419,64 +339,6 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
         newhelper3 = new Newgame_DataBaseHelper3(context);
         myDbHelper = new DataBaseHelper(context);
         newhelper4 = new Newgame_DataBaseHelper4(context);
-/*
-
-        exdb=myDbHelper.getReadableDatabase();
-        dbs=newhelper.getReadableDatabase();
-        dbn=newhelper2.getReadableDatabase();
-        dbn2=newhelper3.getReadableDatabase();
-*/
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
-                .addScope(Drive.SCOPE_APPFOLDER) // SavedGames
-                .build();
-
-
-        /*String gid = "3";
-        String qid = "";
-        for (int i = 0; i<=198; i++){
-            if (qid.equals("")){
-                qid = "" +i;
-            } else {
-                qid = qid + "," + i;
-            }
-        }
-        myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='3'");
-*/
-
-        //loadRewardedVideoAd();
-
-        if (sps.getString(Solukul_Sol.this, "signinagain").equals("yes")) {
-            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                try {
-                    if (!getApiClient().isConnected()) {
-                        if (!isSignedIn()) {
-                            beginUserInitiatedSignIn();
-                            mGoogleApiClient.connect();
-
-                        }
-                    }
-
-                } catch (Exception ex) {
-                    //ex.printStackTrace();
-                }
-            }
-
-        }
-
-
-        if (sps.getInt(Solukul_Sol.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
-        } else {
-            //fb_addload_score_screen(context);
-
-            /*AdRequest notadRequest = new AdRequest.Builder().build();
-            interstitialAd.loadAd(notadRequest);*/
-        }
-
 
         email = sps.getString(Solukul_Sol.this, "email");
 
@@ -504,7 +366,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             } else {
                 adds.setVisibility(View.GONE);
             }
-        }else{
+        } else {
             adds.setVisibility(View.GONE);
         }
 
@@ -691,7 +553,6 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
         openDialog_s = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen);
-        ads_logo = (CircleImageView) openDialog_s.findViewById(R.id.ads_logo);
         adsicon = (RelativeLayout) openDialog_s.findViewById(R.id.adsicon);
         progress = (SeekBar) findViewById(R.id.progress);
         ex_bones = (TextView) findViewById(R.id.ex_bones);
@@ -752,10 +613,10 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             sequence.addSequenceItem(feedback, "கருத்துக்கள்  பொத்தானை அழுத்தி மேலும் உங்களுக்கு தெரிந்த விடைகளை எங்களுக்கு அனுப்பவும் .", "அடுத்து");
 
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Solukul_Sol.this)
-                    .setTarget(helpshare_layout)
-                    .setDismissText("சரி")
-                    .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                    .build())
+                            .setTarget(helpshare_layout)
+                            .setDismissText("சரி")
+                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
+                            .build())
                     .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                         @Override
                         public void onDismiss(MaterialShowcaseView itemView, int position) {
@@ -972,7 +833,6 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
     public void find() {
         adsicon2 = (RelativeLayout) findViewById(R.id.adsicon2);
-        ads_logo2 = (CircleImageView) findViewById(R.id.ads_logo2);
 
         sb1 = (TextView) findViewById(R.id.s_b1);
         sb2 = (TextView) findViewById(R.id.s_b2);
@@ -1226,13 +1086,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
         final Animation pendulam;
         pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
         adsicon2.startAnimation(pendulam);
-        ads_logo2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                adsicon2.setVisibility(View.INVISIBLE);
 
-            }
-        });
         im1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1323,7 +1177,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                                if (isChecked == true) {
+                                if (isChecked) {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                                 } else {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -1515,7 +1369,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                                if (isChecked == true) {
+                                if (isChecked) {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                                 } else {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -1707,7 +1561,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                                if (isChecked == true) {
+                                if (isChecked) {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                                 } else {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -1896,7 +1750,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                                if (isChecked == true) {
+                                if (isChecked) {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                                 } else {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -2084,7 +1938,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                                if (isChecked == true) {
+                                if (isChecked) {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                                 } else {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -2270,7 +2124,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                                if (isChecked == true) {
+                                if (isChecked) {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                                 } else {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -2452,7 +2306,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                                if (isChecked == true) {
+                                if (isChecked) {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                                 } else {
                                     sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -4581,34 +4435,47 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
             sps.putInt(Solukul_Sol.this, "addlodedd", 0);
 
-                s = 1;
-                openDialog_p = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                openDialog_p.setContentView(R.layout.back_pess);
-                TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-                TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+            s = 1;
+            openDialog_p = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+            openDialog_p.setContentView(R.layout.back_pess);
+            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
+            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
 
-                yes.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int sco = Integer.parseInt(s_score.getText().toString());
-                        myDbHelper.executeSql("UPDATE score SET coins='" + sco + "'");
+            yes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int sco = Integer.parseInt(s_score.getText().toString());
+                    myDbHelper.executeSql("UPDATE score SET coins='" + sco + "'");
 
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        String date = sps.getString(Solukul_Sol.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
+                    focus.stop();
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    String date = sps.getString(Solukul_Sol.this, "date");
+                    int pos;
+                    if (date.equals("0")) {
+                        pos = 1;
+                    } else {
+                        pos = 2;
+                    }
+
+
+                    myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+
+                    // String date = sps.getString(Solukul_Sol.this, "date");
+                    if (date.equals("0")) {
+                        if (main_act.equals("")) {
+                            finish();
+                            Intent i = new Intent(Solukul_Sol.this, New_Main_Activity.class);
+                            startActivity(i);
                         } else {
-                            pos = 2;
+                            finish();
                         }
-
-
-                        myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-
-                        // String date = sps.getString(Solukul_Sol.this, "date");
-                        if (date.equals("0")) {
+                    } else {
+                        if (sps.getString(Solukul_Sol.this, "Exp_list").equals("on")) {
+                            finish();
+                            Intent i = new Intent(Solukul_Sol.this, Expandable_List_View.class);
+                            startActivity(i);
+                        } else {
                             if (main_act.equals("")) {
                                 finish();
                                 Intent i = new Intent(Solukul_Sol.this, New_Main_Activity.class);
@@ -4616,55 +4483,41 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                             } else {
                                 finish();
                             }
-                        } else {
-                            if (sps.getString(Solukul_Sol.this, "Exp_list").equals("on")) {
-                                finish();
-                                Intent i = new Intent(Solukul_Sol.this, Expandable_List_View.class);
-                                startActivity(i);
-                            } else {
-                                if (main_act.equals("")) {
-                                    finish();
-                                    Intent i = new Intent(Solukul_Sol.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    finish();
-                                }
-                            }
-
                         }
-
-
-                        //ad
-                        if (sps.getInt(context, "purchase_ads") == 0) {
-                            if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                                sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                                if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                    if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                        openDialog_p.dismiss();
-                                        game_exit_ins.showAd();
-                                    }
-                                }
-                            } else {
-                                openDialog_p.dismiss();
-                                sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
-                            }
-                        }else{
-                            openDialog_p.dismiss();
-                        }
-                        //ad
-
 
                     }
-                });
-                no.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
 
+
+                    //ad
+                    if (sps.getInt(context, "purchase_ads") == 0) {
+                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
+                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
+                            if (Utils.isNetworkAvailable(getApplicationContext())) {
+                                if (game_exit_ins != null && game_exit_ins.isReady()) {
+                                    openDialog_p.dismiss();
+                                    game_exit_ins.showAd();
+                                }
+                            }
+                        } else {
+                            openDialog_p.dismiss();
+                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
+                        }
+                    } else {
                         openDialog_p.dismiss();
                     }
-                });
-                openDialog_p.show();
+                    //ad
 
+
+                }
+            });
+            no.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    openDialog_p.dismiss();
+                }
+            });
+            openDialog_p.show();
 
 
         }
@@ -4795,13 +4648,6 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             rewardvideo.setVisibility(View.INVISIBLE);
         }
         next_continue.setVisibility(View.INVISIBLE);
-
-        ads_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
 
 
         RelativeLayout adsicon = (RelativeLayout) openDialog_s.findViewById(R.id.adsicon);
@@ -5201,8 +5047,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                     next();
                                     //industrialload_game();
                                     return;
-                                }
-                                else{
+                                } else {
                                     ins_game.showAd();
                                 }
 
@@ -5236,212 +5081,6 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                             sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
                         }
                     }
-
-                    if (Utils.isNetworkAvailable(getApplicationContext())) {
-                        if (getApiClient().isConnected()) {
-                            if (isSignedIn()) {
-                                int k1 = 0;
-                                Cursor sc2 = myDbHelper.getQry("select * from score ");
-                                sc2.moveToFirst();
-                                if (sc2.getCount() != 0) {
-                                    k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
-                                }
-                                Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
-                            }
-                        }
-                    }
-                    if (sps.getString(Solukul_Sol.this, "1st_achiv").equals("")) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___1));
-                                    sps.putString(Solukul_Sol.this, "1st_achiv", "yes");
-                                } else {
-                                    sps.putString(Solukul_Sol.this, "1st_achiv", "yes");
-                                }
-                            } else {
-                                sps.putString(Solukul_Sol.this, "1st_achiv", "yes");
-                            }
-                        } else {
-                            sps.putString(Solukul_Sol.this, "1st_achiv", "yes");
-                        }
-                    }
-                    if (sps.getString(getApplicationContext(), "sos_a1").equals("")) {
-                        if (sps.getInt(getApplicationContext(), "sos") >= 5) {
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (getApiClient().isConnected()) {
-                                    if (isSignedIn()) {
-
-                                        Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___5));
-                                        sps.putString(getApplicationContext(), "sos_a1", "yes");
-                                    } else {
-                                        sps.putString(getApplicationContext(), "sos_a1", "yes");
-                                    }
-                                } else {
-                                    sps.putString(getApplicationContext(), "sos_a1", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "sos_a1", "yes");
-                            }
-                            sps.putInt(getApplicationContext(), "sos", (sps.getInt(getApplicationContext(), "sos") + 1));
-                        } else {
-
-                            sps.putInt(getApplicationContext(), "sos", (sps.getInt(getApplicationContext(), "sos") + 1));
-                        }
-                    }
-                    if (sps.getString(getApplicationContext(), "ach6").equals("")) {
-                        if (sps.getInt(getApplicationContext(), "ach6_a1") >= 5) {
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (getApiClient().isConnected()) {
-                                    if (isSignedIn()) {
-
-                                        Games.Achievements.unlock(getApiClient(), getString(R.string.achievement__6));
-                                        sps.putString(getApplicationContext(), "ach6", "yes");
-                                    } else {
-                                        sps.putString(getApplicationContext(), "ach6", "yes");
-                                    }
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach6", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach6", "yes");
-                            }
-                            sps.putInt(getApplicationContext(), "ach6_a1", (sps.getInt(getApplicationContext(), "ach6_a1") + 1));
-                        } else {
-
-                            sps.putInt(getApplicationContext(), "ach6_a1", (sps.getInt(getApplicationContext(), "ach6_a1") + 1));
-                        }
-                    }
-                    if (sps.getString(getApplicationContext(), "ach10").equals("")) {
-                        if (sps.getInt(getApplicationContext(), "ach10_a1") >= 25) {
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (getApiClient().isConnected()) {
-                                    if (isSignedIn()) {
-
-                                        Games.Achievements.unlock(getApiClient(), getString(R.string.achievement__10));
-                                        sps.putString(getApplicationContext(), "ach10", "yes");
-                                    } else {
-                                        sps.putString(getApplicationContext(), "ach10", "yes");
-                                    }
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach10", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach10", "yes");
-                            }
-                            sps.putInt(getApplicationContext(), "ach10_a1", (sps.getInt(getApplicationContext(), "ach10_a1") + 1));
-                        } else {
-
-                            sps.putInt(getApplicationContext(), "ach10_a1", (sps.getInt(getApplicationContext(), "ach10_a1") + 1));
-                        }
-                    }
-                    if (sps.getString(getApplicationContext(), "ach13").equals("")) {
-                        if (sps.getInt(getApplicationContext(), "ach13_a1") >= 50) {
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (getApiClient().isConnected()) {
-                                    if (isSignedIn()) {
-
-                                        Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___13));
-                                        sps.putString(getApplicationContext(), "ach13", "yes");
-                                    } else {
-                                        sps.putString(getApplicationContext(), "ach13", "yes");
-                                    }
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach13", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach13", "yes");
-                            }
-                            sps.putInt(getApplicationContext(), "ach13_a1", (sps.getInt(getApplicationContext(), "ach13_a1") + 1));
-                        } else {
-
-                            sps.putInt(getApplicationContext(), "ach13_a1", (sps.getInt(getApplicationContext(), "ach13_a1") + 1));
-                        }
-
-
-                    }
-
-                    if (sps.getString(getApplicationContext(), "ach17").equals("")) {
-                        if (sps.getInt(getApplicationContext(), "ach17_a1") >= 50) {
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (getApiClient().isConnected()) {
-                                    if (isSignedIn()) {
-
-                                        Games.Achievements.unlock(getApiClient(), getString(R.string.achievement__17));
-                                        sps.putString(getApplicationContext(), "ach17", "yes");
-                                    } else {
-                                        sps.putString(getApplicationContext(), "ach17", "yes");
-                                    }
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach17", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach17", "yes");
-                            }
-                            sps.putInt(getApplicationContext(), "ach17_a1", (sps.getInt(getApplicationContext(), "ach17_a1") + 1));
-                        } else {
-
-                            sps.putInt(getApplicationContext(), "ach17_a1", (sps.getInt(getApplicationContext(), "ach17_a1") + 1));
-                        }
-
-
-                    }
-
-                    if (sps.getString(getApplicationContext(), "ach18").equals("")) {
-                        if (sps.getInt(getApplicationContext(), "ach18_a1") >= 100) {
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (getApiClient().isConnected()) {
-                                    if (isSignedIn()) {
-
-                                        Games.Achievements.unlock(getApiClient(), getString(R.string.achievement____18));
-                                        sps.putString(getApplicationContext(), "ach18", "yes");
-                                    } else {
-                                        sps.putString(getApplicationContext(), "ach18", "yes");
-                                    }
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach18", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach18", "yes");
-                            }
-                            sps.putInt(getApplicationContext(), "ach18_a1", (sps.getInt(getApplicationContext(), "ach18_a1") + 1));
-                        } else {
-
-                            sps.putInt(getApplicationContext(), "ach18_a1", (sps.getInt(getApplicationContext(), "ach18_a1") + 1));
-                        }
-
-
-                    }
-
-                    if (sps.getString(getApplicationContext(), "ach19").equals("")) {
-                        if (sps.getInt(getApplicationContext(), "ach19_a1") >= 250) {
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (getApiClient().isConnected()) {
-                                    if (isSignedIn()) {
-
-                                        Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___19));
-                                        sps.putString(getApplicationContext(), "ach19", "yes");
-                                    } else {
-                                        sps.putString(getApplicationContext(), "ach19", "yes");
-                                    }
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach19", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach19", "yes");
-                            }
-                            sps.putInt(getApplicationContext(), "ach19_a1", (sps.getInt(getApplicationContext(), "ach19_a1") + 1));
-                        } else {
-
-                            sps.putInt(getApplicationContext(), "ach19_a1", (sps.getInt(getApplicationContext(), "ach19_a1") + 1));
-                        }
-
-
-                    }
-
-                   /* dia_dismiss=1;
-                    openDialog_s.dismiss();*/
                 }
             });
         } else {
@@ -5505,8 +5144,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                     openDialog_s.dismiss();
                                     next();
                                     return;
-                                }
-                                else{
+                                } else {
                                     ins_game.showAd();
                                 }
 
@@ -5544,182 +5182,6 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                         }
                     }
 
-                    if (sps.getString(Solukul_Sol.this, "1st_achiv").equals("")) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___1));
-                                    sps.putString(Solukul_Sol.this, "1st_achiv", "yes");
-                                } else {
-                                    sps.putString(Solukul_Sol.this, "1st_achiv", "yes");
-                                }
-                            } else {
-                                sps.putString(Solukul_Sol.this, "1st_achiv", "yes");
-                            }
-                        } else {
-                            sps.putString(Solukul_Sol.this, "1st_achiv", "yes");
-                        }
-
-                    }
-
-                    if (sps.getString(getApplicationContext(), "sos_a1").equals("")) {
-                        if (sps.getInt(getApplicationContext(), "sos") >= 5) {
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (getApiClient().isConnected()) {
-                                    if (isSignedIn()) {
-
-                                        Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___5));
-                                        sps.putString(getApplicationContext(), "sos_a1", "yes");
-                                    } else {
-                                        sps.putString(getApplicationContext(), "sos_a1", "yes");
-                                    }
-                                } else {
-                                    sps.putString(getApplicationContext(), "sos_a1", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "sos_a1", "yes");
-                            }
-                            sps.putInt(getApplicationContext(), "sos", (sps.getInt(getApplicationContext(), "sos") + 1));
-                        } else {
-
-                            sps.putInt(getApplicationContext(), "sos", (sps.getInt(getApplicationContext(), "sos") + 1));
-                        }
-
-
-                    }
-
-                    if (sps.getString(getApplicationContext(), "ach10").equals("")) {
-                        if (sps.getInt(getApplicationContext(), "ach10_a1") >= 25) {
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (getApiClient().isConnected()) {
-                                    if (isSignedIn()) {
-
-                                        Games.Achievements.unlock(getApiClient(), getString(R.string.achievement__10));
-                                        sps.putString(getApplicationContext(), "ach10", "yes");
-                                    } else {
-                                        sps.putString(getApplicationContext(), "ach10", "yes");
-                                    }
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach10", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach10", "yes");
-                            }
-                            sps.putInt(getApplicationContext(), "ach10_a1", (sps.getInt(getApplicationContext(), "ach10_a1") + 1));
-                        } else {
-
-                            sps.putInt(getApplicationContext(), "ach10_a1", (sps.getInt(getApplicationContext(), "ach10_a1") + 1));
-                        }
-
-
-                    }
-
-                    if (sps.getString(getApplicationContext(), "ach13").equals("")) {
-                        if (sps.getInt(getApplicationContext(), "ach13_a1") >= 50) {
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (getApiClient().isConnected()) {
-                                    if (isSignedIn()) {
-
-                                        Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___13));
-                                        sps.putString(getApplicationContext(), "ach13", "yes");
-                                    } else {
-                                        sps.putString(getApplicationContext(), "ach13", "yes");
-                                    }
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach13", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach13", "yes");
-                            }
-                            sps.putInt(getApplicationContext(), "ach13_a1", (sps.getInt(getApplicationContext(), "ach13_a1") + 1));
-                        } else {
-
-                            sps.putInt(getApplicationContext(), "ach13_a1", (sps.getInt(getApplicationContext(), "ach13_a1") + 1));
-                        }
-
-
-                    }
-
-                    if (sps.getString(getApplicationContext(), "ach17").equals("")) {
-                        if (sps.getInt(getApplicationContext(), "ach17_a1") >= 50) {
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (getApiClient().isConnected()) {
-                                    if (isSignedIn()) {
-
-                                        Games.Achievements.unlock(getApiClient(), getString(R.string.achievement__17));
-                                        sps.putString(getApplicationContext(), "ach17", "yes");
-                                    } else {
-                                        sps.putString(getApplicationContext(), "ach17", "yes");
-                                    }
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach17", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach17", "yes");
-                            }
-                            sps.putInt(getApplicationContext(), "ach17_a1", (sps.getInt(getApplicationContext(), "ach17_a1") + 1));
-                        } else {
-
-                            sps.putInt(getApplicationContext(), "ach17_a1", (sps.getInt(getApplicationContext(), "ach17_a1") + 1));
-                        }
-
-
-                    }
-
-                    if (sps.getString(getApplicationContext(), "ach18").equals("")) {
-                        if (sps.getInt(getApplicationContext(), "ach18_a1") >= 100) {
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (getApiClient().isConnected()) {
-                                    if (isSignedIn()) {
-
-                                        Games.Achievements.unlock(getApiClient(), getString(R.string.achievement____18));
-                                        sps.putString(getApplicationContext(), "ach18", "yes");
-                                    } else {
-                                        sps.putString(getApplicationContext(), "ach18", "yes");
-                                    }
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach18", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach18", "yes");
-                            }
-                            sps.putInt(getApplicationContext(), "ach18_a1", (sps.getInt(getApplicationContext(), "ach18_a1") + 1));
-                        } else {
-
-                            sps.putInt(getApplicationContext(), "ach18_a1", (sps.getInt(getApplicationContext(), "ach18_a1") + 1));
-                        }
-
-
-                    }
-
-                    if (sps.getString(getApplicationContext(), "ach19").equals("")) {
-                        if (sps.getInt(getApplicationContext(), "ach19_a1") >= 250) {
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (getApiClient().isConnected()) {
-                                    if (isSignedIn()) {
-
-                                        Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___19));
-                                        sps.putString(getApplicationContext(), "ach19", "yes");
-                                    } else {
-                                        sps.putString(getApplicationContext(), "ach19", "yes");
-                                    }
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach19", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach19", "yes");
-                            }
-                            sps.putInt(getApplicationContext(), "ach19_a1", (sps.getInt(getApplicationContext(), "ach19_a1") + 1));
-                        } else {
-
-                            sps.putInt(getApplicationContext(), "ach19_a1", (sps.getInt(getApplicationContext(), "ach19_a1") + 1));
-                        }
-
-
-                    }
-                /*    dia_dismiss=1;
-                    openDialog_s.dismiss();*/
                 }
             });
         }
@@ -5943,26 +5405,20 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
         if (setting_access == 1) {
             setting_access = 0;
-           // if ((ContextCompat.checkSelfPermission(Solukul_Sol.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                downloaddata_daily();
+            // if ((ContextCompat.checkSelfPermission(Solukul_Sol.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+            downloaddata_daily();
             /*} else {
                 settingpermission();
             }*/
         } else if (setting_access == 2) {
             setting_access = 0;
-           // if ((ContextCompat.checkSelfPermission(Solukul_Sol.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                datadownload_regular();
+            // if ((ContextCompat.checkSelfPermission(Solukul_Sol.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+            datadownload_regular();
             /*} else {
                 settingpermission();
             }*/
         }
 
-        if (sps.getString(getApplicationContext(), "ach11").equals("")) {
-            timee();
-        }
-        if (sps.getString(getApplicationContext(), "ach12").equals("")) {
-            timeehr();
-        }
 
         if (sps.getInt(Solukul_Sol.this, "goto_sett") == 1) {
             sps.putInt(Solukul_Sol.this, "goto_sett", 0);
@@ -6495,75 +5951,6 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
         }
     }
 
-    public void timee() {
-        t1 = new Timer();
-        t1.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-
-                t = sps.getInt(getApplicationContext(), "randomtime");
-                if (t > 0) {
-                    t--;
-                    System.out.println("times---" + t);
-                    sps.putInt(getApplicationContext(), "randomtime", t);
-                    //  sharedPrefAddInt("randomtime", t);
-//                    Toast.makeText(New_Main_Activity.this, ""+t, Toast.LENGTH_SHORT).show();
-                    System.out.println("time " + t);
-                } else {
-
-
-                    if (Utils.isNetworkAvailable(getApplicationContext())) {
-                        if (getApiClient().isConnected()) {
-                            sps.putString(getApplicationContext(), "ach11", "yes");
-
-                            Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___11));
-
-                        } else {
-                            sps.putString(getApplicationContext(), "ach11", "yes");
-                        }
-                    }
-                    t1.cancel();
-
-                }
-
-            }
-        }, 1000, 1000);
-
-    }
-
-    public void timeehr() {
-        th = new Timer();
-        th.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-
-                t2 = sps.getInt(getApplicationContext(), "hr");
-                if (t2 > 0) {
-                    t2--;
-                    System.out.println("times---" + t2);
-                    sps.putInt(getApplicationContext(), "hr", t2);
-                    //  sharedPrefAddInt("randomtime", t);
-//                    Toast.makeText(New_Main_Activity.this, ""+t, Toast.LENGTH_SHORT).show();
-                    System.out.println("time " + t2);
-                } else {
-
-
-                    if (Utils.isNetworkAvailable(getApplicationContext())) {
-                        if (getApiClient().isConnected()) {
-                            sps.putString(getApplicationContext(), "ach12", "yes");
-
-                            Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___12));
-                        } else {
-                            sps.putString(getApplicationContext(), "ach12", "yes");
-                        }
-                    }
-                    th.cancel();
-
-                }
-
-            }
-        }, 1000, 1000);
-
-    }
-
 
     @Override
     public void onPause() {
@@ -6625,8 +6012,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
             //String email = sps.getString(Solukul_Sol.this, "email");
             email = Utils.android_id(context);
-            ;
-         /*   if (email.equals("")) {
+            /*   if (email.equals("")) {
 
                 AccountManager am = AccountManager.get(Solukul_Sol.this);
                 // Account[] accounts =
@@ -6717,7 +6103,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                     Log.e("log_tag", "Error in https connection" + e.toString());
                 }
                 try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
                     String line = "0";
@@ -6756,7 +6142,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                                     cv.put("levelid", json_data.getString("levelid"));
                                     cv.put("letters", json_data.getString("letters"));
 
-                                    String newName = json_data.getString("answer").toString().replaceAll(" ", "");
+                                    String newName = json_data.getString("answer").replaceAll(" ", "");
                                     cv.put("answer", newName);
 
                                     cv.put("hints", json_data.getString("hints"));
@@ -6804,7 +6190,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                 } else {
                     downok = "";
                     downnodata = "";
-                    if (exists("https://nithra.mobi/solliadi/" + email + "-filename.zip") == true) {
+                    if (exists("https://nithra.mobi/solliadi/" + email + "-filename.zip")) {
                         checkmemory();
                     } else {
                         Utils.mProgress.dismiss();
@@ -6837,22 +6223,6 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
             }
         }.execute();
-    }
-
-
-    public static boolean exists(String URLName) {
-        try {
-            HttpURLConnection.setFollowRedirects(false);
-            // note : you may also need
-            //        HttpURLConnection.setInstanceFollowRedirects(false)
-            HttpURLConnection con =
-                    (HttpURLConnection) new URL(URLName).openConnection();
-            con.setRequestMethod("HEAD");
-            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     public void checkmemory() {
@@ -6927,7 +6297,6 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
     }
 
-
     public void goappmanager() {
 
         AlertDialog.Builder builder1 = new AlertDialog.Builder(getBaseContext(), android.R.style.Theme_Dialog);
@@ -6958,7 +6327,6 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
     }
 
-
     public void startDownload() {
 
 
@@ -6972,167 +6340,16 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
     }
 
     protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case DIALOG_DOWNLOAD_PROGRESS:
-                mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setMessage("படங்கள் பதிவிறக்கம் செய்யப்படுகிறது காத்திருக்கவும்.... ");
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                mProgressDialog.setCancelable(false);
-                mProgressDialog.show();
-                // playy();
-                return mProgressDialog;
-
-            default:
-                return null;
+        if (id == DIALOG_DOWNLOAD_PROGRESS) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setMessage("படங்கள் பதிவிறக்கம் செய்யப்படுகிறது காத்திருக்கவும்.... ");
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+            // playy();
+            return mProgressDialog;
         }
-    }
-
-
-    class DownloadFileAsync extends AsyncTask<String, String, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            showDialog(DIALOG_DOWNLOAD_PROGRESS);
-        }
-
-        @Override
-        protected String doInBackground(String... aurl) {
-            InputStream input = null;
-            OutputStream output = null;
-            HttpURLConnection connection = null;
-            try {
-                URL url = new URL(aurl[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-
-                // expect HTTP 200 OK, so we don't mistakenly save error report
-                // instead of the file
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    return "Server returned HTTP " + connection.getResponseCode()
-                            + " " + connection.getResponseMessage();
-                }
-
-                // this will be useful to display download percentage
-                // might be -1: server did not report the length
-                final int fileLength = connection.getContentLength();
-
-                File SDCardRoot = getFilesDir();
-
-                File fol = new File(SDCardRoot + "/Nithra/solliadi/");
-                if (!fol.exists()) {
-                    fol.mkdirs();
-                }
-
-                File file = new File(SDCardRoot + "/Nithra/solliadi/", email + "-filename.zip");
-
-                // download the file
-                input = connection.getInputStream();
-                output = new FileOutputStream(file);
-
-                byte data[] = new byte[4096];
-                long total = 0;
-                int count;
-                while ((count = input.read(data)) != -1) {
-                    // allow canceling with back button
-                    if (isCancelled()) {
-                        input.close();
-                        return null;
-                    }
-                    total += count;
-                    publishProgress("" + (int) ((total * 100) / fileLength));
-                    // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
-                        output.write(data, 0, count);
-                }
-
-                unpackZip(email + "-filename.zip");
-
-
-            } catch (Exception e) {
-
-
-                return e.toString();
-            } finally {
-                try {
-                    if (output != null)
-                        output.close();
-                    if (input != null)
-                        input.close();
-                } catch (IOException ignored) {
-                }
-
-                if (connection != null)
-                    connection.disconnect();
-
-
-            }
-            return null;
-
-        }
-
-
-        @Override
-        protected void onPostExecute(String unused) {
-            mProgressDialog.dismiss();
-                if (unused != null && unused.equals("ERROR_DOW")) {
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Solukul_Sol.this);
-                    alertDialogBuilder.setCancelable(false);
-                    alertDialogBuilder.setTitle("Network connection not available, please check it!");
-                    alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.dismiss();
-                            downloadFileAsync.isCancelled();
-                            downloadFileAsync.cancel(true);
-
-
-                            if (exists("https://nithra.mobi/solliadi/" + email + "-filename.zip") == true) {
-                                System.out.print("========zip ok");
-                                checkmemory();
-                            }
-                        }
-                    });
-                    AlertDialog alertDialog = alertDialogBuilder.create();
-                    alertDialog.show();
-
-
-                } else {
-
-                    Utils.mProgress.dismiss();
-                    newdown();
-                    String date = sps.getString(Solukul_Sol.this, "date");
-                    if (date.equals("0")) {
-                        Cursor c;
-                        c = myDbHelper.getQry("select * from maintable where gameid='3' and isfinish='0' order by id limit 1");
-                        c.moveToFirst();
-                        if (c.getCount() != 0) {
-                            next();
-                        } else {
-                            nextgamesdialog();
-                        }
-                    } else {
-                        Cursor c;
-                        c = myDbHelper.getQry("select * from dailytest where gameid='" + gameid + "' and isfinish='0' and date='" + date + "'");
-                        c.moveToFirst();
-                        if (c.getCount() != 0) {
-                            next();
-                        } else {
-                            nextgamesdialog();
-                        }
-                    }
-
-                }
-        }
-
-        protected void onProgressUpdate(String... progress) {
-            Log.d("ANDRO_ASYNC", progress[0]);
-            mProgressDialog.setProgress(Integer.parseInt(progress[0]));
-			/*if(!isNetworkAvailable()){
-				downloadFileAsync.isCancelled();
-				//downloadFileAsync.cancel(true);
-
-			}*/
-        }
+        return null;
     }
 
     public void newdown() {
@@ -7161,7 +6378,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                     Log.e("log_tag", "Error in https connection" + e.toString());
                 }
                 try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
                     String line = "0";
@@ -7242,7 +6459,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
         if (!destDir.exists()) {
             destDir.mkdir();
         }
-        ZipInputStream zipIn = new ZipInputStream(new FileInputStream(getFilesDir() + "/Nithra/solliadi/"+ZIP_FILE_NAME));
+        ZipInputStream zipIn = new ZipInputStream(new FileInputStream(getFilesDir() + "/Nithra/solliadi/" + ZIP_FILE_NAME));
         ZipEntry entry = zipIn.getNextEntry();
         while (entry != null) {
             String filePath = getFilesDir() + "/Nithra/solliadi/" + File.separator + entry.getName();
@@ -7258,6 +6475,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
         zipIn.close();
         return 1;
     }
+
     private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
         byte[] bytesIn = new byte[1024];
@@ -7295,12 +6513,12 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
             @Override
             public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error"+error);
+                System.out.println("check error" + error);
             }
 
             @Override
             public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2"+error);
+                System.out.println("check error2" + error);
             }
         });
         game_exit_ins.loadAd();
@@ -7349,7 +6567,6 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
     }
 
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -7360,166 +6577,9 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
     @Override
     protected void onStop() {
         super.onStop();
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
 
 
     }
-
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        Log.d(TAG, "onConnected");
-        //  updateUI();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.d(TAG, "onConnectionSuspended: " + i);
-        mGoogleApiClient.connect();
-        // updateUI();
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.d(TAG, "onConnectionFailed");
-        if (mIsResolving) {
-            // The application is attempting to resolve this connection failure already.
-            Log.d(TAG, "onConnectionFailed: already resolving");
-            return;
-        }
-
-        if (mSignInClicked || mAutoStartSignIn) {
-            mSignInClicked = false;
-            mAutoStartSignIn = false;
-
-            // Attempt to resolve the connection failure.
-            Log.d(TAG, "onConnectionFailed: begin resolution.");
-            mIsResolving = BaseGameUtils.resolveConnectionFailure(this, mGoogleApiClient,
-                    connectionResult, RC_SIGN_IN, getString(R.string.signin_other_error));
-        }
-
-        //  updateUI();
-    }
-
-    /**
-     * Update the Snapshot in the Saved Games service with new data.  Metadata is not affected,
-     * however for your own application you will likely want to update metadata such as cover image,
-     * played time, and description with each Snapshot update.  After update, the UI will
-     * be cleared.
-     */
-    private void savedGamesUpdate() {
-        final String snapshotName = "Snapshot-" + String.valueOf(APP_STATE_KEY);
-        final boolean createIfMissing = true;
-
-        // Use the data from the EditText as the new Snapshot data.
-        final byte[] data = getData().getBytes();
-
-
-        //   final long playedTimeMillis = 60 * 60 * 1000;
-        //final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
-
-        AsyncTask<Void, Void, Boolean> updateTask = new AsyncTask<Void, Void, Boolean>() {
-            @Override
-            protected void onPreExecute() {
-                // showProgressDialog("Updating Saved Game");
-            }
-
-            @Override
-            protected Boolean doInBackground(Void... params) {
-                Snapshots.OpenSnapshotResult open = Games.Snapshots.open(
-                        mGoogleApiClient, snapshotName, createIfMissing).await();
-
-                if (!open.getStatus().isSuccess()) {
-                    Log.w(TAG, "Could not open Snapshot for update.");
-                    return false;
-                }
-
-                // Change data but leave existing metadata
-                Snapshot snapshot = open.getSnapshot();
-                snapshot.getSnapshotContents().writeBytes(data);
-
-             /*   SnapshotMetadataChange metadataChange = new SnapshotMetadataChange.Builder()
-                        .fromMetadata(snapshot.getMetadata())
-                        .setDescription("Testing Saved Games")
-                        .setPlayedTimeMillis(playedTimeMillis)
-                        .build();*/
-
-                Snapshots.CommitSnapshotResult commit = Games.Snapshots.commitAndClose(
-                        mGoogleApiClient, snapshot, SnapshotMetadataChange.EMPTY_CHANGE).await();
-
-                if (!commit.getStatus().isSuccess()) {
-                    Log.w(TAG, "Failed to commit Snapshot.");
-                    return false;
-                }
-
-                // No failures
-                return true;
-            }
-
-            @Override
-            protected void onPostExecute(Boolean result) {
-                if (result) {
-                    // displayMessage(getString(R.string.saved_games_update_success), false);
-                } else {
-                    // displayMessage(getString(R.string.saved_games_update_failure), true);
-                }
-
-                // dismissProgressDialog();
-                //clearDataUI();
-            }
-        };
-        updateTask.execute();
-    }
-
-    /**
-     * Get the data from the EditText.
-     *
-     * @return the String in the EditText, or "" if empty.
-     */
-    private String getData() {
-
-
-        Cursor g2 = myDbHelper.getQry("select * from maintable where gameid='1' and isfinish='1' order by id desc limit 1");
-        Cursor g3 = myDbHelper.getQry("select * from maintable where gameid='2' and isfinish='1' order by id desc limit 1");
-        Cursor g4 = myDbHelper.getQry("select * from maintable where gameid='4' and isfinish='1' order by id desc limit 1");
-        g2.moveToFirst();
-        g3.moveToFirst();
-        g4.moveToFirst();
-        Cursor c1 = myDbHelper.getQry("select * from score");
-        c1.moveToFirst();
-
-        //int a2,a3,a4;
-        String b2, b3, b4;
-        if (g2.getCount() == 0) {
-            //  a2=00;
-            b2 = "no";
-        } else {
-            //   a2 = g2.getInt(g2.getColumnIndexOrThrow("levelid"));
-            b2 = String.valueOf(g2.getInt(g2.getColumnIndexOrThrow("levelid")));
-        }
-        if (g3.getCount() == 0) {
-            //  a3=00;
-            b3 = "no";
-        } else {
-            //  a3 = g3.getInt(g3.getColumnIndexOrThrow("levelid"));
-            b3 = String.valueOf(g3.getInt(g3.getColumnIndexOrThrow("levelid")));
-        }
-        if (g4.getCount() == 0) {
-            //  a4=00;
-            b4 = "no";
-        } else {
-            //  a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
-            b4 = String.valueOf(g4.getInt(g4.getColumnIndexOrThrow("levelid")));
-        }
-
-
-        String upload = String.valueOf(b2) + "#" + String.valueOf(b3) + "#" + String.valueOf(letterid) + "#" + String.valueOf(b4) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("l_points"))));
-
-        return upload;
-    }
-
 
     public void nextgamesdialog() {
         final Dialog openDialog = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -7946,10 +7006,10 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
         });
     }
 
-
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 150) {
 
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -7968,7 +7028,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                             Intent i = new Intent(Solukul_Sol.this, New_Main_Gamelist.class);
                             startActivity(i);
                         }
-                    } else if (android.Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
                         sps.putInt(Solukul_Sol.this, "permission", 0);
                         String date = sps.getString(Solukul_Sol.this, "date");
                         if (date.equals("0")) {
@@ -8000,7 +7060,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                             Intent i = new Intent(Solukul_Sol.this, New_Main_Gamelist.class);
                             startActivity(i);
                         }
-                    } else if (android.Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
                         sps.putInt(Solukul_Sol.this, "permission", 0);
                         String date = sps.getString(Solukul_Sol.this, "date");
                         if (date.equals("0")) {
@@ -8034,7 +7094,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
                     boolean showRationale = shouldShowRequestPermissionRationale(permissions[0]);
                     if (!showRationale) {
                         sps.putInt(Solukul_Sol.this, "permission", 2);
-                    } else if (android.Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
                         sps.putInt(Solukul_Sol.this, "permission", 0);
                     }
                 }
@@ -8276,17 +7336,11 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
     }
 
-    //*********************reward videos process 3***********************
-
-
     private void addCoins(int coins) {
         mCoinCount = coins;
         sps.putInt(Solukul_Sol.this, "reward_coin_txt", coins);
         //mCoinCountText.setText("Coins: " + mCoinCount);
     }
-
-
-    //reward videos***********************//
 
     public void vidcoinearn() {
         if (extra_coin_s == 1) {
@@ -8326,6 +7380,8 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
     }
 
+    //*********************reward videos process 3***********************
+
     public void share_earn(int a) {
         final Dialog openDialog = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.share_dialog2);
@@ -8353,6 +7409,9 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
         openDialog.show();
     }
+
+
+    //reward videos***********************//
 
     public void share_earn2(int a) {
         final Dialog openDialog = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -8382,7 +7441,6 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
         openDialog.show();
     }
-
 
     public void downloaddata_daily() {
         if (Utils.isNetworkAvailable(Solukul_Sol.this)) {
@@ -8640,9 +7698,6 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
         helpshare(a);
     }
 
-
-    //*** In Adapter **
-
     public void ins_app(final Context context, View view1, int vall) {
         TextView titt = (TextView) view1.findViewById(R.id.txtlist);
         ImageView logo = (ImageView) view1.findViewById(R.id.imageview);
@@ -8894,7 +7949,8 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
         return app_installed;
     }
 
-    //*** In ad area **
+
+    //*** In Adapter **
 
     //*** In ad area **
     public void showcase_dismiss() {
@@ -9064,6 +8120,8 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
     }
 
+    //*** In ad area **
+
     private void backexitnet() {
         if (main_act.equals("")) {
             finish();
@@ -9120,9 +8178,8 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
         }
     }
 
-
-    public void rewarded_ad(){
-        rewardedAd = MaxRewardedAd.getInstance( getResources().getString(R.string.Reward_Ins), this );
+    public void rewarded_ad() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
         rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
             public void onRewardedVideoStarted(MaxAd ad) {
@@ -9141,7 +8198,7 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
 
             @Override
             public void onAdLoaded(MaxAd ad) {
-                fb_reward=1;
+                fb_reward = 1;
             }
 
             @Override
@@ -9209,6 +8266,157 @@ public class Solukul_Sol extends BaseGameActivity implements GoogleApiClient.Con
             }
         });
         rewardedAd.loadAd();
+    }
+
+    private enum PendingAction {
+        NONE, POST_PHOTO, POST_STATUS_UPDATE
+    }
+
+    class DownloadFileAsync extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showDialog(DIALOG_DOWNLOAD_PROGRESS);
+        }
+
+        @Override
+        protected String doInBackground(String... aurl) {
+            InputStream input = null;
+            OutputStream output = null;
+            HttpURLConnection connection = null;
+            try {
+                URL url = new URL(aurl[0]);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+
+                // expect HTTP 200 OK, so we don't mistakenly save error report
+                // instead of the file
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    return "Server returned HTTP " + connection.getResponseCode()
+                            + " " + connection.getResponseMessage();
+                }
+
+                // this will be useful to display download percentage
+                // might be -1: server did not report the length
+                final int fileLength = connection.getContentLength();
+
+                File SDCardRoot = getFilesDir();
+
+                File fol = new File(SDCardRoot + "/Nithra/solliadi/");
+                if (!fol.exists()) {
+                    fol.mkdirs();
+                }
+
+                File file = new File(SDCardRoot + "/Nithra/solliadi/", email + "-filename.zip");
+
+                // download the file
+                input = connection.getInputStream();
+                output = new FileOutputStream(file);
+
+                byte[] data = new byte[4096];
+                long total = 0;
+                int count;
+                while ((count = input.read(data)) != -1) {
+                    // allow canceling with back button
+                    if (isCancelled()) {
+                        input.close();
+                        return null;
+                    }
+                    total += count;
+                    publishProgress("" + (int) ((total * 100) / fileLength));
+                    // publishing the progress....
+                    if (fileLength > 0) // only if total length is known
+                        output.write(data, 0, count);
+                }
+
+                unpackZip(email + "-filename.zip");
+
+
+            } catch (Exception e) {
+
+
+                return e.toString();
+            } finally {
+                try {
+                    if (output != null)
+                        output.close();
+                    if (input != null)
+                        input.close();
+                } catch (IOException ignored) {
+                }
+
+                if (connection != null)
+                    connection.disconnect();
+
+
+            }
+            return null;
+
+        }
+
+
+        @Override
+        protected void onPostExecute(String unused) {
+            mProgressDialog.dismiss();
+            if (unused != null && unused.equals("ERROR_DOW")) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Solukul_Sol.this);
+                alertDialogBuilder.setCancelable(false);
+                alertDialogBuilder.setTitle("Network connection not available, please check it!");
+                alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                        downloadFileAsync.isCancelled();
+                        downloadFileAsync.cancel(true);
+
+
+                        if (exists("https://nithra.mobi/solliadi/" + email + "-filename.zip")) {
+                            System.out.print("========zip ok");
+                            checkmemory();
+                        }
+                    }
+                });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+
+
+            } else {
+
+                Utils.mProgress.dismiss();
+                newdown();
+                String date = sps.getString(Solukul_Sol.this, "date");
+                if (date.equals("0")) {
+                    Cursor c;
+                    c = myDbHelper.getQry("select * from maintable where gameid='3' and isfinish='0' order by id limit 1");
+                    c.moveToFirst();
+                    if (c.getCount() != 0) {
+                        next();
+                    } else {
+                        nextgamesdialog();
+                    }
+                } else {
+                    Cursor c;
+                    c = myDbHelper.getQry("select * from dailytest where gameid='" + gameid + "' and isfinish='0' and date='" + date + "'");
+                    c.moveToFirst();
+                    if (c.getCount() != 0) {
+                        next();
+                    } else {
+                        nextgamesdialog();
+                    }
+                }
+
+            }
+        }
+
+        protected void onProgressUpdate(String... progress) {
+            Log.d("ANDRO_ASYNC", progress[0]);
+            mProgressDialog.setProgress(Integer.parseInt(progress[0]));
+			/*if(!isNetworkAvailable()){
+				downloadFileAsync.isCancelled();
+				//downloadFileAsync.cancel(true);
+
+			}*/
+        }
     }
 
 }

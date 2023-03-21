@@ -9,7 +9,7 @@ import android.webkit.WebView;
  */
 public class NestedWebView extends WebView {
 
-    private OnScrollChangedCallback  mOnScrollChangedCallback;
+    private OnScrollChangedCallback mOnScrollChangedCallback;
 
     public NestedWebView(Context context) {
         super(context);
@@ -32,12 +32,12 @@ public class NestedWebView extends WebView {
 
     }
 
-    public void setOnScrollChangedCallback(final OnScrollChangedCallback mOnScrollChangedCallback) {
-        this.mOnScrollChangedCallback = mOnScrollChangedCallback;
-    }
-
     public OnScrollChangedCallback getOnScrollChangedCallback() {
         return mOnScrollChangedCallback;
+    }
+
+    public void setOnScrollChangedCallback(final OnScrollChangedCallback mOnScrollChangedCallback) {
+        this.mOnScrollChangedCallback = mOnScrollChangedCallback;
     }
 
     public interface OnScrollChangedCallback {

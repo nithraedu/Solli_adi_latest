@@ -1,6 +1,5 @@
 package nithra.tamil.word.game.solliadi;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
 import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Puthayal_Sorkal_Native_Banner;
@@ -28,7 +27,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.StatFs;
 import android.os.StrictMode;
@@ -64,9 +62,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.applovin.mediation.MaxAd;
@@ -79,16 +76,7 @@ import com.applovin.mediation.ads.MaxRewardedAd;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.facebook.ads.NativeAdLayout;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.snapshot.Snapshot;
-import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
-import com.google.android.gms.games.snapshot.Snapshots;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.example.games.basegameutils.BaseGameActivity;
-import com.google.example.games.basegameutils.BaseGameUtils;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.apache.http.HttpEntity;
@@ -103,13 +91,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -119,6 +104,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -131,7 +117,6 @@ import java.util.TimerTask;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
 import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
@@ -139,74 +124,47 @@ import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
-public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-    int fb_reward = 0;
-    int val=0;
-    //RewardedVideoAd rewardedVideoAd;
-    private MaxRewardedAd rewardedAd;
-    int reward_status = 0;
+public class Clue_Game_Hard extends AppCompatActivity {
+    public static final String TAG = "SavedGames";
+    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
     //*********************reward videos process 1***********************
     //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
-
-
-    private boolean mGameOver;
-    private boolean mGamePaused;
-    private long mTimeRemaining;
-    //reward videos process 1***********************
-
-    public static final String TAG = "SavedGames";
 
     // The AppState slot we are editing.  For simplicity this sample only manipulates a single
     // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
     // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
     private static final int APP_STATE_KEY = 1;
-
     // Request code used to invoke sign-in UI.
     private static final int RC_SIGN_IN = 9001;
-
     // Request code used to invoke Snapshot selection UI.
     private static final int RC_SELECT_SNAPSHOT = 9002;
-
-    /// Client used to interact with Google APIs.
-    private GoogleApiClient mGoogleApiClient;
-    // True when the application is attempting to resolve a sign-in error that has a possible
-    // resolution,
-    private boolean mIsResolving = false;
-
-    // True immediately after the user clicks the sign-in button/
-    private boolean mSignInClicked = false;
-
-    // True if we want to automatically attempt to sign in the user at application start.
-    private boolean mAutoStartSignIn = true;
+    /////////native advance////////////
+    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
+    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
+    //reward videos process 1***********************
+    /////////native advance////////////
+    /////////Native_Top_Advanced////////////
+    private static final String ADMOB_AD_UNIT_ID_Top = "ca-app-pub-4267540560263635/2303543680";
+    /////////Native_Top_Advanced////////////
+    /////////Native_BackPress_Advanced////////////
+    private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
+    public static FrameLayout add, add2, add3;
+    public static LinearLayout add_e;
+    public static LinearLayout add_sc;
+    static int ry;
+    static int mCoinCount = 20;
+    static int rvo = 0;
 
 
     // Facebook variable starts
-
+    static SharedPreference spd = new SharedPreference();
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
-
-    private PendingAction pendingAction = PendingAction.NONE;
-
-    @Override
-    public void onSignInFailed() {
-
-    }
-
-    @Override
-    public void onSignInSucceeded() {
-
-    }
-
-    private enum PendingAction {
-        NONE, POST_PHOTO, POST_STATUS_UPDATE
-    }
-
-    String btn_str = "";
+    private final PendingAction pendingAction = PendingAction.NONE;
+    int fb_reward = 0;
+    int val = 0;
+    int reward_status = 0;
     // facebook variable ends
-
-
+    String btn_str = "";
     DataBaseHelper myDbHelper;
     Typeface typ, tyr;
     TextView c_time, score, to_no;
@@ -218,19 +176,16 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
     int w_id;
     TextView c_verify, c_clear, ans_high, c_clue;
     int f_sec;
-    ;
     TextView c_ans;
     SharedPreference sps = new SharedPreference();
     TextView clue1, clue2, clue3, clue1_txt, clue2_txt, clue3_txt;
-    TextView bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9, bt10, bt11, bt12, bt13, bt14, bt15, bt16;
     // MediaPlayer c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19, c20;
     // MediaPlayer r1, play1;
     // MediaPlayer w1;
-
+    TextView bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9, bt10, bt11, bt12, bt13, bt14, bt15, bt16;
     SoundPool click, win, coin, worng;
     int soundId1, soundId2, soundId3, soundId4;
     int sv = 0;
-
     int e2;
     TextView c_coin;
     RadioButton fn1, fn2, fn3;
@@ -242,19 +197,14 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
     RelativeLayout w_head, helpshare_layout;
     TextView shareq, h_gplues, h_watts_app, h_facebook;
     int r = 0;
-
-
     String sa;
     String sb;
     int type;
-
     JSONArray warray, warray2, carray, sarray, sarray2;
     String str_vpcont;
     String email = "";
-
     Timer t1, th;
     int t, t2;
-    private MaxInterstitialAd ins_game, game_exit_ins;
     LinearLayout qtw;
     TextView earncoin;
     int minmum = 1;
@@ -264,46 +214,24 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
     String downok = "", downnodata = "";
     DownloadFileAsync downloadFileAsync;
     ProgressDialog mProgressDialog;
-    public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
     TextView ttscores;
     int tim = 0;
     long ttstop;
     int noclue = 0;
-    static int ry;
     String retype = "s";
-    static int mCoinCount = 20;
-    static int rvo = 0;
     RelativeLayout edit_buttons_layout;
     Dialog openDialog_p;
     Dialog openDialog_s;
     int s = 0;
-
-    /////////native advance////////////
-    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
-    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
-    /////////native advance////////////
-    /////////Native_Top_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_Top = "ca-app-pub-4267540560263635/2303543680";
-    /////////Native_Top_Advanced////////////
-    /////////Native_BackPress_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
-    /////////Native_BackPress_Advanced////////////
-
-
     int share_name = 0;
     int setting_access = 0;
-    public static FrameLayout add, add2, add3;
-    static SharedPreference spd = new SharedPreference();
     Context context = this;
     RelativeLayout adsicon, adsicon2;
-    CircleImageView ads_logo, ads_logo2;
     int loadaddcontent = 0;
-    public static LinearLayout add_e;
-    public static LinearLayout add_sc;
-
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
     Newgame_DataBaseHelper3 newhelper3;
+    /////////Native_BackPress_Advanced////////////
     Newgame_DataBaseHelper4 newhelper4;
     /////////native advance////////////
     int extra_coin_s = 0;
@@ -316,6 +244,30 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
     NativeAdLayout native_banner_ad_container;
+    //RewardedVideoAd rewardedVideoAd;
+    private MaxRewardedAd rewardedAd;
+
+    private boolean mIsResolving = false;
+    // True immediately after the user clicks the sign-in button/
+    private boolean mSignInClicked = false;
+    // True if we want to automatically attempt to sign in the user at application start.
+    private boolean mAutoStartSignIn = true;
+    private MaxInterstitialAd ins_game, game_exit_ins;
+
+    public static boolean exists(String URLName) {
+        try {
+            HttpURLConnection.setFollowRedirects(false);
+            // note : you may also need
+            //        HttpURLConnection.setInstanceFollowRedirects(false)
+            HttpURLConnection con =
+                    (HttpURLConnection) new URL(URLName).openConnection();
+            con.setRequestMethod("HEAD");
+            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 
     @Override
@@ -367,31 +319,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         }
         myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='2'");
 */
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
-                .addScope(Drive.SCOPE_APPFOLDER) // SavedGames
-                .build();
-
-
-        if (sps.getString(Clue_Game_Hard.this, "signinagain").equals("yes")) {
-            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                try {
-                    if (!getApiClient().isConnected()) {
-                        if (!isSignedIn()) {
-                            beginUserInitiatedSignIn();
-                            mGoogleApiClient.connect();
-
-                        }
-                    }
-
-                } catch (Exception ex) {//ex.printStackTrace();
-                }
-            }
-
-        }
 
 
         if (sps.getInt(Clue_Game_Hard.this, "purchase_ads") == 1) {
@@ -490,7 +417,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
         openDialog_s = new Dialog(Clue_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
-        ads_logo = (CircleImageView) openDialog_s.findViewById(R.id.ads_logo);
         adsicon = (RelativeLayout) openDialog_s.findViewById(R.id.adsicon);
 
         /////////
@@ -565,10 +491,10 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
             //  sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
 
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Clue_Game_Hard.this)
-                    .setTarget(helpshare_layout)
-                    .setDismissText("சரி")
-                    .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                    .build())
+                            .setTarget(helpshare_layout)
+                            .setDismissText("சரி")
+                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
+                            .build())
                     .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                         @Override
                         public void onDismiss(MaterialShowcaseView itemView, int position) {
@@ -621,91 +547,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                     if (c2.getCount() != 0) {
                         next();
                     } else {
-                        ///User Premission Showing
-                        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            if (sps.getString(Clue_Game_Hard.this, "permission_grand").equals("")) {
-                                sps.putString(Clue_Game_Hard.this, "permission_grand", "yes");
-                                //  First_register("yes");
-                                AlertDialog alertDialog = new AlertDialog.Builder(Clue_Game_Hard.this).create();
-                                alertDialog.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய பின்வரும் permission-களை allow செய்யவேண்டும்");
-                                alertDialog.setCancelable(false);
-                                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                                if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                                    ActivityCompat.requestPermissions(Clue_Game_Hard.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 150);
-                                                } else {
-                                                    downloaddata_daily();
-                                                }
-                                            }
-                                        });
-
-                                alertDialog.show();
-
-                            } else {
-                                if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                    if (sps.getInt(Clue_Game_Hard.this, "permission") == 2) {
-                                        AlertDialog alertDialog = new AlertDialog.Builder(Clue_Game_Hard.this).create();
-                                        alertDialog.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய Settings-ல் உள்ள permission-யை allow செய்யவேண்டும்");
-                                        alertDialog.setCancelable(false);
-                                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                                                new DialogInterface.OnClickListener() {
-                                                    public void onClick(DialogInterface dialog, int which) {
-                                                        dialog.dismiss();
-                                                        Intent intent = new Intent();
-                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                                        Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                                        intent.setData(uri);
-                                                        getApplicationContext().startActivity(intent);
-                                                        setting_access = 1;
-                                                    }
-                                                });
-
-                                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                                                new DialogInterface.OnClickListener() {
-                                                    public void onClick(DialogInterface dialog, int which) {
-                                                        sps.putString(Clue_Game_Hard.this, "game_area", "on");
-                                                        String date = sps.getString(Clue_Game_Hard.this, "date");
-                                                        if (date.equals("0")) {
-                                                            if (main_act.equals("")) {
-                                                                finish();
-                                                                Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
-                                                                startActivity(i);
-                                                            } else {
-                                                                finish();
-                                                            }
-                                                        } else {
-                                                            finish();
-                                                            Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
-                                                            startActivity(i);
-                                                        }
-                                                        dialog.dismiss();
-                                                    }
-                                                });
-
-
-                                        alertDialog.show();
-                                    } else {
-                                        if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                            ActivityCompat.requestPermissions(Clue_Game_Hard.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 150);
-                                        } else {
-                                            downloaddata_daily();
-                                        }
-                                    }
-                                } else {
-                                    if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                        ActivityCompat.requestPermissions(Clue_Game_Hard.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 150);
-                                    } else {
-                                        downloaddata_daily();
-                                    }
-                                }
-
-                            }
-                        } else {
-                            downloaddata_daily();
-                        }*/
                         downloaddata_daily();
                     }
                 }
@@ -1183,13 +1024,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         final Animation pendulam;
         pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
         adsicon2.startAnimation(pendulam);
-        ads_logo2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                adsicon2.setVisibility(View.INVISIBLE);
-
-            }
-        });
         c_clue.setOnClickListener(new View.OnClickListener() {
                                       @Override
                                       public void onClick(View v) {
@@ -1302,7 +1136,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                                 @Override
                                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                                    if (isChecked == true) {
+                                    if (isChecked) {
                                         sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                                     } else {
                                         sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -1440,33 +1274,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                         myDbHelper.executeSql("UPDATE maintable SET isfinish=1 WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                     } else {
                         myDbHelper.executeSql("UPDATE dailytest SET isfinish=1 WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    }
-
-
-                    if (sps.getString(getApplicationContext(), "ach6").equals("")) {
-                        if (sps.getInt(getApplicationContext(), "ach6_a1") >= 5) {
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (getApiClient().isConnected()) {
-                                    if (isSignedIn()) {
-
-                                        Games.Achievements.unlock(getApiClient(), getString(R.string.achievement__6));
-                                        sps.putString(getApplicationContext(), "ach6", "yes");
-                                    } else {
-                                        sps.putString(getApplicationContext(), "ach6", "yes");
-                                    }
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach6", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach6", "yes");
-                            }
-                            sps.putInt(getApplicationContext(), "ach6_a1", (sps.getInt(getApplicationContext(), "ach6_a1") + 1));
-                        } else {
-
-                            sps.putInt(getApplicationContext(), "ach6_a1", (sps.getInt(getApplicationContext(), "ach6_a1") + 1));
-                        }
-
-
                     }
 
 
@@ -1608,7 +1415,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         ans_high = (TextView) findViewById(R.id.ans_highlite);
         edit_buttons_layout = (RelativeLayout) findViewById(R.id.edit_buttons_layout);
         adsicon2 = (RelativeLayout) findViewById(R.id.adsicon2);
-        ads_logo2 = (CircleImageView) findViewById(R.id.ads_logo2);
         // c_verify = (Button) findViewById(R.id.clue_verify);
         c_clear = (Button) findViewById(R.id.clue_clear);
         c_ans = (TextView) findViewById(R.id.c_ans);
@@ -3127,7 +2933,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                 } else {
                     downloaddata_regular();
                 }*/
-                if(isNetworkAvailable())
+                if (isNetworkAvailable())
                     downloaddata_regular();
                 else
                     Toast.makeText(this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
@@ -3229,7 +3035,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                             openDialog_p.dismiss();
                             sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
                         }
-                    }else{
+                    } else {
                         openDialog_p.dismiss();
                     }
                     //ad
@@ -3347,12 +3153,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         } else {
             rewardvideo.setVisibility(View.INVISIBLE);
         }
-        ads_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-            }
-        });
         RelativeLayout adsicon = (RelativeLayout) openDialog_s.findViewById(R.id.adsicon);
         Animation shake;
         shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulam);
@@ -3420,7 +3221,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
 
                     }
-                }else {
+                } else {
                     Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
                 }
 
@@ -3544,189 +3345,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                 }
 
                 noclue = 0;
-
-                if (Utils.isNetworkAvailable(getApplicationContext())) {
-                    if (getApiClient().isConnected()) {
-                        if (isSignedIn()) {
-                            int k1 = 0;
-                            Cursor sc2 = myDbHelper.getQry("select * from score");
-                            sc2.moveToFirst();
-                            if (sc2.getCount() != 0) {
-                                k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
-                            }
-                            sc2.close();
-                            Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
-                        }
-                    }
-                }
-
-                if (sps.getString(getApplicationContext(), "1st_achiv").equals("")) {
-                    if (Utils.isNetworkAvailable(getApplicationContext())) {
-                        if (getApiClient().isConnected()) {
-                            if (isSignedIn()) {
-
-                                Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___1));
-                                sps.putString(getApplicationContext(), "1st_achiv", "yes");
-                            } else {
-                                sps.putString(getApplicationContext(), "1st_achiv", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "1st_achiv", "yes");
-                        }
-                    } else {
-                        sps.putString(getApplicationContext(), "1st_achiv", "yes");
-                    }
-
-                }
-
-                if (sps.getString(getApplicationContext(), "clue_a1").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "clue") >= 5) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___3));
-                                    sps.putString(getApplicationContext(), "clue_a1", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "clue_a1", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "clue_a1", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "clue_a1", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "clue", (sps.getInt(getApplicationContext(), "clue") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "clue", (sps.getInt(getApplicationContext(), "clue") + 1));
-                    }
-
-
-                }
-
-                if (sps.getString(getApplicationContext(), "ach8").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "ach8_a1") >= 25) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___8));
-                                    sps.putString(getApplicationContext(), "ach8", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach8", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach8", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "ach8", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "ach8_a1", (sps.getInt(getApplicationContext(), "ach8_a1") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "ach8_a1", (sps.getInt(getApplicationContext(), "ach8_a1") + 1));
-                    }
-
-
-                }
-
-                if (sps.getString(getApplicationContext(), "ach13").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "ach13_a1") >= 50) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___13));
-                                    sps.putString(getApplicationContext(), "ach13", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach13", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach13", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "ach13", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "ach13_a1", (sps.getInt(getApplicationContext(), "ach13_a1") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "ach13_a1", (sps.getInt(getApplicationContext(), "ach13_a1") + 1));
-                    }
-
-
-                }
-
-                if (sps.getString(getApplicationContext(), "ach15").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "ach15_a1") >= 50) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___15));
-                                    sps.putString(getApplicationContext(), "ach15", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach15", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach15", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "ach15", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "ach15_a1", (sps.getInt(getApplicationContext(), "ach15_a1") + 1));
-                    } else {
-                        sps.putInt(getApplicationContext(), "ach15_a1", (sps.getInt(getApplicationContext(), "ach15_a1") + 1));
-                    }
-                }
-                if (sps.getString(getApplicationContext(), "ach18").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "ach18_a1") >= 100) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement____18));
-                                    sps.putString(getApplicationContext(), "ach18", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach18", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach18", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "ach18", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "ach18_a1", (sps.getInt(getApplicationContext(), "ach18_a1") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "ach18_a1", (sps.getInt(getApplicationContext(), "ach18_a1") + 1));
-                    }
-                }
-
-                if (sps.getString(getApplicationContext(), "ach19").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "ach19_a1") >= 250) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___19));
-                                    sps.putString(getApplicationContext(), "ach19", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach19", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach19", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "ach19", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "ach19_a1", (sps.getInt(getApplicationContext(), "ach19_a1") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "ach19_a1", (sps.getInt(getApplicationContext(), "ach19_a1") + 1));
-                    }
-
-
-                }
-
 
             }
         });
@@ -4297,11 +3915,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         super.onResume();
 
 
-        if (!mGameOver && mGamePaused) {
-            //resumeGame();
-        }
-
-
         // uiHelper.onResume();
         //AppEventsLogger.activateApp(this);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Clue_Game_Hard.this);
@@ -4311,41 +3924,16 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
         if (setting_access == 1) {
             setting_access = 0;
-          //  if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                downloaddata_daily();
-            /*} else {
-                settingpermission();
-            }*/
+            //  if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+            downloaddata_daily();
         } else if (setting_access == 2) {
             setting_access = 0;
-           // if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                downloaddata_regular();
-           /* } else {
-                settingpermission();
-            }*/
+            downloaddata_regular();
         }
 
-
-        if (sps.getString(getApplicationContext(), "ach11").equals("")) {
-            timee();
-        }
-        if (sps.getString(getApplicationContext(), "ach12").equals("")) {
-            timeehr();
-        }
 
         if (sps.getInt(Clue_Game_Hard.this, "goto_sett") == 1) {
             sps.putInt(Clue_Game_Hard.this, "goto_sett", 0);
-
-            if (Utils.isNetworkAvailable(Clue_Game_Hard.this)) {
-             /*   Cursor c3 = myDbHelper.getQry("select gameid,w_id from clue_game order by w_id", null);
-
-                if (c3.getCount() != 0) {
-                    c3.moveToLast();
-
-                }
-*/
-
-            }
         }
 
         if (sps.getString(Clue_Game_Hard.this, "resume_c").equals("")) {
@@ -4355,12 +3943,10 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         } else {
 
             String date = sps.getString(Clue_Game_Hard.this, "date");
-            int pos;
             Cursor cs;
             long dscore = 0;
             int noofclue = 0;
             if (date.equals("0")) {
-                pos = 1;
                 cs = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "' and levelid='" + w_id + "'");
                 cs.moveToFirst();
                 if (cs.getCount() != 0) {
@@ -4368,7 +3954,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                     noofclue = cs.getInt(cs.getColumnIndexOrThrow("noclue"));
                 }
             } else {
-                pos = 2;
                 cs = myDbHelper.getQry("select * from dailytest where gameid='" + gameid + "' and levelid='" + w_id + "'");
                 cs.moveToFirst();
                 if (cs.getCount() != 0) {
@@ -4669,16 +4254,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                 } else {
 
 
-                    if (Utils.isNetworkAvailable(getApplicationContext())) {
-                        if (getApiClient().isConnected()) {
-                            sps.putString(getApplicationContext(), "ach11", "yes");
-
-                            Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___11));
-
-                        } else {
-                            sps.putString(getApplicationContext(), "ach11", "yes");
-                        }
-                    }
                     t1.cancel();
 
                 }
@@ -4704,15 +4279,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                 } else {
 
 
-                    if (Utils.isNetworkAvailable(getApplicationContext())) {
-                        if (getApiClient().isConnected()) {
-                            sps.putString(getApplicationContext(), "ach12", "yes");
-
-                            Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___12));
-                        } else {
-                            sps.putString(getApplicationContext(), "ach11", "yes");
-                        }
-                    }
                     th.cancel();
 
                 }
@@ -4807,7 +4373,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                     Log.e("log_tag", "Error in https connection" + e.toString());
                 }
                 try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
                     String line = "0";
@@ -4845,7 +4411,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                                     cv.put("levelid", json_data.getString("levelid"));
                                     cv.put("letters", json_data.getString("letters"));
 
-                                    String newName = json_data.getString("answer").toString().replaceAll(" ", "");
+                                    String newName = json_data.getString("answer").replaceAll(" ", "");
                                     cv.put("answer", newName);
 
                                     cv.put("hints", json_data.getString("hints"));
@@ -4887,7 +4453,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                 } else {
                     downok = "";
                     downnodata = "";
-                    if (exists("https://nithra.mobi/solliadi/" + email + "-filename.zip") == true) {
+                    if (exists("https://nithra.mobi/solliadi/" + email + "-filename.zip")) {
                         checkmemory();
                     } else {
                         Utils.mProgress.dismiss();
@@ -4919,23 +4485,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
             }
         }.execute();
     }
-
-
-    public static boolean exists(String URLName) {
-        try {
-            HttpURLConnection.setFollowRedirects(false);
-            // note : you may also need
-            //        HttpURLConnection.setInstanceFollowRedirects(false)
-            HttpURLConnection con =
-                    (HttpURLConnection) new URL(URLName).openConnection();
-            con.setRequestMethod("HEAD");
-            return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
 
     public void checkmemory() {
         String url = "";
@@ -5007,7 +4556,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
     }
 
-
     public void goappmanager() {
 
         AlertDialog.Builder builder1 = new AlertDialog.Builder(getBaseContext(), android.R.style.Theme_Dialog);
@@ -5038,7 +4586,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
     }
 
-
     public void startDownload() {
 
 
@@ -5052,156 +4599,16 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
     }
 
     protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case DIALOG_DOWNLOAD_PROGRESS:
-                mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setMessage("படங்கள் பதிவிறக்கம் செய்யப்படுகிறது காத்திருக்கவும்.... ");
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                mProgressDialog.setCancelable(false);
-                mProgressDialog.show();
-                // playy();
-                return mProgressDialog;
-
-            default:
-                return null;
+        if (id == DIALOG_DOWNLOAD_PROGRESS) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setMessage("படங்கள் பதிவிறக்கம் செய்யப்படுகிறது காத்திருக்கவும்.... ");
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+            // playy();
+            return mProgressDialog;
         }
-    }
-
-
-    class DownloadFileAsync extends AsyncTask<String, String, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            showDialog(DIALOG_DOWNLOAD_PROGRESS);
-        }
-
-        @Override
-        protected String doInBackground(String... aurl) {
-            InputStream input = null;
-            OutputStream output = null;
-            HttpURLConnection connection = null;
-            try {
-                URL url = new URL(aurl[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-
-                // expect HTTP 200 OK, so we don't mistakenly save error report
-                // instead of the file
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    return "Server returned HTTP " + connection.getResponseCode()
-                            + " " + connection.getResponseMessage();
-                }
-
-                // this will be useful to display download percentage
-                // might be -1: server did not report the length
-                final int fileLength = connection.getContentLength();
-
-                File SDCardRoot = getFilesDir();
-
-                File fol = new File(SDCardRoot + "/Nithra/solliadi/");
-                if (!fol.exists()) {
-                    fol.mkdirs();
-                }
-
-                File file = new File(SDCardRoot + "/Nithra/solliadi/", email + "-filename.zip");
-
-                // download the file
-                input = connection.getInputStream();
-                output = new FileOutputStream(file);
-
-                byte data[] = new byte[4096];
-                long total = 0;
-                int count;
-                while ((count = input.read(data)) != -1) {
-                    // allow canceling with back button
-                    if (isCancelled()) {
-                        input.close();
-                        return null;
-                    }
-                    total += count;
-                    publishProgress("" + (int) ((total * 100) / fileLength));
-                    // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
-                        output.write(data, 0, count);
-                }
-
-                unpackZip(email + "-filename.zip");
-
-
-            } catch (Exception e) {
-
-
-                return e.toString();
-            } finally {
-                try {
-                    if (output != null)
-                        output.close();
-                    if (input != null)
-                        input.close();
-                } catch (IOException ignored) {
-                }
-
-                if (connection != null)
-                    connection.disconnect();
-            }
-            return null;
-
-        }
-
-
-        @Override
-        protected void onPostExecute(String unused) {
-
-            mProgressDialog.dismiss();
-
-                if (unused != null && unused.equals("ERROR_DOW")) {
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Clue_Game_Hard.this);
-                    alertDialogBuilder.setCancelable(false);
-                    alertDialogBuilder.setTitle("Network connection not available, please check it!");
-                    alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.dismiss();
-                            downloadFileAsync.isCancelled();
-                            downloadFileAsync.cancel(true);
-
-
-                            if (exists("https://nithra.mobi/solliadi/" + email + "-filename.zip") == true) {
-                                System.out.print("========zip ok");
-                                checkmemory();
-                            }
-
-                        }
-                    });
-                    AlertDialog alertDialog = alertDialogBuilder.create();
-                    alertDialog.show();
-
-
-                } else {
-                    Utils.mProgress.dismiss();
-                    newdown();
-
-                    String date = sps.getString(Clue_Game_Hard.this, "date");
-                    if (date.equals("0")) {
-                        Cursor c;
-                        c = myDbHelper.getQry("select * from maintable where gameid='2' and isfinish='0' order by id limit 1");
-                        c.moveToFirst();
-                        if (c.getCount() != 0) {
-                            next();
-                        } else {
-                            nextgamesdialog();
-                        }
-                    } else {
-                        next();
-                    }
-                }
-
-        }
-
-        protected void onProgressUpdate(String... progress) {
-            Log.d("ANDRO_ASYNC", progress[0]);
-            mProgressDialog.setProgress(Integer.parseInt(progress[0]));
-        }
+        return null;
     }
 
     public void newdown() {
@@ -5230,7 +4637,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
                     Log.e("log_tag", "Error in https connection" + e.toString());
                 }
                 try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
                     String line = "0";
@@ -5311,7 +4718,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         if (!destDir.exists()) {
             destDir.mkdir();
         }
-        ZipInputStream zipIn = new ZipInputStream(new FileInputStream(getFilesDir() + "/Nithra/solliadi/"+ZIP_FILE_NAME));
+        ZipInputStream zipIn = new ZipInputStream(new FileInputStream(getFilesDir() + "/Nithra/solliadi/" + ZIP_FILE_NAME));
         ZipEntry entry = zipIn.getNextEntry();
         while (entry != null) {
             String filePath = getFilesDir() + "/Nithra/solliadi/" + File.separator + entry.getName();
@@ -5327,6 +4734,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         zipIn.close();
         return 1;
     }
+
     private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
         byte[] bytesIn = new byte[1024];
@@ -5336,7 +4744,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         }
         bos.close();
     }
-
 
     @Override
     protected void onStart() {
@@ -5348,46 +4755,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
     @Override
     protected void onStop() {
         super.onStop();
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
 
-    }
-
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        Log.d(TAG, "onConnected");
-        //  updateUI();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.d(TAG, "onConnectionSuspended: " + i);
-        mGoogleApiClient.connect();
-        // updateUI();
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.d(TAG, "onConnectionFailed");
-        if (mIsResolving) {
-            // The application is attempting to resolve this connection failure already.
-            Log.d(TAG, "onConnectionFailed: already resolving");
-            return;
-        }
-
-        if (mSignInClicked || mAutoStartSignIn) {
-            mSignInClicked = false;
-            mAutoStartSignIn = false;
-
-            // Attempt to resolve the connection failure.
-            Log.d(TAG, "onConnectionFailed: begin resolution.");
-            mIsResolving = BaseGameUtils.resolveConnectionFailure(this, mGoogleApiClient,
-                    connectionResult, RC_SIGN_IN, getString(R.string.signin_other_error));
-        }
-
-        //  updateUI();
     }
 
     /**
@@ -5396,69 +4764,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
      * played time, and description with each Snapshot update.  After update, the UI will
      * be cleared.
      */
-    private void savedGamesUpdate() {
-        final String snapshotName = "Snapshot-" + String.valueOf(APP_STATE_KEY);
-        final boolean createIfMissing = true;
-
-        // Use the data from the EditText as the new Snapshot data.
-        final byte[] data = getData().getBytes();
-
-
-        //   final long playedTimeMillis = 60 * 60 * 1000;
-        //final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
-
-        AsyncTask<Void, Void, Boolean> updateTask = new AsyncTask<Void, Void, Boolean>() {
-            @Override
-            protected void onPreExecute() {
-                // showProgressDialog("Updating Saved Game");
-            }
-
-            @Override
-            protected Boolean doInBackground(Void... params) {
-                Snapshots.OpenSnapshotResult open = Games.Snapshots.open(
-                        mGoogleApiClient, snapshotName, createIfMissing).await();
-
-                if (!open.getStatus().isSuccess()) {
-                    Log.w(TAG, "Could not open Snapshot for update.");
-                    return false;
-                }
-
-                // Change data but leave existing metadata
-                Snapshot snapshot = open.getSnapshot();
-                snapshot.getSnapshotContents().writeBytes(data);
-
-             /*   SnapshotMetadataChange metadataChange = new SnapshotMetadataChange.Builder()
-                        .fromMetadata(snapshot.getMetadata())
-                        .setDescription("Testing Saved Games")
-                        .setPlayedTimeMillis(playedTimeMillis)
-                        .build();*/
-
-                Snapshots.CommitSnapshotResult commit = Games.Snapshots.commitAndClose(
-                        mGoogleApiClient, snapshot, SnapshotMetadataChange.EMPTY_CHANGE).await();
-
-                if (!commit.getStatus().isSuccess()) {
-                    Log.w(TAG, "Failed to commit Snapshot.");
-                    return false;
-                }
-
-                // No failures
-                return true;
-            }
-
-            @Override
-            protected void onPostExecute(Boolean result) {
-                if (result) {
-                    // displayMessage(getString(R.string.saved_games_update_success), false);
-                } else {
-                    // displayMessage(getString(R.string.saved_games_update_failure), true);
-                }
-
-                // dismissProgressDialog();
-                //clearDataUI();
-            }
-        };
-        updateTask.execute();
-    }
 
     /**
      * Get the data from the EditText.
@@ -5503,12 +4808,11 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         }
 
 
-        String upload = String.valueOf(b2) + "#" + String.valueOf(w_id) + "#" + String.valueOf(b3) + "#" + String.valueOf(b4) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("coins")) + "#" + String.valueOf(c1.getInt(c1.getColumnIndexOrThrow("l_points"))));
+        String upload = b2 + "#" + w_id + "#" + b3 + "#" + b4 + "#" + c1.getInt(c1.getColumnIndexOrThrow("coins")) + "#" + c1.getInt(c1.getColumnIndexOrThrow("l_points"));
 
 
         return upload;
     }
-
 
     public void nextgamesdialog() {
         final Dialog openDialog = new Dialog(Clue_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -5878,9 +5182,8 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
     }
 
-
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 150) {
@@ -5984,7 +5287,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
         }
     }
-
 
     public void completegame() {
 
@@ -6180,16 +5482,11 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         }
     }
 
-
-    //*********************reward videos process 3***********************
-
     private void addCoins(int coins) {
         //mCoinCount = coins;
         sps.putInt(Clue_Game_Hard.this, "reward_coin_txt", coins);
         //mCoinCountText.setText("Coins: " + mCoinCount);
     }
-
-    //reward videos***********************//
 
     public void vidcoinearn() {
         if (extra_coin_s == 1) {
@@ -6229,6 +5526,9 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
 
     }
 
+
+    //*********************reward videos process 3***********************
+
     public void share_earn(int a) {
         final Dialog openDialog = new Dialog(Clue_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.share_dialog2);
@@ -6257,6 +5557,7 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         openDialog.show();
     }
 
+    //reward videos***********************//
 
     public void share_earn2(int a) {
         final Dialog openDialog = new Dialog(Clue_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -6283,7 +5584,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         });
         openDialog.show();
     }
-
 
     public void downloaddata_daily() {
 
@@ -6553,9 +5853,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         helpshare(a);
     }
 
-
-//*** In Adapter **
-
     public void ins_app(final Context context, View view1, int vall) {
         TextView titt = (TextView) view1.findViewById(R.id.txtlist);
         ImageView logo = (ImageView) view1.findViewById(R.id.imageview);
@@ -6808,6 +6105,8 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
     }
 
 
+//*** In Adapter **
+
     //*** In ad area **
     public void showcase_dismiss() {
         Handler handler30 = new Handler();
@@ -6918,7 +6217,6 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         }
     }
 
-
     public void rewarded_ad() {
         rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
         rewardedAd.setListener(new MaxRewardedAdListener() {
@@ -6999,84 +6297,144 @@ public class Clue_Game_Hard extends BaseGameActivity implements GoogleApiClient.
         rewardedAd.loadAd();
     }
 
-    /*public void reward() {
-        rewardedVideoAd = new RewardedVideoAd(this, getString(R.string.fb_rewarded_ins));
-        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
-            @Override
-            public void onError(Ad ad, AdError error) {
-                // Rewarded video ad failed to load
+    private enum PendingAction {
+        NONE, POST_PHOTO, POST_STATUS_UPDATE
+    }
 
-            }
+    class DownloadFileAsync extends AsyncTask<String, String, String> {
 
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showDialog(DIALOG_DOWNLOAD_PROGRESS);
+        }
 
+        @Override
+        protected String doInBackground(String... aurl) {
+            InputStream input = null;
+            OutputStream output = null;
+            HttpURLConnection connection = null;
+            try {
+                URL url = new URL(aurl[0]);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
 
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Rewarded video ad clicked
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Rewarded Video ad impression - the event will fire when the
-                // video starts playing
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-
-                // Rewarded Video View Complete - the video has been played to the end.
-                // You can use this event to initialize your reward
-
-
-                // Call method to give reward
-                // giveReward();
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward();
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(Clue_Game_Hard.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                // expect HTTP 200 OK, so we don't mistakenly save error report
+                // instead of the file
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    return "Server returned HTTP " + connection.getResponseCode()
+                            + " " + connection.getResponseMessage();
                 }
 
-                fb_reward = 0;
-            }
-        };
-        rewardedVideoAd.loadAd(
-                rewardedVideoAd.buildLoadAdConfig()
-                        .withAdListener(rewardedVideoAdListener)
-                        .build());
+                // this will be useful to display download percentage
+                // might be -1: server did not report the length
+                final int fileLength = connection.getContentLength();
 
-    }*/
+                File SDCardRoot = getFilesDir();
+
+                File fol = new File(SDCardRoot + "/Nithra/solliadi/");
+                if (!fol.exists()) {
+                    fol.mkdirs();
+                }
+
+                File file = new File(SDCardRoot + "/Nithra/solliadi/", email + "-filename.zip");
+
+                // download the file
+                input = connection.getInputStream();
+                output = new FileOutputStream(file);
+
+                byte[] data = new byte[4096];
+                long total = 0;
+                int count;
+                while ((count = input.read(data)) != -1) {
+                    // allow canceling with back button
+                    if (isCancelled()) {
+                        input.close();
+                        return null;
+                    }
+                    total += count;
+                    publishProgress("" + (int) ((total * 100) / fileLength));
+                    // publishing the progress....
+                    if (fileLength > 0) // only if total length is known
+                        output.write(data, 0, count);
+                }
+
+                unpackZip(email + "-filename.zip");
+
+
+            } catch (Exception e) {
+
+
+                return e.toString();
+            } finally {
+                try {
+                    if (output != null)
+                        output.close();
+                    if (input != null)
+                        input.close();
+                } catch (IOException ignored) {
+                }
+
+                if (connection != null)
+                    connection.disconnect();
+            }
+            return null;
+
+        }
+
+
+        @Override
+        protected void onPostExecute(String unused) {
+
+            mProgressDialog.dismiss();
+
+            if (unused != null && unused.equals("ERROR_DOW")) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Clue_Game_Hard.this);
+                alertDialogBuilder.setCancelable(false);
+                alertDialogBuilder.setTitle("Network connection not available, please check it!");
+                alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                        downloadFileAsync.isCancelled();
+                        downloadFileAsync.cancel(true);
+
+
+                        if (exists("https://nithra.mobi/solliadi/" + email + "-filename.zip")) {
+                            System.out.print("========zip ok");
+                            checkmemory();
+                        }
+
+                    }
+                });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+
+
+            } else {
+                Utils.mProgress.dismiss();
+                newdown();
+
+                String date = sps.getString(Clue_Game_Hard.this, "date");
+                if (date.equals("0")) {
+                    Cursor c;
+                    c = myDbHelper.getQry("select * from maintable where gameid='2' and isfinish='0' order by id limit 1");
+                    c.moveToFirst();
+                    if (c.getCount() != 0) {
+                        next();
+                    } else {
+                        nextgamesdialog();
+                    }
+                } else {
+                    next();
+                }
+            }
+
+        }
+
+        protected void onProgressUpdate(String... progress) {
+            Log.d("ANDRO_ASYNC", progress[0]);
+            mProgressDialog.setProgress(Integer.parseInt(progress[0]));
+        }
+    }
 }
 

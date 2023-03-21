@@ -1,13 +1,14 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.provider.Settings;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -18,12 +19,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.ads.NativeAdLayout;
-
-
-
-
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -40,20 +38,20 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
-
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
 
 public class Game_States extends AppCompatActivity {
 
 
+    static SharedPreference sps = new SharedPreference();
     SQLiteDatabase exdb;
-    RelativeLayout myreport,result,profile,rule;
+    RelativeLayout myreport, result, profile, rule;
     LinearLayout adds;
     TextView tandc;
-    static SharedPreference sps=new SharedPreference();
     String downok = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,12 +63,12 @@ public class Game_States extends AppCompatActivity {
         exdb.execSQL("create table if not exists userdetail(id integer,name varchar,email varchar,phno integer,address varchar,city varchar,regid varchar);");
 
 
-        myreport=(RelativeLayout) findViewById(R.id.myreport);
-        result=(RelativeLayout)findViewById(R.id.result);
-        profile=(RelativeLayout)findViewById(R.id.profile);
-        adds=(LinearLayout)findViewById(R.id.ads_lay);
-        tandc=(TextView)findViewById(R.id.tandc);
-        rule=(RelativeLayout)findViewById(R.id.rule);
+        myreport = (RelativeLayout) findViewById(R.id.myreport);
+        result = (RelativeLayout) findViewById(R.id.result);
+        profile = (RelativeLayout) findViewById(R.id.profile);
+        adds = (LinearLayout) findViewById(R.id.ads_lay);
+        tandc = (TextView) findViewById(R.id.tandc);
+        rule = (RelativeLayout) findViewById(R.id.rule);
 
 
         if (Utils.isNetworkAvailable(getApplicationContext())) {
@@ -84,16 +82,16 @@ public class Game_States extends AppCompatActivity {
                 str_month = "0" + str_month;
             }
 
-            String str_day = ""+cur_day;
-            if(str_day.length()==1){
-                str_day = "0"+str_day;
+            String str_day = "" + cur_day;
+            if (str_day.length() == 1) {
+                str_day = "0" + str_day;
             }
-            final String str_date = cur_year+"-"+str_month+"-"+str_day;
+            final String str_date = cur_year + "-" + str_month + "-" + str_day;
 
-            if (sps.getString(Game_States.this,"s2"+str_date).equals("")) {
+            if (sps.getString(Game_States.this, "s2" + str_date).equals("")) {
                 System.out.println("=============userstates_send");
                 ///Prgress Bar Running:
-                new AsyncTask<String,String,String>(){
+                new AsyncTask<String, String, String>() {
 
                     @Override
                     protected void onPreExecute() {
@@ -110,7 +108,7 @@ public class Game_States extends AppCompatActivity {
                     @Override
                     protected void onPostExecute(String s) {
                         super.onPostExecute(s);
-                        sps.putString(Game_States.this,"s2"+str_date,"yes");
+                        sps.putString(Game_States.this, "s2" + str_date, "yes");
 
                     }
                 }.execute();
@@ -144,7 +142,7 @@ public class Game_States extends AppCompatActivity {
                     finish();
                     Intent intent = new Intent(Game_States.this, States_Activity.class);
                     startActivity(intent);
-                }else {
+                } else {
                     Toast.makeText(Game_States.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -154,9 +152,9 @@ public class Game_States extends AppCompatActivity {
             public void onClick(View v) {
                 if (Utils.isNetworkAvailable(Game_States.this)) {
                     finish();
-                    Intent intent = new Intent(Game_States.this,Result_List.class);
+                    Intent intent = new Intent(Game_States.this, Result_List.class);
                     startActivity(intent);
-                }else {
+                } else {
                     Toast.makeText(Game_States.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
                 }
 
@@ -193,7 +191,7 @@ public class Game_States extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //return super.onKeyDown(keyCode, event);
 
-        if(keyCode==KeyEvent.KEYCODE_BACK) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
 
             finish();
             Intent i = new Intent(Game_States.this, MainActivity.class);
@@ -210,15 +208,15 @@ public class Game_States extends AppCompatActivity {
         if (sps.getInt(Game_States.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
             native_banner_ad_container.setVisibility(View.GONE);
-        }else {
-            if (Utils.isNetworkAvailable(Game_States.this)){
-                fb_native(Game_States.this,native_banner_ad_container);
+        } else {
+            if (Utils.isNetworkAvailable(Game_States.this)) {
+                fb_native(Game_States.this, native_banner_ad_container);
                /* if (sps.getInt(Game_States.this,"native_banner_ads")==1){
                     New_Main_Gamelist.inflateAd(Game_States.this,native_banner_ad_container);
                 }else {
                     fb_native(Game_States.this,native_banner_ad_container);
                 }*/
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
 
@@ -257,28 +255,27 @@ public class Game_States extends AppCompatActivity {
 
     }
 
-    public void userstates_send()
-    {
-        if(sps.getString(Game_States.this,"complite_reg").equals("yes")) {
+    public void userstates_send() {
+        if (sps.getString(Game_States.this, "complite_reg").equals("yes")) {
             ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
             String date = null;
             String mobileno = null;
-            String reg_id = null,email = null,android_id = null;
-            String dgame1 = null,dgame2 = null,dgame3 = null,dgame4 = null,dscore = null,dplaytime = null;
-            String rgame1 = null,rgame2 = null,rgame3 = null,rgame4 = null,rscore = null,rplaytime = null;
+            String reg_id = null, email = null, android_id = null;
+            String dgame1 = null, dgame2 = null, dgame3 = null, dgame4 = null, dscore = null, dplaytime = null;
+            String rgame1 = null, rgame2 = null, rgame3 = null, rgame4 = null, rscore = null, rplaytime = null;
             String share_count = null;
 
 
             String dates = "";
-            String dgame1s = "",dgame2s= "",dgame3s = "",dgame4s = "",dscores = "",dplaytimes = "";
-            String rgame1s = "",rgame2s = "",rgame3s = "",rgame4s = "",rscores = "",rplaytimes = "";
+            String dgame1s = "", dgame2s = "", dgame3s = "", dgame4s = "", dscores = "", dplaytimes = "";
+            String rgame1s = "", rgame2s = "", rgame3s = "", rgame4s = "", rscores = "", rplaytimes = "";
             String share_counts = "";
-            String up_date="";
+            String up_date = "";
 
             Cursor sc3 = exdb.rawQuery("select * from userdetail", null);
             sc3.moveToFirst();
             if (sc3.getCount() != 0) {
-                mobileno=sc3.getString(sc3.getColumnIndexOrThrow("phno"));
+                mobileno = sc3.getString(sc3.getColumnIndexOrThrow("phno"));
                 email = sc3.getString(sc3.getColumnIndexOrThrow("email"));
                 reg_id = sc3.getString(sc3.getColumnIndexOrThrow("regid"));
                 android_id = Settings.Secure.getString(getContentResolver(),
@@ -305,21 +302,19 @@ public class Game_States extends AppCompatActivity {
 
             Cursor sc2 = exdb.rawQuery("select distinct (date) from userdata_r where isfinish=0 and date<'" + std + "' ", null);
 
-            if (sc2.getCount()!=0)
-            {
+            if (sc2.getCount() != 0) {
                 for (int i = 0; i < sc2.getCount(); i++) {
                     sc2.moveToPosition(i);
-                    if (sc2.getCount()!=0)
-                    {
+                    if (sc2.getCount() != 0) {
                         date = sc2.getString(sc2.getColumnIndexOrThrow("date"));
-                        dates=date+","+dates;
+                        dates = date + "," + dates;
 
-                        up_date=up_date+"or date='"+date+"'";
+                        up_date = up_date + "or date='" + date + "'";
                         // Toast.makeText(MainActivity.this, "dates"+dates, Toast.LENGTH_SHORT).show();
 
                         Cursor r = exdb.rawQuery("select * from userdata_r where date ='" + date + "' and type='d'", null);
                         r.moveToFirst();
-                        if (r.getCount()!=0) {
+                        if (r.getCount() != 0) {
                             for (int j = 0; j < r.getCount(); j++) {
 
                                 dgame1 = r.getString(r.getColumnIndexOrThrow("gm1"));
@@ -331,19 +326,19 @@ public class Game_States extends AppCompatActivity {
 
                             }
 
-                            dgame1s=dgame1+","+dgame1s;
-                            dgame2s=dgame2+","+dgame2s;
-                            dgame3s=dgame3+","+dgame3s;
-                            dgame4s=dgame4+","+dgame4s;
-                            dscores=dscore+","+dscores;
-                            dplaytimes=dplaytime+","+dplaytimes;
+                            dgame1s = dgame1 + "," + dgame1s;
+                            dgame2s = dgame2 + "," + dgame2s;
+                            dgame3s = dgame3 + "," + dgame3s;
+                            dgame4s = dgame4 + "," + dgame4s;
+                            dscores = dscore + "," + dscores;
+                            dplaytimes = dplaytime + "," + dplaytimes;
 
 
                         }
 
                         Cursor d = exdb.rawQuery("select * from userdata_r where date ='" + date + "' and type='r'", null);
                         d.moveToFirst();
-                        if (d.getCount()!=0) {
+                        if (d.getCount() != 0) {
                             for (int j = 0; j < d.getCount(); j++) {
 
                                 rgame1 = d.getString(d.getColumnIndexOrThrow("gm1"));
@@ -353,23 +348,23 @@ public class Game_States extends AppCompatActivity {
                                 rscore = d.getString(d.getColumnIndexOrThrow("score"));
                                 rplaytime = d.getString(d.getColumnIndexOrThrow("playtime"));
 
-                                rgame1s=rgame1+","+rgame1s;
-                                rgame2s=rgame2+","+rgame2s;
-                                rgame3s=rgame3+","+rgame3s;
-                                rgame4s=rgame4+","+rgame4s;
-                                rscores=rscore+","+rscores;
-                                rplaytimes=rplaytime+","+rplaytimes;
+                                rgame1s = rgame1 + "," + rgame1s;
+                                rgame2s = rgame2 + "," + rgame2s;
+                                rgame3s = rgame3 + "," + rgame3s;
+                                rgame4s = rgame4 + "," + rgame4s;
+                                rscores = rscore + "," + rscores;
+                                rplaytimes = rplaytime + "," + rplaytimes;
                             }
 
                         }
 
                         Cursor s = exdb.rawQuery("select * from userdata_r where date ='" + date + "' and type='s'", null);
                         s.moveToFirst();
-                        if (s.getCount()!=0) {
+                        if (s.getCount() != 0) {
                             for (int j = 0; j < s.getCount(); j++) {
                                 share_count = s.getString(s.getColumnIndexOrThrow("score"));
 
-                                share_counts=share_count+","+share_counts;
+                                share_counts = share_count + "," + share_counts;
 
                             }
                         }
@@ -379,93 +374,90 @@ public class Game_States extends AppCompatActivity {
 
                 }
 
-                up_date=up_date.substring(3);
+                up_date = up_date.substring(3);
                 // Toast.makeText(MainActivity.this, ""+up_date, Toast.LENGTH_SHORT).show();
-                System.out.println("date=========="+up_date);
+                System.out.println("date==========" + up_date);
 
 
                 nameValuePairs.add(new BasicNameValuePair("email", email));
-                nameValuePairs.add(new BasicNameValuePair("androidid",android_id));
-                nameValuePairs.add(new BasicNameValuePair("registrationid",reg_id));
-                nameValuePairs.add(new BasicNameValuePair("mobileno",mobileno));
+                nameValuePairs.add(new BasicNameValuePair("androidid", android_id));
+                nameValuePairs.add(new BasicNameValuePair("registrationid", reg_id));
+                nameValuePairs.add(new BasicNameValuePair("mobileno", mobileno));
 
-                nameValuePairs.add(new BasicNameValuePair("date",dates));
-                nameValuePairs.add(new BasicNameValuePair("dgame1",dgame1s));
-                nameValuePairs.add(new BasicNameValuePair("dgame2",dgame2s));
-                nameValuePairs.add(new BasicNameValuePair("dgame3",dgame3s));
-                nameValuePairs.add(new BasicNameValuePair("dgame4",dgame4s));
-                nameValuePairs.add(new BasicNameValuePair("dplaytime",dplaytimes));
-                nameValuePairs.add(new BasicNameValuePair("dscore",dscores));
+                nameValuePairs.add(new BasicNameValuePair("date", dates));
+                nameValuePairs.add(new BasicNameValuePair("dgame1", dgame1s));
+                nameValuePairs.add(new BasicNameValuePair("dgame2", dgame2s));
+                nameValuePairs.add(new BasicNameValuePair("dgame3", dgame3s));
+                nameValuePairs.add(new BasicNameValuePair("dgame4", dgame4s));
+                nameValuePairs.add(new BasicNameValuePair("dplaytime", dplaytimes));
+                nameValuePairs.add(new BasicNameValuePair("dscore", dscores));
 
-                nameValuePairs.add(new BasicNameValuePair("rgame1",rgame1s));
-                nameValuePairs.add(new BasicNameValuePair("rgame2",rgame2s));
-                nameValuePairs.add(new BasicNameValuePair("rgame3",rgame3s));
-                nameValuePairs.add(new BasicNameValuePair("rgame4",rgame4s));
-                nameValuePairs.add(new BasicNameValuePair("rplaytime",rplaytimes));
-                nameValuePairs.add(new BasicNameValuePair("rscore",rscores));
+                nameValuePairs.add(new BasicNameValuePair("rgame1", rgame1s));
+                nameValuePairs.add(new BasicNameValuePair("rgame2", rgame2s));
+                nameValuePairs.add(new BasicNameValuePair("rgame3", rgame3s));
+                nameValuePairs.add(new BasicNameValuePair("rgame4", rgame4s));
+                nameValuePairs.add(new BasicNameValuePair("rplaytime", rplaytimes));
+                nameValuePairs.add(new BasicNameValuePair("rscore", rscores));
 
-                nameValuePairs.add(new BasicNameValuePair("share",share_counts));
+                nameValuePairs.add(new BasicNameValuePair("share", share_counts));
                 String result = null;
 
                 InputStream is = null;
-                StringBuilder sb=null;
-                System.out.println("date###=========="+up_date);
-                try{
+                StringBuilder sb = null;
+                System.out.println("date###==========" + up_date);
+                try {
                     HttpClient httpclient = new DefaultHttpClient();
                     HttpPost httppost = new HttpPost("https://nithra.mobi/solliadi/userstatus_prize.php");
                     httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                     HttpResponse response = httpclient.execute(httppost);
                     HttpEntity entity = response.getEntity();
                     is = entity.getContent();
-                }catch(Exception e){
+                } catch (Exception e) {
                     Log.e("log_tag", "Error in https connection" + e.toString());
                 }
-                try{
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is,"iso-8859-1"),8);
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
-                    String line="0";
+                    String line = "0";
                     while ((line = reader.readLine()) != null) {
                         sb.append(line + "\n");
                     }
                     is.close();
-                    result=sb.toString();
+                    result = sb.toString();
 
-                    System.out.print("ord Result============"+result);
-
-
+                    System.out.print("ord Result============" + result);
 
 
-                }catch(Exception e){
+                } catch (Exception e) {
                 }
 
-                try{
+                try {
                     JSONArray jArray = new JSONArray(result);
-                    System.err.println("#######result==="+result);
-                    System.out.println("#######===  "+jArray.length());
-                    JSONObject json_data=null;
+                    System.err.println("#######result===" + result);
+                    System.out.println("#######===  " + jArray.length());
+                    JSONObject json_data = null;
                     //isvalid=""+jArray.length();
-                    downok=""+jArray.length();
-                    System.out.print("########insert ord ============"+downok);
-                    if(jArray.length()>0) {
+                    downok = "" + jArray.length();
+                    System.out.print("########insert ord ============" + downok);
+                    if (jArray.length() > 0) {
                         json_data = jArray.getJSONObject(0);
-                        for (int k = 0; k < jArray.length(); k++){
+                        for (int k = 0; k < jArray.length(); k++) {
 
-                            String results=json_data.getString("Status");
-                            System.out.println("=============Status"+results);
-                            if (results.equals("success")){
+                            String results = json_data.getString("Status");
+                            System.out.println("=============Status" + results);
+                            if (results.equals("success")) {
                                 exdb.execSQL("UPDATE userdata_r SET isfinish=1 WHERE " + up_date + "");
                                 System.out.println("==========Status ok");
                                 System.out.println("===========update_success");
-                                System.out.print("Insert for======="+up_date);
+                                System.out.print("Insert for=======" + up_date);
                             }
 
                             json_data = jArray.getJSONObject(k);
 
                         }
                     }
-                }
-                catch(JSONException e1){
+                } catch (JSONException e1) {
                 } catch (android.net.ParseException e1) {
                 }
 

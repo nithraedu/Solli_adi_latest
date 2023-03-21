@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/back_next2"
-    tools:context="nithra.tamil.word.game.solliadi.My_Multiplayer">
+    android:background="@drawable/back_next2">
 
     <RelativeLayout
         android:id="@+id/head"
@@ -297,7 +296,7 @@
         android:gravity="center"
         android:visibility="invisible">
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/ads_logo2"
             android:layout_width="30dp"
             android:layout_height="30dp" />

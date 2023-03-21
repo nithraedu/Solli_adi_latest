@@ -1,5 +1,9 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
+import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.price_url;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -19,13 +23,6 @@ import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.provider.Settings;
-
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatEditText;
-
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -42,6 +39,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -52,10 +55,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.facebook.ads.NativeAdLayout;
 
-
-
-
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,47 +62,39 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
-
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.price_url;
 
 public class LoginActivity extends AppCompatActivity {
 
-    AppCompatEditText name, emails, phno, address;
-    TextView back, login, pfedit;
+    static final int CAMERA_CAPTURE = 5;
+    private static final int RESULT_LOAD_IMG = 1;
+    private static final int REQUEST_CROP_ICON = 2;
     public static int MY_EMAIL_REQUEST_WRITE = 128;
     public static String android_id;
+    static SharedPreference sps = new SharedPreference();
+    final int PIC_CROP = 3;
+    final int PICK_IMAGE_REQUEST = 8;
+    AppCompatEditText name, emails, phno, address;
+    TextView back, login, pfedit;
     String after_otp, register_id, befour_check, before_time;
-
     CountDownTimer countDownTimer;          // built in android class CountDownTimer
     long totalTimeCountInMilliseconds;      // total count down time in milliseconds
     long timeBlinkInMilliseconds;           // start time of start blinking
     boolean blink;                          // controls the blinking .. on and off
     String isregster, rowid;
     String mobile_noo;
-    String disticts[] = {"மாவட்டம் ", "அரியலூர்", "சென்னை", "கோயம்புத்தூர்", "கடலூர்", "தர்மபுரி", "திண்டுக்கல்", "ஈரோடு", "காஞ்சிபுரம்", "கன்னியாகுமாரி", "கரூர்", "கிருஷ்ணகிரி", "மதுரை", "நாகப்பட்டினம்", "நாமக்கல்", "நீலகிரி", "பெரம்பலூர்", "புதுக்கோட்டை", "ராமநாதபுரம்", "சேலம்", "சிவகங்கை", "தஞ்சாவூர்", "தேனி", "தூத்துக்குடி", "திருச்சிராப்பள்ளி", "திருநெல்வேலி", "திருப்பூர்", "திருவள்ளூர்", "திருவண்ணாமலை", "திருவாரூர்", "வேலூர்", "விழுப்புரம்","விருதுநகர்", "புதுச்சேரி", "காரைக்கால்", "யானம்", "மஹி"};
+    String[] disticts = {"மாவட்டம் ", "அரியலூர்", "சென்னை", "கோயம்புத்தூர்", "கடலூர்", "தர்மபுரி", "திண்டுக்கல்", "ஈரோடு", "காஞ்சிபுரம்", "கன்னியாகுமாரி", "கரூர்", "கிருஷ்ணகிரி", "மதுரை", "நாகப்பட்டினம்", "நாமக்கல்", "நீலகிரி", "பெரம்பலூர்", "புதுக்கோட்டை", "ராமநாதபுரம்", "சேலம்", "சிவகங்கை", "தஞ்சாவூர்", "தேனி", "தூத்துக்குடி", "திருச்சிராப்பள்ளி", "திருநெல்வேலி", "திருப்பூர்", "திருவள்ளூர்", "திருவண்ணாமலை", "திருவாரூர்", "வேலூர்", "விழுப்புரம்", "விருதுநகர்", "புதுச்சேரி", "காரைக்கால்", "யானம்", "மஹி"};
     Spinner dist;
     String citys;
     SQLiteDatabase exdb;
-    static SharedPreference sps = new SharedPreference();
     CheckBox terms;
     LinearLayout adds;
-    CircleImageView login_txt;
-
     //pic picture
     Uri picUri;
-    private static int RESULT_LOAD_IMG = 1;
-    private static int REQUEST_CROP_ICON = 2;
-    static final int CAMERA_CAPTURE = 5;
-    final int PIC_CROP = 3;
-    final int PICK_IMAGE_REQUEST = 8;
     File fil;
     String fi;
     byte[] b = null;
@@ -166,7 +157,6 @@ public class LoginActivity extends AppCompatActivity {
         dist.setAdapter(dis);
         myDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/profile_img.jpg");
 
-        login_txt = (CircleImageView) findViewById(R.id.login_txt);
 
         phno.setText("" + sps.getString(LoginActivity.this, "prize_phno"));
         phno.setEnabled(false);
@@ -236,35 +226,9 @@ public class LoginActivity extends AppCompatActivity {
             RequestOptions requestOptions = new RequestOptions();
             requestOptions.placeholder(R.drawable.loading);
             requestOptions.error(R.drawable.pf_profilepic);
-            if (urls.equals("")) {
-
-            } else {
-                Glide.with(LoginActivity.this)
-                        .setDefaultRequestOptions(requestOptions)
-                        .load(urls)
-                        .apply(new RequestOptions()
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .skipMemoryCache(true))
-                        .listener(new RequestListener<Drawable>() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                //on load failed
-                                login_txt.setImageResource(R.drawable.pf_profilepic);
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                //on load success
-                                return false;
-                            }
-                        })
-                        .into(login_txt);
-            }
 
 
-        }else
-        {
+        } else {
             if ((ContextCompat.checkSelfPermission(LoginActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
                 //ActivityCompat.requestPermissions(New_Main_Activity.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 141);
             } else {
@@ -276,7 +240,6 @@ public class LoginActivity extends AppCompatActivity {
                     Bitmap bm = Bitmap.createScaledBitmap(bmp, 200, 200, false);
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                    login_txt.setImageBitmap(bm);
                     // user_name.setText("");
                 }
             }
@@ -436,64 +399,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-        login_txt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if ((ContextCompat.checkSelfPermission(LoginActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                        if (sps.getInt(LoginActivity.this, "permission") == 2) {
-                            androidx.appcompat.app.AlertDialog alertDialog = new androidx.appcompat.app.AlertDialog.Builder(LoginActivity.this).create();
-                            alertDialog.setMessage("உங்கள் புகைப்படத்தை பதிவேற்றம் செய்ய  settings-ல்  உள்ள permission-யை allow செய்யவேண்டும்");
-                            alertDialog.setCancelable(false);
-                            alertDialog.setButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE, "Settings ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                            Intent intent = new Intent();
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                            Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                            intent.setData(uri);
-                                            getApplicationContext().startActivity(intent);
-                                        }
-                                    });
 
-                            alertDialog.setButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-
-                            alertDialog.show();
-                        } else {
-                            androidx.appcompat.app.AlertDialog alertDialog = new androidx.appcompat.app.AlertDialog.Builder(LoginActivity.this).create();
-                            alertDialog.setMessage("புகைப்படம் பதிவு செய்ய பின்வரும் permission-யை allow செய்யவேண்டும்");
-                            alertDialog.setCancelable(false);
-                            alertDialog.setButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE, "OK ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                            if ((ContextCompat.checkSelfPermission(LoginActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                                ActivityCompat.requestPermissions(LoginActivity.this,
-                                                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 151);
-                                            } else {
-                                                set_photo();
-                                            }
-                                        }
-                                    });
-
-                            alertDialog.show();
-                        }
-                    } else {
-                        set_photo();
-                    }
-
-                } else {
-                    set_photo();
-                }
-            }
-        });
         terms_content.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -537,7 +443,7 @@ public class LoginActivity extends AppCompatActivity {
         terms.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked == true) {
+                if (isChecked) {
                     tm_policy = 1;
                 } else {
                     tm_policy = 0;
@@ -822,55 +728,55 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 151:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    sps.putInt(LoginActivity.this, "permission", 1);
-                    set_photo();
-                } else if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                        // user rejected the permission
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 151) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                sps.putInt(LoginActivity.this, "permission", 1);
+                set_photo();
+            } else if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                    // user rejected the permission
 
-                        boolean showRationale = false;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            showRationale = shouldShowRequestPermissionRationale(permissions[0]);
-                        }
-                        System.out.println("PERMISSION_DENIED : " + showRationale);
-
-                        if (!showRationale) {
-                            sps.putInt(LoginActivity.this, "permission", 2);
-                            //  sp.putString(New_Main_Activity.this, "PERMISSION_DENIED", "yes");
-
-                            androidx.appcompat.app.AlertDialog alertDialog = new androidx.appcompat.app.AlertDialog.Builder(LoginActivity.this).create();
-                            alertDialog.setMessage("உங்கள் புகைப்படத்தை பதிவேற்றம் செய்ய  settings-ல்  உள்ள permission-யை allow செய்யவேண்டும்");
-                            alertDialog.setCancelable(false);
-                            alertDialog.setButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE, "Settings ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                            Intent intent = new Intent();
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                            Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                            intent.setData(uri);
-                                            getApplicationContext().startActivity(intent);
-                                        }
-                                    });
-
-                            alertDialog.setButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-
-                            alertDialog.show();
-
-                        }
+                    boolean showRationale = false;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        showRationale = shouldShowRequestPermissionRationale(permissions[0]);
                     }
+                    System.out.println("PERMISSION_DENIED : " + showRationale);
 
+                    if (!showRationale) {
+                        sps.putInt(LoginActivity.this, "permission", 2);
+                        //  sp.putString(New_Main_Activity.this, "PERMISSION_DENIED", "yes");
+
+                        AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this).create();
+                        alertDialog.setMessage("உங்கள் புகைப்படத்தை பதிவேற்றம் செய்ய  settings-ல்  உள்ள permission-யை allow செய்யவேண்டும்");
+                        alertDialog.setCancelable(false);
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        Intent intent = new Intent();
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                        Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
+                                        intent.setData(uri);
+                                        getApplicationContext().startActivity(intent);
+                                    }
+                                });
+
+                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                        alertDialog.show();
+
+                    }
                 }
+
+            }
         }
     }
 
@@ -910,7 +816,7 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent("com.android.camera.action.CROP");
                 intent.setDataAndType(selectedImageUri, "image/*");
                 intent.putExtra("scale", true);
-                intent.putExtra("circleCrop", new String(""));
+                intent.putExtra("circleCrop", "");
                 intent.putExtra("return-data", false);
                 File cropImageFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/profile_img.jpg"); // Path to save the cropped image
 
@@ -926,7 +832,6 @@ public class LoginActivity extends AppCompatActivity {
                 Bitmap bm = Bitmap.createScaledBitmap(bmp, 200, 200, false);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                login_txt.setImageBitmap(bm);
 
                 b = baos.toByteArray();
                 temp = Base64.encodeToString(b, Base64.DEFAULT);
@@ -950,8 +855,6 @@ public class LoginActivity extends AppCompatActivity {
                     Bitmap bmp = BitmapFactory.decodeFile(path);
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
-                    login_txt.setImageBitmap(bmp);
-
                     b = out.toByteArray();
                     temp = Base64.encodeToString(b, Base64.DEFAULT);
                     sps.putString(getApplicationContext(), "profile_img", temp);
@@ -976,13 +879,9 @@ public class LoginActivity extends AppCompatActivity {
         String place_en = null;
         String district_en = null;
         String mo = null;
-        try {
-            name_en = URLEncoder.encode(name, "UTF-8");
-            place_en = URLEncoder.encode(place, "UTF-8");
-            district_en = URLEncoder.encode(district, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        name_en = URLEncoder.encode(name, StandardCharsets.UTF_8);
+        place_en = URLEncoder.encode(place, StandardCharsets.UTF_8);
+        district_en = URLEncoder.encode(district, StandardCharsets.UTF_8);
 
         String status = "";
         String charset = "UTF-8";
@@ -996,7 +895,7 @@ public class LoginActivity extends AppCompatActivity {
             multipart.addFormField("email", email);
             multipart.addFormField("place", place_en);
             multipart.addFormField("district", district_en);
-            System.out.println("================================districtstart"+district_en);
+            System.out.println("================================districtstart" + district_en);
             multipart.addFormField("otp", sps.getString(LoginActivity.this, "prize_otp"));
             String uri_photo = Environment.getExternalStorageDirectory().getAbsolutePath() + "/profile_img.jpg";
             File myDir = new File(uri_photo);
@@ -1033,7 +932,7 @@ public class LoginActivity extends AppCompatActivity {
                                 sps.putString(LoginActivity.this, "p_user_district", json_data.getString("district"));
                                 sps.putString(LoginActivity.this, "price_registration", "com");
 
-                                System.out.println("================================district"+json_data.getString("district"));
+                                System.out.println("================================district" + json_data.getString("district"));
                             }
                             System.out.println("===========status" + status);
                         }

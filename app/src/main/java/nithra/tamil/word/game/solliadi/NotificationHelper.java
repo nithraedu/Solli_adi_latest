@@ -14,21 +14,22 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.widget.RemoteViews;
+
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
-import android.widget.RemoteViews;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
 class NotificationHelper extends ContextWrapper {
-    private NotificationManager manager;
     public static final String PRIMARY_CHANNEL = "default";
     NotificationChannel chan1 = null;
     Context context;
-    SharedPreference sharedPreference=new SharedPreference();
+    SharedPreference sharedPreference = new SharedPreference();
+    private NotificationManager manager;
 
     public NotificationHelper(Context ctx) {
         super(ctx);
@@ -266,11 +267,11 @@ class NotificationHelper extends ContextWrapper {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
 
                         mBuilder = new Notification.Builder(context, PRIMARY_CHANNEL)
-                            .setSmallIcon(getSmallIcon())
-                            .setColor(Color.parseColor("#6460AA"))
-                            .setGroup("" + titlee)
-                            .setCustomContentView(contentView);
-                    }else {
+                                .setSmallIcon(getSmallIcon())
+                                .setColor(Color.parseColor("#6460AA"))
+                                .setGroup("" + titlee)
+                                .setCustomContentView(contentView);
+                    } else {
                         mBuilder = new Notification.Builder(context, PRIMARY_CHANNEL)
                                 .setSmallIcon(getSmallIcon())
                                 .setColor(Color.parseColor("#6460AA"))
@@ -386,7 +387,7 @@ class NotificationHelper extends ContextWrapper {
                             .setCustomBigContentView(expandView);
                 }
 
-                if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.S){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     mBuilder.setStyle(new Notification.DecoratedCustomViewStyle());
                 }
                 Notification notification = mBuilder.build();
@@ -523,7 +524,8 @@ class NotificationHelper extends ContextWrapper {
         } else {
             i = PendingIntent.FLAG_UPDATE_CURRENT;
         }
-        return stackBuilder.getPendingIntent((int) System.currentTimeMillis(), i);    }
+        return stackBuilder.getPendingIntent((int) System.currentTimeMillis(), i);
+    }
 
     public PendingIntent resultPendingIntent2(String type, String titt, String msgg, int idd, Class activity) {
 
@@ -537,7 +539,8 @@ class NotificationHelper extends ContextWrapper {
         } else {
             i = PendingIntent.FLAG_UPDATE_CURRENT;
         }
-        return stackBuilder.getPendingIntent((int) System.currentTimeMillis(), i);     }
+        return stackBuilder.getPendingIntent((int) System.currentTimeMillis(), i);
+    }
 
     public PendingIntent resultPendingIntent1(String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -549,7 +552,8 @@ class NotificationHelper extends ContextWrapper {
         } else {
             i = PendingIntent.FLAG_UPDATE_CURRENT;
         }
-        return stackBuilder.getPendingIntent((int) System.currentTimeMillis(), i);    }
+        return stackBuilder.getPendingIntent((int) System.currentTimeMillis(), i);
+    }
 
     public Intent set_intent(Context context, int iddd, String titt, String msgg, Class activity) {
         Intent intent;
@@ -558,8 +562,8 @@ class NotificationHelper extends ContextWrapper {
         intent.putExtra("message", msgg);
         intent.putExtra("title", titt);
         intent.putExtra("idd", iddd);
-        if (activity.toString().contains("nithra.tamil.word.game.solliadi.Solli_adi_multiplayer")){
-            System.out.println("#######multiplayrt"+activity);
+        if (activity.toString().contains("nithra.tamil.word.game.solliadi.Solli_adi_multiplayer")) {
+            System.out.println("#######multiplayrt" + activity);
             intent.putExtra("mul", "multi");
         }
         intent.putExtra("Noti_add", 1);

@@ -1,15 +1,14 @@
 package nithra.tamil.word.game.solliadi;
 
 import android.content.Context;
-import androidx.fragment.app.Fragment;
 import android.os.Bundle;
-import androidx.fragment.app.FragmentPagerAdapter;
-
-import androidx.fragment.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 
 import java.util.Locale;
 
@@ -23,17 +22,16 @@ public class Fragment_adapter extends FragmentPagerAdapter {
 
     public Fragment_adapter(Context context, FragmentManager fm) {
         super(fm);
-        this.contexts=context;
+        this.contexts = context;
     }
-
 
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-       View st;
-        st= inflater.inflate(R.layout.fragment_layout, container, false);
+        View st;
+        st = inflater.inflate(R.layout.fragment_layout, container, false);
 
-       return st;
+        return st;
 
     }
 
@@ -52,10 +50,12 @@ public class Fragment_adapter extends FragmentPagerAdapter {
 
         return null;
     }
+
     public int getCount() {
 
         return 3;
     }
+
     public CharSequence getPageTitle(int position) {
         Locale l = Locale.getDefault();
         switch (position) {

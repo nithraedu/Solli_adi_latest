@@ -3,7 +3,6 @@ package nithra.tamil.word.game.solliadi;
 import android.app.ActionBar;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -46,7 +45,7 @@ import nit_app.CodetoTamilUtil;
 import nithra.tamil.word.game.solliadi.adutils.AdUtils;
 
 
-public class Noti_Fragment extends AppCompatActivity implements Notify_del{
+public class Noti_Fragment extends AppCompatActivity implements Notify_del {
 
 
     SharedPreference sharedPreference;
@@ -57,12 +56,12 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del{
     TextView txtNoNotification, del_txt;
     ListView listView;
     int notification_counts = 0;
-    String title[], message[], msgType[], msgDate[], msgTime[], urls[];
-    int Id[], isclose[];
+    String[] title, message, msgType, msgDate, msgTime, urls;
+    int[] Id, isclose;
 
     int isvalided;
     String str_msg;
-   // static SharedPreference sharedPreference = new SharedPreference();
+    // static SharedPreference sharedPreference = new SharedPreference();
     Button noti_delete;
     ProgressDialog mProgress;
 
@@ -202,7 +201,7 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del{
 
     @Override
     public void onLongClick(int id, int title) {
-        delet_fun(id,title);
+        delet_fun(id, title);
     }
 
     public void delet_fun(final int id, final int title) {
@@ -294,7 +293,7 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del{
                 urls[i] = c.getString(c.getColumnIndexOrThrow("url"));
             }
 
-            notify_adapter adapter = new notify_adapter(Noti_Fragment.this, isclose, title, urls,Id,msgDate,msgTime);
+            notify_adapter adapter = new notify_adapter(Noti_Fragment.this, isclose, title, urls, Id, msgDate, msgTime);
             listView.setAdapter(adapter);
 
             if (Utils.isNetworkAvailable(Noti_Fragment.this)) {
@@ -498,7 +497,7 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del{
             native_banner_ad_container.setVisibility(View.GONE);
         } else {
             if (Utils.isNetworkAvailable(Noti_Fragment.this)) {
-               // load_addFromMain_fb(Noti_Fragment.this, native_banner_ad_container);
+                // load_addFromMain_fb(Noti_Fragment.this, native_banner_ad_container);
             } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
@@ -629,10 +628,10 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del{
             @Override
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
                 if (sharedPreference.getInt(Noti_Fragment.this, "purchase_ads") == 0) {
-                    if (interstitialAd!=null && interstitialAd.isReady()) {
+                    if (interstitialAd != null && interstitialAd.isReady()) {
                         //interstitialAd.showAd();
                         back_press();
-                    }else {
+                    } else {
                         setada();
                     }
                 }
@@ -688,7 +687,7 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del{
                 // TODO Auto-generated method stub
                 ConnectionDetector cd = new ConnectionDetector(Noti_Fragment.this);
                 final Boolean status = cd.connectiontointernet();
-                if (status == true) {
+                if (status) {
                     loadUrlInWebView(message);
                     notifcationUrlDialog.dismiss();
                 } else {
@@ -860,8 +859,6 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del{
     }
 
 
-
-
     public void industrial() {
         interstitialAd_notid = new com.facebook.ads.InterstitialAd(Noti_Fragment.this, getString(R.string.fb_noti_industrial));
         InterstitialAdListener interstitialAdListener = new InterstitialAdListener() {
@@ -907,7 +904,6 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del{
         };
 
 
-
     }
 
 
@@ -951,6 +947,7 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del{
         interstitialAd.loadAd();
 
     }
+
     public void loads_ads_banner() {
         System.out.println("#####=====notification_counts" + notification_counts);
         if (sharedPreference.getInt(Noti_Fragment.this, "purchase_ads") == 1) {
@@ -960,7 +957,7 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del{
             //notification_counts = 0;
             if (notification_counts == 0) {
                 if (Utils.isNetworkAvailable(Noti_Fragment.this)) {
-                    AdUtils.load_add_facebook(this,getResources().getString(R.string.Noti_Banner),layout_banner_ad);
+                    AdUtils.load_add_facebook(this, getResources().getString(R.string.Noti_Banner), layout_banner_ad);
                 } else {
                     layout_banner_ad.setVisibility(View.GONE);
                 }

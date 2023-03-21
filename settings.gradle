@@ -18,4 +18,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Solli_adi_Playstore"
 include ':app'
-include ':BaseGameUtils'

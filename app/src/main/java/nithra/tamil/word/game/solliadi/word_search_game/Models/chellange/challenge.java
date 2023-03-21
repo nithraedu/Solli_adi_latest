@@ -1,16 +1,12 @@
 package nithra.tamil.word.game.solliadi.word_search_game.Models.chellange;
 
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
-
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -20,82 +16,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import nithra.tamil.word.game.solliadi.New_Main_Activity;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
-import nithra.tamil.word.game.solliadi.Utils;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.helpclass.my_dialog;
 
 
 public class challenge extends AppCompatActivity {
 
-    static SharedPreference sp = new SharedPreference();
-    SQLiteDatabase mydb;
-    challenge_WS_GridFragment challenge_ws_gridFragment;
 
-
-    my_dialog myDialog_class = new my_dialog();
-
-    boolean start_time = false;
-
-    public void no_tool() {
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!sp.getString(challenge.this, "saval_showcase").equals("")) {
-                    System.out.println("no_tool ------------no_tool -------");
-                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                } else {
-                    no_tool();
-                }
-
-
-                System.out.println("no_tool ------------");
-
-            }
-        }, 1000);
-    }
-
-
-    /////////native advance////////////
-    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
-    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
-    /////////native advance////////////
     public static FrameLayout add3;
-
-
+    static SharedPreference sp = new SharedPreference();
     // Facebook variable starts
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
-
-    private enum PendingAction {
-        NONE, POST_PHOTO, POST_STATUS_UPDATE
-    }
-   /* private UiLifecycleHelper uiHelper;
-    private Session.StatusCallback callback = new Session.StatusCallback() {
-        @Override
-        public void call(Session session, SessionState state,
-                         Exception exception) {
-            // onSessionStateChange(session, state, exception);
-        }
-    };
-    private FacebookDialog.Callback dialogCallback = new FacebookDialog.Callback() {
-        @Override
-        public void onError(FacebookDialog.PendingCall pendingCall,
-                            Exception error, Bundle data) {
-            Log.d("HelloFacebook", String.format("Error: %s", error.toString()));
-        }
-
-        @Override
-        public void onComplete(FacebookDialog.PendingCall pendingCall,
-                               Bundle data) {
-            Log.d("HelloFacebook", "Success!");
-        }
-    };*/
-    // facebook variable ends
-
+    SQLiteDatabase mydb;
+    challenge_WS_GridFragment challenge_ws_gridFragment;
+    my_dialog myDialog_class = new my_dialog();
+    boolean start_time = false;
     FrameLayout fl_adplaceholder;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,12 +59,10 @@ public class challenge extends AppCompatActivity {
         fragmentTransaction.commit();
 
 
-        New_Main_Activity.fb_addload(challenge.this);
-
         if (sp.getInt(challenge.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
         } else {
-            if (myDialog_class.isNetworkAvailable(challenge.this)) {
+            if (my_dialog.isNetworkAvailable(challenge.this)) {
                 //fb_addload_score_screen(challenge.this);
 
                 /*AdRequest notadRequest = new AdRequest.Builder().build();
@@ -176,17 +112,9 @@ public class challenge extends AppCompatActivity {
 
         TextView noask = (TextView) openDialog_p.findViewById(R.id.noask);
         //  noask.setVisibility(View.INVISIBLE);
-        if (sp.getInt(challenge.this, "purchase_ads") == 1) {
-            ads_lay.setVisibility(View.GONE);
-        } else {
-            //  load_addinstall(challenge.this, ads_lay);
-            //  New_Main_Activity.load_addFromMain_BackPress_REC(challenge.this,ads_lay);
-            if (Utils.isNetworkAvailable(challenge.this)) {
-                New_Main_Activity.load_add_fb_rect(challenge.this, ads_lay);
-            } else {
-                ads_lay.setVisibility(View.GONE);
-            }
-        }
+
+        ads_lay.setVisibility(View.GONE);
+
 
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,7 +144,6 @@ public class challenge extends AppCompatActivity {
         openDialog_p.show();
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -224,4 +151,5 @@ public class challenge extends AppCompatActivity {
 
 
     }
+
 }

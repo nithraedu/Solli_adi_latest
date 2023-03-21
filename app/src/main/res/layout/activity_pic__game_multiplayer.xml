@@ -377,7 +377,7 @@
                 android:layout_width="@dimen/wh_35"
                 android:layout_height="@dimen/wh_35" />
 
-            <pl.droidsonroids.gif.GifImageView
+            <ImageView
                 android:layout_width="@dimen/lrtbp_25"
                 android:visibility="gone"
                 android:layout_height="@dimen/lrtbp_25"
@@ -678,7 +678,7 @@
         android:gravity="center"
         android:visibility="invisible"
         android:layout_height="wrap_content">
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/ads_logo2"
             android:layout_width="30dp"
             android:layout_height="30dp"

@@ -1,17 +1,12 @@
 package nithra.tamil.word.game.solliadi;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class New_intro_sc extends AppCompatActivity {
     static SharedPreference sps = new SharedPreference();
@@ -33,7 +28,7 @@ public class New_intro_sc extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sps.putString(New_intro_sc.this,"game_area","on");
+                sps.putString(New_intro_sc.this, "game_area", "on");
                 finish();
                 Intent i = new Intent(New_intro_sc.this, New_Main_Activity.class);
                 startActivity(i);

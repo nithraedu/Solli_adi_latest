@@ -10,7 +10,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -25,24 +24,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
 
 import com.facebook.ads.NativeAdLayout;
 
 
-
-
-
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-
-
 public class Levels extends AppCompatActivity {
+    public static SharedPreferences mPreferences;
     TextView time1, time2, time3, score1, score2, score3, levelid, levelname, l_id_name;
     Typeface typ, tyr;
     DataBaseHelper myDbHelper;
     TextView levela, levelb, levelc;
-    public static SharedPreferences mPreferences;
     SQLiteDatabase db;
     TextView action;
     TextView intro;
@@ -56,6 +49,7 @@ public class Levels extends AppCompatActivity {
 
     TextView l_word1, l_word2, l_word3;
     Context context = this;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_levels);
@@ -114,7 +108,7 @@ public class Levels extends AppCompatActivity {
         four.setSpan(new ForegroundColorSpan(Color.parseColor("#ff33ff")), 0, four.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         intro.append(four);
 
-        Spannable seven = new SpannableString( "\n\n3) தொடர்ந்து சரியான  10 விடைகளை கண்டுபிடித்தால், கூடுதல் விடைகளை நாணயங்கள் குறையாமல் அறிந்து கொள்ளலாம்.");
+        Spannable seven = new SpannableString("\n\n3) தொடர்ந்து சரியான  10 விடைகளை கண்டுபிடித்தால், கூடுதல் விடைகளை நாணயங்கள் குறையாமல் அறிந்து கொள்ளலாம்.");
 
         seven.setSpan(new ForegroundColorSpan(Color.parseColor("#664d00")), 0, seven.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         intro.append(seven);
@@ -207,17 +201,17 @@ public class Levels extends AppCompatActivity {
         if (spa.getInt(Levels.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
             native_banner_ad_container.setVisibility(View.GONE);
-        }else {
-            if (Utils.isNetworkAvailable(Levels.this)){
+        } else {
+            if (Utils.isNetworkAvailable(Levels.this)) {
                 native_banner_ad_container.setVisibility(View.GONE);
-               // fb_native(Levels.this,native_banner_ad_container);
+                // fb_native(Levels.this,native_banner_ad_container);
 
                 /* if (spa.getInt(Levels.this,"native_banner_ads")==1){
                     New_Main_Gamelist.inflateAd(Levels.this,native_banner_ad_container);
                 }else {
                     fb_native(Levels.this,native_banner_ad_container);
                 }*/
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
          /*   if (spa.getInt(Levels.this, "addlodedd") == 1) {

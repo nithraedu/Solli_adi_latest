@@ -9,9 +9,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -23,38 +20,33 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.facebook.ads.NativeAdLayout;
 
-
-
-
-
 import nithra.tamil.word.game.solliadi.DataBaseHelper;
-import nithra.tamil.word.game.solliadi.New_Main_Activity;
-import nithra.tamil.word.game.solliadi.New_Main_Gamelist;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
 import nithra.tamil.word.game.solliadi.Utils;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.Word_search_main;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-
 
 public class Word_search_levels extends AppCompatActivity {
-    TextView time1,time2,time3,score1,score2,score3,levelid,levelname;
-    Typeface typ,tyr;
-    DataBaseHelper myDbHelper;
-    TextView levela,levelb,levelc;
     public static SharedPreferences mPreferences;
+    TextView time1, time2, time3, score1, score2, score3, levelid, levelname;
+    Typeface typ, tyr;
+    DataBaseHelper myDbHelper;
+    TextView levela, levelb, levelc;
     SQLiteDatabase exdb;
     TextView action;
     WebView intro;
     TextView ttr_intro;
     MediaPlayer play1;
-    SharedPreference spa=new SharedPreference();
-    ImageView lock1,lock2,lock3;
+    SharedPreference spa = new SharedPreference();
+    ImageView lock1, lock2, lock3;
     LinearLayout adds;
-    TextView l_word1,l_word2,l_word3;
+    TextView l_word1, l_word2, l_word3;
     Context context = this;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,39 +54,38 @@ public class Word_search_levels extends AppCompatActivity {
         setContentView(R.layout.activity_ws_levels);
 
         myDbHelper = new DataBaseHelper(this);
-        time1=(TextView)findViewById(R.id.b_time);
-        time2=(TextView)findViewById(R.id.b_time2);
-        time3=(TextView)findViewById(R.id.b_time3);
+        time1 = (TextView) findViewById(R.id.b_time);
+        time2 = (TextView) findViewById(R.id.b_time2);
+        time3 = (TextView) findViewById(R.id.b_time3);
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
-        lock1=(ImageView)findViewById(R.id.l1_lockimg);
-        lock2=(ImageView)findViewById(R.id.l2_lockimg);
-        lock3=(ImageView)findViewById(R.id.l3_lockimg);
-        intro=(WebView)findViewById(R.id.introduction);
+        lock1 = (ImageView) findViewById(R.id.l1_lockimg);
+        lock2 = (ImageView) findViewById(R.id.l2_lockimg);
+        lock3 = (ImageView) findViewById(R.id.l3_lockimg);
+        intro = (WebView) findViewById(R.id.introduction);
 
 
-        l_word1=(TextView)findViewById(R.id.l_word_number1);
-        l_word2=(TextView)findViewById(R.id.l_word_number2);
-        l_word3=(TextView)findViewById(R.id.l_word_number3);
+        l_word1 = (TextView) findViewById(R.id.l_word_number1);
+        l_word2 = (TextView) findViewById(R.id.l_word_number2);
+        l_word3 = (TextView) findViewById(R.id.l_word_number3);
 
 
-        adds=(LinearLayout)findViewById(R.id.ads_lay);
-        score1=(TextView)findViewById(R.id.b_score);
-        score2=(TextView)findViewById(R.id.b_score2);
-        score3=(TextView)findViewById(R.id.b_score3);
-        levelid=(TextView)findViewById(R.id.l_level_id);
-        levelname=(TextView)findViewById(R.id.l_id_name);
-        ttr_intro=(TextView)findViewById(R.id.ttr_intro);
+        adds = (LinearLayout) findViewById(R.id.ads_lay);
+        score1 = (TextView) findViewById(R.id.b_score);
+        score2 = (TextView) findViewById(R.id.b_score2);
+        score3 = (TextView) findViewById(R.id.b_score3);
+        levelid = (TextView) findViewById(R.id.l_level_id);
+        levelname = (TextView) findViewById(R.id.l_id_name);
+        ttr_intro = (TextView) findViewById(R.id.ttr_intro);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        RelativeLayout levels=(RelativeLayout)findViewById(R.id.levels);
+        RelativeLayout levels = (RelativeLayout) findViewById(R.id.levels);
         Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button2_animation);
         levels.startAnimation(levels1);
-        RelativeLayout levels2=(RelativeLayout)findViewById(R.id.levels2);
+        RelativeLayout levels2 = (RelativeLayout) findViewById(R.id.levels2);
         Animation levels12 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button2_animation_delay1);
         levels2.startAnimation(levels12);
-        RelativeLayout levels3=(RelativeLayout)findViewById(R.id.levels3);
+        RelativeLayout levels3 = (RelativeLayout) findViewById(R.id.levels3);
         Animation levels13 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button2_animation_delay2);
         levels3.startAnimation(levels13);
-
 
 
         intro.loadUrl("file:///android_asset/ws_intro.html");
@@ -106,18 +97,16 @@ public class Word_search_levels extends AppCompatActivity {
             }
         });
 //sounds for game
-        play1=  MediaPlayer.create(this, R.raw.click);
+        play1 = MediaPlayer.create(this, R.raw.click);
         //
         //sounds for game
 
 
-        String snd=spa.getString(Word_search_levels.this, "snd");
-        if (snd.equals("off"))
-        {
-            play1.setVolume(0,0);
-        }else if (snd.equals("on"))
-        {
-            play1.setVolume(1,1);
+        String snd = spa.getString(Word_search_levels.this, "snd");
+        if (snd.equals("off")) {
+            play1.setVolume(0, 0);
+        } else if (snd.equals("on")) {
+            play1.setVolume(1, 1);
         }
         //
 
@@ -147,8 +136,6 @@ public class Word_search_levels extends AppCompatActivity {
         intro.append(six);*/
 
 
-
-
 //
    /*     exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
         Cursor c1 = exdb.rawQuery("select * from maintable where gameid= 2", null);
@@ -164,7 +151,7 @@ public class Word_search_levels extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().setDisplayShowHomeEnabled(false);
-        View view=getLayoutInflater().inflate(R.layout.action_sole, null);
+        View view = getLayoutInflater().inflate(R.layout.action_sole, null);
         getSupportActionBar().setCustomView(view);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 
@@ -173,23 +160,23 @@ public class Word_search_levels extends AppCompatActivity {
         action.setText("வார்த்தை தேடல்");
         //action.setTypeface(tyr);
         TextView action_back = (TextView) findViewById(R.id.action_back);
-        Drawable d=getResources().getDrawable(R.drawable.actionbar_back);
+        Drawable d = getResources().getDrawable(R.drawable.actionbar_back);
         getSupportActionBar().setBackgroundDrawable(d);
 
 
         action_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                spa.putInt(Word_search_levels.this,"val",1);
+                spa.putInt(Word_search_levels.this, "val", 1);
                 finish();
              /*   Intent i = new Intent(Word_search_levels.this, New_Main_Activity.class);
                 startActivity(i);*/
             }
         });
 //
-        levela=(TextView)findViewById(R.id.l_id_name);
-        levelb=(TextView)findViewById(R.id.l_id_name2);
-        levelc=(TextView)findViewById(R.id.l_id_name3);
+        levela = (TextView) findViewById(R.id.l_id_name);
+        levelb = (TextView) findViewById(R.id.l_id_name2);
+        levelc = (TextView) findViewById(R.id.l_id_name3);
 
         levela.setText("விளையாடு");
 
@@ -207,18 +194,20 @@ public class Word_search_levels extends AppCompatActivity {
 
 
     }
+
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //return super.onKeyDown(keyCode, event);
 
-        if(keyCode==KeyEvent.KEYCODE_BACK) {
-            spa.putInt(Word_search_levels.this,"val",1);
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            spa.putInt(Word_search_levels.this, "val", 1);
             finish();
-           // Intent i = new Intent(Word_search_levels.this, New_Main_Activity.class);
-           // startActivity(i);
+            // Intent i = new Intent(Word_search_levels.this, New_Main_Activity.class);
+            // startActivity(i);
 
         }
         return super.onKeyDown(keyCode, event);
     }
+
     protected void onResume() {
         super.onResume();
         NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
@@ -227,7 +216,7 @@ public class Word_search_levels extends AppCompatActivity {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
             native_banner_ad_container.setVisibility(View.GONE);
 
-        }else {
+        } else {
             if (Utils.isNetworkAvailable(Word_search_levels.this)) {
                 native_banner_ad_container.setVisibility(View.GONE);
                 //fb_native(Word_search_levels.this, native_banner_ad_container);

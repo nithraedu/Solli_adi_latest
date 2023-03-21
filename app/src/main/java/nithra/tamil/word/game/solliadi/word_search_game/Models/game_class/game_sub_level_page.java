@@ -28,21 +28,13 @@ import android.widget.TextView;
 
 import com.facebook.ads.NativeAdLayout;
 
-
-
-
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
-import nithra.tamil.word.game.solliadi.New_Main_Activity;
-import nithra.tamil.word.game.solliadi.New_Main_Gamelist;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
-import nithra.tamil.word.game.solliadi.Utils;
-import nithra.tamil.word.game.solliadi.word_search_game.Models.Word_search_main;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.extra.TinyDB;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.general.WordsearchGridFragment;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.general.general_play;
@@ -51,36 +43,28 @@ import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.LikeB
 import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.OnAnimationEndListener;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.OnLikeListener;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-
 
 public class game_sub_level_page extends Activity implements OnLikeListener, OnAnimationEndListener {
+    public static ArrayList<String> listview_sub_category = new ArrayList<>();
+    public static int game_stage = 0;
     TextView sub_level_title;
     ImageView go_back_sub_level, sub_view_level;
     ListView sub_level_list_view;
-
-    public static ArrayList<String> listview_sub_category = new ArrayList<>();
-
-    public static int game_stage=0;
     ArrayList<String> Ad_loaded = new ArrayList<>();
 
     int native_ad_posion = 5;
 
     sub_level_Adapter subLevelAdapter = new sub_level_Adapter();
     SharedPreference sp = new SharedPreference();
-    SQLiteDatabase mydb, Inner_mydb,exdb;
+    SQLiteDatabase mydb, Inner_mydb, exdb;
 
     Cursor cursor = null;
-    private TinyDB tinyDB;
-
     String table_name = "", level_category = "", level_id = "";
-
     ImageView icon_ad_img;
     LinearLayout n_icon_ad;
     my_dialog myDialog_class = new my_dialog();
-
     LinearLayout Baner_frame;
-
+    private TinyDB tinyDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +124,7 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
             Ad_loaded.add("no_add");
         }
 
-        game_stage=listview_sub_category.size();
+        game_stage = listview_sub_category.size();
 
         /*if (sp.getInt(game_sub_level_page.this, "addcontent") == 1)
         {
@@ -198,17 +182,201 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
         likeButton.setLiked(false);
     }
 
+    public void unlock_info() {
+        final Dialog dialog = new Dialog(game_sub_level_page.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        dialog.setContentView(R.layout.dia_level_unlock);
+        //dialog.getWindow().getAttributes().windowAnimations = R.style.win_anim;
+        if (!dialog.isShowing()) {
+            dialog.show();
+        }
 
 
+        TextView unlock_content_txt = (TextView) dialog.findViewById(R.id.unlock_content_txt);
+
+        unlock_content_txt.setText("நிலை " + (Integer.parseInt(level_id) - 1) + " ஐ முடித்தால் மட்டுமே நிலை " + level_id + " விடுவிக்கப்படும்");
+
+        TextView unlock_yes = (TextView) dialog.findViewById(R.id.unlock_yes);
+        unlock_yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog_class.media_player(getApplicationContext(), R.raw.click, "normal");
+                dialog.dismiss();
+            }
+        });
+        ImageView close_unlock = (ImageView) dialog.findViewById(R.id.close_unlock);
+        close_unlock.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog_class.media_player(getApplicationContext(), R.raw.click, "normal");
+                dialog.dismiss();
+            }
+        });
+    }
+
+    public void retry_concept() {
+        final Dialog dialog = new Dialog(game_sub_level_page.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        dialog.setContentView(R.layout.dia_retry);
+        dialog.setCancelable(false);
+
+        TextView cancel_retry = (TextView) dialog.findViewById(R.id.cancel_retry);
+        TextView done_retry = (TextView) dialog.findViewById(R.id.done_retry);
+
+        cancel_retry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        done_retry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog_class.media_player(getApplicationContext(), R.raw.click, "normal");
+                dialog.dismiss();
+                WordsearchGridFragment.mFoundWords.clear();
+                WordsearchGridFragment.mSolution.clear();
+
+                // Inner_mydb.execSQL("UPDATE '"+table_name+"' SET game_finish='" + 2 + "' where id='" + level_id + "' and game_cate='" + level_category + "'");
+
+                ContentValues contentValues12 = new ContentValues();
+                contentValues12.put("game_finish", 2);
+                Inner_mydb.update(table_name, contentValues12, "id='" + level_id + "' and game_cate='" + level_category + "'", null);
+                //game_cate='" + level_category + "'
+
+                tinyDB.putListObject("solutions" + level_category + level_id, new ArrayList<>(WordsearchGridFragment.mSolution));
+                tinyDB.putListObject("found" + level_category + level_id, new ArrayList<>(WordsearchGridFragment.mFoundWords));
+
+                sp.putString(game_sub_level_page.this, "sub_level_category", "" + level_id);
+                Intent intent = new Intent(game_sub_level_page.this, general_play.class);
+                finish();
+                startActivity(intent);
+            }
+        });
+
+
+        dialog.show();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        myDialog_class.media_player(getApplicationContext(), R.raw.click, "stop");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //myDialog_class. WST_Native_IconAd(game_sub_level_page.this,icon_ad_img,n_icon_ad);
+        // myDialog_class.WST_Native_BannerAd(game_sub_level_page.this, Baner_frame);
+
+        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
+
+        if (sp.getInt(game_sub_level_page.this, "purchase_ads") == 1) {
+            Baner_frame.setVisibility(View.GONE);
+            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
+            native_banner_ad_container.setVisibility(View.GONE);
+
+        } else {
+            native_banner_ad_container.setVisibility(View.GONE);
+           /* if (Utils.isNetworkAvailable(game_sub_level_page.this)) {
+                fb_native(game_sub_level_page.this, native_banner_ad_container);
+                *//*  if (sp.getInt(game_sub_level_page.this, "native_banner_ads") == 1) {
+                    New_Main_Gamelist.inflateAd(game_sub_level_page.this, native_banner_ad_container);
+                } else {
+                    fb_native(game_sub_level_page.this, native_banner_ad_container);
+                }*//*
+            } else {
+                native_banner_ad_container.setVisibility(View.GONE);
+            }
+*/
+            /*if (sp.getInt(game_sub_level_page.this, "addlodedd") == 1) {
+                New_Main_Activity.load_addFromMain(game_sub_level_page.this, Baner_frame);
+            } else {
+                if (Utils.isNetworkAvailable(game_sub_level_page.this)) {
+                    sp.putInt(game_sub_level_page.this, "addlodedd", 2);
+                    System.out.println("@IMG");
+                    final AdView adView = new AdView(game_sub_level_page.this);
+                    adView.setAdUnitId(getString(R.string.main_banner_ori));
+
+                    adView.setAdSize(AdSize.SMART_BANNER);
+                    AdRequest request = new AdRequest.Builder().build();
+                    adView.setAdListener(new AdListener() {
+                        public void onAdLoaded() {
+                            System.out.println("@@@loaded");
+                            Baner_frame.removeAllViews();
+                            Baner_frame.addView(adView);
+                            Baner_frame.setVisibility(View.VISIBLE);
+                            super.onAdLoaded();
+                        }
+
+                        @Override
+                        public void onAdFailedToLoad(int i) {
+                            System.out.println("@@@NOt loaded");
+                            super.onAdFailedToLoad(i);
+                        }
+                    });
+                    adView.loadAd(request);
+
+                }
+            }*/
+        }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(game_sub_level_page.this, game_level_page.class);
+        finish();
+        startActivity(intent);
+    }
+
+    //***************  Backup funtion   *******************
+    public void backup() {
+        final ProgressDialog dialog = ProgressDialog.show(game_sub_level_page.this, "TWS", "Creating Backup Please wait....", true);
+        final Handler handler = new Handler() {
+            public void handleMessage(Message msg) {
+                dialog.dismiss();
+
+            }
+        };
+        Thread checkUpdate = new Thread() {
+            public void run() {
+
+                try {
+                    File dbFile =
+                            new File(Environment.getDataDirectory() + "/data/nithra.tamil.letter.crossword.search/databases/Inner_DB");
+                    FileInputStream in = new FileInputStream(dbFile);
+
+                    File sdCard = getFilesDir();
+                    File dir = new File(sdCard.getAbsolutePath() + "/Nithra/TWS/");
+                    dir.mkdirs();
+                    File file = new File(dir, "Inner_DB");
+                    FileOutputStream f = new FileOutputStream(file);
+                    byte[] buffer = new byte[1024];
+                    int len1 = 0;
+                    while ((len1 = in.read(buffer)) > 0) {
+                        f.write(buffer, 0, len1);
+                    }
+                    f.close();
+
+                } catch (Exception e) {
+                    Log.d("CopyFileFromAssetsToSD", e.getMessage());
+
+                }
+                handler.sendEmptyMessage(0);
+            }
+        };
+        checkUpdate.start();
+    }
 
     public class sub_level_Adapter extends BaseAdapter {
 
-        TextView sub_level_txt, finish_report_txt,coin_msg_coin;
+        TextView sub_level_txt, finish_report_txt, coin_msg_coin;
         Chronometer timer_msg_chrome;
 
         FrameLayout caontent_ad_frame;
 
-        RelativeLayout level_go_lay,timer_message,like_key_lay,like_lock_lay;
+        RelativeLayout level_go_lay, timer_message, like_key_lay, like_lock_lay;
         LinearLayout coin_message;
 
         LikeButton like_key_img, like_lock_img;
@@ -261,15 +429,13 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
 
             finish_report_txt.setVisibility(View.VISIBLE);
 
-            if (my_dialog.isNetworkAvailable(game_sub_level_page.this))
-            {
+            if (my_dialog.isNetworkAvailable(game_sub_level_page.this)) {
                 if (Ad_loaded.get(position).equals("ad_done")) {
 
                     level_go_lay.setVisibility(View.GONE);
-                  //  Native_icon_ad.load_addcontent2(game_sub_level_page.this,caontent_ad_frame);
+                    //  Native_icon_ad.load_addcontent2(game_sub_level_page.this,caontent_ad_frame);
                 }
-            }else
-            {
+            } else {
                 caontent_ad_frame.setVisibility(View.GONE);
             }
 
@@ -280,7 +446,7 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
                 if (win_cursor.getCount() == 0) {
                     finish_report_txt.setText("விடுவிக்க ...");
                     //if (position == position) {
-                   if (position==0) {
+                    if (position == 0) {
                         finish_report_txt.setText("விளையாடலாமே !");
                     }
 
@@ -380,7 +546,6 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
             });
 
 
-
             level_go_lay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -430,195 +595,5 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
 
             return view1;
         }
-    }
-
-    public void unlock_info()
-    {
-        final Dialog dialog = new Dialog(game_sub_level_page.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        dialog.setContentView(R.layout.dia_level_unlock);
-        //dialog.getWindow().getAttributes().windowAnimations = R.style.win_anim;
-        if (!dialog.isShowing()){
-            dialog.show();
-        }
-
-
-        TextView unlock_content_txt=(TextView) dialog.findViewById(R.id.unlock_content_txt);
-
-        unlock_content_txt.setText("நிலை "+(Integer.parseInt(level_id)-1)+" ஐ முடித்தால் மட்டுமே நிலை "+level_id+ " விடுவிக்கப்படும்");
-
-        TextView unlock_yes=(TextView) dialog.findViewById(R.id.unlock_yes);
-        unlock_yes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getApplicationContext(), R.raw.click, "normal");
-                dialog.dismiss();
-            }
-        });
-        ImageView close_unlock=(ImageView)dialog.findViewById(R.id.close_unlock);
-        close_unlock.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getApplicationContext(), R.raw.click, "normal");
-                dialog.dismiss();
-            }
-        });
-    }
-
-    public void retry_concept() {
-        final Dialog dialog = new Dialog(game_sub_level_page.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        dialog.setContentView(R.layout.dia_retry);
-        dialog.setCancelable(false);
-
-        TextView cancel_retry = (TextView) dialog.findViewById(R.id.cancel_retry);
-        TextView done_retry = (TextView) dialog.findViewById(R.id.done_retry);
-
-        cancel_retry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-        done_retry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getApplicationContext(), R.raw.click, "normal");
-                dialog.dismiss();
-                WordsearchGridFragment.mFoundWords.clear();
-                WordsearchGridFragment.mSolution.clear();
-
-               // Inner_mydb.execSQL("UPDATE '"+table_name+"' SET game_finish='" + 2 + "' where id='" + level_id + "' and game_cate='" + level_category + "'");
-
-                ContentValues contentValues12 = new ContentValues();
-                contentValues12.put("game_finish", 2);
-                Inner_mydb.update(table_name, contentValues12, "id='" + level_id + "' and game_cate='"+level_category+"'", null);
-                //game_cate='" + level_category + "'
-
-                tinyDB.putListObject("solutions" + level_category + level_id, new ArrayList<>(WordsearchGridFragment.mSolution));
-                tinyDB.putListObject("found" + level_category + level_id, new ArrayList<>(WordsearchGridFragment.mFoundWords));
-
-                sp.putString(game_sub_level_page.this, "sub_level_category", "" + level_id);
-                Intent intent = new Intent(game_sub_level_page.this, general_play.class);
-                finish();
-                startActivity(intent);
-            }
-        });
-
-
-        dialog.show();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        myDialog_class.media_player(getApplicationContext(), R.raw.click, "stop");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //myDialog_class. WST_Native_IconAd(game_sub_level_page.this,icon_ad_img,n_icon_ad);
-       // myDialog_class.WST_Native_BannerAd(game_sub_level_page.this, Baner_frame);
-
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-
-        if (sp.getInt(game_sub_level_page.this, "purchase_ads") == 1) {
-            Baner_frame.setVisibility(View.GONE);
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            native_banner_ad_container.setVisibility(View.GONE);
-
-        } else {
-            native_banner_ad_container.setVisibility(View.GONE);
-           /* if (Utils.isNetworkAvailable(game_sub_level_page.this)) {
-                fb_native(game_sub_level_page.this, native_banner_ad_container);
-                *//*  if (sp.getInt(game_sub_level_page.this, "native_banner_ads") == 1) {
-                    New_Main_Gamelist.inflateAd(game_sub_level_page.this, native_banner_ad_container);
-                } else {
-                    fb_native(game_sub_level_page.this, native_banner_ad_container);
-                }*//*
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-*/
-            /*if (sp.getInt(game_sub_level_page.this, "addlodedd") == 1) {
-                New_Main_Activity.load_addFromMain(game_sub_level_page.this, Baner_frame);
-            } else {
-                if (Utils.isNetworkAvailable(game_sub_level_page.this)) {
-                    sp.putInt(game_sub_level_page.this, "addlodedd", 2);
-                    System.out.println("@IMG");
-                    final AdView adView = new AdView(game_sub_level_page.this);
-                    adView.setAdUnitId(getString(R.string.main_banner_ori));
-
-                    adView.setAdSize(AdSize.SMART_BANNER);
-                    AdRequest request = new AdRequest.Builder().build();
-                    adView.setAdListener(new AdListener() {
-                        public void onAdLoaded() {
-                            System.out.println("@@@loaded");
-                            Baner_frame.removeAllViews();
-                            Baner_frame.addView(adView);
-                            Baner_frame.setVisibility(View.VISIBLE);
-                            super.onAdLoaded();
-                        }
-
-                        @Override
-                        public void onAdFailedToLoad(int i) {
-                            System.out.println("@@@NOt loaded");
-                            super.onAdFailedToLoad(i);
-                        }
-                    });
-                    adView.loadAd(request);
-
-                }
-            }*/
-        }
-
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Intent intent = new Intent(game_sub_level_page.this, game_level_page.class);
-        finish();
-        startActivity(intent);
-    }
-
-
-
-    //***************  Backup funtion   *******************
-    public void backup() {
-        final ProgressDialog dialog = ProgressDialog.show(game_sub_level_page.this, "TWS", "Creating Backup Please wait....", true);
-        final Handler handler = new Handler() {
-            public void handleMessage(Message msg) {
-                dialog.dismiss();
-
-            }
-        };
-        Thread checkUpdate = new Thread() {
-            public void run() {
-
-                try {
-                    File dbFile =
-                            new File(Environment.getDataDirectory() + "/data/nithra.tamil.letter.crossword.search/databases/Inner_DB");
-                    FileInputStream in = new FileInputStream(dbFile);
-
-                    File sdCard = getFilesDir();
-                    File dir = new File(sdCard.getAbsolutePath() + "/Nithra/TWS/");
-                    dir.mkdirs();
-                    File file = new File(dir, "Inner_DB");
-                    FileOutputStream f = new FileOutputStream(file);
-                    byte[] buffer = new byte[1024];
-                    int len1 = 0;
-                    while ((len1 = in.read(buffer)) > 0) {
-                        f.write(buffer, 0, len1);
-                    }
-                    f.close();
-
-                } catch (Exception e) {
-                    Log.d("CopyFileFromAssetsToSD", e.getMessage());
-
-                }
-                handler.sendEmptyMessage(0);
-            }
-        };
-        checkUpdate.start();
     }
 }

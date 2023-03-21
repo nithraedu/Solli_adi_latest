@@ -1,7 +1,6 @@
 package nithra.tamil.word.game.solliadi;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -10,27 +9,26 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Created by lenovo on 17-06-2016.
  */
-public class customlist  extends BaseAdapter {
+public class customlist extends BaseAdapter {
 
-    String listu[],gameid[],fin[];
+    String[] listu, gameid, fin;
     Context context;
     Typeface typ;
     TextView txtpro;
-TextView date,gamename,playbutton;
+    TextView date, gamename, playbutton;
     SQLiteDatabase exdb;
     RelativeLayout list1;
 
-    public customlist(Context context, String listu[], String gameid[], String[] fin) {
+    public customlist(Context context, String[] listu, String[] gameid, String[] fin) {
 
-        this.fin=fin;
-        this.gameid=gameid;
-        this.listu=listu;
-        this.context=context;
+        this.fin = fin;
+        this.gameid = gameid;
+        this.listu = listu;
+        this.context = context;
 
     }
 
@@ -53,49 +51,42 @@ TextView date,gamename,playbutton;
         return i;
     }
 
-    public View getView(int position, View convertView, ViewGroup parent)
-    {
-        exdb = context.openOrCreateDatabase("Solli_Adi", context.MODE_PRIVATE, null);
-        int a=position+1;
-        LayoutInflater inflater=(LayoutInflater)context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-        View view= inflater.inflate(R.layout.activity_customlist,null);
+    public View getView(int position, View convertView, ViewGroup parent) {
+        exdb = context.openOrCreateDatabase("Solli_Adi", Context.MODE_PRIVATE, null);
+        int a = position + 1;
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.activity_customlist, null);
         date = (TextView) view.findViewById(R.id.date);
-        gamename=(TextView)view.findViewById(R.id.gamename);
-        playbutton=(TextView)view.findViewById(R.id.play);
-        list1=(RelativeLayout)view.findViewById(R.id.list1);
+        gamename = (TextView) view.findViewById(R.id.gamename);
+        playbutton = (TextView) view.findViewById(R.id.play);
+        list1 = (RelativeLayout) view.findViewById(R.id.list1);
         String tfoption = listu[position];
         String[] first = tfoption.split("-");
-        date.setText(""+first[2]+"-"+first[1]+"-"+first[0]);
+        date.setText("" + first[2] + "-" + first[1] + "-" + first[0]);
 
 
-
-       // date.setText(listu[position]);
-        if (gameid[position].equals("1")){
+        // date.setText(listu[position]);
+        if (gameid[position].equals("1")) {
             gamename.setText("படம் பார்த்து கண்டுபிடி");
             list1.setBackgroundResource(R.color.dark_blue);
-        }else if(gameid[position].equals("2"))
-        {
+        } else if (gameid[position].equals("2")) {
             gamename.setText("குறிப்பு மூலம் கண்டுபிடி");
             list1.setBackgroundResource(R.color.red);
-        }else if(gameid[position].equals("3"))
-        {
+        } else if (gameid[position].equals("3")) {
             gamename.setText("சொல்லுக்குள் சொல்");
             list1.setBackgroundResource(R.color.dark_yellow);
-        }else if(gameid[position].equals("4"))
-        {
+        } else if (gameid[position].equals("4")) {
             gamename.setText("சொல் விளையாட்டு");
             list1.setBackgroundResource(R.color.background_floating_material_dark);
         }
         //gamename.setText(gameid[position]);
 
-        if (fin[position].equals("1"))
-        {
+        if (fin[position].equals("1")) {
 
-           playbutton.setBackgroundResource(R.drawable.tick_background);
-        }else if (fin[position].equals("0"))
-        {
+            playbutton.setBackgroundResource(R.drawable.tick_background);
+        } else if (fin[position].equals("0")) {
 
-           playbutton.setBackgroundResource(R.drawable.yellow_question);
+            playbutton.setBackgroundResource(R.drawable.yellow_question);
         }
 
 

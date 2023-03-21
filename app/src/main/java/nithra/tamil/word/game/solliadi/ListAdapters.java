@@ -1,7 +1,5 @@
 package nithra.tamil.word.game.solliadi;
 
-import java.util.List;
-import java.util.Map;
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,14 +8,17 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+import java.util.List;
+import java.util.Map;
+
 public class ListAdapters extends BaseExpandableListAdapter {
 
-    private Activity context;
-    private Map<String, List<String>> ParentListItems;
-    private List<String> Items;
+    private final Activity context;
+    private final Map<String, List<String>> ParentListItems;
+    private final List<String> Items;
 
     public ListAdapters(Activity context, List<String> Items,
-                       Map<String, List<String>> ParentListItems) {
+                        Map<String, List<String>> ParentListItems) {
         this.context = context;
         this.ParentListItems = ParentListItems;
         this.Items = Items;
@@ -69,7 +70,7 @@ public class ListAdapters extends BaseExpandableListAdapter {
         if (ListView == null) {
             LayoutInflater infalInflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            ListView = infalInflater.inflate(R.layout.parent_list,null);
+            ListView = infalInflater.inflate(R.layout.parent_list, null);
         }
         TextView item = (TextView) ListView.findViewById(R.id.textView1);
         item.setText(CoursesFull);

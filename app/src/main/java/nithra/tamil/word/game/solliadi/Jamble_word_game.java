@@ -1,13 +1,12 @@
 package nithra.tamil.word.game.solliadi;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Activity.fb_addload_score_screen;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
 import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Senthamil_Thedal_Native_Banner;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,7 +20,6 @@ import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.os.SystemClock;
@@ -31,7 +29,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -48,9 +45,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.applovin.mediation.MaxAd;
@@ -58,23 +54,14 @@ import com.applovin.mediation.MaxAdListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxAdView;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.applovin.mediation.ads.MaxRewardedAd;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
 import com.facebook.ads.NativeAdLayout;
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.games.Games;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.example.games.basegameutils.BaseGameActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.File;
@@ -82,69 +69,45 @@ import java.io.FileOutputStream;
 import java.util.Calendar;
 import java.util.Random;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
 import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
-import nithra.tamil.word.game.solliadi.adutils.GameExitUtils;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
-public class Jamble_word_game extends BaseGameActivity implements View.OnTouchListener, View.OnDragListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Download_completed {
-    int fb_reward = 0;
-    //RewardedVideoAd rewardedVideoAd;
-    private MaxRewardedAd rewardedAd;
-
-    int reward_status = 0;
+public class Jamble_word_game extends AppCompatActivity implements View.OnTouchListener, View.OnDragListener, Download_completed {
+    public static final String TAG = "SavedGames";
     //*********************reward videos process 1***********************
     //private final String AD_UNIT_ID = getString(R.string.rewarded);
-    private static final String APP_ID = "ca-app-pub-4267540560263635~9441478701";
-    private static final long COUNTER_TIME = 10;
-    private static final int GAME_OVER_REWARD = 1;
-
-
-    private boolean mGameOver;
-    private boolean mGamePaused;
-
-    private long mTimeRemaining;
-    //reward videos process 1***********************
-
-    public static final String TAG = "SavedGames";
 
     // The AppState slot we are editing.  For simplicity this sample only manipulates a single
     // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
     // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
     private static final int APP_STATE_KEY = 1;
-
     // Request code used to invoke sign-in UI.
     private static final int RC_SIGN_IN = 9001;
-
     // Request code used to invoke Snapshot selection UI.
     private static final int RC_SELECT_SNAPSHOT = 9002;
-
-    /// Client used to interact with Google APIs.
-    private GoogleApiClient mGoogleApiClient;
+    static int ry;
+    static int rvo = 0;
+    //reward videos process 1***********************
+    static int mCoinCount = 20;
+    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     // True when the application is attempting to resolve a sign-in error that has a possible
     // resolution,
-    private boolean mIsResolving = false;
-
+    private final boolean mIsResolving = false;
     // True immediately after the user clicks the sign-in button/
-    private boolean mSignInClicked = false;
-
+    private final boolean mSignInClicked = false;
     // True if we want to automatically attempt to sign in the user at application start.
-    private boolean mAutoStartSignIn = true;
-
-
-    // Facebook variable starts
-
-    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
-
+    private final boolean mAutoStartSignIn = true;
+    int fb_reward = 0;
+    int reward_status = 0;
     int extra_coin_s = 0;
     int reward_play_count = 0;
     int ea = 0;
-
     TextView wd_txt1, wd_txt2, wd_txt3, wd_txt4, wd_txt5;
+    // Facebook variable starts
     TextView wd_txt6, wd_txt7, wd_txt8, wd_txt9, wd_txt10;
     TextView ask_ans, c_word_number, c_settings, ch_watts_app, ch_facebook;
     String tuch_val = "";
@@ -162,8 +125,6 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
     Dialog openDialog_p;
     TextView c_score_edit;
     Chronometer focus;
-    static int ry;
-    static int rvo = 0;
     Typeface typ, tyr;
     DataBaseHelper myDbHelper;
     Dialog openDialog_s;
@@ -171,11 +132,6 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
     TextView ttscores;
     int s = 0;
     int dia_dismiss = 0;
-
-    private MaxInterstitialAd ins_game,game_exit_ins;
-
-    CircleImageView ads_logo, ads_logo2;
-    static int mCoinCount = 20;
     int setval_vid;
     TextView coin_value, p_coins_red;
     int e2;
@@ -196,7 +152,13 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
     int share_name = 0;
     LinearLayout earncoin;
     String answer_shows = "";
-
+    //RewardedVideoAd rewardedVideoAd;
+    private MaxRewardedAd rewardedAd;
+    private boolean mGameOver;
+    private boolean mGamePaused;
+    private long mTimeRemaining;
+    /// Client used to interact with Google APIs.
+    private MaxInterstitialAd ins_game, game_exit_ins;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -223,30 +185,6 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
         newhelper3 = new Newgame_DataBaseHelper3(Jamble_word_game.this);
         myDbHelper = new DataBaseHelper(Jamble_word_game.this);
         newhelper4 = new Newgame_DataBaseHelper4(Jamble_word_game.this);
-
-
-
-
-        /*String gid = "18";
-        String qid = "";
-        for (int i = 0; i<=499; i++){
-            if (qid.equals("")){
-                qid = "" +i;
-            } else {
-                qid = qid + "," + i;
-            }
-        }
-        System.out.println("---qid : " +qid);
-        System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
-        newhelper6.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='18'");
-*/
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES) // Games
-                .addScope(Drive.SCOPE_APPFOLDER) // SavedGames
-                .build();
-
 
         //loadRewardedVideoAd();
 
@@ -357,13 +295,13 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
 
         //loads_ads_banner();
         if (sps.getInt(Jamble_word_game.this, "purchase_ads") == 0) {
-        if (Utils.isNetworkAvailable(Jamble_word_game.this)) {
-            adds = (LinearLayout) findViewById(R.id.ads_lay);
-            Ad_NativieUtils.load_add_facebook(this, getResources().getString(R.string.Senthamil_Thedal_Native_Banner_new), adds);
-        }else {
-            adds.setVisibility(View.GONE);
-        }
-        }else{
+            if (Utils.isNetworkAvailable(Jamble_word_game.this)) {
+                adds = (LinearLayout) findViewById(R.id.ads_lay);
+                Ad_NativieUtils.load_add_facebook(this, getResources().getString(R.string.Senthamil_Thedal_Native_Banner_new), adds);
+            } else {
+                adds.setVisibility(View.GONE);
+            }
+        } else {
             adds.setVisibility(View.GONE);
         }
 
@@ -385,10 +323,10 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
             // sequence.addSequenceItem(feedback, "கருத்துக்கள்  பொத்தானை அழுத்தி மேலும் உங்களுக்கு தெரிந்த விடைகளை எங்களுக்கு அனுப்பவும் .", "அடுத்து");
             //   sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Jamble_word_game.this)
-                    .setTarget(ch_facebook)
-                    .setDismissText("சரி")
-                    .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                    .build())
+                            .setTarget(ch_facebook)
+                            .setDismissText("சரி")
+                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
+                            .build())
                     .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                         @Override
                         public void onDismiss(MaterialShowcaseView itemView, int position) {
@@ -513,7 +451,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                     checkbox_ans.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if (isChecked == true) {
+                            if (isChecked) {
                                 sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                             } else {
                                 sps.putString(getApplicationContext(), "checkbox_ans", "");
@@ -1497,8 +1435,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                                 next();
                                 industrialload_game();
                                 return;
-                            }
-                            else{
+                            } else {
                                 ins_game.showAd();
                             }
 
@@ -1538,196 +1475,6 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
 
                 //noclue = 0;
 
-
-
-
-                if (Utils.isNetworkAvailable(getApplicationContext())) {
-                    if (getApiClient().isConnected()) {
-                        if (isSignedIn()) {
-                            int k1 = 0;
-                            Cursor sc2 = myDbHelper.getQry("select * from score ");
-                            sc2.moveToFirst();
-                            if (sc2.getCount() != 0) {
-                                k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
-                            }
-                            Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
-                        }
-                    }
-                }
-
-                if (sps.getString(getApplicationContext(), "1st_achiv").equals("")) {
-                    if (Utils.isNetworkAvailable(getApplicationContext())) {
-                        if (getApiClient().isConnected()) {
-                            if (isSignedIn()) {
-
-                                Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___1));
-                                sps.putString(getApplicationContext(), "1st_achiv", "yes");
-                            } else {
-                                sps.putString(getApplicationContext(), "1st_achiv", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "1st_achiv", "yes");
-                        }
-                    } else {
-                        sps.putString(getApplicationContext(), "1st_achiv", "yes");
-                    }
-
-                }
-
-                if (sps.getString(getApplicationContext(), "clue_a1").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "clue") >= 5) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___3));
-                                    sps.putString(getApplicationContext(), "clue_a1", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "clue_a1", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "clue_a1", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "clue_a1", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "clue", (sps.getInt(getApplicationContext(), "clue") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "clue", (sps.getInt(getApplicationContext(), "clue") + 1));
-                    }
-
-
-                }
-
-                if (sps.getString(getApplicationContext(), "ach8").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "ach8_a1") >= 25) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___8));
-                                    sps.putString(getApplicationContext(), "ach8", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach8", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach8", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "ach8", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "ach8_a1", (sps.getInt(getApplicationContext(), "ach8_a1") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "ach8_a1", (sps.getInt(getApplicationContext(), "ach8_a1") + 1));
-                    }
-
-
-                }
-
-                if (sps.getString(getApplicationContext(), "ach13").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "ach13_a1") >= 50) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___13));
-                                    sps.putString(getApplicationContext(), "ach13", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach13", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach13", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "ach13", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "ach13_a1", (sps.getInt(getApplicationContext(), "ach13_a1") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "ach13_a1", (sps.getInt(getApplicationContext(), "ach13_a1") + 1));
-                    }
-
-
-                }
-
-                if (sps.getString(getApplicationContext(), "ach15").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "ach15_a1") >= 50) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___15));
-                                    sps.putString(getApplicationContext(), "ach15", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach15", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach15", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "ach15", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "ach15_a1", (sps.getInt(getApplicationContext(), "ach15_a1") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "ach15_a1", (sps.getInt(getApplicationContext(), "ach15_a1") + 1));
-                    }
-
-
-                }
-                if (sps.getString(getApplicationContext(), "ach18").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "ach18_a1") >= 100) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement____18));
-                                    sps.putString(getApplicationContext(), "ach18", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach18", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach18", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "ach18", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "ach18_a1", (sps.getInt(getApplicationContext(), "ach18_a1") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "ach18_a1", (sps.getInt(getApplicationContext(), "ach18_a1") + 1));
-                    }
-                }
-
-                if (sps.getString(getApplicationContext(), "ach19").equals("")) {
-                    if (sps.getInt(getApplicationContext(), "ach19_a1") >= 250) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-
-                                    Games.Achievements.unlock(getApiClient(), getString(R.string.achievement___19));
-                                    sps.putString(getApplicationContext(), "ach19", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "ach19", "yes");
-                                }
-                            } else {
-                                sps.putString(getApplicationContext(), "ach19", "yes");
-                            }
-                        } else {
-                            sps.putString(getApplicationContext(), "ach19", "yes");
-                        }
-                        sps.putInt(getApplicationContext(), "ach19_a1", (sps.getInt(getApplicationContext(), "ach19_a1") + 1));
-                    } else {
-
-                        sps.putInt(getApplicationContext(), "ach19_a1", (sps.getInt(getApplicationContext(), "ach19_a1") + 1));
-                    }
-
-
-                }
-
-               /* dia_dismiss = 1;
-                openDialog_s.dismiss();*/
             }
         });
 
@@ -1850,40 +1597,6 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
     }
 
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onSignInFailed() {
-
-    }
-
-    @Override
-    public void onSignInSucceeded() {
-
-    }
-
-    //*********************reward videos process 3***********************
-
-
-    private void addCoins(int coins) {
-        mCoinCount = coins;
-        sps.putInt(Jamble_word_game.this, "reward_coin_txt", coins);
-        //mCoinCountText.setText("Coins: " + mCoinCount);
-    }
-
 
     //reward videos***********************//
     public void share_earn2(int a) {
@@ -1977,12 +1690,12 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
 
             @Override
             public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error"+error);
+                System.out.println("check error" + error);
             }
 
             @Override
             public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2"+error);
+                System.out.println("check error2" + error);
             }
         });
         game_exit_ins.loadAd();
@@ -2158,9 +1871,6 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
     @Override
     protected void onPause() {
         super.onPause();
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
         focus.stop();
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
@@ -3419,58 +3129,58 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
         sps.putString(Jamble_word_game.this, "game_area", "on");
         sps.putString(Jamble_word_game.this, "odd_time_start", "yes");
         sps.putInt(Jamble_word_game.this, "addlodedd", 0);
-            s = 1;
-            openDialog_p = new Dialog(Jamble_word_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-            openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+        s = 1;
+        openDialog_p = new Dialog(Jamble_word_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        openDialog_p.setContentView(R.layout.back_pess);
+        TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
+        TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
 
-            yes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    focus.stop();
-                    newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                    if (main_act.equals("")) {
-                        finish();
-                        openDialog_s.dismiss();
-                        Intent i = new Intent(Jamble_word_game.this, New_Main_Activity.class);
-                        startActivity(i);
-                    } else {
-                        finish();
-                        openDialog_s.dismiss();
-                    }
-
-                    //ad
-                    if (sps.getInt(Jamble_word_game.this, "purchase_ads") == 0) {
-                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                    openDialog_p.dismiss();
-                                    game_exit_ins.showAd();
-                                }
-                            }
-                        } else {
-                            openDialog_p.dismiss();
-                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
-                        }
-                    }else{
-                        openDialog_p.dismiss();
-                    }
-                    //ad
-
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                if (main_act.equals("")) {
+                    finish();
+                    openDialog_s.dismiss();
+                    Intent i = new Intent(Jamble_word_game.this, New_Main_Activity.class);
+                    startActivity(i);
+                } else {
+                    finish();
+                    openDialog_s.dismiss();
                 }
-            });
-            no.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
+                //ad
+                if (sps.getInt(Jamble_word_game.this, "purchase_ads") == 0) {
+                    if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
+                        sps.putInt(getApplicationContext(), "game_exit_ins", 0);
+                        if (Utils.isNetworkAvailable(getApplicationContext())) {
+                            if (game_exit_ins != null && game_exit_ins.isReady()) {
+                                openDialog_p.dismiss();
+                                game_exit_ins.showAd();
+                            }
+                        }
+                    } else {
+                        openDialog_p.dismiss();
+                        sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
+                    }
+                } else {
                     openDialog_p.dismiss();
                 }
-            });
-            openDialog_p.show();
+                //ad
+
+            }
+        });
+        no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                openDialog_p.dismiss();
+            }
+        });
+        openDialog_p.show();
 
     }
 
@@ -3616,8 +3326,9 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 150) {
 
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -3634,7 +3345,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                         finish();
                         Intent i = new Intent(Jamble_word_game.this, New_Main_Activity.class);
                         startActivity(i);
-                    } else if (android.Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
                         sps.putInt(Jamble_word_game.this, "permission", 0);
                         finish();
                         Intent i = new Intent(Jamble_word_game.this, New_Main_Activity.class);
@@ -3659,7 +3370,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                         finish();
                         Intent i = new Intent(Jamble_word_game.this, New_Main_Activity.class);
                         startActivity(i);
-                    } else if (android.Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
                         sps.putInt(Jamble_word_game.this, "permission", 0);
                         finish();
                         Intent i = new Intent(Jamble_word_game.this, New_Main_Activity.class);
@@ -3691,7 +3402,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
                     }
                     if (!showRationale) {
                         sps.putInt(Jamble_word_game.this, "permission", 2);
-                    } else if (android.Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
+                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
                         sps.putInt(Jamble_word_game.this, "permission", 0);
                     }
                 }
@@ -3735,8 +3446,8 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
     }
 
 
-    public void rewarded_ad(){
-        rewardedAd = MaxRewardedAd.getInstance( getResources().getString(R.string.Reward_Ins), this );
+    public void rewarded_ad() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
         rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
             public void onRewardedVideoStarted(MaxAd ad) {
@@ -3755,7 +3466,7 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
 
             @Override
             public void onAdLoaded(MaxAd ad) {
-                fb_reward=1;
+                fb_reward = 1;
             }
 
             @Override
@@ -3826,145 +3537,6 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
     }
 
 
-    /*public void reward(final Context context) {
-        rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-      *//*  rewardedVideoAd.setAdListener(new RewardedVideoAdListener() {
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status=1;
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status==1){
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                }else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-
-            @Override
-            public void onError(Ad ad, AdError adError) {
-                //Toast.makeText(context, ""+adError.getErrorCode(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-
-            }
-        });
-        rewardedVideoAd.loadAd();*//*
-        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
-            @Override
-            public void onError(Ad ad, AdError error) {
-                // Rewarded video ad failed to load
-
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
-                fb_reward = 1;
-
-
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Rewarded video ad clicked
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-                // Rewarded Video ad impression - the event will fire when the
-                // video starts playing
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-
-                // Rewarded Video View Complete - the video has been played to the end.
-                // You can use this event to initialize your reward
-
-
-                // Call method to give reward
-                // giveReward();
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward(context);
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-            }
-        };
-        rewardedVideoAd.loadAd(
-                rewardedVideoAd.buildLoadAdConfig()
-                        .withAdListener(rewardedVideoAdListener)
-                        .build());
-    }*/
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -3974,3 +3546,4 @@ public class Jamble_word_game extends BaseGameActivity implements View.OnTouchLi
         }
     }
 }
+

@@ -1,5 +1,7 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -7,14 +9,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.InterstitialAdListener;
-import com.facebook.ads.NativeAdLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatImageView;
 import android.text.Html;
 import android.view.View;
 import android.view.WindowManager;
@@ -24,15 +18,15 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatImageView;
 
-
-
-
-
+import com.facebook.ads.Ad;
+import com.facebook.ads.AdError;
+import com.facebook.ads.InterstitialAdListener;
+import com.facebook.ads.NativeAdLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import nit_app.CodetoTamilUtil;
-
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
 
 
 public class ST_Activity1 extends Activity {
@@ -48,12 +42,25 @@ public class ST_Activity1 extends Activity {
 
     SharedPreference spa = new SharedPreference();
 
-    LinearLayout adds,ads_lay;
+    LinearLayout adds, ads_lay;
 
     AppCompatImageView noti_cancel;
     FloatingActionButton share_but;
     TextView sticky;
     com.facebook.ads.InterstitialAd interstitialAd_notid;
+
+    public static void share_txt(Context context, String str) {
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("text/plain");
+        i.putExtra(Intent.EXTRA_SUBJECT,
+                "சொல்லிஅடி");
+        i.putExtra(
+                Intent.EXTRA_TEXT,
+                str + "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
+                        "விளையாட இங்கே கிளிக் செய்யவும் \n https://goo.gl/6hFhIy");
+        context.startActivity(Intent.createChooser(i, "Share via"));
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +88,7 @@ public class ST_Activity1 extends Activity {
         }*/
         if (spa.getInt(ST_Activity1.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
-        }else {
+        } else {
 
             /*AdRequest notadRequest = new AdRequest.Builder().build();
             interstitialAd.loadAd(notadRequest);*/
@@ -92,10 +99,10 @@ public class ST_Activity1 extends Activity {
 
         content_view = (WebView) findViewById(R.id.noti_web);
         share_but = (FloatingActionButton) findViewById(R.id.share_but);
-        sticky=(TextView)findViewById(R.id.sticky);
+        sticky = (TextView) findViewById(R.id.sticky);
         //ImageView backdrop=(ImageView) home_about_dialog.findViewById(R.id.backdrop);
-         noti_cancel=(AppCompatImageView)findViewById(R.id.noti_cancel);
-         ads_lay=(LinearLayout)findViewById(R.id.ads_lay);
+        noti_cancel = (AppCompatImageView) findViewById(R.id.noti_cancel);
+        ads_lay = (LinearLayout) findViewById(R.id.ads_lay);
 
      /*   adds=(LinearLayout)findViewById(R.id.ads_lay);
         content_view = (WebView) findViewById(R.id.web);
@@ -125,7 +132,7 @@ public class ST_Activity1 extends Activity {
             str_title = title;
         }
 
-        sticky = (TextView)findViewById(R.id.sticky);
+        sticky = (TextView) findViewById(R.id.sticky);
         sticky.setText(str_title);
 
         WebSettings ws = content_view.getSettings();
@@ -139,16 +146,16 @@ public class ST_Activity1 extends Activity {
 
         content_view.loadDataWithBaseURL("", summary, "text/html", "utf-8", null);
 
-        FloatingActionButton share_but = (FloatingActionButton)findViewById(R.id.share_but);
+        FloatingActionButton share_but = (FloatingActionButton) findViewById(R.id.share_but);
 
         share_but.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String result = Html.fromHtml(message).toString();
-                result = sharedPreference.getString(ST_Activity1.this,"view_web_tit") + "\n" + CodetoTamilUtil.convertToTamil(CodetoTamilUtil.BAMINI, result);
+                result = sharedPreference.getString(ST_Activity1.this, "view_web_tit") + "\n" + CodetoTamilUtil.convertToTamil(CodetoTamilUtil.BAMINI, result);
                 //share_txt(ST_Activity1.this, "" + result);
-                Share_content share_content=new Share_content();
-                share_content.Share_content(ST_Activity1.this,result);
+                Share_content share_content = new Share_content();
+                share_content.Share_content(ST_Activity1.this, result);
             }
         });
 
@@ -202,12 +209,12 @@ public class ST_Activity1 extends Activity {
                 if (interstitialAd_notid != null) {
                     if (interstitialAd_notid.isAdLoaded()) {
                         interstitialAd_notid.show();
-                    }else {
+                    } else {
                         finish();
                         Intent i = new Intent(ST_Activity1.this, New_Main_Activity.class);
                         startActivity(i);
                     }
-                }else {
+                } else {
                     finish();
                     Intent i = new Intent(ST_Activity1.this, New_Main_Activity.class);
                     startActivity(i);
@@ -318,17 +325,6 @@ public class ST_Activity1 extends Activity {
 
 
     }
-    public static void share_txt(Context context,String str) {
-        Intent i = new Intent(Intent.ACTION_SEND);
-        i.setType("text/plain");
-        i.putExtra(Intent.EXTRA_SUBJECT,
-                "சொல்லிஅடி");
-        i.putExtra(
-                Intent.EXTRA_TEXT,
-                str + "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                      "விளையாட இங்கே கிளிக் செய்யவும் \n https://goo.gl/6hFhIy");
-        context.startActivity(Intent.createChooser(i, "Share via"));
-    }
 
     @Override
     public void onBackPressed() {
@@ -338,12 +334,12 @@ public class ST_Activity1 extends Activity {
         if (interstitialAd_notid != null) {
             if (interstitialAd_notid.isAdLoaded()) {
                 interstitialAd_notid.show();
-            }else {
+            } else {
                 finish();
                 Intent i = new Intent(ST_Activity1.this, New_Main_Activity.class);
                 startActivity(i);
             }
-        }else {
+        } else {
             finish();
             Intent i = new Intent(ST_Activity1.this, New_Main_Activity.class);
             startActivity(i);
@@ -495,15 +491,15 @@ public class ST_Activity1 extends Activity {
         if (spa.getInt(ST_Activity1.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
             native_banner_ad_container.setVisibility(View.GONE);
-        }else {
-            if (Utils.isNetworkAvailable(ST_Activity1.this)){
-                fb_native(ST_Activity1.this,native_banner_ad_container);
+        } else {
+            if (Utils.isNetworkAvailable(ST_Activity1.this)) {
+                fb_native(ST_Activity1.this, native_banner_ad_container);
               /*  if (spa.getInt(ST_Activity1.this,"native_banner_ads")==1){
                     New_Main_Gamelist.inflateAd(ST_Activity1.this,native_banner_ad_container);
                 }else {
                     fb_native(ST_Activity1.this,native_banner_ad_container);
                 }*/
-            }else {
+            } else {
                 native_banner_ad_container.setVisibility(View.GONE);
             }
            /* if (spa.getInt(ST_Activity1.this, "addlodedd") == 1) {
@@ -539,8 +535,9 @@ public class ST_Activity1 extends Activity {
         }
 
     }
-    public void industrial(){
-        System.out.println("###############&&&&&&&&&"+sharedPreference.getInt(ST_Activity1.this, "Content_ads_shown_new"));
+
+    public void industrial() {
+        System.out.println("###############&&&&&&&&&" + sharedPreference.getInt(ST_Activity1.this, "Content_ads_shown_new"));
         interstitialAd_notid = new com.facebook.ads.InterstitialAd(ST_Activity1.this, getString(R.string.fb_noti_industrial));
         InterstitialAdListener interstitialAdListener = new InterstitialAdListener() {
             @Override
@@ -588,7 +585,7 @@ public class ST_Activity1 extends Activity {
             if (spa.getInt(ST_Activity1.this, "purchase_ads") == 1) {
                 System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
             } else {
-               // interstitialAd_notid.loadAd();
+                // interstitialAd_notid.loadAd();
                 interstitialAd_notid.loadAd(
                         interstitialAd_notid.buildLoadAdConfig()
                                 .withAdListener(interstitialAdListener)

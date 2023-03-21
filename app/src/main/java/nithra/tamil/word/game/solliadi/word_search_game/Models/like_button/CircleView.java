@@ -7,10 +7,11 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import androidx.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.util.Property;
 import android.view.View;
+
+import androidx.annotation.ColorInt;
 
 /**
  * Created by Miroslaw Stanek on 21.12.2015.
@@ -18,29 +19,48 @@ import android.view.View;
  */
 
 public class CircleView extends View {
+    public static final Property<CircleView, Float> INNER_CIRCLE_RADIUS_PROGRESS =
+            new Property<CircleView, Float>(Float.class, "innerCircleRadiusProgress") {
+                @Override
+                public Float get(CircleView object) {
+                    return object.getInnerCircleRadiusProgress();
+                }
+
+                @Override
+                public void set(CircleView object, Float value) {
+                    object.setInnerCircleRadiusProgress(value);
+                }
+            };
+    public static final Property<CircleView, Float> OUTER_CIRCLE_RADIUS_PROGRESS =
+            new Property<CircleView, Float>(Float.class, "outerCircleRadiusProgress") {
+                @Override
+                public Float get(CircleView object) {
+                    return object.getOuterCircleRadiusProgress();
+                }
+
+                @Override
+                public void set(CircleView object, Float value) {
+                    object.setOuterCircleRadiusProgress(value);
+                }
+            };
     private int START_COLOR = 0xFFFF5722;
     private int END_COLOR = 0xFFFFC107;
-
-    private ArgbEvaluator argbEvaluator = new ArgbEvaluator();
-
-    private Paint circlePaint = new Paint();
-    private Paint maskPaint = new Paint();
-
+    private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+    private final Paint circlePaint = new Paint();
+    private final Paint maskPaint = new Paint();
     private Bitmap tempBitmap;
     private Canvas tempCanvas;
-
     private float outerCircleRadiusProgress = 0f;
     private float innerCircleRadiusProgress = 0f;
-
     private int width = 0;
     private int height = 0;
-
     private int maxCircleSize;
 
     public CircleView(Context context) {
         super(context);
         init();
     }
+
 
     public CircleView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -51,7 +71,6 @@ public class CircleView extends View {
         super(context, attrs, defStyleAttr);
         init();
     }
-
 
     private void init() {
         circlePaint.setStyle(Paint.Style.FILL);
@@ -66,7 +85,6 @@ public class CircleView extends View {
         invalidate();
     }
 
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -74,7 +92,6 @@ public class CircleView extends View {
         if (width != 0 && height != 0)
             setMeasuredDimension(width, height);
     }
-
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -93,18 +110,12 @@ public class CircleView extends View {
         canvas.drawBitmap(tempBitmap, 0, 0, null);
     }
 
-    public void setInnerCircleRadiusProgress(float innerCircleRadiusProgress) {
-        this.innerCircleRadiusProgress = innerCircleRadiusProgress;
-        postInvalidate();
-    }
-
     public float getInnerCircleRadiusProgress() {
         return innerCircleRadiusProgress;
     }
 
-    public void setOuterCircleRadiusProgress(float outerCircleRadiusProgress) {
-        this.outerCircleRadiusProgress = outerCircleRadiusProgress;
-        updateCircleColor();
+    public void setInnerCircleRadiusProgress(float innerCircleRadiusProgress) {
+        this.innerCircleRadiusProgress = innerCircleRadiusProgress;
         postInvalidate();
     }
 
@@ -118,31 +129,11 @@ public class CircleView extends View {
         return outerCircleRadiusProgress;
     }
 
-    public static final Property<CircleView, Float> INNER_CIRCLE_RADIUS_PROGRESS =
-            new Property<CircleView, Float>(Float.class, "innerCircleRadiusProgress") {
-                @Override
-                public Float get(CircleView object) {
-                    return object.getInnerCircleRadiusProgress();
-                }
-
-                @Override
-                public void set(CircleView object, Float value) {
-                    object.setInnerCircleRadiusProgress(value);
-                }
-            };
-
-    public static final Property<CircleView, Float> OUTER_CIRCLE_RADIUS_PROGRESS =
-            new Property<CircleView, Float>(Float.class, "outerCircleRadiusProgress") {
-                @Override
-                public Float get(CircleView object) {
-                    return object.getOuterCircleRadiusProgress();
-                }
-
-                @Override
-                public void set(CircleView object, Float value) {
-                    object.setOuterCircleRadiusProgress(value);
-                }
-            };
+    public void setOuterCircleRadiusProgress(float outerCircleRadiusProgress) {
+        this.outerCircleRadiusProgress = outerCircleRadiusProgress;
+        updateCircleColor();
+        postInvalidate();
+    }
 
     public void setStartColor(@ColorInt int color) {
         START_COLOR = color;
