@@ -48,7 +48,7 @@
                 android:hint="மின்னஞ்சலை பதிவிடவும்"
                 android:minLines="6"
                 android:textColor="#000"
-                android:textSize="@dimen/txt_18"></EditText>
+                android:textSize="@dimen/txt_18" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -68,7 +68,7 @@
                     android:inputType="textMultiLine"
                     android:textColor="#000"
                     android:textColorHint="@color/red"
-                    android:textSize="@dimen/txt_18"></EditText>
+                    android:textSize="@dimen/txt_18" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
@@ -107,7 +107,7 @@
                         android:minLines="6"
                         android:textColor="#000"
                         android:textColorHint="@color/red"
-                        android:textSize="@dimen/txt_18"></EditText>
+                        android:textSize="@dimen/txt_18" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -127,7 +127,7 @@
                         android:minLines="6"
                         android:textColor="#000"
                         android:textColorHint="@color/red"
-                        android:textSize="@dimen/txt_18"></EditText>
+                        android:textSize="@dimen/txt_18" />
                 </com.google.android.material.textfield.TextInputLayout>
 
 

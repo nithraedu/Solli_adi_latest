@@ -32,7 +32,7 @@ public class LikeButton extends FrameLayout implements View.OnClickListener {
     private static final DecelerateInterpolator DECCELERATE_INTERPOLATOR = new DecelerateInterpolator();
     private static final AccelerateDecelerateInterpolator ACCELERATE_DECELERATE_INTERPOLATOR = new AccelerateDecelerateInterpolator();
     private static final OvershootInterpolator OVERSHOOT_INTERPOLATOR = new OvershootInterpolator(4);
-    SharedPreference sp = new SharedPreference();
+    final SharedPreference sp = new SharedPreference();
     private ImageView icon;
     private DotsView dotsView;
     private CircleView circleView;

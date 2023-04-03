@@ -11,7 +11,6 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
@@ -23,17 +22,15 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.facebook.ads.NativeAdLayout;
-
 import nithra.tamil.word.game.solliadi.DataBaseHelper;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
-import nithra.tamil.word.game.solliadi.Utils;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.Word_search_main;
 
 
 public class Word_search_levels extends AppCompatActivity {
     public static SharedPreferences mPreferences;
+    final SharedPreference spa = new SharedPreference();
     TextView time1, time2, time3, score1, score2, score3, levelid, levelname;
     Typeface typ, tyr;
     DataBaseHelper myDbHelper;
@@ -43,7 +40,6 @@ public class Word_search_levels extends AppCompatActivity {
     WebView intro;
     TextView ttr_intro;
     MediaPlayer play1;
-    SharedPreference spa = new SharedPreference();
     ImageView lock1, lock2, lock3;
     LinearLayout adds;
     TextView l_word1, l_word2, l_word3;
@@ -76,7 +72,7 @@ public class Word_search_levels extends AppCompatActivity {
         levelid = (TextView) findViewById(R.id.l_level_id);
         levelname = (TextView) findViewById(R.id.l_id_name);
         ttr_intro = (TextView) findViewById(R.id.ttr_intro);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         RelativeLayout levels = (RelativeLayout) findViewById(R.id.levels);
         Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button2_animation);
         levels.startAnimation(levels1);
@@ -111,45 +107,11 @@ public class Word_search_levels extends AppCompatActivity {
         //
 
 
-
-
-   /*     Spannable wordTwo = new SpannableString( "1)  இங்கு 3 குறிப்புகள் கொடுக்கப்படும் அதன் மூலம் விடையை கண்டுபிடிக்க வேண்டும்.");
-
-        wordTwo.setSpan(new ForegroundColorSpan(Color.BLUE), 0, wordTwo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        intro.append(wordTwo);
-
-        Spannable wordThree = new SpannableString( "\n\n2) முதலில் 1 குறிப்பு மட்டும் தரப்படும். 30 வினாடிகளுக்குப் பிறகு அடுத்த குறிப்பு தரப்படும். அடுத்த 30 வினாடிகளில் இறுதி குறிப்பு தரப்படும்.");
-
-        wordThree.setSpan(new ForegroundColorSpan(Color.parseColor("#ff33ff")), 0, wordThree.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        intro.append(wordThree);
-
-
-        Spannable four = new SpannableString( "\n\n3)  சரியான விடையை முதல் குறிப்பில்  கண்டுபிடித்துவிட்டால் 20 நாணயங்கள் வழங்கப்படும்.  இரண்டு குறிப்புகளைப் பயன்படுத்தி கண்டுபிடித்தால் 15 நாணயங்கள் வழங்கப்படும். மூன்றாவது குறிப்பில் கண்டுபிடிக்கப்படும் வார்த்தைகளுக்கு 10 நாணயங்கள் மட்டுமே வழங்கப்படும்.");
-
-        four.setSpan(new ForegroundColorSpan(Color.parseColor("#800080")), 0, four.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        intro.append(four);
-
-
-        Spannable six = new SpannableString( "\n\n5) கேள்விக்குறியை அழுத்தி விடையைக் காணலாம். அவ்வாறு பார்க்கும்பொழுது 100 நாணயங்கள் குறைக்கப்படும்.");
-
-        six.setSpan(new ForegroundColorSpan(Color.parseColor("#ff6633")), 0, six.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        intro.append(six);*/
-
-
-//
-   /*     exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
-        Cursor c1 = exdb.rawQuery("select * from maintable where gameid= 2", null);
-        c1.moveToFirst();
-
-        Cursor c2 = exdb.rawQuery("select * from maintable where gameid= 2 and isfinish='1'", null);
-        c2.moveToFirst();
-        int cs2 = c2.getCount()+1;
-        l_word1.setText(c2.getCount() + "/" + c1.getCount());
-*/
+        //
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         getSupportActionBar().setDisplayShowHomeEnabled(false);
         View view = getLayoutInflater().inflate(R.layout.action_sole, null);
         getSupportActionBar().setCustomView(view);
@@ -169,8 +131,6 @@ public class Word_search_levels extends AppCompatActivity {
             public void onClick(View view) {
                 spa.putInt(Word_search_levels.this, "val", 1);
                 finish();
-             /*   Intent i = new Intent(Word_search_levels.this, New_Main_Activity.class);
-                startActivity(i);*/
             }
         });
 //
@@ -201,66 +161,9 @@ public class Word_search_levels extends AppCompatActivity {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             spa.putInt(Word_search_levels.this, "val", 1);
             finish();
-            // Intent i = new Intent(Word_search_levels.this, New_Main_Activity.class);
-            // startActivity(i);
 
         }
         return super.onKeyDown(keyCode, event);
     }
 
-    protected void onResume() {
-        super.onResume();
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-
-        if (spa.getInt(Word_search_levels.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            native_banner_ad_container.setVisibility(View.GONE);
-
-        } else {
-            if (Utils.isNetworkAvailable(Word_search_levels.this)) {
-                native_banner_ad_container.setVisibility(View.GONE);
-                //fb_native(Word_search_levels.this, native_banner_ad_container);
-
-                /*    if (spa.getInt(Word_search_levels.this, "native_banner_ads") == 1) {
-                    New_Main_Gamelist.inflateAd(Word_search_levels.this, native_banner_ad_container);
-                } else {
-                    fb_native(Word_search_levels.this, native_banner_ad_container);
-                }*/
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-
-          /*  if (spa.getInt(Word_search_levels.this, "addlodedd") == 1) {
-                New_Main_Activity.load_addFromMain(Word_search_levels.this, adds);
-            }else {
-                if (Utils.isNetworkAvailable(Word_search_levels.this)) {
-                    spa.putInt(Word_search_levels.this, "addlodedd", 2);
-                    System.out.println("@IMG");
-                    final AdView adView = new AdView(Word_search_levels.this);
-                    adView.setAdUnitId(getString(R.string.main_banner_ori));
-
-                    adView.setAdSize(AdSize.SMART_BANNER);
-                    AdRequest request = new AdRequest.Builder().build();
-                    adView.setAdListener(new AdListener() {
-                        public void onAdLoaded() {
-                            System.out.println("@@@loaded");
-                            adds.removeAllViews();
-                            adds.addView(adView);
-                            adds.setVisibility(View.VISIBLE);
-                            super.onAdLoaded();
-                        }
-
-                        @Override
-                        public void onAdFailedToLoad(int i) {
-                            System.out.println("@@@NOt loaded");
-                            super.onAdFailedToLoad(i);
-                        }
-                    });
-                    adView.loadAd(request);
-
-                }
-            }*/
-        }
-
-    }
 }

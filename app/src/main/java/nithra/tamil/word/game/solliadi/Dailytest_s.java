@@ -26,11 +26,11 @@ import java.util.StringTokenizer;
 
 public class Dailytest_s extends BroadcastReceiver {
     final public static String ONE_TIME = "onetime";
-    SharedPreference sps = new SharedPreference();
+    final SharedPreference sps = new SharedPreference();
+    final int min = 1;
+    final int max = 3;
     SQLiteDatabase exdb;
     String letters;
-    int min = 1;
-    int max = 3;
     int random;
     NotificationHelper_offline noti;
 
@@ -41,7 +41,7 @@ public class Dailytest_s extends BroadcastReceiver {
         Time time = new Time();
         time.setToNow();
 
-        String armTodayOrTomo1 = "";
+        String armTodayOrTomo1;
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         Date time1 = sdf.parse(time.hour + ":" + time.minute);
         Date time2 = sdf.parse(selectedHour + ":" + selectedMinute);
@@ -62,7 +62,7 @@ public class Dailytest_s extends BroadcastReceiver {
         noti = new NotificationHelper_offline(context);
         exdb = context.openOrCreateDatabase("Solli_Adi", Context.MODE_PRIVATE, null);
 
-        Boolean isBooted = false;
+        boolean isBooted;
 
         final String BOOT_ACTION = "android.intent.action.BOOT_COMPLETED";
 
@@ -72,13 +72,7 @@ public class Dailytest_s extends BroadcastReceiver {
 
         if (!isBooted) {
             try {
-                //	createNotification2(context);
 
-                //sps.putInt(context,"daily_test_order",sps.getInt(context,"daily_test_order")+1);
-
-
-                //noti.createNotification_double_clue(context);
-                //noti.createNotification_double_find_diffward(context);
 
                 if (sps.getString(context, "newgame_notification").equals("start")) {
                     if (sps.getInt(context, "notification_order") == 0) {

@@ -17,7 +17,7 @@ import java.util.Locale;
  */
 public class Fragment_adapter extends FragmentPagerAdapter {
 
-    Context contexts;
+    final Context contexts;
     View as;
 
     public Fragment_adapter(Context context, FragmentManager fm) {

@@ -6,13 +6,10 @@ import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.price_url;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -23,7 +20,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
@@ -38,14 +34,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
-import com.facebook.ads.NativeAdLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,7 +52,7 @@ import nithra.tamil.word.game.solliadi.SharedPreference;
 import nithra.tamil.word.game.solliadi.Utils;
 
 public class Game_Status extends AppCompatActivity {
-    static SharedPreference sp = new SharedPreference();
+    static final SharedPreference sp = new SharedPreference();
     static String price_date = "";
     static String price_date_d = "";
     static String price_month_date = "";
@@ -93,7 +82,7 @@ public class Game_Status extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game__status);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         Newgame_DataBaseHelper myDbHelper = new Newgame_DataBaseHelper(Game_Status.this);
         myDbHelper.executeSql("create table if not exists prize_data(id INTEGER PRIMARY KEY AUTOINCREMENT,date varchar,score integer,isfinish integer DEFAULT 0);");
         back = (TextView) findViewById(R.id.back);
@@ -119,44 +108,6 @@ public class Game_Status extends AppCompatActivity {
         previus_month_my_status = (TextView) findViewById(R.id.previus_month_my_status);
 
 
-    /*    loading_data.getSettings().setJavaScriptEnabled(true);
-        loading_data.setWebViewClient(new WebViewClient());
-        WebSettings webSettings = loading_data.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setDomStorageEnabled(true);
-        loading_data.getSettings().setJavaScriptEnabled(true);
-        loading_data.getSettings().setDomStorageEnabled(true);*/
-
-      /*  new AsyncTask<String, String, String>() {
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
-
-            @Override
-            protected String doInBackground(String... params) {
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-
-
-                System.out.println("##########################urls_status"+urls_status);
-
-            }
-        }.execute();*/
-
-     /*   loading_data.setWebViewClient(new WebViewClient() {
-
-            public void onPageFinished(WebView view, String url) {
-                // do your stuff here
-                Utils.mProgress.dismiss();
-            }
-        });*/
         intros.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -272,8 +223,6 @@ public class Game_Status extends AppCompatActivity {
                         }
                     }
                 }
-               /* Intent i = new Intent(Game_Status.this, New_Main_Activity.class);
-                startActivity(i);*/
             }
         });
 
@@ -366,8 +315,8 @@ public class Game_Status extends AppCompatActivity {
                     @Override
                     public void onResponse(String ServerResponse) {
                         JSONArray jArray, jArray2;
-                        JSONObject json_data = null;
-                        JSONObject json_data2 = null;
+                        JSONObject json_data;
+                        JSONObject json_data2;
                         String data = "";
                         try {
                             jArray = new JSONArray(ServerResponse);
@@ -403,8 +352,6 @@ public class Game_Status extends AppCompatActivity {
                                 } else {
                                     if (month.equals(price_month_date) && year.equals(price_year_date)) {
                                         if (score.equals("0")) {
-                              /*      your_score.setVisibility(View.INVISIBLE);
-                                    u_pulli.setVisibility(View.INVISIBLE);*/
                                             u_pulli.setText("பரிசுத்திட்ட புள்ளிகள்:");
                                             your_score.setText(score);
                                             u_nilai.setText("உங்கள் நிலை:");
@@ -444,26 +391,18 @@ public class Game_Status extends AppCompatActivity {
                         if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                             //This indicates that the reuest has either time out or there is no connection
                             Utils.mProgress.dismiss();
-                            // Toast.makeText(Game_Status.this, "NoConnectionError", Toast.LENGTH_LONG).show();
-                            //  loading_data.setVisibility(View.INVISIBLE);
                             retry.setVisibility(View.VISIBLE);
                         } else if (error instanceof AuthFailureError) {
                             //Error indicating that there was an Authentication Failure while performing the request
                             Utils.mProgress.dismiss();
-                            // Toast.makeText(Game_Status.this, "AuthFailureError", Toast.LENGTH_LONG).show();
-                            //  loading_data.setVisibility(View.INVISIBLE);
                             retry.setVisibility(View.VISIBLE);
                         } else if (error instanceof ServerError) {
                             //Indicates that the server responded with a error response
                             Utils.mProgress.dismiss();
-                            // Toast.makeText(Game_Status.this, "ServerError", Toast.LENGTH_LONG).show();
-                            //  loading_data.setVisibility(View.INVISIBLE);
                             retry.setVisibility(View.VISIBLE);
                         } else if (error instanceof NetworkError) {
                             //Indicates that there was network error while performing the request
                             Utils.mProgress.dismiss();
-                            // Toast.makeText(Game_Status.this, "NetworkError", Toast.LENGTH_LONG).show();
-                            //     loading_data.setVisibility(View.INVISIBLE);
                             retry.setVisibility(View.VISIBLE);
                         } else if (error instanceof ParseError) {
                             // Indicates that the server response could not be parsed
@@ -521,46 +460,6 @@ public class Game_Status extends AppCompatActivity {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
             adds.setVisibility(View.GONE);
         } else {
-        /*    if (sp.getInt(Game_Status.this, "addlodedd") == 1) {
-                System.out.println("####Native");
-                New_Main_Activity.load_addFromMain(Game_Status.this, adds);
-            } else {
-                if (Utils.isNetworkAvailable(Game_Status.this)) {
-                    sp.putInt(Game_Status.this, "addlodedd", 2);
-                    System.out.println("@IMG");
-                    final AdView adView = new AdView(Game_Status.this);
-                    adView.setAdUnitId(getString(R.string.main_banner_ori));
-                    adView.setAdSize(AdSize.SMART_BANNER);
-                    AdRequest request = new AdRequest.Builder().build();
-                    adView.setAdListener(new AdListener() {
-                        public void onAdLoaded() {
-                            System.out.println("@@@loaded");
-                            adds.removeAllViews();
-                            adds.addView(adView);
-                            adds.setVisibility(View.VISIBLE);
-                            super.onAdLoaded();
-                        }
-
-                        @Override
-                        public void onAdFailedToLoad(int i) {
-                            System.out.println("@@@NOt loaded");
-                            super.onAdFailedToLoad(i);
-                        }
-                    });
-                    adView.loadAd(request);
-
-                }
-            }*/
-       /*     NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-            if (Utils.isNetworkAvailable(Game_Status.this)){
-                if (sp.getInt(Game_Status.this,"native_banner_ads")==1){
-                    New_Main_Gamelist.inflateAd(Game_Status.this,native_banner_ad_container);
-                }else {
-                    fb_native(Game_Status.this,native_banner_ad_container);
-                }
-            }else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }*/
         }
     }
 
@@ -581,63 +480,7 @@ public class Game_Status extends AppCompatActivity {
         intros.getSettings().setJavaScriptEnabled(true);
         intros.getSettings().setDomStorageEnabled(true);
 
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
 
-        if (sp.getInt(Game_Status.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            ads_lay.setVisibility(View.GONE);
-            native_banner_ad_container.setVisibility(View.GONE);
-
-        } else {
-           /* if (Utils.isNetworkAvailable(Game_Status.this)) {
-                if (sp.getInt(Game_Status.this, "native_banner_ads") == 1) {
-                    New_Main_Gamelist.inflateAd(Game_Status.this, native_banner_ad_container);
-                } else {
-                    fb_native(Game_Status.this, native_banner_ad_container);
-                }
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }*/
-
-           /* if (sp.getInt(Game_Status.this, "addlodedd") == 1) {
-                System.out.println("####Native");
-                New_Main_Activity.load_addFromMain(Game_Status.this, ads_lay);
-            } else {
-                if (Utils.isNetworkAvailable(Game_Status.this)) {
-                    sp.putInt(Game_Status.this, "addlodedd", 2);
-                    System.out.println("@IMG");
-                    final AdView adView = new AdView(Game_Status.this);
-                    adView.setAdUnitId(getString(R.string.main_banner_ori));
-                    adView.setAdSize(AdSize.SMART_BANNER);
-                    AdRequest request = new AdRequest.Builder().build();
-                    adView.setAdListener(new AdListener() {
-                        public void onAdLoaded() {
-                            System.out.println("@@@loaded");
-                            ads_lay.removeAllViews();
-                            ads_lay.addView(adView);
-                            ads_lay.setVisibility(View.VISIBLE);
-                            super.onAdLoaded();
-                        }
-
-                        @Override
-                        public void onAdFailedToLoad(int i) {
-                            System.out.println("@@@NOt loaded");
-                            super.onAdFailedToLoad(i);
-                        }
-                    });
-                    adView.loadAd(request);
-
-                }
-            }*/
-
-        }
-     /*   intros.setWebViewClient(new WebViewClient() {
-
-            public void onPageFinished(WebView view, String url) {
-                // do your stuff here
-                Utils.mProgress.dismiss();
-            }
-        });*/
         heading_txt.setText(show_txt);
         intros.setWebChromeClient(new WebChromeClient() {
             private ProgressDialog mProgress;
@@ -655,83 +498,10 @@ public class Game_Status extends AppCompatActivity {
                 }
             }
         });
-        /*intros.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon)
-            {
-                // TODO show you progress image
-                Utils.mProgress.show();
-                super.onPageStarted(view, url, favicon);
-            }
 
-            @Override
-            public void onPageFinished(WebView view, String url)
-            {
-                // TODO hide your progress image
-                Utils.mProgress.dismiss();
-
-                super.onPageFinished(view, url);
-            }
-        });*/
-        openDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-
-                if (sp.getInt(Game_Status.this, "purchase_ads") == 1) {
-                    System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-                    ads_lay.setVisibility(View.GONE);
-                    native_banner_ad_container.setVisibility(View.GONE);
-
-                } else {
-                   /* if (Utils.isNetworkAvailable(Game_Status.this)) {
-                        if (sp.getInt(Game_Status.this, "native_banner_ads") == 1) {
-                            New_Main_Gamelist.inflateAd(Game_Status.this, native_banner_ad_container);
-                        } else {
-                            fb_native(Game_Status.this, native_banner_ad_container);
-                        }
-                    } else {
-                        native_banner_ad_container.setVisibility(View.GONE);
-                    }*/
-                  /*  if (sp.getInt(Game_Status.this, "addlodedd") == 1) {
-                        System.out.println("####Native");
-                        New_Main_Activity.load_addFromMain(Game_Status.this, adds);
-                    } else {
-                        if (Utils.isNetworkAvailable(Game_Status.this)) {
-                            sp.putInt(Game_Status.this, "addlodedd", 2);
-                            System.out.println("@IMG");
-                            final AdView adView = new AdView(Game_Status.this);
-                            adView.setAdUnitId(getString(R.string.main_banner_ori));
-                            adView.setAdSize(AdSize.SMART_BANNER);
-                            AdRequest request = new AdRequest.Builder().build();
-                            adView.setAdListener(new AdListener() {
-                                public void onAdLoaded() {
-                                    System.out.println("@@@loaded");
-                                    adds.removeAllViews();
-                                    adds.addView(adView);
-                                    adds.setVisibility(View.VISIBLE);
-                                    super.onAdLoaded();
-                                }
-
-                                @Override
-                                public void onAdFailedToLoad(int i) {
-                                    System.out.println("@@@NOt loaded");
-                                    super.onAdFailedToLoad(i);
-                                }
-                            });
-                            adView.loadAd(request);
-
-                        }
-
-                    }*/
-                }
-
-            }
-        });
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 openDialog.dismiss();
             }
         });

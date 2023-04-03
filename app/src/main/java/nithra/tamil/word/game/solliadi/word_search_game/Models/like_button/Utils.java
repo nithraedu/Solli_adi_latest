@@ -31,9 +31,6 @@ public class Utils {
 
     public static List<Icon> getIcons() {
         List<Icon> icons = new ArrayList<>();
-        /*icons.add(new Icon(R.drawable.heart_on, R.drawable.heart_off, IconType.Heart));
-        icons.add(new Icon(R.drawable.star_on, R.drawable.star_off, IconType.Star));
-        icons.add(new Icon(R.drawable.thumb_on, R.drawable.thumb_off, IconType.Thumb));*/
 
         return icons;
     }

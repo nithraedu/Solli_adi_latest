@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -35,10 +34,10 @@ public class Dailytest_listview extends AppCompatActivity {
         setContentView(R.layout.activity_dailytest_listview);
 
         exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         list = (ListView) findViewById(R.id.dailytest_list);
         nodata = (TextView) findViewById(R.id.nodata);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         getSupportActionBar().setDisplayShowHomeEnabled(false);
         View view = getLayoutInflater().inflate(R.layout.action_sole, null);
         getSupportActionBar().setCustomView(view);
@@ -53,7 +52,7 @@ public class Dailytest_listview extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 finish();
-                Intent intent = new Intent(Dailytest_listview.this, MainActivity.class);
+                Intent intent = new Intent(Dailytest_listview.this, New_Main_Activity.class);
                 startActivity(intent);
             }
         });
@@ -141,7 +140,7 @@ public class Dailytest_listview extends AppCompatActivity {
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             finish();
-            Intent intent = new Intent(Dailytest_listview.this, MainActivity.class);
+            Intent intent = new Intent(Dailytest_listview.this, New_Main_Activity.class);
             startActivity(intent);
         }
         return super.onKeyDown(keyCode, event);

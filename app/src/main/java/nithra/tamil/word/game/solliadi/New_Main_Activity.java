@@ -53,7 +53,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -76,6 +75,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -92,18 +92,15 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
 import com.applovin.sdk.AppLovinSdk;
 import com.facebook.ads.AudienceNetworkAds;
-import com.facebook.ads.NativeAdLayout;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.RequestConfiguration;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
@@ -125,7 +122,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -185,14 +181,10 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     static final int PLUS_ONE_REQUEST_CODE = 0;
     static final String TAG2 = "TrivialDrive";
     static final int CAMERA_CAPTURE = 5;
+    static final int mCoinCount = 20;
+    static final SharedPreference sps = new SharedPreference();
     private static final String LOADING_PHRASE_CONFIG_KEY = "app_sort_order";
     private static final String LOADING_PHRASE_CONFIG_KEY2 = "SolliadiPrize";
-    /*public static LinearLayout add;
-    public static LinearLayout add2;
-    public static AdView adView2;
-    public static AdView adView;
-    public static AdRequest request;
-    public static AdRequest request2;*/
     private static final int RESULT_LOAD_IMG = 1;
     private static final int REQUEST_CROP_ICON = 2;
     public static SharedPreferences mPreferences;
@@ -210,15 +202,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     public static String main_act = "";
     //////////////////////////////////////////////////////////New Activity variables////////////////////////////////
     public static LinearLayout fb_rect;
-    static int mCoinCount = 20;
-    static SharedPreference sps = new SharedPreference();
     static LinearLayout ads_lay;
-    static LinearLayout ads_lay_rectangle;
-    static LinearLayout ads_lay_new;
-    static LinearLayout fb_rectangle;
-    static LinearLayout fb_rectangle_scoresc;
-    static LinearLayout fb_rectangle_mutiplayer;
-    static NativeAdLayout nativeAdLayout;
     static SharedPreference spd = new SharedPreference();
     static String price_date = "";
     static String price_date_d = "";
@@ -232,6 +216,17 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     static int status_act = 0, multi_val = 0;
     final int PIC_CROP = 3;
     final int PICK_IMAGE_REQUEST = 8;
+    final Context context = this;
+    final SharedPreference wee = new SharedPreference();
+    final SharedPreference spa = new SharedPreference();
+    final int back_flag = 0;
+    final int vercode = 0;
+    final ArrayList<String> column = new ArrayList<>(Arrays.asList("challenge_word", "oposit_word", "Q_A_word", "missing_word"));
+    final ArrayList<String> table = new ArrayList<>(Arrays.asList("challenge", "yethirsoll", "Q_A", "missing_word"));
+    final SharedPreference sp = new SharedPreference();
+    final int minmum = 1;
+    final int maximum = 4;
+    final int mCurScreen = -1;
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     private final int c_total = 1050;
     private final PendingAction pendingAction = PendingAction.NONE;
@@ -246,8 +241,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     ///ad file
     private final int exit = 0;
     private final String mCurrentSaveName = "snapshotTemp";
-    Context context = this;
-    SharedPreference wee = new SharedPreference();
     RippleView wordgame1, cluegame, picgame, solukulsol, oddmanout, matchword, opposite_word, english_to_tamil, right_order, riddle, tirukural_s, error_correction, fill_in_blanks, eng_to_tamil, pic_to_words;
     DataBaseHelper myDbHelper;
     Newgame_DataBaseHelper newhelper;
@@ -273,13 +266,10 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     TextView wordgame, hintgame, solegame, pictgame;
     TranslateAnimation translateAnimation1, translateAnimation2, translateAnimation3, translateAnimation4, translateAnimation5;
     TranslateAnimation translateAnimation6, translateAnimation7, translateAnimation8, translateAnimation9, translateAnimation10;
-    SharedPreference spa = new SharedPreference();
     TextView name_main, noti;
-    int back_flag = 0;
     int feedcheck;
     SQLiteDatabase myDB = null;
     DrawerLayout drawer;
-    int vercode = 0;
     String vername;
     TextView ver_name, version_code;
     String version_name;
@@ -321,9 +311,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     //nithra.mobi
     int fb_reward = 0;
     int reward_status = 0;
-    //RewardedVideoAd rewardedVideoAd;
-    /*private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/4032646722";
-    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~9746757509";*/ String strr_html;
+    String strr_html;
     RelativeLayout adsicon2;
     FrameLayout ads_layout_bottom;
     TextView opposite_word_id, english_to_tamil_id;
@@ -342,9 +330,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     /////////Native_BackPress_Advanced////////////
     DataBaseHelper_wordsearch myDbHelperd;
     Cursor update_cursor = null;
-    ArrayList<String> column = new ArrayList<>(Arrays.asList("challenge_word", "oposit_word", "Q_A_word", "missing_word"));
-    ArrayList<String> table = new ArrayList<>(Arrays.asList("challenge", "yethirsoll", "Q_A", "missing_word"));
-    SharedPreference sp = new SharedPreference();
     int version_code_n = 0, update = 0;
     String current_date = "";
     RippleView word_search_main, match_the_fallows;
@@ -355,8 +340,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     int extra_coin_s = 0;
     int reward_play_count = 0;
     int ea = 0;
-    int minmum = 1;
-    int maximum = 4;
     int randomno;
     Dialog openDialog;
     TextView coin_value;
@@ -365,7 +348,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     RelativeLayout prize_lay;
     AppUpdateManager appUpdateManager;
     Dialog openDialogterm;
-    int mCurScreen = -1;
     Dialog openDialog1;
     Uri picUri;
     String img_str = "";
@@ -386,17 +368,17 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     private long mTimeRemaining;
     private int c_counter = 0;
     private byte[] mSaveGameData;
-    private MaxRewardedAd rewardedAd;
+    private RewardedAd rewardedAd;
+
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private BillingManager mBillingManager;
-    private MaxInterstitialAd interstitialAd;
 
     public static void sharedPrefAdd(String one, String two, final SharedPreferences mPreferences) {
         // TODO Auto-generated method stub
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putString(one, two);
-        editor.commit();
+        editor.apply();
     }
 
     public static boolean exists(String URLName) {
@@ -415,7 +397,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
 
     public static Boolean clr_chace(Context context) {
-        Boolean aBoolean = false;
+        boolean aBoolean = false;
         SharedPreference sharedPreference = new SharedPreference();
         Calendar calendar = Calendar.getInstance();
         long next_hour = calendar.getTimeInMillis();
@@ -437,11 +419,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         try {
             date_today = sdf1.parse(today_date);
-            if (!sharedPreference.getString(context, "clr_chace").equals("")) {
+            if (!sharedPreference.getString(context, "clr_chace").equals(""))
                 date_app_update = sdf1.parse(sharedPreference.getString(context, "clr_chace"));
-            } else {
-                date_app_update = sdf1.parse(today_date);
-            }
+            else date_app_update = sdf1.parse(today_date);
 
         } catch (ParseException e) {
             e.printStackTrace();
@@ -453,11 +433,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
             aBoolean = true;
             System.out.println("clr_chace : " + aBoolean);
-        } else {
-            if (date_today.compareTo(date_app_update) >= 0) {
-                aBoolean = true;
-                System.out.println("clr_chace : " + aBoolean);
-            }
+        } else if (date_today.compareTo(date_app_update) >= 0) {
+            aBoolean = true;
+            System.out.println("clr_chace : " + aBoolean);
         }
         return aBoolean;
     }
@@ -480,14 +458,10 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
 
             String str_month1 = "" + (cur_month1 + 1);
-            if (str_month1.length() == 1) {
-                str_month1 = "0" + str_month1;
-            }
+            if (str_month1.length() == 1) str_month1 = "0" + str_month1;
 
             String str_day1 = "" + cur_day1;
-            if (str_day1.length() == 1) {
-                str_day1 = "0" + str_day1;
-            }
+            if (str_day1.length() == 1) str_day1 = "0" + str_day1;
             price_date = str_month1 + "-" + cur_year1;
             System.out.println("#################PS_price_date_in" + price_date);
 //////////////////////////////////////////////////////////////////////////////////////PRIZE DATA TABLE///////////////////////////////////////////////////////////////////////////
@@ -524,18 +498,14 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
 
         price_month_date = "" + (cur_month1 + 1);
-        if (price_month_date.length() == 1) {
-            price_month_date = "0" + price_month_date;
-        }
+        if (price_month_date.length() == 1) price_month_date = "0" + price_month_date;
 
 
         price_date_d = price_month_date + "-" + price_year_date;
         System.out.println("#################PS_date" + price_date_d);
 
         price_pre_month_date = "" + (cur_month1);
-        if (price_pre_month_date.length() == 1) {
-            price_pre_month_date = "0" + price_pre_month_date;
-        }
+        if (price_pre_month_date.length() == 1) price_pre_month_date = "0" + price_pre_month_date;
 
         price_date_dm = price_pre_month_date + "-" + price_year_date;
         System.out.println("#################PSV_date" + price_date_dm);
@@ -545,9 +515,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             Cursor ol = myDbHelper.getQry("select * from prize_data where date ='" + price_date_dm + "'");
             ol.moveToFirst();
             System.out.println("#################PS_count" + ol.getCount());
-            if (ol.getCount() != 0) {
-                old_score_ed = ol.getInt(ol.getColumnIndexOrThrow("score"));
-            }
+            if (ol.getCount() != 0) old_score_ed = ol.getInt(ol.getColumnIndexOrThrow("score"));
 
             Cursor up = myDbHelper.getQry("select * from prize_data where date ='" + price_date_d + "'");
             up.moveToFirst();
@@ -568,7 +536,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     try {
                         jArray = new JSONArray(ServerResponse);
                         json_data = jArray.getJSONObject(0);
-                        if (json_data.getString("status").equals("success")) {
+                        if (json_data.getString("status").equals("success"))
                             for (int i = 0; i < jArray.length(); i++) {
                                 String urls = json_data.getString("web");
                                 String result = json_data.getString("result");
@@ -582,7 +550,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
                                 System.out.println("##############urls###########" + urls);
                             }
-                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -663,50 +630,40 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         if (sp.getInt(New_Main_Activity.this, "inappmessage") == 0) {
             sp.putInt(New_Main_Activity.this, "inappmessage", 1);
             FirebaseInAppMessaging.getInstance().setMessagesSuppressed(true);
-        } else {
-            FirebaseInAppMessaging.getInstance().setMessagesSuppressed(false);
-        }
+        } else FirebaseInAppMessaging.getInstance().setMessagesSuppressed(false);
 
 
         // successdialog();
         System.out.println("=============Androidid" + Utils.android_id(context));
 
-        //
-
-        /////////
-
-        //advancads();
-        ////////
         main_act = "m_on";
 
+        /*RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(List.of("ABCDEF012345")).build();
+            MobileAds.setRequestConfiguration(configuration);*/
+
+        MobileAds.initialize(this);
         if (spa.getInt(context, "purchase_ads") == 0) {
-            // Make sure to set the mediation provider value to "max" to ensure proper functionality
-            AppLovinSdk.getInstance(context).setMediationProvider("max");
-            AppLovinSdk.initializeSdk(context, configuration -> {
-                // AppLovin SDK is initialized, start loading ads
-                industrialload();
-            });
-
-
-            MobileAds.initialize(this);
-            RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(List.of("ABCDEF012345")).build();
+            AppLovinSdk.initializeSdk(this);
+            AppLovinSdk.getInstance(this).setMediationProvider("max");
+            RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("65963a1553b841c3")).build();
             MobileAds.setRequestConfiguration(configuration);
+            //AppLovinSdk.getInstance( this ).showMediationDebugger();
         }
 
 
         onresume_start = 0;
         status_act = 1;
-        //reward(context);
-        rewarded_ad();
+
+        rewarded_adnew();
         intro_scn();
 
 
         db = new DataBaseHelper1(this);
-        RippleView leader = (RippleView) findViewById(R.id.leader);
-        RippleView multipalyer = (RippleView) findViewById(R.id.multipalyer);
+        RippleView leader = findViewById(R.id.leader);
+        RippleView multipalyer = findViewById(R.id.multipalyer);
 
-        re_ads = (RelativeLayout) findViewById(R.id.re_ads);
-        r_ads = (LinearLayout) findViewById(R.id.r_ads);
+        re_ads = findViewById(R.id.re_ads);
+        r_ads = findViewById(R.id.r_ads);
         email = Utils.android_id(context);
         sps.putString(New_Main_Activity.this, "newgame_notification", "start");
 
@@ -718,9 +675,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(Config.REGISTRATION_COMPLETE)) {
+                if (intent.getAction().equals(Config.REGISTRATION_COMPLETE))
                     FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
-                }
             }
         };
 
@@ -733,9 +689,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         }
 
 
-        adsicon2 = (RelativeLayout) findViewById(R.id.adsicon2);
-        rm_name = (TextView) findViewById(R.id.rm_name);
-        ex_name = (TextView) findViewById(R.id.ex_name);
+        adsicon2 = findViewById(R.id.adsicon2);
+        rm_name = findViewById(R.id.rm_name);
+        ex_name = findViewById(R.id.ex_name);
         final Animation pendulam;
         pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulam2);
         adsicon2.startAnimation(pendulam);
@@ -744,21 +700,15 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         AudienceNetworkAds.initialize(this);
 
 
-        /* if (sps.getInt(New_Main_Activity.this, "purchase_ads") != 1) {
-            rm_name.setText("சேவை மையம்");
-        }*/
-        if (sps.getInt(New_Main_Activity.this, "reward_coin_txt") == 0) {
+        if (sps.getInt(New_Main_Activity.this, "reward_coin_txt") == 0)
             sps.putInt(New_Main_Activity.this, "reward_coin_txt", 20);
-        }
 
         r_ads.setOnClickListener(v -> {
             //Toast.makeText(New_Main_Activity.this, "purchase", Toast.LENGTH_SHORT).show();
 
-            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                purchasedialog();
-            } else {
+            if (Utils.isNetworkAvailable(getApplicationContext())) purchasedialog();
+            else
                 Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-            }
 
         });
 
@@ -767,9 +717,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 purchasedialog();
                 sps.putString(New_Main_Activity.this, "ads_dialog", "");
             }
-        } else {
-            sps.putString(New_Main_Activity.this, "ads_dialog_oi", "");
-        }
+        } else sps.putString(New_Main_Activity.this, "ads_dialog_oi", "");
 
 
         if (sp.getString(New_Main_Activity.this, "review_time").equals("")) {
@@ -782,11 +730,11 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         // appUpdateManager = AppUpdateManagerFactory.create(New_Main_Activity.this);
 
         inapp_messaging();
-        word_search_main = (RippleView) findViewById(R.id.word_search_main);
-        leader_bd = (LinearLayout) findViewById(R.id.leader_bd);
-        achivements_d = (LinearLayout) findViewById(R.id.achivements_d);
-        word_search_d = (LinearLayout) findViewById(R.id.word_search_d);
-        multi_d = (LinearLayout) findViewById(R.id.multi_d);
+        word_search_main = findViewById(R.id.word_search_main);
+        leader_bd = findViewById(R.id.leader_bd);
+        achivements_d = findViewById(R.id.achivements_d);
+        word_search_d = findViewById(R.id.word_search_d);
+        multi_d = findViewById(R.id.multi_d);
         //didTapButton(word_search_main);
         leader_bd.setOnClickListener(v -> {
             //leader_bd();
@@ -810,9 +758,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         });
 
         word_search_main.setOnClickListener(v -> {
-          /*  Intent main = new Intent(getApplicationContext(), Test_Activity.class);
-            finish();
-            startActivity(main);*/
             if (sps.getString(New_Main_Activity.this, "Word_search_mainintro").equals("")) {
                 click.play(soundId1, sv, sv, 0, 0, sv);
                 Intent main = new Intent(getApplicationContext(), Word_search_levels.class);
@@ -827,7 +772,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             }
         });
 
-        if (Utils.isNetworkAvailable(New_Main_Activity.this)) {
+        if (Utils.isNetworkAvailable(New_Main_Activity.this))
             if (sp.getInt(New_Main_Activity.this, "referrerCheck") == 0) {
 
                 mReferrerClient = InstallReferrerClient.newBuilder(this).build();
@@ -835,10 +780,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 mReferrerClient.startConnection(this);
                 System.out.println("Referrer check" + mReferrerClient.isReady());
 
-            } else {
-                System.out.println("=== ReferrerDetails Referrer Already Detected");
-            }
-        }
+            } else System.out.println("=== ReferrerDetails Referrer Already Detected");
 
 
         Animation w_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blink_animation);
@@ -847,11 +789,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         //multipalyer.startAnimation(zoomAnim());
 
         multipalyer.setOnClickListener(view -> {
-            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                purchasedialog();
-            } else {
+            if (Utils.isNetworkAvailable(getApplicationContext())) purchasedialog();
+            else
                 Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-            }
 
 
         });
@@ -859,7 +799,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             //leader_bd();
         });
 
-        RippleView achive = (RippleView) findViewById(R.id.achivements);
+        RippleView achive = findViewById(R.id.achivements);
         achive.setOnClickListener(v -> {
 
             //achivemnt_st();
@@ -868,9 +808,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         File SDCardRoot = getFilesDir();
         File fol = new File(SDCardRoot + "/Nithra/solliadi/");
-        if (!fol.exists()) {
-            fol.mkdirs();
-        }
+        if (!fol.exists()) fol.mkdirs();
 
 
         Calendar calendar3 = Calendar.getInstance();
@@ -879,34 +817,28 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
 
         String str_month1 = "" + (cur_month1 + 1);
-        if (str_month1.length() == 1) {
-            str_month1 = "0" + str_month1;
-        }
+        if (str_month1.length() == 1) str_month1 = "0" + str_month1;
 
         String str_day1 = "" + cur_day1;
-        if (str_day1.length() == 1) {
-            str_day1 = "0" + str_day1;
-        }
+        if (str_day1.length() == 1) str_day1 = "0" + str_day1;
         final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
 
 
-        if (sps.getString(New_Main_Activity.this, "install_date").equals("")) {
-
+        if (sps.getString(New_Main_Activity.this, "install_date").equals(""))
             sps.putString(New_Main_Activity.this, "install_date", "" + str_date1);
-        }
 
         if (sps.getString(New_Main_Activity.this, "no_dialog").equals("")) {
             sps.putString(New_Main_Activity.this, str_date1, "yes");
             sps.putString(New_Main_Activity.this, "no_dialog", "yes");
         }
 
-        noti_img = (TextView) findViewById(R.id.noti_img);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        noti_img = findViewById(R.id.noti_img);
+        toolbar = findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
-        final RelativeLayout navigationView = (RelativeLayout) findViewById(R.id.nav_view);
+        final RelativeLayout navigationView = findViewById(R.id.nav_view);
 
-        ver_name = (TextView) findViewById(R.id.version_name);
-        version_code = (TextView) findViewById(R.id.version_code);
+        ver_name = findViewById(R.id.version_name);
+        version_code = findViewById(R.id.version_code);
 
 
         sps.putInt(context, "addloded_rect_bck", 0);
@@ -925,10 +857,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             version_code.setText("VC." + versions_code);
         }
 
-        //getSupportActionBar().setDisplayShowHomeEnabled(true);
-        //getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(false);
-
-//animations();
         callactivity();
 
         ///sound initialize
@@ -939,58 +867,43 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
 
         //Share
-        if (sps.getString(New_Main_Activity.this, "wt").equals("")) {
+        if (sps.getString(New_Main_Activity.this, "wt").equals(""))
             sps.putString(New_Main_Activity.this, "wt", "yes");
-        } else {
-            sps.putString(New_Main_Activity.this, "wt", "no");
-        }
-        if (sps.getString(New_Main_Activity.this, "fbs").equals("")) {
+        else sps.putString(New_Main_Activity.this, "wt", "no");
+        if (sps.getString(New_Main_Activity.this, "fbs").equals(""))
             sps.putString(New_Main_Activity.this, "fbs", "yes");
-        } else {
-            sps.putString(New_Main_Activity.this, "fbs", "no");
-        }
-        if (sps.getString(New_Main_Activity.this, "gplues").equals("")) {
+        else sps.putString(New_Main_Activity.this, "fbs", "no");
+        if (sps.getString(New_Main_Activity.this, "gplues").equals(""))
             sps.putString(New_Main_Activity.this, "gplues", "yes");
-        } else {
-            sps.putString(New_Main_Activity.this, "gplues", "no");
-        }
+        else sps.putString(New_Main_Activity.this, "gplues", "no");
 
 //// Share
 
-        if (sps.getString(New_Main_Activity.this, "wn_intro").equals("")) {
+        if (sps.getString(New_Main_Activity.this, "wn_intro").equals(""))
             sps.putString(New_Main_Activity.this, "wn_intro", "yes");
-        }
-        if (sps.getString(New_Main_Activity.this, "cn_intro").equals("")) {
+        if (sps.getString(New_Main_Activity.this, "cn_intro").equals(""))
             sps.putString(New_Main_Activity.this, "cn_intro", "yes");
-        }
-        if (sps.getString(New_Main_Activity.this, "sn_intro").equals("")) {
+        if (sps.getString(New_Main_Activity.this, "sn_intro").equals(""))
             sps.putString(New_Main_Activity.this, "sn_intro", "yes");
-        }
-        if (sps.getString(New_Main_Activity.this, "pn_intro").equals("")) {
+        if (sps.getString(New_Main_Activity.this, "pn_intro").equals(""))
             sps.putString(New_Main_Activity.this, "pn_intro", "yes");
-        }
 
 ////Db Copy
 
 
-        if (sps.getString(New_Main_Activity.this, "dbcopy_n").equals("")) {
+        if (sps.getString(New_Main_Activity.this, "dbcopy_n").equals(""))
             sps.putString(New_Main_Activity.this, "dbcopy_n", "no");
-        }
 
 /////introduction activity
 
-        if (sps.getString(New_Main_Activity.this, "w_lintro").equals("")) {
+        if (sps.getString(New_Main_Activity.this, "w_lintro").equals(""))
             sps.putString(New_Main_Activity.this, "w_lintro", "yes");
-        }
-        if (sps.getString(New_Main_Activity.this, "c_lintro").equals("")) {
+        if (sps.getString(New_Main_Activity.this, "c_lintro").equals(""))
             sps.putString(New_Main_Activity.this, "c_lintro", "yes");
-        }
-        if (sps.getString(New_Main_Activity.this, "s_lintro").equals("")) {
+        if (sps.getString(New_Main_Activity.this, "s_lintro").equals(""))
             sps.putString(New_Main_Activity.this, "s_lintro", "yes");
-        }
-        if (sps.getString(New_Main_Activity.this, "p_lintro").equals("")) {
+        if (sps.getString(New_Main_Activity.this, "p_lintro").equals(""))
             sps.putString(New_Main_Activity.this, "p_lintro", "yes");
-        }
 
 
 //////Date Request
@@ -1001,30 +914,23 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             int cur_day = calendar2.get(Calendar.DAY_OF_MONTH);
 
             String str_month = "" + (cur_month + 1);
-            if (str_month.length() == 1) {
-                str_month = "0" + str_month;
-            }
+            if (str_month.length() == 1) str_month = "0" + str_month;
 
             String str_day = "" + cur_day;
-            if (str_day.length() == 1) {
-                str_day = "0" + str_day;
-            }
+            if (str_day.length() == 1) str_day = "0" + str_day;
             String str_date = cur_year + "-" + str_month + "-" + str_day;
             sps.putString(New_Main_Activity.this, "daily_date_request", "" + str_date);
         }
-        if (sp.getString(New_Main_Activity.this, "new_user_db").equals("")) {
+        if (sp.getString(New_Main_Activity.this, "new_user_db").equals(""))
             System.out.println("**************************new_user_db");
+        else if (sp.getString(New_Main_Activity.this, "new_user_db").equals("on")) {
+            sp.putString(New_Main_Activity.this, "db_name_start", "Tamil_Game2.db");
+            Commen_string.dbs_name = "Tamil_Game2.db";
+            System.out.println("**************************Tamil_Game2.db");
         } else {
-            if (sp.getString(New_Main_Activity.this, "new_user_db").equals("on")) {
-                sp.putString(New_Main_Activity.this, "db_name_start", "Tamil_Game2.db");
-                Commen_string.dbs_name = "Tamil_Game2.db";
-                System.out.println("**************************Tamil_Game2.db");
-            } else {
-                sp.putString(New_Main_Activity.this, "db_name_start", "Solli_Adi");
-                Commen_string.dbs_name = "Solli_Adi";
-                System.out.println("**************************Solli_Adi");
-            }
-
+            sp.putString(New_Main_Activity.this, "db_name_start", "Solli_Adi");
+            Commen_string.dbs_name = "Solli_Adi";
+            System.out.println("**************************Solli_Adi");
         }
 
         if (sps.getString(New_Main_Activity.this, "bending_total3").equals("yes")) {
@@ -1053,46 +959,30 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                if (sps.getString(New_Main_Activity.this, "alter_answer_table").equals("")) {
+                if (sps.getString(New_Main_Activity.this, "alter_answer_table").equals(""))
                     Utils.mProgress(New_Main_Activity.this, "முதல் தடவை தரவுகளை ஏற்றுகிறது. சில நிமிடங்கள் வரை ஆகலாம், காத்திருக்கவும்.....", false).show();
-                }
             }
 
             @Override
             protected String doInBackground(String... params) {
-              /*  if (sps.getInt(New_Main_Activity.this, "dbcopy" + Utils.versioncode_get(New_Main_Activity.this)) == 0) {
-                    TestAdapter mDbHelper = new TestAdapter(New_Main_Activity.this);
-                    mDbHelper.createDatabase();
-                    mDbHelper.open();
-                    mDbHelper.close();
-                }*/
 
 
                 mPreferences = getSharedPreferences("", MODE_PRIVATE);
 
                 if (sps.getString(New_Main_Activity.this, "dbcopied_n").equals("yes")) {
 
-                } else {
-                    dbcreate();
-
-                }
+                } else dbcreate();
                 if (mPreferences.getString("newdbcopied_n", "").equals("yes")) {
 
-                } else {
-                    newgamecreate_db();
-                }
+                } else newgamecreate_db();
 
                 if (mPreferences.getString("newdbcopied_n2", "").equals("yes")) {
 
-                } else {
-                    newgamecreate_db2();
-                }
+                } else newgamecreate_db2();
 
                 if (mPreferences.getString("newdbcopied_n3", "").equals("yes")) {
 
-                } else {
-                    newgamecreate_db3();
-                }
+                } else newgamecreate_db3();
 
                 try {
                     PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -1106,31 +996,13 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
                 if (mPreferences.getString("newdbcopied_n4", "").equals("yes")) {
 
-                } else {
-                    newgamecreate_db4();
-                }
+                } else newgamecreate_db4();
                 if (mPreferences.getString("newdbcopied_n5", "").equals("yes")) {
 
-                } else {
-                    newgamecreate_db5();
-                }
+                } else newgamecreate_db5();
                 if (mPreferences.getString("newdbcopied_n6", "").equals("yes")) {
 
-                } else {
-                    newgamecreate_db6();
-                }
-
-                /*if (Utils.versioncode_get(New_Main_Activity.this)>=39)
-                {
-                    sp.putString(New_Main_Activity.this,"db_name_start","Tamil_Game2.db");
-                }
-                if (Utils.versioncode_get(New_Main_Activity.this)=39)
-                {
-                    sp.putString(New_Main_Activity.this,"db_name_start","Tamil_Game2.db");
-                }
-                else {
-                    sp.putString(New_Main_Activity.this,"db_name_start","Solli_Adi");
-                }*/
+                } else newgamecreate_db6();
 
                 if (sp.getString(New_Main_Activity.this, "new_user_db").equals("on")) {
                     sp.putString(New_Main_Activity.this, "db_name_start", "Tamil_Game2.db");
@@ -1141,11 +1013,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 }
 
                 dbadd_wordsearch();
-               /* if (sp.getInt(New_Main_Activity.this, "app_version") < version_code_n) {
-
-                    sp.putInt(New_Main_Activity.this, "app_version", version_code_n);
-                    sp.putString(New_Main_Activity.this, "newdbcopied_n4", "");
-                }*/
                 // dbmovefirst();
                 return null;
             }
@@ -1159,32 +1026,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 newhelper2 = new Newgame_DataBaseHelper2(context);
                 newhelper3 = new Newgame_DataBaseHelper3(context);
 
-               /* newhelper = new Newgame_DataBaseHelper(context);
-                newhelper2 = new Newgame_DataBaseHelper2(context);
-                newhelper3 = new Newgame_DataBaseHelper3(context);*/
-
-               /* dbs = openOrCreateDatabase("Newgames.db", MODE_PRIVATE, null);
-                dbn = openOrCreateDatabase("Newgames2.db", MODE_PRIVATE, null);
-                dbns = openOrCreateDatabase("Newgames3.db", MODE_PRIVATE, null);*/
-
-               /* db1 = myDbHelper.getReadableDatabase();
-                dbs = newhelper.getReadableDatabase();
-                dbn = newhelper2.getReadableDatabase();
-                dbns = newhelper3.getReadableDatabase();
-*/
-
                 // Utils.mProgress.dismiss();
-            /*    if (sps.getString(New_Main_Activity.this,"signinagain").equals("yes"))
-                {
-                    if(Utils.isNetworkAvailable(getApplicationContext())){
-                        if(!getApiClient().isConnected()){
-                            if(!isSignedIn()) {
-                                signinagain();
-                            }
-                            //Toast.makeText(getApplication(),"bbbbbb",Toast.LENGTH_SHORT).show();
-                        }}
-                }
-*/
 
                 sps.putInt(New_Main_Activity.this, "dbcopy" + Utils.versioncode_get(New_Main_Activity.this), 1);
 //                app_install_check(New_Main_Activity.this, db);
@@ -1199,30 +1041,19 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     int cur_day = calendar2.get(Calendar.DAY_OF_MONTH);
 
                     String str_month = "" + (cur_month + 1);
-                    if (str_month.length() == 1) {
-
-                        str_month = "0" + str_month;
-                    }
+                    if (str_month.length() == 1) str_month = "0" + str_month;
 
                     String str_day = "" + cur_day;
-                    if (str_day.length() == 1) {
-                        str_day = "0" + str_day;
-                    }
+                    if (str_day.length() == 1) str_day = "0" + str_day;
                     final String str_date = cur_year + "-" + str_month + "-" + str_day;
                     if (sps.getString(New_Main_Activity.this, "s1" + str_date).equals("")) {
                         ///Prgress Bar Running:
                         new AsyncTask<String, String, String>() {
-                            @Override
-                            protected void onPreExecute() {
-                                super.onPreExecute();
-                                //   Utils.mProgress(New_Main_Activity.this,"முதல் தடவை தரவுகளை ஏற்றுகிறது. சில நிமிடங்கள் வரை ஆகலாம், காத்திருக்கவும்.....",false).show();
-                            }
 
                             @Override
                             protected String doInBackground(String... params) {
-                                if (mPreferences.getString("newdbcopied_n3", "").equals("yes")) {
+                                if (mPreferences.getString("newdbcopied_n3", "").equals("yes"))
                                     gamestatus();
-                                }
                                 //userstates_send();
                                 return null;
                             }
@@ -1241,11 +1072,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                         System.out.println("==================userstates_send");
                         ///Prgress Bar Running:
                         new AsyncTask<String, String, String>() {
-                            @Override
-                            protected void onPreExecute() {
-                                super.onPreExecute();
-                                //   Utils.mProgress(New_Main_Activity.this,"முதல் தடவை தரவுகளை ஏற்றுகிறது. சில நிமிடங்கள் வரை ஆகலாம், காத்திருக்கவும்.....",false).show();
-                            }
 
                             @Override
                             protected String doInBackground(String... params) {
@@ -1254,9 +1080,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                                 if (sps.getString(context, "price_registration").equals("com")) {
                                     // send_prize_data(New_Main_Activity.this);
                                     System.out.println("==================send_prize_data com");
-                                    if (Utils.isNetworkAvailable(New_Main_Activity.this)) {
+                                    if (Utils.isNetworkAvailable(New_Main_Activity.this))
                                         send_prize_data(New_Main_Activity.this);
-                                    }
 
                                 }
                                 return null;
@@ -1265,9 +1090,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                             @Override
                             protected void onPostExecute(String s) {
                                 super.onPostExecute(s);
-                                if (Utils.isNetworkAvailable(New_Main_Activity.this)) {
+                                if (Utils.isNetworkAvailable(New_Main_Activity.this))
                                     sps.putString(New_Main_Activity.this, "s2" + str_date, "yes");
-                                }
 
                             }
                         }.execute();
@@ -1290,10 +1114,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     String mobileno = null;
                     Cursor sc3 = myDbHelper.getQry("select * from userdetail");
                     sc3.moveToFirst();
-                    if (sc3.getCount() != 0) {
+                    if (sc3.getCount() != 0)
                         mobileno = sc3.getString(sc3.getColumnIndexOrThrow("phno"));
-
-                    }
 
                     Cursor sc2 = myDbHelper.getQry("select * from userdata_r where date ='" + str_date1 + "' and type='d'");
                     sc2.moveToFirst();
@@ -1353,13 +1175,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
                 Cursor cv = myDB.rawQuery("select * from noti_cal where isclose='0'", null);
                 System.out.println("============cv.getcount" + cv.getCount());
-                if (cv.getCount() <= 9) {
-                    noti_lenear.setText("" + cv.getCount());
-                } else if (cv.getCount() > 9) {
-                    noti_lenear.setText("9+");
-                } else {
-                    noti_lenear.setText("0");
-                }
+                if (cv.getCount() <= 9) noti_lenear.setText("" + cv.getCount());
+                else if (cv.getCount() > 9) noti_lenear.setText("9+");
+                else noti_lenear.setText("0");
 
                 myDbHelper = new DataBaseHelper(context);
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
@@ -1374,24 +1192,21 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     nl_coins_show.setText("" + k1);
                 }
 
-                if (sps.getString(New_Main_Activity.this, "bending_total3").equals("")) {
+                if (sps.getString(New_Main_Activity.this, "bending_total3").equals(""))
                     sps.putString(New_Main_Activity.this, "bending_total3", "yes");
-                }
                 if (sps.getString(New_Main_Activity.this, "bending_total4").equals("")) {
                     sps.putString(New_Main_Activity.this, "bending_total4", "yes");
                     sp.putString(New_Main_Activity.this, "game_area", "");
                 }
 
-                if (sps.getString(New_Main_Activity.this, "bending_total5").equals("")) {
+                if (sps.getString(New_Main_Activity.this, "bending_total5").equals(""))
                     sps.putString(New_Main_Activity.this, "bending_total5", "yes");
-                }
                 if (sps.getString(New_Main_Activity.this, "bending_total6").equals("")) {
                 }
 
                 ///Alter Answer table
-                if (sps.getString(New_Main_Activity.this, "alter_answer_table").equals("")) {
+                if (sps.getString(New_Main_Activity.this, "alter_answer_table").equals(""))
                     Utils.mProgress.dismiss();
-                }
                 if (sps.getString(New_Main_Activity.this, "alter_answer_table").equals("")) {
 
 
@@ -1435,19 +1250,17 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         }.execute();
 
 
-        if (sps.getString(New_Main_Activity.this, "game_type").equals("")) {
+        if (sps.getString(New_Main_Activity.this, "game_type").equals(""))
             sps.putString(New_Main_Activity.this, "game_type", "1");
-        }
-        if (sps.getString(New_Main_Activity.this, "daily_game").equals("")) {
+        if (sps.getString(New_Main_Activity.this, "daily_game").equals(""))
             sps.putString(New_Main_Activity.this, "game_type", "1");
-        }
 
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        noti_lenear = (TextView) findViewById(R.id.noti_linear);
+        noti_lenear = findViewById(R.id.noti_linear);
         noti_lenear.setText("0");
         noti_lenear.setOnClickListener(view -> {
             //finish();
@@ -1456,19 +1269,24 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         });
 
-        LinearLayout home = (LinearLayout) findViewById(R.id.home);
-        LinearLayout dailytestlist = (LinearLayout) findViewById(R.id.dailytestlist);
+        LinearLayout home = findViewById(R.id.home);
+        LinearLayout dailytestlist = findViewById(R.id.dailytestlist);
 
         home.setOnClickListener(v -> drawer.closeDrawer(navigationView));
-        LinearLayout privacypolicy = (LinearLayout) findViewById(R.id.privacy_pl);
+        LinearLayout privacypolicy = findViewById(R.id.privacy_pl);
         privacypolicy.setOnClickListener(v -> {
             if (Utils.isNetworkAvailable(getApplicationContext())) {
                 // finish();
                 Intent i = new Intent(context, Main_policy.class);
                 startActivity(i);
-            } else {
+            } else
                 Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-            }
+
+        });
+        LinearLayout exit = findViewById(R.id.exit);
+        exit.setOnClickListener(v -> backpressed());
+        RelativeLayout nav_view = findViewById(R.id.nav_view);
+        nav_view.setOnClickListener(v -> {
 
         });
         dailytestlist.setOnClickListener(v -> {
@@ -1477,76 +1295,49 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             Intent i = new Intent(New_Main_Activity.this, Expandable_List_View.class);
             startActivity(i);
         });
-        LinearLayout notifications = (LinearLayout) findViewById(R.id.notifications);
+        LinearLayout notifications = findViewById(R.id.notifications);
         notifications.setOnClickListener(v -> {
             finish();
             Intent i = new Intent(New_Main_Activity.this, Expandable_List_View.class);
             startActivity(i);
             drawer.closeDrawer(navigationView);
         });
-        LinearLayout karuthu = (LinearLayout) findViewById(R.id.karuthu);
+        LinearLayout karuthu = findViewById(R.id.karuthu);
         karuthu.setOnClickListener(v -> {
             send_feed();
             drawer.closeDrawer(navigationView);
         });
-        LinearLayout ern = (LinearLayout) findViewById(R.id.ern);
+        LinearLayout ern = findViewById(R.id.ern);
         ern.setOnClickListener(v -> {
             dialog();
             drawer.closeDrawer(navigationView);
         });
-        LinearLayout rating = (LinearLayout) findViewById(R.id.rating);
+        LinearLayout rating = findViewById(R.id.rating);
         rating.setOnClickListener(v -> {
             rate_fun();
             drawer.closeDrawer(navigationView);
         });
-        LinearLayout nithra = (LinearLayout) findViewById(R.id.nithra);
+        LinearLayout nithra = findViewById(R.id.nithra);
         nithra.setOnClickListener(v -> {
-            if (Utils.isNetworkAvailable(New_Main_Activity.this)) {
+            if (Utils.isNetworkAvailable(New_Main_Activity.this))
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/developer?id=Nithra")));
-            } else {
-                Utils.toast_center(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ");
-            }
+            else Utils.toast_center(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ");
         });
 
-        LinearLayout share = (LinearLayout) findViewById(R.id.share);
+        LinearLayout share = findViewById(R.id.share);
         share.setOnClickListener(v -> {
             share_fun();
             drawer.closeDrawer(navigationView);
         });
 
-        if (sps.getString(New_Main_Activity.this, "Daily_notifications").equals("")) {
+        if (sps.getString(New_Main_Activity.this, "Daily_notifications").equals(""))
             sps.putString(New_Main_Activity.this, "Daily_notifications", "yes");
-        }
 
 
-        toggleButton = (TextView) findViewById(R.id.daily_noti);
-    /*    String sds = sps.getString(New_Main_Activity.this, "Daily_notifications");
-        if (sds.equals("yes")) {
-            toggleButton.setBackgroundResource(R.drawable.on);
-        } else if (sds.equals("no")) {
-            toggleButton.setBackgroundResource(R.drawable.off);
-        }
+        toggleButton = findViewById(R.id.daily_noti);
 
 
-        toggleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String sds = sps.getString(New_Main_Activity.this, "Daily_notifications");
-                System.out.println("***In");
-                if (sds.equals("yes")) {
-                    System.out.println("***no");
-                    sps.putString(New_Main_Activity.this, "Daily_notifications", "no");
-                    toggleButton.setBackgroundResource(R.drawable.off);
-                } else if (sds.equals("no")) {
-                    System.out.println("***yes");
-                    sps.putString(New_Main_Activity.this, "Daily_notifications", "yes");
-                    toggleButton.setBackgroundResource(R.drawable.on);
-                }
-            }
-        });*/
-
-
-        ads_lay2 = (LinearLayout) findViewById(R.id.ads_lay2);
+        ads_lay2 = findViewById(R.id.ads_lay2);
 
         ads_lay2.setOnClickListener(v -> {
 
@@ -1554,73 +1345,64 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         createFolder();
 
-        ads_lay = (LinearLayout) findViewById(R.id.ads_lay);
+        ads_lay = findViewById(R.id.ads_lay);
         ads_lay.setVisibility(View.VISIBLE);
-        ads_lay3 = (LinearLayout) findViewById(R.id.ads_lay3);
+        ads_lay3 = findViewById(R.id.ads_lay3);
 
 
-        prices = (Button) findViewById(R.id.price);
-        prize_lay = (RelativeLayout) findViewById(R.id.prize_lay);
+        prices = findViewById(R.id.price);
+        prize_lay = findViewById(R.id.prize_lay);
 
         prize_enable();
 
         sp.putString(New_Main_Activity.this, "sd_prize_st", "");
-        if (sp.getInt(New_Main_Activity.this, "remoteConfig_prize") == 1) {
-            //prices.setVisibility(View.VISIBLE);
+        // prices.setVisibility(View.GONE);
+        //prices.setVisibility(View.VISIBLE);
+        if (sp.getInt(New_Main_Activity.this, "remoteConfig_prize") == 1)
             prize_lay.setVisibility(View.VISIBLE);
-        } else {
-            // prices.setVisibility(View.GONE);
-            prize_lay.setVisibility(View.GONE);
-        }
+        else prize_lay.setVisibility(View.GONE);
         sp.putString(New_Main_Activity.this, "activity_call", "");
         prize_lay.setOnClickListener(v -> {
-            if (determineConnectivity(New_Main_Activity.this)) {
+            if (determineConnectivity(New_Main_Activity.this))
                 if (sp.getString(New_Main_Activity.this, "price_registration").equals("com")) {
                     //finish();
                     Intent i = new Intent(New_Main_Activity.this, Game_Status.class);
                     startActivity(i);
+                } else if (sp.getString(New_Main_Activity.this, "otp_verify").equals("yes")) {
+                    // finish();
+                    Intent i = new Intent(New_Main_Activity.this, LoginActivity.class);
+                    startActivity(i);
                 } else {
-                    if (sp.getString(New_Main_Activity.this, "otp_verify").equals("yes")) {
-                        // finish();
-                        Intent i = new Intent(New_Main_Activity.this, LoginActivity.class);
-                        startActivity(i);
-                    } else {
-                        //finish();
-                        sp.putString(New_Main_Activity.this, "activity_call", "main");
-                        Intent i = new Intent(New_Main_Activity.this, Price_Login.class);
-                        startActivity(i);
-                    }
+                    //finish();
+                    sp.putString(New_Main_Activity.this, "activity_call", "main");
+                    Intent i = new Intent(New_Main_Activity.this, Price_Login.class);
+                    startActivity(i);
                 }
-            } else {
+            else
                 Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
-            }
         });
         prices.setOnClickListener(v -> {
-            if (determineConnectivity(New_Main_Activity.this)) {
+            if (determineConnectivity(New_Main_Activity.this))
                 if (sp.getString(New_Main_Activity.this, "price_registration").equals("com")) {
                     finish();
                     Intent i = new Intent(New_Main_Activity.this, Game_Status.class);
                     startActivity(i);
+                } else if (sp.getString(New_Main_Activity.this, "otp_verify").equals("yes")) {
+                    finish();
+                    Intent i = new Intent(New_Main_Activity.this, LoginActivity.class);
+                    startActivity(i);
                 } else {
-                    if (sp.getString(New_Main_Activity.this, "otp_verify").equals("yes")) {
-                        finish();
-                        Intent i = new Intent(New_Main_Activity.this, LoginActivity.class);
-                        startActivity(i);
-                    } else {
-                        finish();
-                        Intent i = new Intent(New_Main_Activity.this, Price_Login.class);
-                        startActivity(i);
-                    }
-
+                    finish();
+                    Intent i = new Intent(New_Main_Activity.this, Price_Login.class);
+                    startActivity(i);
                 }
-            } else {
+            else
                 Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
-            }
 
 
         });
 
-        p_login_txt = (TextView) findViewById(R.id.p_login_txt);
+        p_login_txt = findViewById(R.id.p_login_txt);
     }
 
     private void getFcmToken() {
@@ -1637,15 +1419,11 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
             SharedPreference sharedPreference = new SharedPreference();
             if (sharedPreference.getInt(New_Main_Activity.this, "isvalid") == 0) {
-                if (sharedPreference.getString(New_Main_Activity.this, "token").length() > 0) {
+                if (sharedPreference.getString(New_Main_Activity.this, "token").length() > 0)
                     new gcmpost_update2().execute(token);
-                }
 
-            } else {
-                if (sharedPreference.getInt(New_Main_Activity.this, "fcm_update") < Utils.getversioncode(New_Main_Activity.this)) {
-                    new gcmpost_update1().execute(token);
-                }
-            }
+            } else if (sharedPreference.getInt(New_Main_Activity.this, "fcm_update") < Utils.getversioncode(New_Main_Activity.this))
+                new gcmpost_update1().execute(token);
             System.out.println("---fcm token : " + token);
         });
 
@@ -1660,50 +1438,32 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             CharSequence text = getIntent().getCharSequenceExtra(Intent.ACTION_VIEW);
             String Word = "" + text;
             System.out.println("first  " + Word);
-            if (data.toString().contains("prize")) {
-                if (determineConnectivity(New_Main_Activity.this)) {
+            if (data.toString().contains("prize"))
+                if (determineConnectivity(New_Main_Activity.this))
                     if (sp.getString(New_Main_Activity.this, "price_registration").equals("com")) {
                         finish();
                         Intent i = new Intent(New_Main_Activity.this, Game_Status.class);
                         startActivity(i);
+                    } else if (sp.getString(New_Main_Activity.this, "otp_verify").equals("yes")) {
+                        finish();
+                        Intent i = new Intent(New_Main_Activity.this, LoginActivity.class);
+                        startActivity(i);
                     } else {
-                        if (sp.getString(New_Main_Activity.this, "otp_verify").equals("yes")) {
-                            finish();
-                            Intent i = new Intent(New_Main_Activity.this, LoginActivity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            sp.putString(New_Main_Activity.this, "activity_call", "main");
-                            Intent i = new Intent(New_Main_Activity.this, Price_Login.class);
-                            startActivity(i);
-                        }
+                        finish();
+                        sp.putString(New_Main_Activity.this, "activity_call", "main");
+                        Intent i = new Intent(New_Main_Activity.this, Price_Login.class);
+                        startActivity(i);
                     }
-                } else {
+                else
                     Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
-                }
-            }
 
         }
     }
 
-    //method
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-      /*  getMenuInflater().inflate(R.menu.main, menu);
-        return true;*/
-      /*  MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu, menu);*/
         return true;
     }
 
@@ -1717,62 +1477,62 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     public void callactivity() {
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        wordgame1 = (RippleView) findViewById(R.id.word_game);
-        cluegame = (RippleView) findViewById(R.id.hint_game);
-        solukulsol = (RippleView) findViewById(R.id.solukulsol);
-        oddmanout = (RippleView) findViewById(R.id.oddmanout);
-        matchword = (RippleView) findViewById(R.id.matchwords);
-        opposite_word = (RippleView) findViewById(R.id.opposite_word);
-        english_to_tamil = (RippleView) findViewById(R.id.english_to_tamil);
-        right_order = (RippleView) findViewById(R.id.right_order);
-        riddle = (RippleView) findViewById(R.id.riddle);
-        tirukural_s = (RippleView) findViewById(R.id.tirukural_s);
-        error_correction = (RippleView) findViewById(R.id.error_correction);
 
-        fill_in_blanks = (RippleView) findViewById(R.id.fill_in_blanks);
-        eng_to_tamil = (RippleView) findViewById(R.id.eng_to_tamil);
-        pic_to_words = (RippleView) findViewById(R.id.pic_to_words);
-        match_the_fallows = (RippleView) findViewById(R.id.match_the_fallows);
+        wordgame1 = findViewById(R.id.word_game);
+        cluegame = findViewById(R.id.hint_game);
+        solukulsol = findViewById(R.id.solukulsol);
+        oddmanout = findViewById(R.id.oddmanout);
+        matchword = findViewById(R.id.matchwords);
+        opposite_word = findViewById(R.id.opposite_word);
+        english_to_tamil = findViewById(R.id.english_to_tamil);
+        right_order = findViewById(R.id.right_order);
+        riddle = findViewById(R.id.riddle);
+        tirukural_s = findViewById(R.id.tirukural_s);
+        error_correction = findViewById(R.id.error_correction);
 
-
-        adsicon2 = (RelativeLayout) findViewById(R.id.adsicon2);
-
-        picgame = (RippleView) findViewById(R.id.pic_game);
-        wordgame = (TextView) findViewById(R.id.wordgame);
-        hintgame = (TextView) findViewById(R.id.hintgame);
-        solegame = (TextView) findViewById(R.id.solgame);
-        pictgame = (TextView) findViewById(R.id.picgame);
-        m_settings = (TextView) findViewById(R.id.m_settings);
-        name_main = (TextView) findViewById(R.id.name_main);
-
-        p_id = (TextView) findViewById(R.id.p_id);
-        c_id = (TextView) findViewById(R.id.c_id);
-        ss_id = (TextView) findViewById(R.id.ss_id);
-        s_id = (TextView) findViewById(R.id.s_id);
-        oddmanout_ss_id = (TextView) findViewById(R.id.oddmanout_ss_id);
-        matchwords_no = (TextView) findViewById(R.id.matchwords_no);
-
-        opposite_word_id = (TextView) findViewById(R.id.opposite_word_id);
-        english_to_tamil_id = (TextView) findViewById(R.id.english_to_tamil_id);
-
-        right_order_id = (TextView) findViewById(R.id.right_order_id);
-        riddle_id = (TextView) findViewById(R.id.riddle_id);
-        error_correction_id = (TextView) findViewById(R.id.error_correction_id);
-        fill_in_blanks_id = (TextView) findViewById(R.id.fill_in_blanks_id);
-        eng_to_tamil_no = (TextView) findViewById(R.id.eng_to_tamil_no);
-        pic_to_words_no = (TextView) findViewById(R.id.pic_to_words_no);
-        match_words_no = (TextView) findViewById(R.id.match_words_no);
-        tirukuralid = (TextView) findViewById(R.id.tirukuralid);
+        fill_in_blanks = findViewById(R.id.fill_in_blanks);
+        eng_to_tamil = findViewById(R.id.eng_to_tamil);
+        pic_to_words = findViewById(R.id.pic_to_words);
+        match_the_fallows = findViewById(R.id.match_the_fallows);
 
 
-        noti_lenear = (TextView) findViewById(R.id.noti_linear);
-        action = (TextView) findViewById(R.id.actionword8);
-        noti_lenear = (TextView) findViewById(R.id.noti_linear);
+        adsicon2 = findViewById(R.id.adsicon2);
+
+        picgame = findViewById(R.id.pic_game);
+        wordgame = findViewById(R.id.wordgame);
+        hintgame = findViewById(R.id.hintgame);
+        solegame = findViewById(R.id.solgame);
+        pictgame = findViewById(R.id.picgame);
+        m_settings = findViewById(R.id.m_settings);
+        name_main = findViewById(R.id.name_main);
+
+        p_id = findViewById(R.id.p_id);
+        c_id = findViewById(R.id.c_id);
+        ss_id = findViewById(R.id.ss_id);
+        s_id = findViewById(R.id.s_id);
+        oddmanout_ss_id = findViewById(R.id.oddmanout_ss_id);
+        matchwords_no = findViewById(R.id.matchwords_no);
+
+        opposite_word_id = findViewById(R.id.opposite_word_id);
+        english_to_tamil_id = findViewById(R.id.english_to_tamil_id);
+
+        right_order_id = findViewById(R.id.right_order_id);
+        riddle_id = findViewById(R.id.riddle_id);
+        error_correction_id = findViewById(R.id.error_correction_id);
+        fill_in_blanks_id = findViewById(R.id.fill_in_blanks_id);
+        eng_to_tamil_no = findViewById(R.id.eng_to_tamil_no);
+        pic_to_words_no = findViewById(R.id.pic_to_words_no);
+        match_words_no = findViewById(R.id.match_words_no);
+        tirukuralid = findViewById(R.id.tirukuralid);
+
+
+        noti_lenear = findViewById(R.id.noti_linear);
+        action = findViewById(R.id.actionword8);
+        noti_lenear = findViewById(R.id.noti_linear);
 
 
         View view = getLayoutInflater().inflate(R.layout.action_sole, null);
-        action = (TextView) findViewById(R.id.actionword8);
+        action = findViewById(R.id.actionword8);
         Drawable d = getResources().getDrawable(R.drawable.actionbar_back);
 
         name_main.setText("சொல்லிஅடி");
@@ -1786,13 +1546,10 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
 ///
         String snd = sps.getString(New_Main_Activity.this, "snd");
-        if (snd.equals("off")) {
-            sv = 0;
-            //play1.setVolume(0,0);
-        } else if (snd.equals("on")) {
-            sv = 1;
-            //play1.setVolume(1,1);
-        }
+        //play1.setVolume(0,0);
+        if (snd.equals("off")) sv = 0;
+        else //play1.setVolume(1,1);
+            if (snd.equals("on")) sv = 1;
         //
         wordgame1.setOnRippleCompleteListener(this);
         cluegame.setOnRippleCompleteListener(this);
@@ -1832,13 +1589,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 //Toast.makeText(getBaseContext(),"second",Toast.LENGTH_SHORT).show();
 
                 myDbHelper = new DataBaseHelper(this);
-                try {
-                    myDbHelper.createDataBase();
-                    System.out.println("*******createDataBase");
-                } catch (IOException ioe) {
-                    System.out.println("" + ioe + "*******Unable to create database");
-                    throw new Error("Unable to create database");
-                }
+                myDbHelper.createDataBase();
+                System.out.println("*******createDataBase");
                 try {
                     myDbHelper.openDataBase();
                     System.out.println("*******openDataBase");
@@ -1867,13 +1619,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     throw sqle;
                 }
                 try {
-                    try {
-                        myDbHelper.createDataBase();
-                        System.out.println("*******createDataBase");
-                    } catch (IOException ioe) {
-                        System.out.println("" + ioe + "*******Unable to create database");
-                        throw new Error("*******Unable to create database");
-                    }
+                    myDbHelper.createDataBase();
+                    System.out.println("*******createDataBase");
                     System.out.println("*******openDataBase");
 
                 } catch (SQLException sqle) {
@@ -1902,16 +1649,16 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     }
 
     public void animations() {
-        final TextView a = (TextView) findViewById(R.id.a);
-        final TextView a_para = (TextView) findViewById(R.id.a_para);
+        final TextView a = findViewById(R.id.a);
+        final TextView a_para = findViewById(R.id.a_para);
 
-        final TextView ee = (TextView) findViewById(R.id.ee);
-        final TextView ee_para = (TextView) findViewById(R.id.ee_para);
-        final TextView e = (TextView) findViewById(R.id.e);
-        final TextView e_para = (TextView) findViewById(R.id.e_para);
+        final TextView ee = findViewById(R.id.ee);
+        final TextView ee_para = findViewById(R.id.ee_para);
+        final TextView e = findViewById(R.id.e);
+        final TextView e_para = findViewById(R.id.e_para);
 
-        final TextView u = (TextView) findViewById(R.id.u);
-        final TextView u_para = (TextView) findViewById(R.id.u_para);
+        final TextView u = findViewById(R.id.u);
+        final TextView u_para = findViewById(R.id.u_para);
 
         a.setVisibility(View.VISIBLE);
         translateAnimation1 = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 1.1f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f);
@@ -1919,7 +1666,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         a.startAnimation(translateAnimation1);
         // a.setVisibility(View.INVISIBLE);
 
-        Handler handler = new Handler();
+        Handler handler = new Handler(Looper.myLooper());
         handler.postDelayed(() -> {
             a.setVisibility(View.INVISIBLE);
             a_para.setVisibility(View.VISIBLE);
@@ -1941,7 +1688,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         u.startAnimation(translateAnimation3);
         u.setVisibility(View.INVISIBLE);
         u_para.setVisibility(View.INVISIBLE);
-        Handler handler2 = new Handler();
+        Handler handler2 = new Handler(Looper.myLooper());
         handler2.postDelayed(() -> {
             u.setVisibility(View.INVISIBLE);
             u_para.setVisibility(View.VISIBLE);
@@ -1962,7 +1709,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         ee.startAnimation(translateAnimation5);
         ee.setVisibility(View.INVISIBLE);
         ee_para.setVisibility(View.INVISIBLE);
-        Handler handler3 = new Handler();
+        Handler handler3 = new Handler(Looper.myLooper());
         handler3.postDelayed(() -> {
             ee_para.setVisibility(View.VISIBLE);
             translateAnimation6 = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 1.1f);
@@ -1982,7 +1729,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         e.startAnimation(translateAnimation7);
         e.setVisibility(View.INVISIBLE);
         e_para.setVisibility(View.INVISIBLE);
-        Handler handler4 = new Handler();
+        Handler handler4 = new Handler(Looper.myLooper());
         handler4.postDelayed(() -> {
             ee_para.setVisibility(View.VISIBLE);
             translateAnimation8 = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 0.0f, TranslateAnimation.RELATIVE_TO_PARENT, 1.1f);
@@ -2005,8 +1752,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             case R.id.pic_game: {
                 if (sps.getString(New_Main_Activity.this, "picintro_one").equals("")) {
                     click.play(soundId1, sv, sv, 0, 0, sv);
-                    // play1.start();
-                    //  finish();
                     spa.putString(New_Main_Activity.this, "date", "0");
                     wee.putString(New_Main_Activity.this, "pic1", "p1");
                     Intent i = new Intent(New_Main_Activity.this, Picture_Levels.class);
@@ -2014,8 +1759,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     sps.putString(New_Main_Activity.this, "picintro_one", "yes");
                 } else {
                     click.play(soundId1, sv, sv, 0, 0, sv);
-                    //play1.start();
-                    // finish();
                     spa.putString(New_Main_Activity.this, "date", "0");
                     wee.putString(New_Main_Activity.this, "pic1", "p1");
                     Intent i = new Intent(New_Main_Activity.this, Picture_Game_Hard.class);
@@ -2029,8 +1772,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 ///clue_game
                 if (sps.getString(New_Main_Activity.this, "hintintro_one").equals("")) {
                     click.play(soundId1, sv, sv, 0, 0, sv);
-                    // play1.start();
-                    //   finish();
                     spa.putString(New_Main_Activity.this, "date", "0");
                     wee.putString(New_Main_Activity.this, "hint", "h1");
                     Intent i = new Intent(New_Main_Activity.this, Clue_Levels.class);
@@ -2038,8 +1779,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     sps.putString(New_Main_Activity.this, "hintintro_one", "yes");
                 } else {
                     click.play(soundId1, sv, sv, 0, 0, sv);
-                    //play1.start();
-                    //   finish();
                     spa.putString(New_Main_Activity.this, "date", "0");
                     wee.putString(New_Main_Activity.this, "hint", "h1");
                     Intent i = new Intent(New_Main_Activity.this, Clue_Game_Hard.class);
@@ -2051,8 +1790,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             case R.id.word_game: {
                 if (sps.getString(New_Main_Activity.this, "wordintro_one").equals("")) {
                     click.play(soundId1, sv, sv, 0, 0, sv);
-                    // play1.start();
-                    //  finish();
                     spa.putString(New_Main_Activity.this, "date", "0");
                     wee.putString(New_Main_Activity.this, "open1", "l1");
                     Intent i = new Intent(New_Main_Activity.this, Levels.class);
@@ -2061,8 +1798,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
                 } else {
                     click.play(soundId1, sv, sv, 0, 0, sv);
-                    //play1.start();
-                    // finish();
                     spa.putString(New_Main_Activity.this, "date", "0");
                     wee.putString(New_Main_Activity.this, "open1", "l1");
                     Intent i = new Intent(New_Main_Activity.this, Word_Game_Hard.class);
@@ -2346,9 +2081,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     @Override
     protected void onResume() {
         super.onResume();
-        //  visible();
-
-        //purchase();
 
         if (spa.getInt(New_Main_Activity.this, "purchase_ads_completed") == 1) {
             spa.putInt(New_Main_Activity.this, "purchase_ads_completed", 2);
@@ -2359,9 +2091,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         mBillingManager = new BillingManager(this, updateListener);
 
 
-        if (sps.getInt(New_Main_Activity.this, "purchase_ads") == 1) {
+        if (sps.getInt(New_Main_Activity.this, "purchase_ads") == 1)
             ads_lay.setVisibility(View.GONE);
-        } else {
+        else {
 
         }
 
@@ -2376,45 +2108,24 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         // uiHelper.onResume();
 
 
-
-
-       /* if (sps.getInt(New_Main_Activity.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        } else {
-            if (Utils.isNetworkAvailable(New_Main_Activity.this)) {
-                System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase not done");
-                load_add(add);
-            }
-        }*/
-
         System.out.println("###############---------------bnd");
         if (sps.getString(New_Main_Activity.this, "bending_total4").equals("yes")) {
             System.out.println("###############---------------bnd---------yes");
             if (sp.getString(New_Main_Activity.this, "game_area").equals("on")) {
                 System.out.println("###############---------------bnd---------on");
-                settext();
                 sp.putString(New_Main_Activity.this, "game_area", "");
             }
         }
-
-       /* Toast.makeText(this, "Onresume", Toast.LENGTH_SHORT).show();
-        if (Utils.isNetworkAvailable(New_Main_Activity.this)) {
-            New_Main_Activity.load_addFromMain(New_Main_Activity.this, ads_lay);
-        }*/
 
         myDB = this.openOrCreateDatabase("myDB", MODE_PRIVATE, null);
         tablescreated();
         Cursor cv = myDB.rawQuery("select * from noti_cal where isclose='0'", null);
         System.out.println("============cv.getcount" + cv.getCount());
-        if (cv.getCount() <= 9) {
-            noti_count.setText("" + cv.getCount());
-        } else if (cv.getCount() > 9) {
-            noti_count.setText("9+");
-        } else {
-            noti_count.setText("0");
-        }
+        if (cv.getCount() <= 9) noti_count.setText("" + cv.getCount());
+        else if (cv.getCount() > 9) noti_count.setText("9+");
+        else noti_count.setText("0");
         if (onresume_start == 0) {
-            Handler handel = new Handler();
+            Handler handel = new Handler(Looper.myLooper());
             handel.postDelayed(() -> score_update(), 500);
 
         }
@@ -2463,19 +2174,10 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             sps.putInt(New_Main_Activity.this, "addloded", 0);
             sps.putInt(context, "addloded2", 0);
-            if (drawer.isDrawerOpen(GravityCompat.START)) {
-                drawer.closeDrawer(GravityCompat.START);
-            } else {
-                if (mCurScreen == R.layout.activity_new__main_) {
-                    activity_start_screen();
-                } else {
-                    if (back_flag == 0) {
-                        backpressed();
-                    } else {
-                    }
-
-                }
-
+            if (drawer.isDrawerOpen(GravityCompat.START)) drawer.closeDrawer(GravityCompat.START);
+            else if (mCurScreen == R.layout.activity_new__main_) activity_start_screen();
+            else if (back_flag == 0) backpressed();
+            else {
             }
             return true;
         }
@@ -2486,26 +2188,13 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         final Dialog openDialog_p = new Dialog(New_Main_Activity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_p.setContentView(R.layout.back_pess_mainacivity);
         // openDialog_p.setCancelable(false);
-        TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-        TextView noask = (TextView) openDialog_p.findViewById(R.id.noask);
-        TextView no = (TextView) openDialog_p.findViewById(R.id.no);
-        CheckBox checkbox_back = (CheckBox) openDialog_p.findViewById(R.id.checkbox_back);
+        TextView yes = openDialog_p.findViewById(R.id.yes);
+        TextView noask = openDialog_p.findViewById(R.id.noask);
+        TextView no = openDialog_p.findViewById(R.id.no);
+        CheckBox checkbox_back = openDialog_p.findViewById(R.id.checkbox_back);
         checkbox_back.setVisibility(View.GONE);
         noask.setVisibility(View.GONE);
-        final LinearLayout ads_layd = (LinearLayout) openDialog_p.findViewById(R.id.ads_lay);
-
-       /* if (sps.getInt(New_Main_Activity.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            ads_layd.setVisibility(View.GONE);
-        } else {
-            // New_Main_Activity.load_addFromMain_rect(New_Main_Activity.this, ads_layd);
-            if (Utils.isNetworkAvailable(context)) {
-                New_Main_Activity.load_add_fb_rect(New_Main_Activity.this, ads_layd);
-            } else {
-                ads_layd.setVisibility(View.GONE);
-            }
-
-        }*/
+        final LinearLayout ads_layd = openDialog_p.findViewById(R.id.ads_lay);
 
         yes.setOnClickListener(view -> {
 
@@ -2513,75 +2202,20 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             if (sps.getString(New_Main_Activity.this, "ratefun_shown").equals("")) {
                 ratefun();
                 sps.putString(New_Main_Activity.this, "ratefun_shown", "yes");
-            } else {
-                //ins ad exit
-                if (spa.getInt(context, "purchase_ads") == 0) {
-                    if (interstitialAd != null && interstitialAd.isReady()) {
-                        interstitialAd.showAd();
-                    } else {
-                        finish();
-                    }
-                } else {
-                    finish();
-                }
-
-
-            }
+            } else finish();
             openDialog_p.dismiss();
         });
         no.setOnClickListener(view -> openDialog_p.dismiss());
 
-        if (sps.getString(getApplicationContext(), "ach11").equals("")) {
+        if (sps.getString(getApplicationContext(), "ach11").equals(""))
             sps.putInt(New_Main_Activity.this, "randomtime1", 0);
 
-        }
-
-        if (sps.getString(getApplicationContext(), "ach12").equals("")) {
+        if (sps.getString(getApplicationContext(), "ach12").equals(""))
             sps.putInt(New_Main_Activity.this, "hr1", 0);
-
-        }
         openDialog_p.show();
 
     }
 
-    public void industrialload() {
-
-        interstitialAd = new MaxInterstitialAd(getResources().getString(R.string.App_Exit_Ins), this);
-        interstitialAd.setListener(new MaxAdListener() {
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                exit_dia();
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-
-            }
-        });
-        interstitialAd.loadAd();
-
-    }
 
     @Override
     public void onInstallReferrerSetupFinished(int responseCode) {
@@ -2612,7 +2246,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                         if (referrerUrl != null) {
                             if (referrerUrl.length() > 0) {
                                 String[] referrerList = referrerUrl.split("&");
-                                for (int i = 0; i < referrerList.length; i++) {
+                                for (int i = 0; i < referrerList.length; i++)
                                     if (i == 0) {
                                         source = referrerList[i].substring(referrerList[i].indexOf("=") + 1);
                                         System.out.println("Referrer_source===" + source);
@@ -2623,7 +2257,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                                         comp = referrerList[i].substring(referrerList[i].indexOf("=") + 1);
                                         System.out.println("Referrer_comp===" + comp);
                                     }
-                                }
                             }
                             /*sent data to server*/
                             new AsyncTask<String, String, String>() {
@@ -2634,13 +2267,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                                     return null;
                                 }
                             }.execute();
-                        } else {
-                            System.out.println("=== Referrer URL NULL");
-                        }
+                        } else System.out.println("=== Referrer URL NULL");
 
-                    } else {
-                        System.out.println("=== Referrer Details NULL");
-                    }
+                    } else System.out.println("=== Referrer Details NULL");
                 } catch (RemoteException e) {
                     e.printStackTrace();
                     System.out.println("=== error " + e.getMessage());
@@ -2694,35 +2323,31 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         final Dialog ratedia = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar);
         ratedia.setContentView(R.layout.rate);
-        Button yesbut = (Button) ratedia.findViewById(R.id.button2);
-        Button nobut = (Button) ratedia.findViewById(R.id.button1);
+        Button yesbut = ratedia.findViewById(R.id.button2);
+        Button nobut = ratedia.findViewById(R.id.button1);
 
         final Dialog yesratedialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar);
         yesratedialog.setContentView(R.layout.rate1);
-        Button yesbut1 = (Button) yesratedialog.findViewById(R.id.button2);
-        Button nobut1 = (Button) yesratedialog.findViewById(R.id.button1);
+        Button yesbut1 = yesratedialog.findViewById(R.id.button2);
+        Button nobut1 = yesratedialog.findViewById(R.id.button1);
 
         final Dialog feedratedialog = new Dialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth);
         feedratedialog.setContentView(R.layout.send_feedback);
         feedratedialog.setCanceledOnTouchOutside(false);
-        Button sentbut1 = (Button) feedratedialog.findViewById(R.id.btnSend);
-        final EditText editText1 = (EditText) feedratedialog.findViewById(R.id.editText1);
+        Button sentbut1 = feedratedialog.findViewById(R.id.btnSend);
+        final EditText editText1 = feedratedialog.findViewById(R.id.editText1);
 
-        final EditText ph_no = (EditText) feedratedialog.findViewById(R.id.ph_no);
-        final EditText name = (EditText) feedratedialog.findViewById(R.id.name);
-        final EditText emails = (EditText) feedratedialog.findViewById(R.id.emails);
-        final TextView privacy_policy = (TextView) feedratedialog.findViewById(R.id.privacy_policy);
+        final EditText ph_no = feedratedialog.findViewById(R.id.ph_no);
+        final EditText name = feedratedialog.findViewById(R.id.name);
+        final EditText emails = feedratedialog.findViewById(R.id.emails);
+        final TextView privacy_policy = feedratedialog.findViewById(R.id.privacy_policy);
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         privacy_policy.setOnClickListener(v -> {
             imm.hideSoftInputFromWindow(editText1.getWindowToken(), 0);
             imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
-            if (isNetworkAvailable()) {
-
-                showPrivacy();
-            } else {
+            if (isNetworkAvailable()) showPrivacy();
+            else
                 Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
-
-            }
         });
         editText1.addTextChangedListener(new TextWatcher() {
             @Override
@@ -2746,21 +2371,17 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         });
         sentbut1.setOnClickListener(v -> {
             // TODO Auto-generated method stub
-            if (editText1.getText().toString().trim().length() == 0) {
+            if (editText1.getText().toString().trim().length() == 0)
                 Utils.toast_center(New_Main_Activity.this, "உங்களது கருத்துக்களை பதிவு செய்யவும். ");
-            } else {
-                if (Utils.isNetworkAvailable(New_Main_Activity.this)) {
+            else if (Utils.isNetworkAvailable(New_Main_Activity.this)) {
 
-                    Utills.INSTANCE.sendFeed(New_Main_Activity.this, name.getText().toString(), emails.getText().toString(), ph_no.getText().toString(), editText1.getText().toString());
+                Utills.INSTANCE.sendFeed(New_Main_Activity.this, name.getText().toString(), emails.getText().toString(), ph_no.getText().toString(), editText1.getText().toString());
 
-                    imm.hideSoftInputFromWindow(editText1.getWindowToken(), 0);
-                    imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
-                    feedratedialog.dismiss();
+                imm.hideSoftInputFromWindow(editText1.getWindowToken(), 0);
+                imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
+                feedratedialog.dismiss();
 
-                } else {
-                    Utils.toast_normal(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-            }
+            } else Utils.toast_normal(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ");
 
 
         });
@@ -2775,13 +2396,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 System.out.println();
             }
             yesratedialog.dismiss();
-            if (spa.getInt(context, "purchase_ads") == 0) {
-                if (interstitialAd != null && interstitialAd.isReady()) {
-                    interstitialAd.showAd();
-                } else {
-                    finish();
-                }
-            }
+            if (spa.getInt(context, "purchase_ads") == 0) finish();
         });
 
         nobut1.setOnClickListener(v -> {
@@ -2817,61 +2432,24 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         });
         yesratedialog.setOnDismissListener(dialog -> {
             // TODO Auto-generated method stub
-            if (feedcheck == 0) {
-                //ins ad exit
-
-                if (spa.getInt(context, "purchase_ads") == 0) {
-                    if (interstitialAd != null && interstitialAd.isReady()) {
-                        interstitialAd.showAd();
-                    } else {
-                        finish();
-                    }
-                }
-            }
+            //ins ad exit
+            if (feedcheck == 0) if (spa.getInt(context, "purchase_ads") == 0) finish();
         });
 
         ratedia.setOnDismissListener(dialog -> {
             // TODO Auto-generated method stub
-            if (feedcheck == 0) {
-                //ins ad exit
-                if (spa.getInt(context, "purchase_ads") == 0) {
-                    if (interstitialAd != null && interstitialAd.isReady()) {
-                        interstitialAd.showAd();
-                    } else {
-                        finish();
-                    }
-                }
-            }
+            //ins ad exit
+            if (feedcheck == 0) if (spa.getInt(context, "purchase_ads") == 0) finish();
         });
         feedratedialog.setOnDismissListener(dialog -> {
             // TODO Auto-generated method stub
-            if (feedcheck == 1) {
-                //ins ad exit
-                if (spa.getInt(context, "purchase_ads") == 0) {
-                    if (interstitialAd != null && interstitialAd.isReady()) {
-                        interstitialAd.showAd();
-                    } else {
-                        finish();
-                    }
-                } else {
-                    finish();
-                }
-            }
+            //ins ad exit
+            if (feedcheck == 1) finish();
         });
 
-        if (sps.getInt(getApplicationContext(), "ratecheckval") == 0) {
-            ratedia.show();
-        } else {
-            //ins ad exit
-            if (spa.getInt(context, "purchase_ads") == 0) {
-                if (interstitialAd != null && interstitialAd.isReady()) {
-                    interstitialAd.showAd();
-                } else {
-                    finish();
-                }
-            }
-
-        }
+        //ins ad exit
+        if (sps.getInt(getApplicationContext(), "ratecheckval") == 0) ratedia.show();
+        else if (spa.getInt(context, "purchase_ads") == 0) finish();
     }
 
     public void exit_dia() {
@@ -2879,7 +2457,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         exit_dia.setContentView(R.layout.exit_lay);
         exit_dia.setCanceledOnTouchOutside(false);
         exit_dia.setCancelable(false);
-        Handler handel = new Handler();
+        Handler handel = new Handler(Looper.myLooper());
         handel.postDelayed(() -> {
             // TODO Auto-generated method stub
             finish();
@@ -2904,43 +2482,32 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         final Dialog rating_dialog = new Dialog(New_Main_Activity.this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth);
         rating_dialog.setContentView(R.layout.send_feedback);
-       /* rating_dialog.getWindow().setLayout(android.app.ActionBar.LayoutParams.MATCH_PARENT,
-                android.app.ActionBar.LayoutParams.MATCH_PARENT);*/
-        Button btnSent = (Button) rating_dialog.findViewById(R.id.btnSend);
+        Button btnSent = rating_dialog.findViewById(R.id.btnSend);
         rating_dialog.setCanceledOnTouchOutside(false);
-        final EditText txtFeedBack = (EditText) rating_dialog.findViewById(R.id.editText1);
-        final EditText ph_no = (EditText) rating_dialog.findViewById(R.id.ph_no);
-        final EditText name = (EditText) rating_dialog.findViewById(R.id.name);
-        final EditText emails = (EditText) rating_dialog.findViewById(R.id.emails);
-        final TextView privacy_policy = (TextView) rating_dialog.findViewById(R.id.privacy_policy);
+        final EditText txtFeedBack = rating_dialog.findViewById(R.id.editText1);
+        final EditText ph_no = rating_dialog.findViewById(R.id.ph_no);
+        final EditText name = rating_dialog.findViewById(R.id.name);
+        final EditText emails = rating_dialog.findViewById(R.id.emails);
+        final TextView privacy_policy = rating_dialog.findViewById(R.id.privacy_policy);
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         privacy_policy.setOnClickListener(v -> {
             imm.hideSoftInputFromWindow(txtFeedBack.getWindowToken(), 0);
             imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
-            if (isNetworkAvailable()) {
-                showPrivacy();
-            } else {
+            if (isNetworkAvailable()) showPrivacy();
+            else
                 Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
-
-            }
         });
         btnSent.setOnClickListener(v -> {
             // TODO Auto-generated method stub
-            if (txtFeedBack.getText().toString().trim().length() == 0) {
+            if (txtFeedBack.getText().toString().trim().length() == 0)
                 Utils.toast_center(New_Main_Activity.this, "உங்களது கருத்துக்களை பதிவு செய்யவும். ");
-            } else {
-                if (Utils.isNetworkAvailable(New_Main_Activity.this)) {
-                    Utills.INSTANCE.sendFeed(New_Main_Activity.this, name.getText().toString(), emails.getText().toString(), ph_no.getText().toString(), txtFeedBack.getText().toString());
-                    imm.hideSoftInputFromWindow(txtFeedBack.getWindowToken(), 0);
-                    imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
-                    rating_dialog.dismiss();
-                } else {
-                    Utils.toast_normal(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-            }
-            /*InputMethodManager imms = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imms.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);*/
+            else if (Utils.isNetworkAvailable(New_Main_Activity.this)) {
+                Utills.INSTANCE.sendFeed(New_Main_Activity.this, name.getText().toString(), emails.getText().toString(), ph_no.getText().toString(), txtFeedBack.getText().toString());
+                imm.hideSoftInputFromWindow(txtFeedBack.getWindowToken(), 0);
+                imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
+                rating_dialog.dismiss();
+            } else Utils.toast_normal(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ");
         });
 
 
@@ -2961,19 +2528,15 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         // Create Folder
         File direct = new File(Environment.getExternalStorageDirectory() + "/Nithra");
 
-        if (!direct.exists()) {
-            if (direct.mkdir()) {
-                // directory is created;
-            }
+        if (!direct.exists()) if (direct.mkdir()) {
+            // directory is created;
         }
 
         direct.getAbsolutePath();
 
         File direct1 = new File(direct + "/solliadi");
-        if (!direct1.exists()) {
-            if (direct1.mkdir()) {
-                // directory is created;
-            }
+        if (!direct1.exists()) if (direct1.mkdir()) {
+            // directory is created;
         }
     }
 
@@ -3002,9 +2565,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 src.close();
                 dst.close();
                 System.out.println("*******Database Restored successfully");
-            } else {
-                System.out.println("*******Restored error");
-            }
+            } else System.out.println("*******Restored error");
 
         } catch (Exception e) {
             System.out.println("*******Database Coppy error");
@@ -3015,12 +2576,12 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         final Dialog openDialog;
         openDialog = new Dialog(New_Main_Activity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.free_roll);
-        counter = (TextView) openDialog.findViewById(R.id.timer);
-        time2 = (TextView) openDialog.findViewById(R.id.timer2);
-        final TextView start_thread = (TextView) openDialog.findViewById(R.id.start);
-        final TextView stop_thread = (TextView) openDialog.findViewById(R.id.stop);
-        final TextView cancel = (TextView) openDialog.findViewById(R.id.close);
-        final TextView t_time = (TextView) openDialog.findViewById(R.id.t_time);
+        counter = openDialog.findViewById(R.id.timer);
+        time2 = openDialog.findViewById(R.id.timer2);
+        final TextView start_thread = openDialog.findViewById(R.id.start);
+        final TextView stop_thread = openDialog.findViewById(R.id.stop);
+        final TextView cancel = openDialog.findViewById(R.id.close);
+        final TextView t_time = openDialog.findViewById(R.id.t_time);
         c_counter = 0;
         counter.setVisibility(View.INVISIBLE);
         start_thread.setVisibility(View.VISIBLE);
@@ -3073,16 +2634,11 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             time2.setText(r);
             c_counter = 0;
             int d = Integer.parseInt(r);
-            if (d == 1000) {
+            if (d == 1000)
                 Toast.makeText(New_Main_Activity.this, "YOU WIN JACKPOT", Toast.LENGTH_SHORT).show();
-
-            } else if (d > 990 && d < 1000) {
+            else if (d > 990 && d < 1000)
                 Toast.makeText(New_Main_Activity.this, "YOU 20 COIN", Toast.LENGTH_SHORT).show();
-
-            } else {
-                Toast.makeText(New_Main_Activity.this, "NO COINS", Toast.LENGTH_SHORT).show();
-
-            }
+            else Toast.makeText(New_Main_Activity.this, "NO COINS", Toast.LENGTH_SHORT).show();
         });
 
         cancel.setOnClickListener(v -> openDialog.dismiss());
@@ -3090,13 +2646,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     }
 
-
-    /*@Override
-    protected void onStart() {
-        super.onStart();
-       // mGoogleApiClient.connect();
-
-    }*/
 
     public void rate() {
         if ((sps.getString(New_Main_Activity.this, "show_rate").equals(""))) {
@@ -3130,10 +2679,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         Utils.mProgress(New_Main_Activity.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", false).show();
         Utils.mProgress.setCancelable(false);
         new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
 
             @Override
             protected Void doInBackground(Void... params) {
@@ -3164,9 +2709,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
                     String line = "0";
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
+                    while ((line = reader.readLine()) != null) sb.append(line + "\n");
                     is.close();
                     result = sb.toString();
                     System.out.print("ord Result============" + result);
@@ -3219,13 +2762,10 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
                                     }
 
-                                    if (i == (jArray.length() - 1)) {
-                                        if (exists("https://nithra.mobi/solliadi/" + sps.getString(New_Main_Activity.this, "email") + "-filename.zip")) {
+                                    if (i == (jArray.length() - 1))
+                                        if (exists("https://nithra.mobi/solliadi/" + sps.getString(New_Main_Activity.this, "email") + "-filename.zip"))
                                             checkmemory();
-                                        } else {
-                                            System.out.print("ord image no============");
-                                        }
-                                    }
+                                        else System.out.print("ord image no============");
 
 
                                 }
@@ -3261,10 +2801,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     public void downloadcheck1(final String lastid, final String daily) {
         new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
 
             @Override
             protected Void doInBackground(Void... params) {
@@ -3292,9 +2828,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
                     String line = "0";
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
+                    while ((line = reader.readLine()) != null) sb.append(line + "\n");
                     is.close();
                     result = sb.toString();
                     System.out.print("daily Result============" + result);
@@ -3339,20 +2873,15 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                                         cv.put("date", json_data.getString("date"));
                                         myDbHelper.insert_data("dailytest", null, cv);
                                     }
-                                    if (i == (jArray.length() - 1)) {
-                                        if (exists("https://nithra.mobi/solliadi/" + sps.getString(New_Main_Activity.this, "email") + "-filename.zip")) {
+                                    if (i == (jArray.length() - 1))
+                                        if (exists("https://nithra.mobi/solliadi/" + sps.getString(New_Main_Activity.this, "email") + "-filename.zip"))
                                             checkmemory();
-                                        } else {
-                                            System.out.print("daily image no============");
-                                        }
-                                    }
+                                        else System.out.print("daily image no============");
 
                                 }
                             }
                         }
-                    } else {
-                        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%null null");
-                    }
+                    } else System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%null null");
 
                 } catch (JSONException e1) {
                     e1.printStackTrace();
@@ -3450,14 +2979,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         }
 
-        if (filesize <= kiloAvailable) {
-
-            //startdownload();
-            startDownload();
-        } else {
-
-            goappmanager();
-        }
+        //startdownload();
+        if (filesize <= kiloAvailable) startDownload();
+        else goappmanager();
 
 
     }
@@ -3536,9 +3060,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
                     String line = "0";
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
+                    while ((line = reader.readLine()) != null) sb.append(line + "\n");
                     is.close();
                     result = sb.toString();
 
@@ -3561,7 +3083,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     }
 
-    public int unpackZip(String ZIP_FILE_NAME) {
+    public void unpackZip(String ZIP_FILE_NAME) {
         InputStream is;
         ZipInputStream zis;
         try {
@@ -3598,9 +3120,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         } catch (IOException e) {
             e.printStackTrace();
-            return 0;
         }
-        return 1;
     }
 
 
@@ -3608,31 +3128,23 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         String level1, level2, level3, level4, coins = null, l_points = null;
         Cursor lastid1 = myDbHelper.getQry("select * from maintable where gameid=1 and isfinish='1'order by levelid desc");
 
-        if (lastid1 != null && lastid1.moveToFirst()) {
+        if (lastid1 != null && lastid1.moveToFirst())
             level1 = String.valueOf(lastid1.getInt(lastid1.getColumnIndexOrThrow("levelid")));
-        } else {
-            level1 = "-1";
-        }
+        else level1 = "-1";
 
         Cursor lastid2 = myDbHelper.getQry("select * from maintable where gameid=2 and isfinish='1'order by levelid desc");
-        if (lastid2 != null && lastid2.moveToFirst()) {
+        if (lastid2 != null && lastid2.moveToFirst())
             level2 = String.valueOf(lastid2.getInt(lastid2.getColumnIndexOrThrow("levelid")));
-        } else {
-            level2 = "-1";
-        }
+        else level2 = "-1";
 
         Cursor lastid3 = myDbHelper.getQry("select * from maintable where gameid=3 and isfinish='1'order by levelid desc");
-        if (lastid3 != null && lastid3.moveToFirst()) {
+        if (lastid3 != null && lastid3.moveToFirst())
             level3 = String.valueOf(lastid3.getInt(lastid3.getColumnIndexOrThrow("levelid")));
-        } else {
-            level3 = "-1";
-        }
+        else level3 = "-1";
         Cursor lastid4 = myDbHelper.getQry("select * from maintable where gameid=4 and isfinish='1'order by levelid desc");
-        if (lastid4 != null && lastid4.moveToFirst()) {
+        if (lastid4 != null && lastid4.moveToFirst())
             level4 = String.valueOf(lastid4.getInt(lastid4.getColumnIndexOrThrow("levelid")));
-        } else {
-            level4 = "-1";
-        }
+        else level4 = "-1";
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         if (cfx != null && cfx.moveToFirst()) {
             coins = String.valueOf(cfx.getInt(cfx.getColumnIndexOrThrow("coins")));
@@ -3655,19 +3167,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             // Get the deviceID
 
             String email = sps.getString(New_Main_Activity.this, "email");
-    /*        if (email.equals("")) {
-
-                AccountManager am = AccountManager.get(New_Main_Activity.this);
-                // Account[] accounts =
-                // AccountManager.get(getBaseContext()).getAccounts();
-                Account[] accounts = am.getAccountsByType("com.google");
-
-                if (accounts.length > 0) {
-                    email = accounts[0].name;
-                }
-
-                System.out.println("email ==============" + email);
-            }*/
 
             String vcode = String.valueOf(vercode);
             // String letter= URLDecoder.decode(feedback,"UTF-8");
@@ -3688,9 +3187,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
             String line = "";
-            while ((line = rd.readLine()) != null) {
-                Log.e("HttpResponse", line);
-            }
+            while ((line = rd.readLine()) != null) Log.e("HttpResponse", line);
 
         } catch (IOException e) {
 
@@ -3704,51 +3201,46 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         openDialog.setContentView(R.layout.earncoin);
 
 
-        RelativeLayout wp = (RelativeLayout) openDialog.findViewById(R.id.earnwa);
-        RelativeLayout fb = (RelativeLayout) openDialog.findViewById(R.id.earnfb);
-        RelativeLayout gplus = (RelativeLayout) openDialog.findViewById(R.id.earngplus);
+        RelativeLayout wp = openDialog.findViewById(R.id.earnwa);
+        RelativeLayout fb = openDialog.findViewById(R.id.earnfb);
+        RelativeLayout gplus = openDialog.findViewById(R.id.earngplus);
 
-        TextView cancel = (TextView) openDialog.findViewById(R.id.cancel);
-        TextView ss = (TextView) openDialog.findViewById(R.id.ssss);
+        TextView cancel = openDialog.findViewById(R.id.cancel);
+        TextView ss = openDialog.findViewById(R.id.ssss);
 
         ss.setOnClickListener(v -> openDialog.cancel());
         cancel.setOnClickListener(v -> openDialog.cancel());
 
 
-        RelativeLayout video = (RelativeLayout) openDialog.findViewById(R.id.earnvideo);
+        RelativeLayout video = openDialog.findViewById(R.id.earnvideo);
         video.setOnClickListener(v -> {
             extra_coin_s = 0;
             if (isNetworkAvailable()) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
-                    rewardedAd.showAd();
+                    show_reward();
 
                     openDialog.dismiss();
-                } else {
-                    new Handler().postDelayed(() -> {
-                        reward_progressBar.dismiss();
-                        if (fb_reward == 1) {
-                            rewardedAd.showAd();
-                            // mShowVideoButton.setVisibility(View.VISIBLE);
-                        } else {
-                            //reward(context);
-                            rewarded_ad();
-                            Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                        }
-                    }, 2000);
+                } else new Handler(Looper.myLooper()).postDelayed(() -> {
+                    reward_progressBar.dismiss();
+                    // mShowVideoButton.setVisibility(View.VISIBLE);
+                    if (fb_reward == 1) show_reward();
+                    else {
 
-
-                }
-            } else {
+                        rewarded_adnew();
+                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                    }
+                }, 2000);
+            } else
                 Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-            }
 
 
         });
 
         wp.setOnClickListener(view -> {
             onresume_start = 1;
+            // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             if (isNetworkAvailable()) {
                 final boolean appinstalled = appInstalledOrNot("com.whatsapp");
                 if (appinstalled) {
@@ -3761,38 +3253,16 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     i.putExtra(Intent.EXTRA_TEXT, msg);
 
                     startActivityForResult(i, 12);
-                } else {
+                } else
                     Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                }
 
-            } else {
+            } else
                 Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-            }
         });
         fb.setOnClickListener(view -> {
-          /*  if (isNetworkAvailable()) {
-
-
-                btn_str = "invite";
-                if (isLoggedIn()) {
-                    Bundle params = new Bundle();
-                    params.putString("message", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                            "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                    showDialogWithoutNotificationBarInvite("apprequests",
-                            params);
-                    // toast("yes");
-                } else {
-                   // openFacebookSession();
-                    // toast("no");
-                }
-
-
-            } else {
-                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-            }   // toast("இணையதள சேவையை சரிபார்க்கவும் ");*/
         });
         gplus.setOnClickListener(view -> {
+            // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             if (isNetworkAvailable()) {
                 final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
                 if (appinstalled) {
@@ -3804,14 +3274,11 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     startActivityForResult(Intent.createChooser(i, "Share via"), 15);
 
 
-                } else {
+                } else
                     Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                }
 
-            } else {
+            } else
                 Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-            }
 
         });
         openDialog.show();
@@ -3834,13 +3301,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             openDialogterm.dismiss();
             openDialogterm = null;
         }
-        if (rewardedAd != null) {
-            rewardedAd.destroy();
-            rewardedAd = null;
-        }
-        if (advieww != null) {
-            advieww.destroy();
-        }
+        if (rewardedAd != null) rewardedAd = null;
+        if (advieww != null) advieww.destroy();
 
     }
 
@@ -3895,14 +3357,10 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             int cur_day = calendar2.get(Calendar.DAY_OF_MONTH);
 
             String str_month = "" + (cur_month + 1);
-            if (str_month.length() == 1) {
-                str_month = "0" + str_month;
-            }
+            if (str_month.length() == 1) str_month = "0" + str_month;
 
             String str_day = "" + cur_day;
-            if (str_day.length() == 1) {
-                str_day = "0" + str_day;
-            }
+            if (str_day.length() == 1) str_day = "0" + str_day;
             String std = cur_year + "-" + str_month + "-" + str_day;
 
 
@@ -3944,35 +3402,30 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
                         Cursor d = myDbHelper.getQry("select * from userdata_r where date ='" + date + "' and type='r'");
                         d.moveToFirst();
-                        if (d.getCount() != 0) {
-                            for (int j = 0; j < d.getCount(); j++) {
+                        if (d.getCount() != 0) for (int j = 0; j < d.getCount(); j++) {
 
-                                rgame1 = d.getString(d.getColumnIndexOrThrow("gm1"));
-                                rgame2 = d.getString(d.getColumnIndexOrThrow("gm2"));
-                                rgame3 = d.getString(d.getColumnIndexOrThrow("gm3"));
-                                rgame4 = d.getString(d.getColumnIndexOrThrow("gm4"));
-                                rscore = d.getString(d.getColumnIndexOrThrow("score"));
-                                rplaytime = d.getString(d.getColumnIndexOrThrow("playtime"));
+                            rgame1 = d.getString(d.getColumnIndexOrThrow("gm1"));
+                            rgame2 = d.getString(d.getColumnIndexOrThrow("gm2"));
+                            rgame3 = d.getString(d.getColumnIndexOrThrow("gm3"));
+                            rgame4 = d.getString(d.getColumnIndexOrThrow("gm4"));
+                            rscore = d.getString(d.getColumnIndexOrThrow("score"));
+                            rplaytime = d.getString(d.getColumnIndexOrThrow("playtime"));
 
-                                rgame1s = rgame1 + "," + rgame1s;
-                                rgame2s = rgame2 + "," + rgame2s;
-                                rgame3s = rgame3 + "," + rgame3s;
-                                rgame4s = rgame4 + "," + rgame4s;
-                                rscores = rscore + "," + rscores;
-                                rplaytimes = rplaytime + "," + rplaytimes;
-                            }
-
+                            rgame1s = rgame1 + "," + rgame1s;
+                            rgame2s = rgame2 + "," + rgame2s;
+                            rgame3s = rgame3 + "," + rgame3s;
+                            rgame4s = rgame4 + "," + rgame4s;
+                            rscores = rscore + "," + rscores;
+                            rplaytimes = rplaytime + "," + rplaytimes;
                         }
 
                         Cursor s = myDbHelper.getQry("select * from userdata_r where date ='" + date + "' and type='s'");
                         s.moveToFirst();
-                        if (s.getCount() != 0) {
-                            for (int j = 0; j < s.getCount(); j++) {
-                                share_count = s.getString(s.getColumnIndexOrThrow("score"));
+                        if (s.getCount() != 0) for (int j = 0; j < s.getCount(); j++) {
+                            share_count = s.getString(s.getColumnIndexOrThrow("score"));
 
-                                share_counts = share_count + "," + share_counts;
+                            share_counts = share_count + "," + share_counts;
 
-                            }
                         }
 
                     }
@@ -4025,9 +3478,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
                     String line = "0";
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
+                    while ((line = reader.readLine()) != null) sb.append(line + "\n");
                     is.close();
                     result = sb.toString();
 
@@ -4070,36 +3521,28 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     public void nextapp(int rm) {
 
-        if (rm == 1) {
-
+        if (rm == 1)
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=nithra.tamilcalender&hl=en")));
-        } else if (rm == 2) {
-
-
+        else if (rm == 2)
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.bharathdictionary")));
-        } else if (rm == 3) {
-
+        else if (rm == 3)
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle")));
-        } else if (rm == 4) {
-
+        else if (rm == 4)
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=nithra.tnpsc")));
-        }
 
     }
 
     public void alert(int val, String str) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(New_Main_Activity.this);
         alertDialogBuilder.setTitle("சொல்லிஅடி");
-        if (val == 0) {
+        if (val == 0)
             alertDialogBuilder.setMessage("உங்கள் App பழைய Version-ல் உள்ளது.\n" + "தங்கள் புதிய Version-க்கு மறுக்கிறீர்களா?" + "\n\n" + str).setCancelable(true).setPositiveButton("இல்லை", (dialog, id) -> dialog.cancel()).setNegativeButton("ஆம்", (dialog, id) -> {
                 dialog.cancel();
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
 
             });
-        } else {
+        else
             alertDialogBuilder.setMessage("உங்களது App Latest Version-ல் உள்ளது.\n" + "நீங்கள் தொடர்ந்து பயன்படுத்துங்கள்").setCancelable(true).setPositiveButton("சரி", (dialog, id) -> dialog.cancel());
-
-        }
 
 
         AlertDialog alertDialog = alertDialogBuilder.create();
@@ -4121,8 +3564,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             openDialog.setContentView(R.layout.share_dialog2);
             openDialog.setCancelable(false);
             // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-            TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-            TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+            TextView ok_y = openDialog.findViewById(R.id.ok_y);
+            TextView b_scores = openDialog.findViewById(R.id.b_scores);
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
@@ -4150,15 +3593,13 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         openDialog.setContentView(R.layout.share_dialog2);
         openDialog.setCancelable(false);
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView b_scores = openDialog.findViewById(R.id.b_scores);
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
 
-     /*   int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
@@ -4174,8 +3615,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     public void newupdate() {
 
-        if (sps.getInt(getApplicationContext(), "vcode") != 0) {
-            if (sps.getInt(getApplicationContext(), "update" + Utils.versioncode_get(New_Main_Activity.this)) == 0) {
+        if (sps.getInt(getApplicationContext(), "vcode") != 0)
+            if (sps.getInt(getApplicationContext(), "update" + Utils.versioncode_get(New_Main_Activity.this)) == 0)
                 if (sps.getInt(getApplicationContext(), "vcode") < Utils.versioncode_get(New_Main_Activity.this)) {
 
                     final Dialog dialog = new Dialog(New_Main_Activity.this, android.R.style.Theme_Holo_Light_Dialog_NoActionBar_MinWidth);
@@ -4183,10 +3624,10 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     dialog.setContentView(R.layout.update);
                     dialog.setCancelable(true);
 
-                    TextView dia_close = (TextView) dialog.findViewById(R.id.dia_close);
+                    TextView dia_close = dialog.findViewById(R.id.dia_close);
                     dia_close.setVisibility(View.VISIBLE);
                     dia_close.setOnClickListener(v -> dialog.dismiss());
-                    WebView webview = (WebView) dialog.findViewById(R.id.poruppu_thurapu);
+                    WebView webview = dialog.findViewById(R.id.poruppu_thurapu);
 
                     webview.loadUrl("file:///android_asset/update.html");
 
@@ -4198,8 +3639,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     });
                     sps.putInt(getApplicationContext(), "update" + Utils.versioncode_get(New_Main_Activity.this), Utils.versioncode_get(New_Main_Activity.this));
                 }
-            }
-        }
 
     }
 
@@ -4211,13 +3650,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 //Toast.makeText(getBaseContext(),"second",Toast.LENGTH_SHORT).show();
 
                 newhelper = new Newgame_DataBaseHelper(this);
-                try {
-                    newhelper.createDataBase();
-                    System.out.println("*******createDataBase");
-                } catch (IOException ioe) {
-                    System.out.println("" + ioe + "*******Unable to create database");
-                    throw new Error("Unable to create database");
-                }
+                newhelper.createDataBase();
+                System.out.println("*******createDataBase");
                 try {
                     newhelper.openDataBase();
                     System.out.println("*******openDataBase");
@@ -4245,13 +3679,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     throw sqle;
                 }
                 try {
-                    try {
-                        newhelper.createDataBase();
-                        System.out.println("*******createDataBase");
-                    } catch (IOException ioe) {
-                        System.out.println("" + ioe + "*******Unable to create database");
-                        throw new Error("*******Unable to create database");
-                    }
+                    newhelper.createDataBase();
+                    System.out.println("*******createDataBase");
                     System.out.println("*******openDataBase");
 
                 } catch (SQLException sqle) {
@@ -4287,13 +3716,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 //Toast.makeText(getBaseContext(),"second",Toast.LENGTH_SHORT).show();
 
                 newhelper2 = new Newgame_DataBaseHelper2(this);
-                try {
-                    newhelper2.createDataBase();
-                    System.out.println("*******createDataBase");
-                } catch (IOException ioe) {
-                    System.out.println("" + ioe + "*******Unable to create database");
-                    throw new Error("Unable to create database");
-                }
+                newhelper2.createDataBase();
+                System.out.println("*******createDataBase");
                 try {
                     newhelper2.openDataBase();
                     System.out.println("*******openDataBase");
@@ -4322,13 +3746,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 }
 
                 try {
-                    try {
-                        newhelper2.createDataBase();
-                        System.out.println("*******createDataBase");
-                    } catch (IOException ioe) {
-                        System.out.println("" + ioe + "*******Unable to create database");
-                        throw new Error("*******Unable to create database");
-                    }
+                    newhelper2.createDataBase();
+                    System.out.println("*******createDataBase");
                     System.out.println("*******openDataBase");
 
                 } catch (SQLException sqle) {
@@ -4363,13 +3782,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
 
                 newhelper3 = new Newgame_DataBaseHelper3(this);
-                try {
-                    newhelper3.createDataBase();
-                    System.out.println("*******createDataBase");
-                } catch (IOException ioe) {
-                    System.out.println("" + ioe + "*******Unable to create database");
-                    throw new Error("Unable to create database");
-                }
+                newhelper3.createDataBase();
+                System.out.println("*******createDataBase");
                 try {
                     newhelper3.openDataBase();
                     System.out.println("*******openDataBase");
@@ -4397,13 +3811,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     throw sqle;
                 }
                 try {
-                    try {
-                        newhelper3.createDataBase();
-                        System.out.println("*******createDataBase");
-                    } catch (IOException ioe) {
-                        System.out.println("" + ioe + "*******Unable to create database");
-                        throw new Error("*******Unable to create database");
-                    }
+                    newhelper3.createDataBase();
+                    System.out.println("*******createDataBase");
                     System.out.println("*******openDataBase");
 
                 } catch (SQLException sqle) {
@@ -4438,13 +3847,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             if (mPreferences.getString("newdbcopied_n4", "").equals("")) {
                 //Toast.makeText(getBaseContext(),"second",Toast.LENGTH_SHORT).show();
                 newhelper4 = new Newgame_DataBaseHelper4(this);
-                try {
-                    newhelper4.createDataBase();
-                    System.out.println("*******createDataBase4");
-                } catch (IOException ioe) {
-                    System.out.println("" + ioe + "*******Unable to create database4");
-                    throw new Error("Unable to create database4");
-                }
+                newhelper4.createDataBase();
+                System.out.println("*******createDataBase4");
                 try {
                     newhelper4.openDataBase();
                     System.out.println("*******openDataBase4");
@@ -4468,13 +3872,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             if (mPreferences.getString("newdbcopied_n5", "").equals("")) {
                 //Toast.makeText(getBaseContext(),"second",Toast.LENGTH_SHORT).show();
                 newhelper5 = new Newgame_DataBaseHelper5(this);
-                try {
-                    newhelper5.createDataBase();
-                    System.out.println("*******createDataBase4");
-                } catch (IOException ioe) {
-                    System.out.println("" + ioe + "*******Unable to create database4");
-                    throw new Error("Unable to create database4");
-                }
+                newhelper5.createDataBase();
+                System.out.println("*******createDataBase4");
                 try {
                     newhelper5.openDataBase();
                     System.out.println("*******openDataBase4");
@@ -4497,13 +3896,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             if (mPreferences.getString("newdbcopied_n6", "").equals("")) {
                 //Toast.makeText(getBaseContext(),"second",Toast.LENGTH_SHORT).show();
                 newhelper6 = new Newgame_DataBaseHelper6(this);
-                try {
-                    newhelper6.createDataBase();
-                    System.out.println("*******createDataBase6");
-                } catch (IOException ioe) {
-                    System.out.println("" + ioe + "*******Unable to create database6");
-                    throw new Error("Unable to create database6");
-                }
+                newhelper6.createDataBase();
+                System.out.println("*******createDataBase6");
                 try {
                     newhelper6.openDataBase();
                     System.out.println("*******openDataBase6");
@@ -4528,15 +3922,13 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         Dialog dialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.privacy);
-        final ProgressBar progressBar = (ProgressBar) dialog.findViewById(R.id.progressBar);
-        final WebView webView = (WebView) dialog.findViewById(R.id.webView);
+        final ProgressBar progressBar = dialog.findViewById(R.id.progressBar);
+        final WebView webView = dialog.findViewById(R.id.webView);
         //webView.setVisibility(View.VISIBLE);
         webView.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
-                if (progress == 100) {
-                    progressBar.setVisibility(View.GONE);
-                    //webView.setVisibility(View.VISIBLE);
-                }
+                //webView.setVisibility(View.VISIBLE);
+                if (progress == 100) progressBar.setVisibility(View.GONE);
             }
         });
         webView.loadUrl(url);
@@ -4559,9 +3951,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     downloadcheck("0", "ord");
                     dialog.dismiss();
                 }
-            } else {
+            } else
                 Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-            }
 
         }).setNegativeButton("இல்லை", (dialog, which) -> dialog.dismiss()).setIcon(android.R.drawable.ic_dialog_alert).show();
     }
@@ -4584,16 +3975,13 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         mFirebaseRemoteConfig.fetchAndActivate().addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
                 boolean updated = task.getResult();
-                if (!finalAdVal.equals("")) {
+                if (!finalAdVal.equals(""))
                     sps.putInt(getApplicationContext(), "remoteConfig_prize", Integer.parseInt(finalAdVal));
-                }
-                if (sp.getInt(New_Main_Activity.this, "remoteConfig_prize") == 1) {
-                    // prices.setVisibility(View.VISIBLE);
+                //  prices.setVisibility(View.GONE);
+                // prices.setVisibility(View.VISIBLE);
+                if (sp.getInt(New_Main_Activity.this, "remoteConfig_prize") == 1)
                     prize_lay.setVisibility(View.VISIBLE);
-                } else {
-                    //  prices.setVisibility(View.GONE);
-                    prize_lay.setVisibility(View.GONE);
-                }
+                else prize_lay.setVisibility(View.GONE);
 
             } else {
 
@@ -4628,44 +4016,18 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         System.out.println("################====Remote" + adVal);
         //sps.putInt(this, "remoteConfig", Integer.parseInt(adVal));
 
-    /*    long cacheExpiration = 3600; // 1 hour in seconds.
-        // If your app is using developer mode, cacheExpiration is set to 0, so each fetch will
-        // retrieve values from the service.
-        if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
-            cacheExpiration = 0;
-        }*/
         final String finalAdVal = adVal;
         mFirebaseRemoteConfig.fetchAndActivate().addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
                 boolean updated = task.getResult();
-                if (!finalAdVal.equals("")) {
+                if (!finalAdVal.equals(""))
                     sps.putInt(getApplicationContext(), "remoteConfig", Integer.parseInt(finalAdVal));
-                } else {
-                    sps.putInt(getApplicationContext(), "remoteConfig", 1);
-                }
+                else sps.putInt(getApplicationContext(), "remoteConfig", 1);
 
-            } else {
-                sps.putInt(getApplicationContext(), "remoteConfig", 1);
-
-            }
+            } else sps.putInt(getApplicationContext(), "remoteConfig", 1);
 
         });
 
- /*       mFirebaseRemoteConfig.fetch(cacheExpiration)
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            //Toast.makeText(New_Main_Activity.this, "Succeeded " + finalAdVal, Toast.LENGTH_SHORT).show();
-                            sps.putInt(getApplicationContext(), "remoteConfig", Integer.parseInt(finalAdVal));
-                            mFirebaseRemoteConfig.activateFetched();
-                        } else {
-                            sps.putInt(getApplicationContext(), "remoteConfig", 1);
-                            // Toast.makeText(New_Main_Activity.this, "Failed", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                });*/
     }
 
     /**
@@ -4735,152 +4097,95 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         // int a2,a3,a4;
         String b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19;
 
-        if (g1.getCount() == 0) {
-            //a2=00;
-            b1 = "no";
-        } else {
-            // a2 = g2.getInt(g2.getColumnIndexOrThrow("levelid"));
-            b1 = String.valueOf(g1.getInt(g1.getColumnIndexOrThrow("levelid")));
-        }
-        if (g2.getCount() == 0) {
-            //a2=00;
-            b2 = "no";
-        } else {
-            // a2 = g2.getInt(g2.getColumnIndexOrThrow("levelid"));
-            b2 = String.valueOf(g2.getInt(g2.getColumnIndexOrThrow("levelid")));
-        }
-        if (g3.getCount() == 0) {
-            //  a3=00;
-            b3 = "no";
-        } else {
-            //  a3 = g3.getInt(g3.getColumnIndexOrThrow("levelid"));
-            b3 = String.valueOf(g3.getInt(g3.getColumnIndexOrThrow("levelid")));
-        }
-        if (g4.getCount() == 0) {
-            // a4=00;
-            b4 = "no";
-        } else {
-            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
-            b4 = String.valueOf(g4.getInt(g4.getColumnIndexOrThrow("levelid")));
-        }
+        // a2 = g2.getInt(g2.getColumnIndexOrThrow("levelid"));
+        //a2=00;
+        if (g1.getCount() == 0) b1 = "no";
+        else b1 = String.valueOf(g1.getInt(g1.getColumnIndexOrThrow("levelid")));
+        // a2 = g2.getInt(g2.getColumnIndexOrThrow("levelid"));
+        //a2=00;
+        if (g2.getCount() == 0) b2 = "no";
+        else b2 = String.valueOf(g2.getInt(g2.getColumnIndexOrThrow("levelid")));
+        //  a3 = g3.getInt(g3.getColumnIndexOrThrow("levelid"));
+        //  a3=00;
+        if (g3.getCount() == 0) b3 = "no";
+        else b3 = String.valueOf(g3.getInt(g3.getColumnIndexOrThrow("levelid")));
+        // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+        // a4=00;
+        if (g4.getCount() == 0) b4 = "no";
+        else b4 = String.valueOf(g4.getInt(g4.getColumnIndexOrThrow("levelid")));
 
-        if (g5.getCount() == 0) {
-            // a4=00;
-            b5 = "no";
-        } else {
-            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
-            b5 = String.valueOf(g5.getInt(g5.getColumnIndexOrThrow("questionid")));
-        }
+        // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+        // a4=00;
+        if (g5.getCount() == 0) b5 = "no";
+        else b5 = String.valueOf(g5.getInt(g5.getColumnIndexOrThrow("questionid")));
 
 
-        if (g6.getCount() == 0) {
-            // a4=00;
-            b6 = "no";
-        } else {
-            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
-            b6 = String.valueOf(g6.getInt(g6.getColumnIndexOrThrow("questionid")));
-        }
+        // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+        // a4=00;
+        if (g6.getCount() == 0) b6 = "no";
+        else b6 = String.valueOf(g6.getInt(g6.getColumnIndexOrThrow("questionid")));
 
 
-        if (g7.getCount() == 0) {
-            // a4=00;
-            b7 = "no";
-        } else {
-            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
-            b7 = String.valueOf(g7.getInt(g7.getColumnIndexOrThrow("questionid")));
-        }
+        // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+        // a4=00;
+        if (g7.getCount() == 0) b7 = "no";
+        else b7 = String.valueOf(g7.getInt(g7.getColumnIndexOrThrow("questionid")));
 
-        if (g8.getCount() == 0) {
-            // a4=00;
-            b8 = "no";
-        } else {
-            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
-            b8 = String.valueOf(g8.getInt(g8.getColumnIndexOrThrow("questionid")));
-        }
+        // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+        // a4=00;
+        if (g8.getCount() == 0) b8 = "no";
+        else b8 = String.valueOf(g8.getInt(g8.getColumnIndexOrThrow("questionid")));
 
 
-        if (g9.getCount() == 0) {
-            // a4=00;
-            b9 = "no";
-        } else {
-            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
-            b9 = String.valueOf(g9.getInt(g9.getColumnIndexOrThrow("questionid")));
-        }
+        // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+        // a4=00;
+        if (g9.getCount() == 0) b9 = "no";
+        else b9 = String.valueOf(g9.getInt(g9.getColumnIndexOrThrow("questionid")));
 
-        if (g10.getCount() == 0) {
-            // a4=00;
-            b10 = "no";
-        } else {
-            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
-            b10 = String.valueOf(g10.getInt(g10.getColumnIndexOrThrow("questionid")));
-        }
+        // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+        // a4=00;
+        if (g10.getCount() == 0) b10 = "no";
+        else b10 = String.valueOf(g10.getInt(g10.getColumnIndexOrThrow("questionid")));
 
-        if (g11.getCount() == 0) {
-            // a4=00;
-            b11 = "no";
-        } else {
-            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
-            b11 = String.valueOf(g11.getInt(g11.getColumnIndexOrThrow("questionid")));
-        }
+        // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+        // a4=00;
+        if (g11.getCount() == 0) b11 = "no";
+        else b11 = String.valueOf(g11.getInt(g11.getColumnIndexOrThrow("questionid")));
 
-        if (g12.getCount() == 0) {
-            // a4=00;
-            b12 = "no";
-        } else {
-            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
-            b12 = String.valueOf(g12.getInt(g12.getColumnIndexOrThrow("questionid")));
-        }
+        // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+        // a4=00;
+        if (g12.getCount() == 0) b12 = "no";
+        else b12 = String.valueOf(g12.getInt(g12.getColumnIndexOrThrow("questionid")));
 
-        if (g13.getCount() == 0) {
-            // a4=00;
-            b13 = "no";
-        } else {
-            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
-            b13 = String.valueOf(g13.getInt(g13.getColumnIndexOrThrow("levelid")));
-        }
+        // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+        // a4=00;
+        if (g13.getCount() == 0) b13 = "no";
+        else b13 = String.valueOf(g13.getInt(g13.getColumnIndexOrThrow("levelid")));
 
-        if (g14.getCount() == 0) {
-            // a4=00;
-            b14 = "no";
-        } else {
-            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
-            b14 = String.valueOf(g14.getInt(g14.getColumnIndexOrThrow("questionid")));
-        }
+        // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+        // a4=00;
+        if (g14.getCount() == 0) b14 = "no";
+        else b14 = String.valueOf(g14.getInt(g14.getColumnIndexOrThrow("questionid")));
 
-        if (g15.getCount() == 0) {
-            // a4=00;
-            b15 = "no";
-        } else {
-            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
-            b15 = String.valueOf(g15.getInt(g15.getColumnIndexOrThrow("questionid")));
-        }
+        // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+        // a4=00;
+        if (g15.getCount() == 0) b15 = "no";
+        else b15 = String.valueOf(g15.getInt(g15.getColumnIndexOrThrow("questionid")));
 
-        if (g16.getCount() == 0) {
-            // a4=00;
-            b16 = "no";
-        } else {
-            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
-            b16 = String.valueOf(g16.getInt(g16.getColumnIndexOrThrow("questionid")));
-        }
+        // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
+        // a4=00;
+        if (g16.getCount() == 0) b16 = "no";
+        else b16 = String.valueOf(g16.getInt(g16.getColumnIndexOrThrow("questionid")));
 
-        if (g17.getCount() == 0) {
-            // a4=00;
-            b17 = "no";
-        } else {
-            b17 = String.valueOf(g17.getInt(g17.getColumnIndexOrThrow("questionid")));
-        }
+        // a4=00;
+        if (g17.getCount() == 0) b17 = "no";
+        else b17 = String.valueOf(g17.getInt(g17.getColumnIndexOrThrow("questionid")));
 
-        if (g18.getCount() == 0) {
-            b18 = "no";
-        } else {
-            b18 = String.valueOf(g18.getInt(g18.getColumnIndexOrThrow("questionid")));
-        }
+        if (g18.getCount() == 0) b18 = "no";
+        else b18 = String.valueOf(g18.getInt(g18.getColumnIndexOrThrow("questionid")));
 
-        if (g19.getCount() == 0) {
-            b19 = "no";
-        } else {
-            b19 = String.valueOf(g19.getInt(g19.getColumnIndexOrThrow("questionid")));
-        }
+        if (g19.getCount() == 0) b19 = "no";
+        else b19 = String.valueOf(g19.getInt(g19.getColumnIndexOrThrow("questionid")));
 
 
         String upload = b1 + "#" + b2 + "#" + b3 + "#" + b4 + "#" + c1.getInt(c1.getColumnIndexOrThrow("coins")) + "#" + c1.getInt(c1.getColumnIndexOrThrow("l_points")) + "#" + b5 + "#" + b6 + "#" + b7 + "#" + b8 + "#" + b9 + "#" + b10 + "#" + b11 + "#" + b12 + "#" + b13 + "#" + b14 + "#" + b15 + "#" + b16 + "#" + b17 + "#" + b18 + "#" + b19;
@@ -4899,8 +4204,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         newhelper5 = new Newgame_DataBaseHelper5(context);
         newhelper6 = new Newgame_DataBaseHelper6(context);
         if (data == null) {
-            // dataEditText.setText("");
-            //  Toast.makeText(context, "சேமித்த தரவுகள் ஏதும் இல்லை ", Toast.LENGTH_SHORT).show();
         } else {
 
             //  dataEditText.setText(data);
@@ -4910,45 +4213,33 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             System.out.println("=======================length" + length);
             // Toast.makeText(New_Main_Activity.this, "length"+length, Toast.LENGTH_SHORT).show();
             if (length == 6) {
-                if (!first[0].equals("no")) {
+                if (!first[0].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
-                }
-                if (!first[1].equals("no")) {
+                if (!first[1].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
-                }
-                if (!first[2].equals("no")) {
+                if (!first[2].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
-                }
-                if (!first[3].equals("no")) {
+                if (!first[3].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
-
-                }
                 myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
                 myDbHelper.executeSql("UPDATE score SET l_points='" + first[5] + "'");
             } else if (length == 10) {
 
-                if (!first[0].equals("no")) {
+                if (!first[0].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
-                }
-                if (!first[1].equals("no")) {
+                if (!first[1].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
-                }
-                if (!first[2].equals("no")) {
+                if (!first[2].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
-                }
-                if (!first[3].equals("no")) {
+                if (!first[3].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
-                }
-                if (!first[6].equals("no")) {
+                if (!first[6].equals("no"))
                     newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='5' and questionid<='" + first[6] + "'");
-                }
-                if (!first[7].equals("no")) {
+                if (!first[7].equals("no"))
                     newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='6' and questionid<='" + first[7] + "'");
-                }
 
-                if (!first[8].equals("no")) {
+                if (!first[8].equals("no"))
                     newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='7' and questionid<='" + first[8] + "'");
-                }
 
 
                 myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
@@ -4956,289 +4247,213 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
             } else if (length == 14) {
 
-                if (!first[0].equals("no")) {
+                if (!first[0].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
-                }
-                if (!first[1].equals("no")) {
+                if (!first[1].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
-                }
-                if (!first[2].equals("no")) {
+                if (!first[2].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
-                }
-                if (!first[3].equals("no")) {
+                if (!first[3].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
-                }
-                if (!first[6].equals("no")) {
+                if (!first[6].equals("no"))
                     newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='5' and questionid<='" + first[6] + "'");
-                }
-                if (!first[7].equals("no")) {
+                if (!first[7].equals("no"))
                     newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='6' and questionid<='" + first[7] + "'");
-                }
-                if (!first[8].equals("no")) {
+                if (!first[8].equals("no"))
                     newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='7' and questionid<='" + first[8] + "'");
-                }
-                if (!first[9].equals("no")) {
+                if (!first[9].equals("no"))
                     newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='8' and questionid<='" + first[9] + "'");
-                }
-                if (!first[10].equals("no")) {
+                if (!first[10].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='9' and questionid<='" + first[10] + "'");
-                }
-                if (!first[11].equals("no")) {
+                if (!first[11].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='10' and questionid<='" + first[11] + "'");
-                }
-                if (!first[12].equals("no")) {
+                if (!first[12].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='11' and questionid<='" + first[12] + "'");
-                }
-                if (!first[13].equals("no")) {
+                if (!first[13].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='12' and questionid<='" + first[13] + "'");
-                }
 
                 myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
                 myDbHelper.executeSql("UPDATE score SET l_points='" + first[5] + "'");
             } else if (length == 15) {
-                if (!first[0].equals("no")) {
+                if (!first[0].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
-                }
-                if (!first[1].equals("no")) {
+                if (!first[1].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
-                }
-                if (!first[2].equals("no")) {
+                if (!first[2].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
-                }
-                if (!first[3].equals("no")) {
+                if (!first[3].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
-                }
-                if (!first[6].equals("no")) {
+                if (!first[6].equals("no"))
                     newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='5' and questionid<='" + first[6] + "'");
-                }
-                if (!first[7].equals("no")) {
+                if (!first[7].equals("no"))
                     newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='6' and questionid<='" + first[7] + "'");
-                }
-                if (!first[8].equals("no")) {
+                if (!first[8].equals("no"))
                     newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='7' and questionid<='" + first[8] + "'");
-                }
-                if (!first[9].equals("no")) {
+                if (!first[9].equals("no"))
                     newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='8' and questionid<='" + first[9] + "'");
-                }
-                if (!first[10].equals("no")) {
+                if (!first[10].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='9' and questionid<='" + first[10] + "'");
-                }
-                if (!first[11].equals("no")) {
+                if (!first[11].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='10' and questionid<='" + first[11] + "'");
-                }
-                if (!first[12].equals("no")) {
+                if (!first[12].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='11' and questionid<='" + first[12] + "'");
-                }
-                if (!first[13].equals("no")) {
+                if (!first[13].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='12' and questionid<='" + first[13] + "'");
-                }
-                if (!first[14].equals("no")) {
+                if (!first[14].equals("no"))
                     newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE gameid='13' and levelid<='" + first[14] + "'");
-                }
-               /* if (!first[15].equals("no")) {
-                    newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE gameid='14' and levelid<='" + first[15] + "'");
-                }*/
 
                 myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
                 myDbHelper.executeSql("UPDATE score SET l_points='" + first[5] + "'");
             } else if (length == 18) {
-                if (!first[0].equals("no")) {
+                if (!first[0].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
-                }
-                if (!first[1].equals("no")) {
+                if (!first[1].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
-                }
-                if (!first[2].equals("no")) {
+                if (!first[2].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
-                }
-                if (!first[3].equals("no")) {
+                if (!first[3].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
-                }
-                if (!first[6].equals("no")) {
+                if (!first[6].equals("no"))
                     newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='5' and questionid<='" + first[6] + "'");
-                }
-                if (!first[7].equals("no")) {
+                if (!first[7].equals("no"))
                     newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='6' and questionid<='" + first[7] + "'");
-                }
-                if (!first[8].equals("no")) {
+                if (!first[8].equals("no"))
                     newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='7' and questionid<='" + first[8] + "'");
-                }
-                if (!first[9].equals("no")) {
+                if (!first[9].equals("no"))
                     newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='8' and questionid<='" + first[9] + "'");
-                }
-                if (!first[10].equals("no")) {
+                if (!first[10].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='9' and questionid<='" + first[10] + "'");
-                }
-                if (!first[11].equals("no")) {
+                if (!first[11].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='10' and questionid<='" + first[11] + "'");
-                }
-                if (!first[12].equals("no")) {
+                if (!first[12].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='11' and questionid<='" + first[12] + "'");
-                }
-                if (!first[13].equals("no")) {
+                if (!first[13].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='12' and questionid<='" + first[13] + "'");
-                }
-                if (!first[14].equals("no")) {
+                if (!first[14].equals("no"))
                     newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE gameid='13' and levelid<='" + first[14] + "'");
-                }
-               /* if (!first[15].equals("no")) {
-                    newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE gameid='14' and levelid<='" + first[15] + "'");
-                }*/
-                if (!first[15].equals("no")) {
+                if (!first[15].equals("no"))
                     newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE gameid='15' and questionid<='" + first[15] + "'");
-                }
-                if (!first[16].equals("no")) {
+                if (!first[16].equals("no"))
                     newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE gameid='16' and questionid<='" + first[16] + "'");
-                }
-                if (!first[17].equals("no")) {
+                if (!first[17].equals("no"))
                     newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE gameid='17' and questionid<='" + first[17] + "'");
-                }
 
 
                 myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
                 myDbHelper.executeSql("UPDATE score SET l_points='" + first[5] + "'");
             } else {
-                if (!first[0].equals("no")) {
+                if (!first[0].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='1' and levelid<='" + first[0] + "'");
-                }
-                if (!first[1].equals("no")) {
+                if (!first[1].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='2' and levelid<='" + first[1] + "'");
-                }
-                if (!first[2].equals("no")) {
+                if (!first[2].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='3' and levelid<='" + first[2] + "'");
-                }
-                if (!first[3].equals("no")) {
+                if (!first[3].equals("no"))
                     myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE gameid='4' and levelid<='" + first[3] + "'");
-                }
-                if (!first[6].equals("no")) {
+                if (!first[6].equals("no"))
                     newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='5' and questionid<='" + first[6] + "'");
-                }
-                if (!first[7].equals("no")) {
+                if (!first[7].equals("no"))
                     newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE gameid='6' and questionid<='" + first[7] + "'");
-                }
-                if (!first[8].equals("no")) {
+                if (!first[8].equals("no"))
                     newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='7' and questionid<='" + first[8] + "'");
-                }
-                if (!first[9].equals("no")) {
+                if (!first[9].equals("no"))
                     newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE gameid='8' and questionid<='" + first[9] + "'");
-                }
-                if (!first[10].equals("no")) {
+                if (!first[10].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='9' and questionid<='" + first[10] + "'");
-                }
-                if (!first[11].equals("no")) {
+                if (!first[11].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='10' and questionid<='" + first[11] + "'");
-                }
-                if (!first[12].equals("no")) {
+                if (!first[12].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='11' and questionid<='" + first[12] + "'");
-                }
-                if (!first[13].equals("no")) {
+                if (!first[13].equals("no"))
                     newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE gameid='12' and questionid<='" + first[13] + "'");
-                }
-                if (!first[14].equals("no")) {
+                if (!first[14].equals("no"))
                     newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE gameid='13' and levelid<='" + first[14] + "'");
-                }
-               /* if (!first[15].equals("no")) {
-                    newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE gameid='14' and levelid<='" + first[15] + "'");
-                }*/
-                if (!first[15].equals("no")) {
+                if (!first[15].equals("no"))
                     newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE gameid='15' and questionid<='" + first[15] + "'");
-                }
-                if (!first[16].equals("no")) {
+                if (!first[16].equals("no"))
                     newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE gameid='16' and questionid<='" + first[16] + "'");
-                }
-                if (!first[17].equals("no")) {
+                if (!first[17].equals("no"))
                     newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE gameid='17' and questionid<='" + first[17] + "'");
-                }
 
-                if (!first[18].equals("no")) {
+                if (!first[18].equals("no"))
                     newhelper6.executeSql("UPDATE newgames5 SET isfinish='1' WHERE gameid='18' and questionid<='" + first[18] + "'");
-                }
-                if (!first[19].equals("no")) {
+                if (!first[19].equals("no"))
                     newhelper6.executeSql("UPDATE newgames5 SET isfinish='1' WHERE gameid='19' and questionid<='" + first[19] + "'");
-                }
-                if (!first[20].equals("no")) {
+                if (!first[20].equals("no"))
                     newhelper6.executeSql("UPDATE newgames5 SET isfinish='1' WHERE gameid='20' and questionid<='" + first[20] + "'");
-                }
                 myDbHelper.executeSql("UPDATE score SET coins='" + first[4] + "'");
                 myDbHelper.executeSql("UPDATE score SET l_points='" + first[5] + "'");
             }
 
-
-            settext();
 
             Toast.makeText(New_Main_Activity.this, "தரவுகள் பதிவேற்றப்பட்டது", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void settext() {
-
-    }
 
     public void ins_app(final Context context, View view1, int vall) {
-        TextView titt = (TextView) view1.findViewById(R.id.txtlist);
-        ImageView logo = (ImageView) view1.findViewById(R.id.imageview);
-        final Button inss = (Button) view1.findViewById(R.id.btn_cont);
-        if (vall == 1 || vall == 0) {
-            if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
-                titt.setText("நித்ரா தமிழ் நாட்காட்டி");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.calender_logo);
-            } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
-                titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
-                inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.dic_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
-                titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.vivasayam_logo);
-            } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
-                titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.samayal_logo);
-            } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
-                titt.setText("நித்ராவின் சொல்லிஅடிகள்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.jobs_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
-                titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.crossword_logo);
-            } else {
-                titt.setText("நித்ரா  செயலிகள்");
-                inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
-                logo.setImageResource(R.drawable.nithralogo);
-            }
-        } else if (vall == 2) {
-            if (!appInstalledOrNot(context, "com.bharathdictionary")) {
-                titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
-                inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.dic_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
-                titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.vivasayam_logo);
-            } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
-                titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.samayal_logo);
-            } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
-                titt.setText("நித்ராவின் சொல்லிஅடிகள்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.jobs_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
-                titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.crossword_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
-                titt.setText("நித்ரா தமிழ் நாட்காட்டி");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.calender_logo);
-            } else {
-                titt.setText("நித்ரா  செயலிகள்");
-                inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
-                logo.setImageResource(R.drawable.nithralogo);
-            }
-        } else if (vall == 3) {
+        TextView titt = view1.findViewById(R.id.txtlist);
+        ImageView logo = view1.findViewById(R.id.imageview);
+        final Button inss = view1.findViewById(R.id.btn_cont);
+        if (vall == 1 || vall == 0) if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
+            titt.setText("நித்ரா தமிழ் நாட்காட்டி");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.calender_logo);
+        } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
+            titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
+            inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.dic_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
+            titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.vivasayam_logo);
+        } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
+            titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.samayal_logo);
+        } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
+            titt.setText("நித்ராவின் சொல்லிஅடிகள்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.jobs_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
+            titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.crossword_logo);
+        } else {
+            titt.setText("நித்ரா  செயலிகள்");
+            inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
+            logo.setImageResource(R.drawable.nithralogo);
+        }
+        else if (vall == 2) if (!appInstalledOrNot(context, "com.bharathdictionary")) {
+            titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
+            inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.dic_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
+            titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.vivasayam_logo);
+        } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
+            titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.samayal_logo);
+        } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
+            titt.setText("நித்ராவின் சொல்லிஅடிகள்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.jobs_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
+            titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.crossword_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
+            titt.setText("நித்ரா தமிழ் நாட்காட்டி");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.calender_logo);
+        } else {
+            titt.setText("நித்ரா  செயலிகள்");
+            inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
+            logo.setImageResource(R.drawable.nithralogo);
+        }
+        else if (vall == 3)
             if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
                 titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
                 inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
@@ -5268,142 +4483,133 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
                 logo.setImageResource(R.drawable.nithralogo);
             }
-        } else if (vall == 4) {
-            if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
-                titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.samayal_logo);
-            } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
-                titt.setText("நித்ராவின் சொல்லிஅடிகள்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.jobs_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
-                titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.crossword_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
-                titt.setText("நித்ரா தமிழ் நாட்காட்டி");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.calender_logo);
-            } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
-                titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
-                inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.dic_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
-                titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.vivasayam_logo);
-            } else {
-                titt.setText("நித்ரா  செயலிகள்");
-                inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
-                logo.setImageResource(R.drawable.nithralogo);
-            }
-        } else if (vall == 5) {
-            if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
-                titt.setText("நித்ராவின் சொல்லிஅடிகள்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.jobs_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
-                titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.crossword_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
-                titt.setText("நித்ரா தமிழ் நாட்காட்டி");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.calender_logo);
-            } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
-                titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
-                inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.dic_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
-                titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.vivasayam_logo);
-            } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
-                titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.samayal_logo);
-            } else {
-                titt.setText("நித்ரா  செயலிகள்");
-                inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
-                logo.setImageResource(R.drawable.nithralogo);
-            }
-        } else if (vall == 6) {
-            if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
-                titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.crossword_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
-                titt.setText("நித்ரா தமிழ் நாட்காட்டி");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.calender_logo);
-            } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
-                titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
-                inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.dic_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
-                titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.vivasayam_logo);
-            } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
-                titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.samayal_logo);
-            } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
-                titt.setText("நித்ராவின் சொல்லிஅடிகள்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.jobs_logo);
-            } else {
-                titt.setText("நித்ரா  செயலிகள்");
-                inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
-                logo.setImageResource(R.drawable.nithralogo);
-            }
+        else if (vall == 4) if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
+            titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.samayal_logo);
+        } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
+            titt.setText("நித்ராவின் சொல்லிஅடிகள்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.jobs_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
+            titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.crossword_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
+            titt.setText("நித்ரா தமிழ் நாட்காட்டி");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.calender_logo);
+        } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
+            titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
+            inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.dic_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
+            titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.vivasayam_logo);
         } else {
-            if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
-                titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.crossword_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
-                titt.setText("நித்ரா தமிழ் நாட்காட்டி");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.calender_logo);
-            } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
-                titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
-                inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.dic_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
-                titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.vivasayam_logo);
-            } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
-                titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.samayal_logo);
-            } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
-                titt.setText("நித்ராவின் சொல்லிஅடிகள்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.jobs_logo);
-            } else {
-                titt.setText("நித்ரா  செயலிகள்");
-                inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
-                logo.setImageResource(R.drawable.nithralogo);
-            }
+            titt.setText("நித்ரா  செயலிகள்");
+            inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
+            logo.setImageResource(R.drawable.nithralogo);
+        }
+        else if (vall == 5) if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
+            titt.setText("நித்ராவின் சொல்லிஅடிகள்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.jobs_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
+            titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.crossword_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
+            titt.setText("நித்ரா தமிழ் நாட்காட்டி");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.calender_logo);
+        } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
+            titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
+            inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.dic_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
+            titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.vivasayam_logo);
+        } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
+            titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.samayal_logo);
+        } else {
+            titt.setText("நித்ரா  செயலிகள்");
+            inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
+            logo.setImageResource(R.drawable.nithralogo);
+        }
+        else if (vall == 6) if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
+            titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.crossword_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
+            titt.setText("நித்ரா தமிழ் நாட்காட்டி");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.calender_logo);
+        } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
+            titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
+            inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.dic_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
+            titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.vivasayam_logo);
+        } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
+            titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.samayal_logo);
+        } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
+            titt.setText("நித்ராவின் சொல்லிஅடிகள்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.jobs_logo);
+        } else {
+            titt.setText("நித்ரா  செயலிகள்");
+            inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
+            logo.setImageResource(R.drawable.nithralogo);
+        }
+        else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
+            titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.crossword_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
+            titt.setText("நித்ரா தமிழ் நாட்காட்டி");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.calender_logo);
+        } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
+            titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
+            inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.dic_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
+            titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.vivasayam_logo);
+        } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
+            titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.samayal_logo);
+        } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
+            titt.setText("நித்ராவின் சொல்லிஅடிகள்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.jobs_logo);
+        } else {
+            titt.setText("நித்ரா  செயலிகள்");
+            inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
+            logo.setImageResource(R.drawable.nithralogo);
         }
 
         view1.setOnClickListener(view -> {
-            if (Utils.isNetworkAvailable(context)) {
+            if (Utils.isNetworkAvailable(context))
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(inss.getTag().toString())));
-            } else {
-                Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
-            }
+            else Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
         });
 
         inss.setOnClickListener(view -> {
-            if (Utils.isNetworkAvailable(context)) {
+            if (Utils.isNetworkAvailable(context))
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(view.getTag().toString())));
-            } else {
-                Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
-            }
+            else Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
         });
     }
 
@@ -5449,13 +4655,12 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         }
 
         purchase.setOnClickListener(v -> {
+            // L.t(New_Main_Activity.this, U.INA);
             if (Utils.isNetworkAvailable(getApplicationContext())) {
                 purchaseDia.dismiss();
                 startActivity(new Intent(New_Main_Activity.this, Billing_Activity.class));
-            } else {
+            } else
                 Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                // L.t(New_Main_Activity.this, U.INA);
-            }
         });
         cuscare.setOnClickListener(v -> customerCaredialog());
         purchaseDia.show();
@@ -5500,12 +4705,12 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         openDialog.setContentView(R.layout.share_dialog2);
         openDialog.setCancelable(false);
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        ImageView bonus_coin = (ImageView) openDialog.findViewById(R.id.bonus_coin);
-        LinearLayout today_coin = (LinearLayout) openDialog.findViewById(R.id.today_coin);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        ImageView bonus_coin = openDialog.findViewById(R.id.bonus_coin);
+        LinearLayout today_coin = openDialog.findViewById(R.id.today_coin);
         today_coin.setVisibility(View.INVISIBLE);
         bonus_coin.setVisibility(View.INVISIBLE);
-        TextView coin_txt_content = (TextView) openDialog.findViewById(R.id.coin_txt_content);
+        TextView coin_txt_content = openDialog.findViewById(R.id.coin_txt_content);
         coin_txt_content.setText("வெற்றிகரமாக விளம்பரங்கள் நீக்கப்பட்டது.\n நன்றி");
         ok_y.setOnClickListener(v -> {
             finish();
@@ -5527,15 +4732,13 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     public void appRestart() {
         Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
-        if (i != null) {
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        }
+        if (i != null) i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
     }
 
-    private void makeCall(String phone) {
+    private void makeCall() {
         Intent callIntent = new Intent(Intent.ACTION_VIEW);
-        callIntent.setData(Uri.parse("tel:" + phone));
+        callIntent.setData(Uri.parse("tel:" + ""));
         startActivity(callIntent);
     }
 
@@ -5549,19 +4752,14 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         int cur_day = calendar2.get(Calendar.DAY_OF_MONTH);
 
         String str_month = "" + (cur_month + 1);
-        if (str_month.length() == 1) {
-            str_month = "0" + str_month;
-        }
+        if (str_month.length() == 1) str_month = "0" + str_month;
 
         String str_day = "" + cur_day;
-        if (str_day.length() == 1) {
-            str_day = "0" + str_day;
-        }
+        if (str_day.length() == 1) str_day = "0" + str_day;
         current_date = cur_year + "-" + str_month + "-" + str_day;
 
-        if (sp.getString(New_Main_Activity.this, "install_date").equals("")) {
+        if (sp.getString(New_Main_Activity.this, "install_date").equals(""))
             sp.putString(New_Main_Activity.this, "install_date", current_date);
-        }
 
         myDbHelperd = new DataBaseHelper_wordsearch(New_Main_Activity.this);
 
@@ -5575,19 +4773,13 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         }
 
 
-        if (sp.getInt(New_Main_Activity.this, "app_version") == 2) {
+        if (sp.getInt(New_Main_Activity.this, "app_version") == 2)
             sp.putString(New_Main_Activity.this, "alter", "done");
-        }
 
 
         if (sp.getInt(New_Main_Activity.this, "app_version") < version_code_n) {
-            try {
-                myDbHelperd.createDataBase();
-                System.out.println("createDataBase");
-            } catch (IOException ioe) {
-                System.out.println("" + ioe + "Unable to create database");
-                throw new Error("Unable to create database");
-            }
+            myDbHelperd.createDataBase();
+            System.out.println("createDataBase");
             try {
                 myDbHelperd.openDataBase();
                 System.out.println("openDataBase");
@@ -5625,29 +4817,27 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     public void update_word_search() {
 
-        if (update != 0) {
-            try {
-                for (int i = 0; i < column.size(); i++) {
-                    update_cursor = Inner_mydb.rawQuery("select * from challenge where " + column.get(i) + "='" + 1 + "'", null);
+        if (update != 0) try {
+            for (int i = 0; i < column.size(); i++) {
+                update_cursor = Inner_mydb.rawQuery("select * from challenge where " + column.get(i) + "='" + 1 + "'", null);
 
-                    System.out.println("check ----------------- select * from challenge where " + column.get(i) + "='" + 1 + "'");
-                    System.out.println("check ----------------- update_cursor.getCount() : " + update_cursor.getCount());
+                System.out.println("check ----------------- select * from challenge where " + column.get(i) + "='" + 1 + "'");
+                System.out.println("check ----------------- update_cursor.getCount() : " + update_cursor.getCount());
 
-                    if (update_cursor.getCount() != 0) {
-                        for (int j = 0; j < update_cursor.getCount(); j++) {
-                            update_cursor.moveToPosition(j);
-                            int id = update_cursor.getInt(update_cursor.getColumnIndexOrThrow("id"));
-                            mydbd.execSQL("UPDATE " + table.get(i) + " SET is_finish='" + 1 + "' where id='" + id + "'");
-                        }
+                if (update_cursor.getCount() != 0)
+                    for (int j = 0; j < update_cursor.getCount(); j++) {
+                        update_cursor.moveToPosition(j);
+                        int id = update_cursor.getInt(update_cursor.getColumnIndexOrThrow("id"));
+                        mydbd.execSQL("UPDATE " + table.get(i) + " SET is_finish='" + 1 + "' where id='" + id + "'");
                     }
-                }
-
-
-            } finally {
-                if (update_cursor != null) update_cursor.close();
-
             }
-        } else {
+
+
+        } finally {
+            if (update_cursor != null) update_cursor.close();
+
+        }
+        else {
 
         }
 
@@ -5660,8 +4850,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         openDialog.setContentView(R.layout.daily_bones_newd2);
 
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView tomarrow_coin_earn = (TextView) openDialog.findViewById(R.id.tomarrow_coin_earn);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView tomarrow_coin_earn = openDialog.findViewById(R.id.tomarrow_coin_earn);
 
 
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
@@ -5674,14 +4864,10 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
 
         String str_month1 = "" + (cur_month1 + 1);
-        if (str_month1.length() == 1) {
-            str_month1 = "0" + str_month1;
-        }
+        if (str_month1.length() == 1) str_month1 = "0" + str_month1;
 
         String str_day1 = "" + cur_day1;
-        if (str_day1.length() == 1) {
-            str_day1 = "0" + str_day1;
-        }
+        if (str_day1.length() == 1) str_day1 = "0" + str_day1;
         final String str_date1 = str_day1 + "-" + str_month1 + "-" + cur_year1;
 
         Date date1 = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24));
@@ -5707,37 +4893,24 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         if (str_date1.equals(sps.getString(New_Main_Activity.this, "daily_bonus_date"))) {
 
-        } else {
-            sps.putInt(context, "daily_bonus_count", 0);
-        }
-        if (sps.getInt(context, "daily_bonus_count") == 0) {
-            ea = 100;
-        } else if (sps.getInt(context, "daily_bonus_count") == 1) {
-            ea = 150;
-        } else if (sps.getInt(context, "daily_bonus_count") == 2) {
-            ea = 200;
-        } else if (sps.getInt(context, "daily_bonus_count") == 3) {
-            ea = 250;
-        } else if (sps.getInt(context, "daily_bonus_count") == 4) {
-            ea = 300;
-        }
+        } else sps.putInt(context, "daily_bonus_count", 0);
+        if (sps.getInt(context, "daily_bonus_count") == 0) ea = 100;
+        else if (sps.getInt(context, "daily_bonus_count") == 1) ea = 150;
+        else if (sps.getInt(context, "daily_bonus_count") == 2) ea = 200;
+        else if (sps.getInt(context, "daily_bonus_count") == 3) ea = 250;
+        else if (sps.getInt(context, "daily_bonus_count") == 4) ea = 300;
 
 
-        if (sps.getString(context, "price_registration").equals("com")) {
-            new Handler().postDelayed(() -> prize_data_update(context, ea), 2000);
-        }
+        if (sps.getString(context, "price_registration").equals("com"))
+            new Handler(Looper.myLooper()).postDelayed(() -> prize_data_update(context, ea), 2000);
 
 
-        coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
-      /*  final int vals = reward_play_count * 100;
-        ea = ea + vals;*/
+        coin_value = openDialog.findViewById(R.id.coin_value);
         coin_value.setText("" + ea);
         setval_vid = ea;
         Random rn = new Random();
         randomno = rn.nextInt(maximum - minmum + 1) + minmum;
 
-        //String r= String.valueOf(w_id);
-        //lt_id.setText(r);
         String ran_score = "";
         if (randomno == 1) {
             sps.putInt(context, "daily_bonus_count", 1);
@@ -5753,7 +4926,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             ran_score = "300";
         }
 
-        LinearLayout extra_coin = (LinearLayout) openDialog.findViewById(R.id.extra_coin);
+        LinearLayout extra_coin = openDialog.findViewById(R.id.extra_coin);
         tomarrow_coin_earn.setText("நாளைய தினத்திற்கான ஊக்க நாணயங்கள் : " + ran_score);
         extra_coin.setOnClickListener(v -> {
             extra_coin_s = 1;
@@ -5761,35 +4934,26 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 final ProgressDialog reward_progressBar = ProgressDialog.show(New_Main_Activity.this, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
-                    if (rewardedAd.isReady()) {
-                        rewardedAd.showAd();
+                    show_reward();
+
+
+                } else new Handler(Looper.myLooper()).postDelayed(() -> {
+                    reward_progressBar.dismiss();
+                    // mShowVideoButton.setVisibility(View.VISIBLE);
+                    if (fb_reward == 1) show_reward();
+                    else {
+                        //reward(New_Main_Activity.this);
+                        rewarded_adnew();
+                        Toast.makeText(New_Main_Activity.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                     }
-
-                } else {
-                    new Handler().postDelayed(() -> {
-                        reward_progressBar.dismiss();
-                        if (fb_reward == 1) {
-                            rewardedAd.showAd();
-                            // mShowVideoButton.setVisibility(View.VISIBLE);
-                        } else {
-                            //reward(New_Main_Activity.this);
-                            rewarded_ad();
-                            Toast.makeText(New_Main_Activity.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                        }
-                    }, 2000);
-
-
-                }
-            } else {
+                }, 2000);
+            } else
                 Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-            }
 
         });
         if (openDialog.isShowing()) {
 
-        } else {
-            openDialog.show();
-        }
+        } else openDialog.show();
 
     }
 
@@ -5805,26 +4969,26 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         RelativeLayout toolbar, user_img_lay;
         TextView drower;
         RelativeLayout play_game, user_achivements, user_order_leaderboard;
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drower = (TextView) findViewById(R.id.drower);
-        nl_coins_show = (TextView) findViewById(R.id.nl_coins_show);
-        new_earncoin = (LinearLayout) findViewById(R.id.new_earncoin);
-        user_name = (TextView) findViewById(R.id.nl_coins_show);
-        arrow_click = (TextView) findViewById(R.id.arrow_click);
-        play_word = (TextView) findViewById(R.id.play_word);
-        tamila_word = (TextView) findViewById(R.id.tamila_word);
-        noti_count = (TextView) findViewById(R.id.noti_count);
-        play_game = (RelativeLayout) findViewById(R.id.play_game);
-        user_img_lay = (RelativeLayout) findViewById(R.id.user_img_lay);
-        user_achivements = (RelativeLayout) findViewById(R.id.user_achivements);
-        user_order_leaderboard = (RelativeLayout) findViewById(R.id.user_order_leaderboard);
+        drawer = findViewById(R.id.drawer_layout);
+        drower = findViewById(R.id.drower);
+        nl_coins_show = findViewById(R.id.nl_coins_show);
+        new_earncoin = findViewById(R.id.new_earncoin);
+        user_name = findViewById(R.id.nl_coins_show);
+        arrow_click = findViewById(R.id.arrow_click);
+        play_word = findViewById(R.id.play_word);
+        tamila_word = findViewById(R.id.tamila_word);
+        noti_count = findViewById(R.id.noti_count);
+        play_game = findViewById(R.id.play_game);
+        user_img_lay = findViewById(R.id.user_img_lay);
+        user_achivements = findViewById(R.id.user_achivements);
+        user_order_leaderboard = findViewById(R.id.user_order_leaderboard);
 
-        nl_removeads = (LinearLayout) findViewById(R.id.nl_removeads);
-        nl_rateus = (LinearLayout) findViewById(R.id.nl_rateus);
-        nl_share = (LinearLayout) findViewById(R.id.nl_share);
-        nl_howtoplay = (LinearLayout) findViewById(R.id.nl_howtoplay);
-        nl_feedback = (LinearLayout) findViewById(R.id.nl_feedback);
-        nl_notification = (LinearLayout) findViewById(R.id.nl_notification);
+        nl_removeads = findViewById(R.id.nl_removeads);
+        nl_rateus = findViewById(R.id.nl_rateus);
+        nl_share = findViewById(R.id.nl_share);
+        nl_howtoplay = findViewById(R.id.nl_howtoplay);
+        nl_feedback = findViewById(R.id.nl_feedback);
+        nl_notification = findViewById(R.id.nl_notification);
 
         final Animation zom = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.bounce);
         play_game.startAnimation(zom);
@@ -5833,11 +4997,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         arrow_click.setAnimation(zom2);
 
         drower.setOnClickListener(v -> {
-            if (drawer.isDrawerVisible(GravityCompat.START)) {
+            if (drawer.isDrawerVisible(GravityCompat.START))
                 drawer.closeDrawer(GravityCompat.START);
-            } else {
-                drawer.openDrawer(GravityCompat.START);
-            }
+            else drawer.openDrawer(GravityCompat.START);
         });
         user_achivements.setOnClickListener(v -> {
             //achivemnt_st();
@@ -5850,19 +5012,17 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             startActivity(i);
         });
         nl_removeads.setOnClickListener(v -> {
-            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                purchasedialog();
-            } else {
+            if (Utils.isNetworkAvailable(getApplicationContext())) purchasedialog();
+            else
                 Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-            }
         });
         nl_feedback.setOnClickListener(v -> send_feed());
         nl_howtoplay.setOnClickListener(v -> {
             final Dialog openDialog = new Dialog(New_Main_Activity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
             openDialog.setContentView(R.layout.introsdialog_web);
-            WebView intros = (WebView) openDialog.findViewById(R.id.web_introscreen);
-            TextView close = (TextView) openDialog.findViewById(R.id.close);
-            TextView done_exit = (TextView) openDialog.findViewById(R.id.done_exit);
+            WebView intros = openDialog.findViewById(R.id.web_introscreen);
+            TextView close = openDialog.findViewById(R.id.close);
+            TextView done_exit = openDialog.findViewById(R.id.done_exit);
             close.setOnClickListener(v13 -> openDialog.dismiss());
             done_exit.setOnClickListener(v12 -> openDialog.dismiss());
             intros.setOnLongClickListener(v1 -> true);
@@ -5906,39 +5066,34 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         }
     }
 
-    public void rewarded_ad() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
+    public void rewarded_adnew() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedAd.load(this, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
             @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error.
+                Log.d(TAG, loadAdError.toString());
+                rewardedAd = null;
             }
 
             @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-
-                System.out.println("adchecked--");
+            public void onAdLoaded(@NonNull RewardedAd ad) {
+                rewardedAd = ad;
                 fb_reward = 1;
+                adslisner();
+                Log.d(TAG, "Ad was loaded.");
             }
+        });
+
+
+    }
+
+    public void adslisner() {
+        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
 
             @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_ad();
+            public void onAdDismissedFullScreenContent() {
+                rewarded_adnew();
                 if (reward_status == 1) {
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
@@ -5949,89 +5104,74 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
                     }
-                    Handler handler = new Handler();
+                    Handler handler = new Handler(Looper.myLooper());
                     handler.postDelayed(() -> vidcoinearn(), 500);
-                } else {
+                } else
                     Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
 
                 fb_reward = 0;
-                rewardedAd.loadAd();
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
 
             }
 
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("==adtest==" + adUnitId);
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("==adtest_display==" + error);
-                rewardedAd.loadAd();
-            }
         });
-        rewardedAd.loadAd();
+    }
+
+    public void show_reward() {
+        if (rewardedAd != null) rewardedAd.show(this, rewardItem -> {
+            // Handle the reward.
+            Log.d(TAG, "The user earned the reward.");
+            int rewardAmount = rewardItem.getAmount();
+            String rewardType = rewardItem.getType();
+            reward_status = 1;
+        });
+        else Log.d(TAG, "The rewarded ad wasn't ready yet.");
     }
 
     private void app_update_manager() {
         appUpdateManager = AppUpdateManagerFactory.create(New_Main_Activity.this);
         com.google.android.play.core.tasks.Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
         appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
-            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
-
+            //inapp_review_dialog();
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE))
                 try {
                     appUpdateManager.startUpdateFlowForResult(appUpdateInfo, AppUpdateType.IMMEDIATE, New_Main_Activity.this, 200);
                 } catch (IntentSender.SendIntentException e) {
                     e.printStackTrace();
                 }
-            } else {
-                //inapp_review_dialog();
-                if (sp.getString(New_Main_Activity.this, "review_complete").equals("")) {
-                    if (!sp.getString(New_Main_Activity.this, "review_time").equals("")) {
-                        long before_date = Long.parseLong(sp.getString(New_Main_Activity.this, "review_time"));
+            else if (sp.getString(New_Main_Activity.this, "review_complete").equals(""))
+                if (!sp.getString(New_Main_Activity.this, "review_time").equals("")) {
+                    long before_date = Long.parseLong(sp.getString(New_Main_Activity.this, "review_time"));
 
-                        Calendar current_date = Calendar.getInstance();
+                    Calendar current_date = Calendar.getInstance();
 
-                        long currentdate_mills = current_date.getTimeInMillis();
+                    long currentdate_mills = current_date.getTimeInMillis();
 
-                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-                        String string_current_date = sdf.format(currentdate_mills);
-                        String string_before_date = sdf.format(before_date);
+                    String string_current_date = sdf.format(currentdate_mills);
+                    String string_before_date = sdf.format(before_date);
 
 
-                        //System.out.println("new Version " + date);
-                        long timediff = 0;
+                    //System.out.println("new Version " + date);
+                    long timediff = 0;
 
-                        try {
-                            timediff = TimeUnit.DAYS.convert(sdf.parse(string_current_date).getTime() - sdf.parse(string_before_date).getTime(), TimeUnit.MILLISECONDS);
+                    try {
+                        timediff = TimeUnit.DAYS.convert(sdf.parse(string_current_date).getTime() - sdf.parse(string_before_date).getTime(), TimeUnit.MILLISECONDS);
 
-                            System.out.println("new Version " + timediff);
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
-
-
-                        if ((int) timediff >= 10) {
-                            System.out.println("new Version 1 " + timediff);
-                            if (Utils.isNetworkAvailable(New_Main_Activity.this)) {
-                                if (sp.getString(New_Main_Activity.this, "inapp_review_first").equals("")) {
-                                    sp.putString(New_Main_Activity.this, "inapp_review_first", "on");
-
-                                } else {
-                                    inapp_review_dialog();
-                                }
-                            }
-                        }
+                        System.out.println("new Version " + timediff);
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
                     }
 
+
+                    if ((int) timediff >= 10) {
+                        System.out.println("new Version 1 " + timediff);
+                        if (Utils.isNetworkAvailable(New_Main_Activity.this))
+                            if (sp.getString(New_Main_Activity.this, "inapp_review_first").equals(""))
+                                sp.putString(New_Main_Activity.this, "inapp_review_first", "on");
+                            else inapp_review_dialog();
+                    }
                 }
-            }
 
         });
 
@@ -6078,7 +5218,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             intro = new Dialog(New_Main_Activity.this, android.R.style.Theme_Translucent_NoTitleBar);
             intro.setCancelable(false);
             intro.setContentView(R.layout.activity_new_intro_sc);
-            intro.show();
+            if (!isFinishing()) intro.show();
             sps.putInt(New_Main_Activity.this, "addloded2", 0);
             sps.putInt(New_Main_Activity.this, "addloded", 0);
             sps.putString(New_Main_Activity.this, "og_game_on_oi", "on");
@@ -6093,21 +5233,15 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
 
                 String str_month1 = "" + (cur_month1 + 1);
-                if (str_month1.length() == 1) {
-                    str_month1 = "0" + str_month1;
-                }
+                if (str_month1.length() == 1) str_month1 = "0" + str_month1;
 
                 String str_day1 = "" + cur_day1;
-                if (str_day1.length() == 1) {
-                    str_day1 = "0" + str_day1;
-                }
+                if (str_day1.length() == 1) str_day1 = "0" + str_day1;
                 final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
 
 
-                if (sps.getString(New_Main_Activity.this, "install_date").equals("")) {
-
+                if (sps.getString(New_Main_Activity.this, "install_date").equals(""))
                     sps.putString(New_Main_Activity.this, "install_date", "" + str_date1);
-                }
 
                 if (sps.getString(New_Main_Activity.this, "no_dialog").equals("")) {
                     sps.putString(New_Main_Activity.this, str_date1, "yes");
@@ -6126,9 +5260,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 terms_and_policy();
             }, 5000);
 
-        } else {
-            terms_and_policy();
-        }
+        } else terms_and_policy();
     }
 
     public void terms_and_policy() {
@@ -6137,10 +5269,10 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             openDialogterm.setContentView(R.layout.termsandpolicy);
             openDialogterm.setCancelable(false);
             openDialogterm.show();
-            TextView yes = (TextView) openDialogterm.findViewById(R.id.yes);
-            TextView no = (TextView) openDialogterm.findViewById(R.id.no);
-            TextView txt_ex = (TextView) openDialogterm.findViewById(R.id.txt_ex);
-            TextView txt_ex2 = (TextView) openDialogterm.findViewById(R.id.txt_ex2);
+            TextView yes = openDialogterm.findViewById(R.id.yes);
+            TextView no = openDialogterm.findViewById(R.id.no);
+            TextView txt_ex = openDialogterm.findViewById(R.id.txt_ex);
+            TextView txt_ex2 = openDialogterm.findViewById(R.id.txt_ex2);
             no.setText("AGREE & CONTINUE");
             txt_ex.setText("Privacy & Terms");
             txt_ex2.setText("Thanks for downloading or updating Solli Adi\n\n" + "By clicking privacy tab you can read our privacy policy and agree to the terms of privacy policy to continue using Nithra Solli Adi.");
@@ -6149,9 +5281,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 if (Utils.isNetworkAvailable(getApplicationContext())) {
                     Intent i = new Intent(context, Main_policy.class);
                     startActivity(i);
-                } else {
+                } else
                     Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }
             });
             no.setOnClickListener(v -> {
                 sps.putInt(New_Main_Activity.this, "termsandpollicy", 2);
@@ -6159,12 +5290,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             });
 
             openDialogterm.setOnDismissListener(dialog -> {
-
-            /*    if (sps.getInt(New_Main_Activity.this, "termsandpollicy") == 1) {
-                    sps.putInt(New_Main_Activity.this, "termsandpollicy", 2);
-                } else {
-                    sps.putInt(New_Main_Activity.this, "termsandpollicy", 2);
-                }*/
 
             });
 
@@ -6180,13 +5305,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         super.onActivityResult(requestCode, resultCode, intent);
         Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + intent);
-        if (requestCode == 200) {
-            if (resultCode != RESULT_OK) {
-                // Toast.makeText(this, "Update Faild.... Please try again", Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "Update flow failed! Result code: " + resultCode);
-
-            }
-        }
+        // Toast.makeText(this, "Update Faild.... Please try again", Toast.LENGTH_SHORT).show();
+        if (requestCode == 200) if (resultCode != RESULT_OK)
+            Log.d(TAG, "Update flow failed! Result code: " + resultCode);
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && intent != null && intent.getData() != null) {
 
@@ -6211,49 +5332,79 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 e.printStackTrace();
             }
         }
-        if (requestCode == 0) {
-            if (Utils.isNetworkAvailable(New_Main_Activity.this)) {
-                nextapp(random);
+        if (requestCode == 0) if (Utils.isNetworkAvailable(New_Main_Activity.this)) nextapp(random);
+        else {
 
-            } else {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(New_Main_Activity.this);                            /*.setTitle("Delete entry")*/
+            alertDialogBuilder.setCancelable(false);
+            alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்").setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                    dialog.dismiss();
+                }
+            }).setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // do nothing
 
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(New_Main_Activity.this);                            /*.setTitle("Delete entry")*/
-                alertDialogBuilder.setCancelable(false);
-                alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
-                        .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // do nothing
+                    finish();
+                    Intent i = new Intent(New_Main_Activity.this, New_Main_Activity.class);
+                    startActivity(i);
+                    dialog.dismiss();
+                }
+            }).setIcon(android.R.drawable.ic_dialog_alert).show();
 
-                                finish();
-                                Intent i = new Intent(New_Main_Activity.this, New_Main_Activity.class);
-                                startActivity(i);
-                                dialog.dismiss();
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-
-            }
         }
 
         System.out.println("@@@@" + requestCode);
-        if (requestCode == 15) {
-            if (resultCode == -1) {
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                int spx = skx + 10;
-                String aStringx = Integer.toString(spx);
-                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+        if (requestCode == 15) if (resultCode == -1) {
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            int spx = skx + 10;
+            String aStringx = Integer.toString(spx);
+            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
-                share_earn(10);
+            share_earn(10);
 
+            ///Reward Share
+            retype = "s";
+            Calendar calendar3 = Calendar.getInstance();
+            int cur_year1 = calendar3.get(Calendar.YEAR);
+            int cur_month1 = calendar3.get(Calendar.MONTH);
+            int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
+
+            String str_month1 = "" + (cur_month1 + 1);
+            if (str_month1.length() == 1) str_month1 = "0" + str_month1;
+
+            String str_day1 = "" + cur_day1;
+            if (str_day1.length() == 1) str_day1 = "0" + str_day1;
+            final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
+
+            if (sps.getString(New_Main_Activity.this, "complite_reg").equals("yes")) {
+                Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
+                cn.moveToFirst();
+                int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
+                int gm1s = gm1 + 1;
+                myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
+            }
+            ///Reward Share
+            //setcoin(1);
+        } else {
+            //  Toast.makeText(getApplicationContext(), "share and earns", Toast.LENGTH_SHORT).show();
+        }
+
+        if (requestCode == 12) if (resultCode == -1) {
+
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            int spx = skx + 20;
+            String aStringx = Integer.toString(spx);
+            //score.setText(aStringx);
+            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+            share_earn(20);
+
+            if (sps.getString(New_Main_Activity.this, "complite_reg").equals("yes")) {
                 ///Reward Share
                 retype = "s";
                 Calendar calendar3 = Calendar.getInstance();
@@ -6262,73 +5413,23 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
 
                 String str_month1 = "" + (cur_month1 + 1);
-                if (str_month1.length() == 1) {
-                    str_month1 = "0" + str_month1;
-                }
+                if (str_month1.length() == 1) str_month1 = "0" + str_month1;
 
                 String str_day1 = "" + cur_day1;
-                if (str_day1.length() == 1) {
-                    str_day1 = "0" + str_day1;
-                }
+                if (str_day1.length() == 1) str_day1 = "0" + str_day1;
                 final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
-
-                if (sps.getString(New_Main_Activity.this, "complite_reg").equals("yes")) {
-                    Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
-                    cn.moveToFirst();
+                ///
+                Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
+                cn.moveToFirst();
+                if (cn.getCount() != 0) {
                     int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
+
                 ///Reward Share
-                //setcoin(1);
-            } else {
-                //  Toast.makeText(getApplicationContext(), "share and earns", Toast.LENGTH_SHORT).show();
             }
-        }
-
-        if (requestCode == 12) {
-            if (resultCode == -1) {
-
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                int spx = skx + 20;
-                String aStringx = Integer.toString(spx);
-                //score.setText(aStringx);
-                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                share_earn(20);
-
-                if (sps.getString(New_Main_Activity.this, "complite_reg").equals("yes")) {
-                    ///Reward Share
-                    retype = "s";
-                    Calendar calendar3 = Calendar.getInstance();
-                    int cur_year1 = calendar3.get(Calendar.YEAR);
-                    int cur_month1 = calendar3.get(Calendar.MONTH);
-                    int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
-
-                    String str_month1 = "" + (cur_month1 + 1);
-                    if (str_month1.length() == 1) {
-                        str_month1 = "0" + str_month1;
-                    }
-
-                    String str_day1 = "" + cur_day1;
-                    if (str_day1.length() == 1) {
-                        str_day1 = "0" + str_day1;
-                    }
-                    final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
-                    ///
-                    Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
-                    cn.moveToFirst();
-                    if (cn.getCount() != 0) {
-                        int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
-                        int gm1s = gm1 + 1;
-                        myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
-                    }
-
-                    ///Reward Share
-                }
-            } else {
-            }
+        } else {
         }
 
         try {
@@ -6357,8 +5458,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 Bitmap bm = Bitmap.createScaledBitmap(bmp, 200, 200, false);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                // image_view.setImageBitmap(bm);
-                // user_name.setText("");
                 b = baos.toByteArray();
                 temp = Base64.encodeToString(b, Base64.DEFAULT);
                 sps.putString(getApplicationContext(), "profile_img", temp);
@@ -6377,8 +5476,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     Bitmap bmp = BitmapFactory.decodeFile(path);
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
-                    //image_view.setImageBitmap(bmp);
-                    // user_name.setText("");
                     b = out.toByteArray();
                     temp = Base64.encodeToString(b, Base64.DEFAULT);
                     sps.putString(getApplicationContext(), "profile_img", temp);
@@ -6404,12 +5501,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     class DownloadFileAsync extends AsyncTask<String, String, String> {
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // showDialog(DIALOG_DOWNLOAD_PROGRESS);
-        }
-
-        @Override
         protected String doInBackground(String... aurl) {
             InputStream input = null;
             OutputStream output = null;
@@ -6421,9 +5512,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
                 // expect HTTP 200 OK, so we don't mistakenly save error report
                 // instead of the file
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK)
                     return "Server returned HTTP " + connection.getResponseCode() + " " + connection.getResponseMessage();
-                }
 
                 // this will be useful to display download percentage
                 // might be -1: server did not report the length
@@ -6432,9 +5522,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 File SDCardRoot = getFilesDir();
 
                 File fol = new File(SDCardRoot + "/Nithra/solliadi/");
-                if (!fol.exists()) {
-                    fol.mkdirs();
-                }
+                if (!fol.exists()) fol.mkdirs();
 
 
                 File file = new File(SDCardRoot + "/Nithra/solliadi/", sps.getString(New_Main_Activity.this, "email") + "-filename.zip");
@@ -6509,10 +5597,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     }
 
     private class gcmpost_update1 extends AsyncTask<String, String, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
 
         @Override
         protected String doInBackground(String... strr) {
@@ -6529,10 +5613,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     }
 
     private class gcmpost_update2 extends AsyncTask<String, String, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
 
         @Override
         protected String doInBackground(String... strr) {
@@ -6550,10 +5630,10 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     public class CustomerCareAdapter extends ArrayAdapter {
 
+        public final int[] colorArray = {R.color.green, R.color.green, R.color.green, R.color.green, R.color.green, R.color.green, R.color.green, R.color.green};
+        final Context context;
+        final List<Item> list;
         public TextView title, ans;
-        public int[] colorArray = {R.color.green, R.color.green, R.color.green, R.color.green, R.color.green, R.color.green, R.color.green, R.color.green};
-        Context context;
-        List<Item> list;
         LayoutInflater inflater;
         LinearLayout textLay;
         Button btn;
@@ -6562,10 +5642,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             super(context, resource, list);
             this.context = context;
             this.list = list;
-        }
-
-        public void notifyDataSetChanged() {
-            super.notifyDataSetChanged();
         }
 
         @Override
@@ -6585,21 +5661,14 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             btn.setOnClickListener(view1 -> {
 
 
-                if (list.get(position).getId() == 1) {
-                    if (Utils.isNetworkAvailable(context)) {
-                        final Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                        emailIntent.setType("plain/text");
-                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Regarding Nithra Solli_Adi Subscription");
-                        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"feedback@nithra.mobi"});
-                        startActivity(Intent.createChooser(emailIntent, "Send mail..."));
-                    } else {
-                        Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
-                    }
-
-
-                } else if (list.get(position).getId() == 2) {
-                    makeCall("");
-                }
+                if (list.get(position).getId() == 1) if (Utils.isNetworkAvailable(context)) {
+                    final Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                    emailIntent.setType("plain/text");
+                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Regarding Nithra Solli_Adi Subscription");
+                    emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"feedback@nithra.mobi"});
+                    startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+                } else Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
+                else if (list.get(position).getId() == 2) makeCall();
             });
 
             if (list.get(position).getId() == 1) {
@@ -6608,9 +5677,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             } else if (list.get(position).getId() == 2) {
                 btn.setText("CALL US");
                 btn.setBackgroundColor(context.getResources().getColor(colorArray[position]));
-            } else {
-                btn.setVisibility(View.GONE);
-            }
+            } else btn.setVisibility(View.GONE);
             return view;
         }
 
@@ -6622,7 +5689,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         @Override
         public void onPurchasesUpdated(List<Purchase> purchaseList) {
 
-            for (Purchase purchase : purchaseList) {
+            for (Purchase purchase : purchaseList)
                 if (BillingManager.SKU_ID.equals(purchase.getProducts().get(0))) {
 
                     spa.putInt(New_Main_Activity.this, "purchase_ads", 1);
@@ -6632,12 +5699,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     // We should consume the purchase and fill up the tank once it was consumed
                     // mActivity.getBillingManager().consumeAsync(purchase.getPurchaseToken());
                     SharedPreference sharedPreference = new SharedPreference();
-                    //sharedPreference.putInt(New_Main_Activity.this, "pur_type", 2);
-                    // sharedPreference.putBoolean(New_Main_Activity.this, "purchase", true);
 
 
                 }
-            }
 
 
         }

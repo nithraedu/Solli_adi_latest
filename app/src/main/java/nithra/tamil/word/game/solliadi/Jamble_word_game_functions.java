@@ -2,7 +2,6 @@ package nithra.tamil.word.game.solliadi;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.widget.TextView;
 
 public class Jamble_word_game_functions {
     DataBaseHelper myDbHelper;
@@ -18,10 +17,7 @@ public class Jamble_word_game_functions {
         return val;
     }
 
-    public void Jamble_word_game_functions(TextView tx1, TextView tx2, TextView tx3, TextView tx4, TextView tx5, TextView tx6, TextView tx7, TextView tx8, TextView tx9, TextView tx10) {
-
-    }
-/*
+    /*
     public static void  scorescreen(final Context context){
         final Typeface typ, tyr;
 
@@ -77,7 +73,7 @@ public class Jamble_word_game_functions {
             }
         });
         TextView video_earn = (TextView) openDialog_s.findViewById(R.id.video_earn);
-        video_earn.setText("மேலும் " + sps.getInt(context, "reward_coin_txt") + "+நாணயங்கள் பெற");
+        video_earn.setText("காணொளியை பார்த்து  " + sps.getInt(context, "reward_coin_txt") + "+ நாணயங்கள் பெற");
 
         Animation myFadeInAnimation = AnimationUtils.loadAnimation(context, R.anim.blink_animation);
         vid_earn.startAnimation(myFadeInAnimation);
@@ -143,7 +139,7 @@ public class Jamble_word_game_functions {
                         // mShowVideoButton.setVisibility(View.VISIBLE);
                     } else {
                         startGame();
-                        new Handler().postDelayed(new Runnable() {
+                        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 reward_progressBar.dismiss();
@@ -179,7 +175,7 @@ public class Jamble_word_game_functions {
                         // mShowVideoButton.setVisibility(View.VISIBLE);
                     } else {
                         startGame();
-                        new Handler().postDelayed(new Runnable() {
+                        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 reward_progressBar.dismiss();

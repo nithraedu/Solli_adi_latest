@@ -51,12 +51,6 @@ import java.util.List;
 class CustomKeyboard {
 
     /**
-     * The key (code) handler.
-     */
-
-    String str = "";
-    int vall = 0;
-    /**
      * A link to the KeyboardView that is used to render this CustomKeyboard1.
      */
     private final KeyboardView mKeyboardView;
@@ -64,6 +58,12 @@ class CustomKeyboard {
      * A link to the activity that hosts the {@link #mKeyboardView}.
      */
     private final Activity mHostActivity;
+    /**
+     * The key (code) handler.
+     */
+
+    String str = "";
+    int vall = 0;
     private final OnKeyboardActionListener mOnKeyboardActionListener = new OnKeyboardActionListener() {
 
         public final static int CodeDelete = -5; // Keyboard.KEYCODE_DELETE
@@ -2024,8 +2024,6 @@ class CustomKeyboard {
         keys.get(34).label = "\"";
         keys.get(34).codes[0] = 34;
         mKeyboardView.invalidateKey(41);
- /*       keys.get(41).label = "'";
-        keys.get(41).codes[0] = 39;*/
         mKeyboardView.invalidateKey(36);
         keys.get(36).label = "அ";
         keys.get(36).codes[0] = -55001;

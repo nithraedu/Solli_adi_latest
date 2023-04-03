@@ -9,9 +9,9 @@ import java.util.Queue;
 
 public class MaterialShowcaseSequence implements IDetachedListener {
 
+    final Queue<MaterialShowcaseView> mShowcaseQueue;
+    final Activity mActivity;
     PrefsManager mPrefsManager;
-    Queue<MaterialShowcaseView> mShowcaseQueue;
-    Activity mActivity;
     private boolean mSingleUse = false;
     private ShowcaseConfig mConfig;
     private int mSequencePosition = 0;
@@ -29,11 +29,7 @@ public class MaterialShowcaseSequence implements IDetachedListener {
         this.singleUse(sequenceID);
     }
 
-    public void seqance_end(Activity activity, String start) {
-
-    }
-
-    public MaterialShowcaseSequence addSequenceItem(View targetView, String content, String dismissText) {
+    public void addSequenceItem(View targetView, String content, String dismissText) {
 
         MaterialShowcaseView sequenceItem = new MaterialShowcaseView.Builder(mActivity)
                 .setTarget(targetView)
@@ -46,7 +42,6 @@ public class MaterialShowcaseSequence implements IDetachedListener {
         }
 
         mShowcaseQueue.add(sequenceItem);
-        return this;
     }
 
     public MaterialShowcaseSequence addSequenceItem(MaterialShowcaseView sequenceItem) {
@@ -54,10 +49,9 @@ public class MaterialShowcaseSequence implements IDetachedListener {
         return this;
     }
 
-    public MaterialShowcaseSequence singleUse(String sequenceID) {
+    public void singleUse(String sequenceID) {
         mSingleUse = true;
         mPrefsManager = new PrefsManager(mActivity, sequenceID);
-        return this;
     }
 
     public void setOnItemShownListener(OnSequenceItemShownListener listener) {

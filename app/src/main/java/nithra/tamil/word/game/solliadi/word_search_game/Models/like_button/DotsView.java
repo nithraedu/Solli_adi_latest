@@ -30,6 +30,7 @@ public class DotsView extends View {
     private static final int DOTS_COUNT = 7;
     private static final int OUTER_DOTS_POSITION_ANGLE = 51;
     private final Paint[] circlePaints = new Paint[4];
+    private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
     private int COLOR_1 = 0xFFFFC107;
     private int COLOR_2 = 0xFFFF9800;
     private int COLOR_3 = 0xFFFF5722;
@@ -46,7 +47,6 @@ public class DotsView extends View {
     private float currentDotSize1 = 0;
     private float currentDotSize2 = 0;
     private float currentRadius2 = 0;
-    private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
     public DotsView(Context context) {
         super(context);

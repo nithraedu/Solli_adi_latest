@@ -71,7 +71,7 @@ public class HttpHandler {
                         new InputStreamReader(
                                 conn.getInputStream()));
                 StringBuffer sb = new StringBuffer();
-                String line = "";
+                String line;
 
                 while ((line = in.readLine()) != null) {
 
@@ -87,8 +87,6 @@ public class HttpHandler {
                 return "false : " + responseCode;
             }
 
-           /* InputStream in = new BufferedInputStream(conn.getInputStream());
-            response = convertStreamToString(in);*/
         } catch (MalformedURLException e) {
             Log.e(TAG, "MalformedURLException: " + e.getMessage());
         } catch (ProtocolException e) {
@@ -155,7 +153,7 @@ public class HttpHandler {
                         new InputStreamReader(
                                 conn.getInputStream()));
                 StringBuffer sb = new StringBuffer();
-                String line = "";
+                String line;
 
                 while ((line = in.readLine()) != null) {
 
@@ -171,8 +169,6 @@ public class HttpHandler {
                 return "false : " + responseCode;
             }
 
-           /* InputStream in = new BufferedInputStream(conn.getInputStream());
-            response = convertStreamToString(in);*/
         } catch (MalformedURLException e) {
             Log.e(TAG, "MalformedURLException: " + e.getMessage());
         } catch (ProtocolException e) {

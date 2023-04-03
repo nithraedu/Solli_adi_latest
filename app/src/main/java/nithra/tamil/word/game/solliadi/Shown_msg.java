@@ -30,8 +30,6 @@ public class Shown_msg extends Activity {
         if (sharedPreference.getInt(Shown_msg.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
         } else {
-           /* AdRequest adRequest = new AdRequest.Builder().build();
-            interstitialAd.loadAd(adRequest);*/
         }
 
 
@@ -55,12 +53,12 @@ public class Shown_msg extends Activity {
                 if (sharedPreference.getInt(Shown_msg.this, "Noti_add") == 1) {
 
                     sharedPreference.putInt(getApplicationContext(), "Noti_add", 0);
-                    Intent i = new Intent(Shown_msg.this, MainActivity.class);
+                    Intent i = new Intent(Shown_msg.this, New_Main_Activity.class);
                     finish();
                     startActivity(i);
 
                 } else {
-                    Intent i = new Intent(Shown_msg.this, MainActivity.class);
+                    Intent i = new Intent(Shown_msg.this, New_Main_Activity.class);
                     finish();
                     startActivity(i);
                 }

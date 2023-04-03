@@ -24,7 +24,7 @@ public class Bonus extends BroadcastReceiver {
         db1 = context.openOrCreateDatabase("Solli_Adi", Context.MODE_PRIVATE, null);
 
         myDbHelper = new DataBaseHelper(context);
-        Boolean isBooted = false;
+        boolean isBooted;
 
         final String BOOT_ACTION = "android.intent.action.BOOT_COMPLETED";
 
@@ -48,45 +48,9 @@ public class Bonus extends BroadcastReceiver {
     }
 
 
-    public void createNotification2(final Context context) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-        Intent i = new Intent(context, MainActivity.class);
-        //i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.putExtra("coins", "ok");
-
-
-        PendingIntent intent = PendingIntent.getActivity(context, 5, i, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(intent);
-        builder.setTicker(context.getResources().getString(R.string.app_name));
-        builder.setSmallIcon(R.drawable.noti_backicon);
-        builder.setAutoCancel(true);
-
-        Notification notification = builder.build();
-	/*	RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.remote_bonous);
-		//final String time = DateFormat.getTimeInstance().format(new Date()).toString();
-		//final String text = context.getResources().getString(R.string.action_settings, time);
-		contentView.setTextViewText(R.id.textview, "");
-		notification.contentView = contentView;
-
-		if (Build.VERSION.SDK_INT >= 16) {
-			// Inflate and set the layout for the expanded notification view
-			RemoteViews expandedView =
-					new RemoteViews(context.getPackageName(), R.layout.remote_bonous1);
-			notification.bigContentView = expandedView;
-		}*/
-        //notification.setLatestEventInfo(context, "கூடுதல் நாணயங்கள் ", "100", intent);
-        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        nm.notify(5, notification);
-
-
-    }
-
-
     public void createNotification_double(final Context context) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-        Intent i = new Intent(context, MainActivity.class);
+        Intent i = new Intent(context, New_Main_Activity.class);
         //i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

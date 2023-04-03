@@ -2,14 +2,12 @@ package nithra.tamil.word.game.solliadi;
 
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Puthayal_Sorkal_Native_Banner;
 
 import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -28,6 +26,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.StatFs;
 import android.os.StrictMode;
 import android.os.SystemClock;
@@ -39,10 +38,8 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -50,9 +47,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -61,21 +56,21 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.NativeAdLayout;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -113,13 +108,11 @@ import java.util.Date;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
-import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
@@ -127,39 +120,23 @@ import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 public class Clue_Game_Hard extends AppCompatActivity {
     public static final String TAG = "SavedGames";
     public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
-    //*********************reward videos process 1***********************
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
-
-    // The AppState slot we are editing.  For simplicity this sample only manipulates a single
-    // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
-    // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
-    private static final int APP_STATE_KEY = 1;
-    // Request code used to invoke sign-in UI.
-    private static final int RC_SIGN_IN = 9001;
-    // Request code used to invoke Snapshot selection UI.
-    private static final int RC_SELECT_SNAPSHOT = 9002;
-    /////////native advance////////////
-    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
-    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
-    //reward videos process 1***********************
-    /////////native advance////////////
-    /////////Native_Top_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_Top = "ca-app-pub-4267540560263635/2303543680";
-    /////////Native_Top_Advanced////////////
-    /////////Native_BackPress_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
-    public static FrameLayout add, add2, add3;
-    public static LinearLayout add_e;
-    public static LinearLayout add_sc;
-    static int ry;
-    static int mCoinCount = 20;
-    static int rvo = 0;
-
-
+    static final int mCoinCount = 20;
     // Facebook variable starts
-    static SharedPreference spd = new SharedPreference();
+    static final SharedPreference spd = new SharedPreference();
+    static int ry;
+    static int rvo = 0;
+    final int gameid = 2;
+    final SharedPreference sps = new SharedPreference();
+    final int minmum = 1;
+    final int maximum = 3;
+    final Context context = this;
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     private final PendingAction pendingAction = PendingAction.NONE;
+    private final boolean mIsResolving = false;
+    // True immediately after the user clicks the sign-in button/
+    private final boolean mSignInClicked = false;
+    // True if we want to automatically attempt to sign in the user at application start.
+    private final boolean mAutoStartSignIn = true;
     int fb_reward = 0;
     int val = 0;
     int reward_status = 0;
@@ -172,16 +149,11 @@ public class Clue_Game_Hard extends AppCompatActivity {
     SQLiteDatabase exdb, dbs, dbn, dbn2;
     EditText c_edit;
     int level;
-    int gameid = 2;
     int w_id;
     TextView c_verify, c_clear, ans_high, c_clue;
     int f_sec;
     TextView c_ans;
-    SharedPreference sps = new SharedPreference();
     TextView clue1, clue2, clue3, clue1_txt, clue2_txt, clue3_txt;
-    // MediaPlayer c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19, c20;
-    // MediaPlayer r1, play1;
-    // MediaPlayer w1;
     TextView bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9, bt10, bt11, bt12, bt13, bt14, bt15, bt16;
     SoundPool click, win, coin, worng;
     int soundId1, soundId2, soundId3, soundId4;
@@ -200,15 +172,11 @@ public class Clue_Game_Hard extends AppCompatActivity {
     String sa;
     String sb;
     int type;
-    JSONArray warray, warray2, carray, sarray, sarray2;
-    String str_vpcont;
     String email = "";
     Timer t1, th;
     int t, t2;
     LinearLayout qtw;
     TextView earncoin;
-    int minmum = 1;
-    int maximum = 3;
     int randomno;
     TextView next_continue;
     String downok = "", downnodata = "";
@@ -225,9 +193,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
     int s = 0;
     int share_name = 0;
     int setting_access = 0;
-    Context context = this;
     RelativeLayout adsicon, adsicon2;
-    int loadaddcontent = 0;
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
     Newgame_DataBaseHelper3 newhelper3;
@@ -243,24 +209,18 @@ public class Clue_Game_Hard extends AppCompatActivity {
     int setval_vid;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
-    NativeAdLayout native_banner_ad_container;
-    //RewardedVideoAd rewardedVideoAd;
-    private MaxRewardedAd rewardedAd;
 
-    private boolean mIsResolving = false;
-    // True immediately after the user clicks the sign-in button/
-    private boolean mSignInClicked = false;
-    // True if we want to automatically attempt to sign in the user at application start.
-    private boolean mAutoStartSignIn = true;
-    private MaxInterstitialAd ins_game, game_exit_ins;
+    Handler handler;
+    Runnable my_runnable;
+    private RewardedAd rewardedAd;
+    private InterstitialAd mInterstitialAd;
 
     public static boolean exists(String URLName) {
         try {
             HttpURLConnection.setFollowRedirects(false);
             // note : you may also need
             //        HttpURLConnection.setInstanceFollowRedirects(false)
-            HttpURLConnection con =
-                    (HttpURLConnection) new URL(URLName).openConnection();
+            HttpURLConnection con = (HttpURLConnection) new URL(URLName).openConnection();
             con.setRequestMethod("HEAD");
             return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
         } catch (Exception e) {
@@ -274,11 +234,8 @@ public class Clue_Game_Hard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_clue__game);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-
-        c_clue = (Button) findViewById(R.id.next_clue);
-        native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
+        c_clue = findViewById(R.id.next_clue);
         Animation myFadeInAnimation = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.blink_animation);
         c_clue.startAnimation(myFadeInAnimation);
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
@@ -308,55 +265,16 @@ public class Clue_Game_Hard extends AppCompatActivity {
         newhelper4 = new Newgame_DataBaseHelper4(context);
 
 
-       /* String gid = "2";
-        String qid = "";
-        for (int i = 0; i<=198; i++){
-            if (qid.equals("")){
-                qid = "" +i;
-            } else {
-                qid = qid + "," + i;
-            }
-        }
-        myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='2'");
-*/
-
-
-        if (sps.getInt(Clue_Game_Hard.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
-        } else {
-            //fb_addload_score_screen(context);
-            /* */
-        }
-
-
         email = sps.getString(Clue_Game_Hard.this, "email");
-        rewarded_ad();
+        MobileAds.initialize(this);
+        rewarded_adnew();
         if (sps.getInt(context, "purchase_ads") == 0) {
-            // Make sure to set the mediation provider value to "max" to ensure proper functionality
-            AppLovinSdk.getInstance(context).setMediationProvider("max");
-            AppLovinSdk.initializeSdk(context, new AppLovinSdk.SdkInitializationListener() {
-                @Override
-                public void onSdkInitialized(final AppLovinSdkConfiguration configuration) {
-                    // AppLovin SDK is initialized, start loading ads
-                    industrialload_game();
-                    game_exit_ins_ad();
-
-                }
-            });
+            Utills.INSTANCE.initializeAdzz(this);
+            industrialload();
         }
-        //reward();
 
-        //loads_ads_banner();
-        adds = (LinearLayout) findViewById(R.id.ads_lay);
-        if (sps.getInt(context, "purchase_ads") == 0) {
-            if (Utils.isNetworkAvailable(Clue_Game_Hard.this)) {
-                Ad_NativieUtils.load_add_facebook(this, getResources().getString(R.string.Puthayal_Sorkal_Native_Banner_new), adds);
-            } else {
-                adds.setVisibility(View.GONE);
-            }
-        } else {
-            adds.setVisibility(View.GONE);
-        }
+        adds = findViewById(R.id.ads_lay);
+        Utills.INSTANCE.load_add_AppLovin(this, adds);
 
         ///Alter Answer table
 
@@ -384,44 +302,37 @@ public class Clue_Game_Hard extends AppCompatActivity {
         coin = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
         soundId4 = coin.load(Clue_Game_Hard.this, R.raw.coins, 1);
 ///
-        ImageView prize_logo = (ImageView) findViewById(R.id.prize_logo);
+        ImageView prize_logo = findViewById(R.id.prize_logo);
         if (sps.getInt(Clue_Game_Hard.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
             prize_logo.setVisibility(View.GONE);
         }
-        prize_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isNetworkAvailable()) {
-                    if (sps.getString(Clue_Game_Hard.this, "price_registration").equals("com")) {
+        prize_logo.setOnClickListener(v -> {
+            if (isNetworkAvailable()) {
+                if (sps.getString(Clue_Game_Hard.this, "price_registration").equals("com")) {
+                    finish();
+                    Intent i = new Intent(Clue_Game_Hard.this, Game_Status.class);
+                    startActivity(i);
+                } else {
+                    if (sps.getString(Clue_Game_Hard.this, "otp_verify").equals("yes")) {
                         finish();
-                        Intent i = new Intent(Clue_Game_Hard.this, Game_Status.class);
+                        Intent i = new Intent(Clue_Game_Hard.this, LoginActivity.class);
                         startActivity(i);
                     } else {
-                        if (sps.getString(Clue_Game_Hard.this, "otp_verify").equals("yes")) {
-                            finish();
-                            Intent i = new Intent(Clue_Game_Hard.this, LoginActivity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            Intent i = new Intent(Clue_Game_Hard.this, Price_Login.class);
-                            startActivity(i);
-                        }
+                        finish();
+                        Intent i = new Intent(Clue_Game_Hard.this, Price_Login.class);
+                        startActivity(i);
                     }
-                } else {
-                    Toast.makeText(Clue_Game_Hard.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(Clue_Game_Hard.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
             }
         });
 
         openDialog_s = new Dialog(Clue_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
-        adsicon = (RelativeLayout) openDialog_s.findViewById(R.id.adsicon);
-
-        /////////
-
-        //New_Main_Activity.fb_addload(Clue_Game_Hard.this);
+        adsicon = openDialog_s.findViewById(R.id.adsicon);
 
         if (sps.getInt(Clue_Game_Hard.this, "purchase_ads") == 1) {
         } else {
@@ -431,16 +342,11 @@ public class Clue_Game_Hard extends AppCompatActivity {
         //Sound ON OFF
         String snd = sps.getString(Clue_Game_Hard.this, "snd");
 
-        LayoutInflater layoutInflater
-                = (LayoutInflater) getBaseContext()
-                .getSystemService(LAYOUT_INFLATER_SERVICE);
+        LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = layoutInflater.inflate(R.layout.settings, null);
-        popupWindow = new PopupWindow(
-                popupView,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        toggleButton = (TextView) popupView.findViewById(R.id.toggle);
-        c_settings = (TextView) findViewById(R.id.c_settings);
+        popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        toggleButton = popupView.findViewById(R.id.toggle);
+        c_settings = findViewById(R.id.c_settings);
         if (snd.equals("off")) {
             //  toggleButton.setBackgroundResource(R.drawable.off);
             c_settings.setBackgroundResource(R.drawable.sound_off);
@@ -449,31 +355,25 @@ public class Clue_Game_Hard extends AppCompatActivity {
             c_settings.setBackgroundResource(R.drawable.sound_on);
             sv = 1;
         }
-        c_edit = (EditText) findViewById(R.id.clue_ans_editer);
-        c_edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(c_edit.getWindowToken(), 0);
-            }
+        c_edit = findViewById(R.id.clue_ans_editer);
+        c_edit.setOnClickListener(v -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(c_edit.getWindowToken(), 0);
         });
-        c_edit.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(c_edit.getWindowToken(), 0);
+        c_edit.setOnTouchListener((v, event) -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(c_edit.getWindowToken(), 0);
 
-                return true;
-            }
+            return true;
         });
 
         if (sps.getInt(Clue_Game_Hard.this, "reward_coin_txt") == 0) {
             sps.putInt(Clue_Game_Hard.this, "reward_coin_txt", 20);
         }
 
-        c_ans = (TextView) findViewById(R.id.c_ans);
-        h_watts_app = (TextView) findViewById(R.id.ch_watts_app);
-        helpshare_layout = (RelativeLayout) findViewById(R.id.helpshare_layout);
+        c_ans = findViewById(R.id.c_ans);
+        h_watts_app = findViewById(R.id.ch_watts_app);
+        helpshare_layout = findViewById(R.id.helpshare_layout);
         //Dialog for intro
         if (sps.getString(Clue_Game_Hard.this, "cn_intro").equals("yes")) {
             showcase_dismiss();
@@ -490,24 +390,16 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
             //  sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
 
-            sequence.addSequenceItem(new MaterialShowcaseView.Builder(Clue_Game_Hard.this)
-                            .setTarget(helpshare_layout)
-                            .setDismissText("சரி")
-                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                            .build())
-                    .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
-                        @Override
-                        public void onDismiss(MaterialShowcaseView itemView, int position) {
+            sequence.addSequenceItem(new MaterialShowcaseView.Builder(Clue_Game_Hard.this).setTarget(helpshare_layout).setDismissText("சரி").setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.").build()).setOnItemDismissedListener((itemView, position) -> {
 
-                            if (position == 2) {
-                                sps.putString(Clue_Game_Hard.this, "clue_time_start", "yes");
-                                sps.putString(Clue_Game_Hard.this, "showcase_dismiss_c", "yes");
-                                focus.setBase(SystemClock.elapsedRealtime());
-                                focus.start();
+                if (position == 2) {
+                    sps.putString(Clue_Game_Hard.this, "clue_time_start", "yes");
+                    sps.putString(Clue_Game_Hard.this, "showcase_dismiss_c", "yes");
+                    focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();
 
-                            }
-                        }
-                    });
+                }
+            });
 
 
             sps.putString(Clue_Game_Hard.this, "cn_intro", "no");
@@ -567,405 +459,270 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
     }
 
-    private void loads_ads_banner() {
-        adds = (LinearLayout) findViewById(R.id.ads_lay);
-        if (sps.getInt(Clue_Game_Hard.this, "purchase_ads") == 1) {
-            adds.setVisibility(View.GONE);
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
+    public void industrialload() {
+        if (mInterstitialAd != null) return;
+        Log.i(TAG, "onAdLoadedCalled");
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        InterstitialAd.load(this, getResources().getString(R.string.Game2_Stage_Close_PS), adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                interstiallistener();
+                Log.i(TAG, "onAdLoaded");
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.d(TAG, loadAdError.toString());
+                mInterstitialAd = null;
+                handler = null;
+                Log.i(TAG, "onAdLoadedfailed" + loadAdError.getMessage());
+            }
+        });
+
+    }
+
+    public void interstiallistener() {
+        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override
+            public void onAdDismissedFullScreenContent() {
+                // Called when ad is dismissed.
+                // Set the ad reference to null so you don't show the ad a second time.
+                Log.d(TAG, "Ad dismissed fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                setSc();
+                industrialload();
+            }
+
+            @Override
+            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                // Called when ad fails to show.
+                Log.e(TAG, "Ad failed to show fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
+                setSc();
+            }
+
+        });
+    }
+
+    public void adShow() {
+        if (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") == Utills.interstitialadCount && mInterstitialAd != null) {
+            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
+            Utills.INSTANCE.Loading_Dialog(this);
+            handler = new Handler(Looper.myLooper());
+            my_runnable = () -> {
+                mInterstitialAd.show(this);
+            };
+            handler.postDelayed(my_runnable, 2500);
         } else {
-            if (Utils.isNetworkAvailable(Clue_Game_Hard.this)) {
-                fb_native_Puthayal_Sorkal_Native_Banner(Clue_Game_Hard.this, native_banner_ad_container);
+            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") + 1));
+            if (sps.getInt(this, "Game2_Stage_Close_PS") > Utills.interstitialadCount)
+                sps.putInt(this, "Game2_Stage_Close_PS", 0);
+            setSc();
+            //Toast.makeText(this, "" + sps.getInt(this, "Game2_Stage_Close_PS"), Toast.LENGTH_SHORT).show();
 
-                /* if (spd.getInt(Clue_Game_Hard.this, "native_banner_ads") == 1) {
-                    New_Main_Gamelist.inflateAd(Clue_Game_Hard.this, native_banner_ad_container);
-                } else {
-                    fb_native(Clue_Game_Hard.this, native_banner_ad_container);
-                }*/
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-        /*    if (sps.getInt(Clue_Game_Hard.this, "addlodedd") == 1) {
-                New_Main_Activity.load_addFromMain(Clue_Game_Hard.this, adds);
-            } else {
-                if (Utils.isNetworkAvailable(Clue_Game_Hard.this)) {
-                    sps.putInt(Clue_Game_Hard.this, "addlodedd", 2);
-                    System.out.println("@IMG");
-                    final AdView adView = new AdView(Clue_Game_Hard.this);
-                    adView.setAdUnitId(getString(R.string.main_banner_ori));
-
-                    adView.setAdSize(AdSize.SMART_BANNER);
-                    AdRequest request = new AdRequest.Builder().build();
-                    adView.setAdListener(new AdListener() {
-                        public void onAdLoaded() {
-                            System.out.println("@@@loaded");
-                            adds.removeAllViews();
-                            adds.addView(adView);
-                            adds.setVisibility(View.VISIBLE);
-                            super.onAdLoaded();
-                        }
-
-                        @Override
-                        public void onAdFailedToLoad(int i) {
-                            System.out.println("@@@NOt loaded");
-                            super.onAdFailedToLoad(i);
-                        }
-                    });
-                    adView.loadAd(request);
-
-                }
-            }*/
         }
-    }
-
-
-    public void game_exit_ins_ad() {
-
-        game_exit_ins = new MaxInterstitialAd(getResources().getString(R.string.Cat_Exit_Ins), this);
-        game_exit_ins.setListener(new MaxAdListener() {
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                openDialog_p.dismiss();
-                game_exit_ins_ad();
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error" + error);
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2" + error);
-            }
-        });
-        game_exit_ins.loadAd();
-
-    }
-
-    public void industrialload_game() {
-
-        ins_game = new MaxInterstitialAd(getResources().getString(R.string.Puthayal_Sorkal_Ins_new), this);
-        ins_game.setListener(new MaxAdListener() {
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                dia_dismiss = 1;
-                openDialog_s.dismiss();
-                next();
-                industrialload_game();
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-
-            }
-        });
-        ins_game.loadAd();
 
     }
 
 
     public void clicklistner() {
-        c_settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        c_settings.setOnClickListener(v -> {
+            c_settings.setBackgroundResource(R.drawable.sound_off);
+            String snd = sps.getString(Clue_Game_Hard.this, "snd");
+            if (snd.equals("off")) {
+                sps.putString(Clue_Game_Hard.this, "snd", "on");
+                c_settings.setBackgroundResource(R.drawable.sound_on);
+                sv = 1;
+            } else if (snd.equals("on")) {
+                sps.putString(Clue_Game_Hard.this, "snd", "off");
                 c_settings.setBackgroundResource(R.drawable.sound_off);
-                String snd = sps.getString(Clue_Game_Hard.this, "snd");
-                if (snd.equals("off")) {
-                    sps.putString(Clue_Game_Hard.this, "snd", "on");
-                    c_settings.setBackgroundResource(R.drawable.sound_on);
-                    sv = 1;
-                } else if (snd.equals("on")) {
-                    sps.putString(Clue_Game_Hard.this, "snd", "off");
-                    c_settings.setBackgroundResource(R.drawable.sound_off);
-                    sv = 0;
-                }
-
+                sv = 0;
             }
+
         });
-        earncoin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog(0);
+        earncoin.setOnClickListener(v -> dialog(0));
+
+
+        w_head.setOnClickListener(view -> {
+            if (kx == 2) {
+                popupWindow.dismiss();
+                kx = 1;
             }
         });
 
-
-        w_head.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (kx == 2) {
-                    popupWindow.dismiss();
-                    kx = 1;
-                }
-            }
+        h_gplues.setOnClickListener(view -> {
+            share_name = 3;
+            String a = "com.google.android.apps.plus";
+            permission(a);
+        });
+        h_watts_app.setOnClickListener(view -> {
+            share_name = 2;
+            String a = "com.whatsapp";
+            permission(a);
+        });
+        h_facebook.setOnClickListener(view -> {
+            share_name = 1;
+            final String a = "com.facebook.katana";
+            permission(a);
         });
 
-        h_gplues.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                share_name = 3;
-                String a = "com.google.android.apps.plus";
-                permission(a);
-            }
+        bt1.setOnClickListener(v -> {
+            //c1.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt1.startAnimation(shake);
+            String ts = bt1.getText().toString();
+            c_edit.append(ts);
         });
-        h_watts_app.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                share_name = 2;
-                String a = "com.whatsapp";
-                permission(a);
-            }
+        bt2.setOnClickListener(v -> {
+            // c2.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt2.startAnimation(shake);
+            String ts = bt2.getText().toString();
+            c_edit.append(ts);
         });
-        h_facebook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                share_name = 1;
-                final String a = "com.facebook.katana";
-                permission(a);
-            }
+        bt3.setOnClickListener(v -> {
+            // c3.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt3.startAnimation(shake);
+            String ts = bt3.getText().toString();
+            c_edit.append(ts);
+        });
+        bt5.setOnClickListener(v -> {
+            //  c4.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt5.startAnimation(shake);
+            String ts = bt5.getText().toString();
+            c_edit.append(ts);
+        });
+        bt6.setOnClickListener(v -> {
+            // c5.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt6.startAnimation(shake);
+            String ts = bt6.getText().toString();
+            c_edit.append(ts);
+        });
+        bt7.setOnClickListener(v -> {
+            // c6.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt7.startAnimation(shake);
+            String ts = bt7.getText().toString();
+            c_edit.append(ts);
+        });
+        bt9.setOnClickListener(v -> {
+            // c7.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt9.startAnimation(shake);
+            String ts = bt9.getText().toString();
+            c_edit.append(ts);
+        });
+        bt10.setOnClickListener(v -> {
+            // c8.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt10.startAnimation(shake);
+            String ts = bt10.getText().toString();
+            c_edit.append(ts);
+        });
+        bt11.setOnClickListener(v -> {
+            //  c9.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt11.startAnimation(shake);
+            String ts = bt11.getText().toString();
+            c_edit.append(ts);
         });
 
-        bt1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //c1.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt1.startAnimation(shake);
-                String ts = bt1.getText().toString();
-                c_edit.append(ts);
-            }
-        });
-        bt2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c2.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt2.startAnimation(shake);
-                String ts = bt2.getText().toString();
-                c_edit.append(ts);
-            }
-        });
-        bt3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c3.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt3.startAnimation(shake);
-                String ts = bt3.getText().toString();
-                c_edit.append(ts);
-            }
-        });
-        bt5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //  c4.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt5.startAnimation(shake);
-                String ts = bt5.getText().toString();
-                c_edit.append(ts);
-            }
-        });
-        bt6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c5.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt6.startAnimation(shake);
-                String ts = bt6.getText().toString();
-                c_edit.append(ts);
-            }
-        });
-        bt7.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c6.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt7.startAnimation(shake);
-                String ts = bt7.getText().toString();
-                c_edit.append(ts);
-            }
-        });
-        bt9.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c7.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt9.startAnimation(shake);
-                String ts = bt9.getText().toString();
-                c_edit.append(ts);
-            }
-        });
-        bt10.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c8.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt10.startAnimation(shake);
-                String ts = bt10.getText().toString();
-                c_edit.append(ts);
-            }
-        });
-        bt11.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //  c9.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt11.startAnimation(shake);
-                String ts = bt11.getText().toString();
-                c_edit.append(ts);
-            }
+        bt4.setOnClickListener(v -> {
+            // c10.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt4.startAnimation(shake);
+            String ts = bt4.getText().toString();
+            c_edit.append(ts);
         });
 
-        bt4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c10.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt4.startAnimation(shake);
-                String ts = bt4.getText().toString();
-                c_edit.append(ts);
-            }
+        bt8.setOnClickListener(v -> {
+            // c11.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt8.startAnimation(shake);
+            String ts = bt8.getText().toString();
+            c_edit.append(ts);
+        });
+        bt12.setOnClickListener(v -> {
+            // c12.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt12.startAnimation(shake);
+            String ts = bt12.getText().toString();
+            c_edit.append(ts);
+
+        });
+        bt13.setOnClickListener(v -> {
+            // c13.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt13.startAnimation(shake);
+            String ts = bt13.getText().toString();
+            c_edit.append(ts);
         });
 
-        bt8.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c11.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt8.startAnimation(shake);
-                String ts = bt8.getText().toString();
-                c_edit.append(ts);
-            }
+        bt14.setOnClickListener(v -> {
+            // c14.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt14.startAnimation(shake);
+            String ts = bt14.getText().toString();
+            c_edit.append(ts);
         });
-        bt12.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c12.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt12.startAnimation(shake);
-                String ts = bt12.getText().toString();
-                c_edit.append(ts);
+        bt15.setOnClickListener(v -> {
+            // c15.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt15.startAnimation(shake);
+            String ts = bt15.getText().toString();
+            c_edit.append(ts);
 
-            }
         });
-        bt13.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c13.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt13.startAnimation(shake);
-                String ts = bt13.getText().toString();
-                c_edit.append(ts);
-            }
+        bt16.setOnClickListener(v -> {
+            //c16.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
+            bt16.startAnimation(shake);
+            String ts = bt16.getText().toString();
+            c_edit.append(ts);
+
         });
 
-        bt14.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c14.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt14.startAnimation(shake);
-                String ts = bt14.getText().toString();
-                c_edit.append(ts);
-            }
-        });
-        bt15.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c15.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt15.startAnimation(shake);
-                String ts = bt15.getText().toString();
-                c_edit.append(ts);
+        qtw.setOnClickListener(v -> dialog(0));
 
-            }
-        });
-        bt16.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //c16.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
-                bt16.startAnimation(shake);
-                String ts = bt16.getText().toString();
-                c_edit.append(ts);
-
-            }
+        c_clear.setOnClickListener(v -> {
+            //c17.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            pressKey();
         });
 
-        qtw.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog(0);
-            }
-        });
-
-        c_clear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //c17.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                pressKey(KeyEvent.KEYCODE_DEL);
-            }
-        });
-
-        c_clear.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                c_edit.setText("");
-                return false;
-            }
+        c_clear.setOnLongClickListener(v -> {
+            c_edit.setText("");
+            return false;
         });
 
         focus.addTextChangedListener(new TextWatcher() {
@@ -1000,8 +757,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 }
             }
 
-            public void beforeTextChanged(CharSequence s, int start,
-                                          int count, int after) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -1024,48 +780,116 @@ public class Clue_Game_Hard extends AppCompatActivity {
         final Animation pendulam;
         pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
         adsicon2.startAnimation(pendulam);
-        c_clue.setOnClickListener(new View.OnClickListener() {
-                                      @Override
-                                      public void onClick(View v) {
-                                          clue();
-                                          // tim=0;
-                                          sps.putInt(getApplicationContext(), "cluetime", 0);
+        c_clue.setOnClickListener(v -> {
+            clue();
+            // tim=0;
+            sps.putInt(getApplicationContext(), "cluetime", 0);
 
-                                      }
-                                  }
-        );
-        edit_buttons_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (kx == 2) {
-                    popupWindow.dismiss();
-                    kx = 1;
-                }
+        });
+        edit_buttons_layout.setOnClickListener(v -> {
+            if (kx == 2) {
+                popupWindow.dismiss();
+                kx = 1;
             }
         });
 //User Verifing Answer
-        c_ans.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
-                cfw.moveToFirst();
-                if (cfw.getCount() != 0) {
-                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
-                    if (sk >= 100) {
-                        if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
+        c_ans.setOnClickListener(v -> {
+            Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
+            cfw.moveToFirst();
+            if (cfw.getCount() != 0) {
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
+                if (sk >= 100) {
+                    if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
+                        Cursor cd;
+                        String date = sps.getString(Clue_Game_Hard.this, "date");
+                        if (date.equals("0")) {
+                            cd = myDbHelper.getQry("SELECT * FROM maintable where  levelid='" + w_id + "' and isfinish='0' and gameid='" + gameid + "'");
+                            cd.moveToFirst();
+                        } else {
+                            cd = myDbHelper.getQry("SELECT * FROM dailytest where  levelid='" + w_id + "' and isfinish='0' and gameid='" + gameid + "'");
+                            cd.moveToFirst();
+                        }
+                        String sa = "";
+                        if (cd.getCount() != 0) {
+                            sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
+
+                        }
+                        //Toast.makeText(Clue_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
+                        //Score Adding
+                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                        cfx.moveToFirst();
+                        if (cfx.getCount() != 0) {
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                            int spx = skx - 100;
+                            String aStringx = Integer.toString(spx);
+                            score.setText(aStringx);
+                            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                        }
+
+                        c_ans.setBackgroundResource(R.drawable.tick_background);
+                        c_ans.setEnabled(false);
+                        //
+                        sps.putInt(getApplicationContext(), "ach6_a1", 0);
+
+                        //bulb invisible
+                        c_clue.clearAnimation();
+                        c_clue.setVisibility(View.INVISIBLE);
+
+                        //
+                        list4.setVisibility(View.INVISIBLE);
+
+                        Animation w_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button1and3_animation);
+                        ans_high.startAnimation(w_game);
+                        ans_high.setVisibility(View.VISIBLE);
+                        ans_high.setText(sa);
+                        //Update QST
+                        String datee = sps.getString(Clue_Game_Hard.this, "date");
+                        if (datee.equals("0")) {
+                            myDbHelper.executeSql("UPDATE maintable SET isfinish=1 WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                        } else {
+                            myDbHelper.executeSql("UPDATE dailytest SET isfinish=1 WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                        }
+                        //Next Function
+                        r = 1;
+
+
+                        focus.stop();
+                        completegame();
+                        Handler handler = new Handler(Looper.myLooper());
+                        handler.postDelayed(() -> adShow(), 5000);
+
+                    } else {
+                        final Dialog openDialog = new Dialog(Clue_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                        openDialog.setContentView(R.layout.show_ans);
+                        TextView yes = openDialog.findViewById(R.id.yes);
+                        TextView no = openDialog.findViewById(R.id.no);
+                        TextView txt_ex2 = openDialog.findViewById(R.id.txt_ex2);
+                        txt_ex2.setText("மொத்த நாணயங்களில் 100 குறைக்கப்படும்");
+                        CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                        checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+                            if (isChecked) {
+                                sps.putString(getApplicationContext(), "checkbox_ans", "yes");
+                            } else {
+                                sps.putString(getApplicationContext(), "checkbox_ans", "");
+                            }
+                        });
+
+                        yes.setOnClickListener(v12 -> {
                             Cursor cd;
                             String date = sps.getString(Clue_Game_Hard.this, "date");
                             if (date.equals("0")) {
                                 cd = myDbHelper.getQry("SELECT * FROM maintable where  levelid='" + w_id + "' and isfinish='0' and gameid='" + gameid + "'");
+
                                 cd.moveToFirst();
                             } else {
                                 cd = myDbHelper.getQry("SELECT * FROM dailytest where  levelid='" + w_id + "' and isfinish='0' and gameid='" + gameid + "'");
                                 cd.moveToFirst();
                             }
-                            String sa = "";
+                            String sas = null;
                             if (cd.getCount() != 0) {
-                                sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
-
+                                sas = cd.getString(cd.getColumnIndexOrThrow("answer"));
                             }
                             //Toast.makeText(Clue_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
                             //Score Adding
@@ -1077,7 +901,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
                                 String aStringx = Integer.toString(spx);
                                 score.setText(aStringx);
                                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
                             }
 
                             c_ans.setBackgroundResource(R.drawable.tick_background);
@@ -1095,7 +918,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                             Animation w_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button1and3_animation);
                             ans_high.startAnimation(w_game);
                             ans_high.setVisibility(View.VISIBLE);
-                            ans_high.setText(sa);
+                            ans_high.setText(sas);
                             //Update QST
                             String datee = sps.getString(Clue_Game_Hard.this, "date");
                             if (datee.equals("0")) {
@@ -1105,133 +928,29 @@ public class Clue_Game_Hard extends AppCompatActivity {
                             }
                             //Next Function
                             r = 1;
+                            openDialog.dismiss();
 
-
-                      /*  if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-                                    savedGamesUpdate();
-                                }
-                            }
-                        }*/
                             focus.stop();
                             completegame();
-                            Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    setSc();
-                                }
-                            }, 5000);
 
-                        } else {
-                            final Dialog openDialog = new Dialog(Clue_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                            openDialog.setContentView(R.layout.show_ans);
-                            TextView yes = (TextView) openDialog.findViewById(R.id.yes);
-                            TextView no = (TextView) openDialog.findViewById(R.id.no);
-                            TextView txt_ex2 = (TextView) openDialog.findViewById(R.id.txt_ex2);
-                            txt_ex2.setText("மொத்த நாணயங்களில் 100 குறைக்கப்படும்");
-                            CheckBox checkbox_ans = (CheckBox) openDialog.findViewById(R.id.checkbox_ans);
-                            checkbox_ans.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                                @Override
-                                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                                    if (isChecked) {
-                                        sps.putString(getApplicationContext(), "checkbox_ans", "yes");
-                                    } else {
-                                        sps.putString(getApplicationContext(), "checkbox_ans", "");
-                                    }
-                                }
-                            });
-
-                            yes.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Cursor cd;
-                                    String date = sps.getString(Clue_Game_Hard.this, "date");
-                                    if (date.equals("0")) {
-                                        cd = myDbHelper.getQry("SELECT * FROM maintable where  levelid='" + w_id + "' and isfinish='0' and gameid='" + gameid + "'");
-
-                                        cd.moveToFirst();
-                                    } else {
-                                        cd = myDbHelper.getQry("SELECT * FROM dailytest where  levelid='" + w_id + "' and isfinish='0' and gameid='" + gameid + "'");
-                                        cd.moveToFirst();
-                                    }
-                                    String sas = null;
-                                    if (cd.getCount() != 0) {
-                                        sas = cd.getString(cd.getColumnIndexOrThrow("answer"));
-                                    }
-                                    //Toast.makeText(Clue_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
-                                    //Score Adding
-                                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                    cfx.moveToFirst();
-                                    if (cfx.getCount() != 0) {
-                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                        int spx = skx - 100;
-                                        String aStringx = Integer.toString(spx);
-                                        score.setText(aStringx);
-                                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                                    }
-
-                                    c_ans.setBackgroundResource(R.drawable.tick_background);
-                                    c_ans.setEnabled(false);
-                                    //
-                                    sps.putInt(getApplicationContext(), "ach6_a1", 0);
-
-                                    //bulb invisible
-                                    c_clue.clearAnimation();
-                                    c_clue.setVisibility(View.INVISIBLE);
-
-                                    //
-                                    list4.setVisibility(View.INVISIBLE);
-
-                                    Animation w_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button1and3_animation);
-                                    ans_high.startAnimation(w_game);
-                                    ans_high.setVisibility(View.VISIBLE);
-                                    ans_high.setText(sas);
-                                    //Update QST
-                                    String datee = sps.getString(Clue_Game_Hard.this, "date");
-                                    if (datee.equals("0")) {
-                                        myDbHelper.executeSql("UPDATE maintable SET isfinish=1 WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                                    } else {
-                                        myDbHelper.executeSql("UPDATE dailytest SET isfinish=1 WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                                    }
-                                    //Next Function
-                                    r = 1;
-                                    openDialog.dismiss();
-
-                                    focus.stop();
-                                    completegame();
-
-                                    Handler handler = new Handler();
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-
-                                            setSc();
-                                        }
-                                    }, 5000);
+                            Handler handler = new Handler(Looper.myLooper());
+                            handler.postDelayed(() -> adShow(), 5000);
 
 
-                                }
-                            });
-                            no.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    sps.putString(getApplicationContext(), "checkbox_ans", "");
-                                    openDialog.dismiss();
-                                }
-                            });
-                            openDialog.show();
-                        }
-
-
-                    } else {
-                        dialog(1);
+                        });
+                        no.setOnClickListener(v1 -> {
+                            sps.putString(getApplicationContext(), "checkbox_ans", "");
+                            openDialog.dismiss();
+                        });
+                        openDialog.show();
                     }
-                }
 
+
+                } else {
+                    dialog(1);
+                }
             }
+
         });
         //Verifing Answer
         c_edit.addTextChangedListener(new TextWatcher() {
@@ -1239,8 +958,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
 
-            public void beforeTextChanged(CharSequence s, int start,
-                                          int count, int after) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -1320,12 +1038,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
                     String date = sps.getString(Clue_Game_Hard.this, "date");
                     int pos;
                     if (date.equals("0")) {
-                        pos = 1;
                         myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
 
                         myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                     } else {
-                        pos = 2;
                         myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
 
                         myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
@@ -1339,16 +1055,15 @@ public class Clue_Game_Hard extends AppCompatActivity {
                     share.setType("image/*");
                     share.putExtra(Intent.EXTRA_STREAM, uri);
                     share.putExtra(Intent.EXTRA_TEXT, " நித்ராவின் சொல்லிஅடி செயலியை விளையாடிக் கொண்டிருக்கிறேன் இதற்கான விடையை என்னோடு பகிர்ந்து கொள்ளுங்கள்  https://goo.gl/bRqmah");
-                    share.putExtra(Intent.EXTRA_SUBJECT,
-                            "Solli_Adi");
+                    share.putExtra(Intent.EXTRA_SUBJECT, "Solli_Adi");
                     //  share.putExtra(android.content.Intent.EXTRA_TEXT,"Shared via Tamil Calendar Offline.\nClick here to download"+ "\nhttps://goo.gl/ITvWGu");
                     startActivity(Intent.createChooser(share, "Share Card Using"));
                 } else {
 
-                    CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout);
+                    CoordinatorLayout coordinatorLayout = findViewById(R.id.myCoordinatorLayout);
                     Snackbar snackbar = Snackbar.make(coordinatorLayout, "இந்த செயலி தங்களிடம் இல்லை", Snackbar.LENGTH_SHORT);
                     final View view = snackbar.getView();
-                    TextView textView = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+                    TextView textView = view.findViewById(com.google.android.material.R.id.snackbar_text);
                     view.setBackgroundResource(R.drawable.answershow);
                     textView.setTextColor(Color.parseColor("#FFFFFF"));
                     textView.setGravity(Gravity.CENTER | Gravity.BOTTOM);
@@ -1403,63 +1118,62 @@ public class Clue_Game_Hard extends AppCompatActivity {
         }
     }
 
-    private void pressKey(int keycode) {
-        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, keycode);
-        c_edit.onKeyDown(keycode, event);
+    private void pressKey() {
+        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL);
+        c_edit.onKeyDown(KeyEvent.KEYCODE_DEL, event);
     }
 
     //find view
     public void find() {
-        c_edit = (EditText) findViewById(R.id.clue_ans_editer);
-        c_clear = (TextView) findViewById(R.id.clue_clear);
-        ans_high = (TextView) findViewById(R.id.ans_highlite);
-        edit_buttons_layout = (RelativeLayout) findViewById(R.id.edit_buttons_layout);
-        adsicon2 = (RelativeLayout) findViewById(R.id.adsicon2);
+        c_edit = findViewById(R.id.clue_ans_editer);
+        c_clear = findViewById(R.id.clue_clear);
+        ans_high = findViewById(R.id.ans_highlite);
+        edit_buttons_layout = findViewById(R.id.edit_buttons_layout);
+        adsicon2 = findViewById(R.id.adsicon2);
         // c_verify = (Button) findViewById(R.id.clue_verify);
-        c_clear = (Button) findViewById(R.id.clue_clear);
-        c_ans = (TextView) findViewById(R.id.c_ans);
-        clue1 = (TextView) findViewById(R.id.clue1_ans);
-        clue2 = (TextView) findViewById(R.id.clue2_ans);
-        clue3 = (TextView) findViewById(R.id.clue3_ans);
-        clue1_txt = (TextView) findViewById(R.id.clue1_txt);
-        clue2_txt = (TextView) findViewById(R.id.clue2_txt);
-        clue3_txt = (TextView) findViewById(R.id.clue3_txt);
-        c_clue = (Button) findViewById(R.id.next_clue);
-        adds = (LinearLayout) findViewById(R.id.ads_lay);
-        list4 = (LinearLayout) findViewById(R.id.list4);
+        c_clear = findViewById(R.id.clue_clear);
+        c_ans = findViewById(R.id.c_ans);
+        clue1 = findViewById(R.id.clue1_ans);
+        clue2 = findViewById(R.id.clue2_ans);
+        clue3 = findViewById(R.id.clue3_ans);
+        clue1_txt = findViewById(R.id.clue1_txt);
+        clue2_txt = findViewById(R.id.clue2_txt);
+        clue3_txt = findViewById(R.id.clue3_txt);
+        c_clue = findViewById(R.id.next_clue);
+        list4 = findViewById(R.id.list4);
 
-        bt1 = (TextView) findViewById(R.id.c_button1);
-        bt2 = (TextView) findViewById(R.id.c_button2);
-        bt3 = (TextView) findViewById(R.id.c_button3);
-        bt4 = (TextView) findViewById(R.id.c_button4);
-        bt5 = (TextView) findViewById(R.id.c_button5);
-        bt6 = (TextView) findViewById(R.id.c_button6);
-        bt7 = (TextView) findViewById(R.id.c_button7);
-        bt8 = (TextView) findViewById(R.id.c_button8);
-        bt9 = (TextView) findViewById(R.id.c_button9);
-        bt10 = (TextView) findViewById(R.id.c_button10);
-        bt11 = (TextView) findViewById(R.id.c_button11);
-        bt12 = (TextView) findViewById(R.id.c_button12);
-        bt13 = (TextView) findViewById(R.id.c_button13);
-        bt14 = (TextView) findViewById(R.id.c_button14);
-        bt15 = (TextView) findViewById(R.id.c_button15);
-        bt16 = (TextView) findViewById(R.id.c_button16);
-        qtw = (LinearLayout) findViewById(R.id.qwt);
-        earncoin = (TextView) findViewById(R.id.earncoin);
+        bt1 = findViewById(R.id.c_button1);
+        bt2 = findViewById(R.id.c_button2);
+        bt3 = findViewById(R.id.c_button3);
+        bt4 = findViewById(R.id.c_button4);
+        bt5 = findViewById(R.id.c_button5);
+        bt6 = findViewById(R.id.c_button6);
+        bt7 = findViewById(R.id.c_button7);
+        bt8 = findViewById(R.id.c_button8);
+        bt9 = findViewById(R.id.c_button9);
+        bt10 = findViewById(R.id.c_button10);
+        bt11 = findViewById(R.id.c_button11);
+        bt12 = findViewById(R.id.c_button12);
+        bt13 = findViewById(R.id.c_button13);
+        bt14 = findViewById(R.id.c_button14);
+        bt15 = findViewById(R.id.c_button15);
+        bt16 = findViewById(R.id.c_button16);
+        qtw = findViewById(R.id.qwt);
+        earncoin = findViewById(R.id.earncoin);
 
         //help share
-        w_head = (RelativeLayout) findViewById(R.id.clue_head);
-        h_gplues = (TextView) findViewById(R.id.ch_gplues);
-        h_watts_app = (TextView) findViewById(R.id.ch_watts_app);
-        h_facebook = (TextView) findViewById(R.id.ch_facebook);
+        w_head = findViewById(R.id.clue_head);
+        h_gplues = findViewById(R.id.ch_gplues);
+        h_watts_app = findViewById(R.id.ch_watts_app);
+        h_facebook = findViewById(R.id.ch_facebook);
         //
         //Time Score Making
-        to_no = (TextView) findViewById(R.id.c_word_number);
-        score = (TextView) findViewById(R.id.c_score_edit);
-        focus = (Chronometer) findViewById(R.id.c_time_edit);
-        c_settings = (TextView) findViewById(R.id.c_settings);
+        to_no = findViewById(R.id.c_word_number);
+        score = findViewById(R.id.c_score_edit);
+        focus = findViewById(R.id.c_time_edit);
+        c_settings = findViewById(R.id.c_settings);
         //
-        c_coin = (TextView) findViewById(R.id.c_coins);
+        c_coin = findViewById(R.id.c_coins);
         //score intial
 
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
@@ -1826,10 +1540,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
             bt10.setText(letter15);
             bt11.setText(letter4);
             bt12.setText(letter12);
-              /*  bt13.setText(letter10);
-                bt14.setText(letter14);
-                bt15.setText(letter12);
-                bt16.setText(letter13);*/
 
 
         } else if (type == 2) {
@@ -1866,10 +1576,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
             bt10.setText(letter13);
             bt11.setText(letter7);
             bt12.setText(word2);
-                /*bt13.setText(letter14);
-                bt14.setText(word2);
-                bt15.setText(letter10);
-                bt16.setText(letter8);*/
 
 
         } else if (type == 3) {
@@ -1906,10 +1612,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
             bt10.setText(word2);
             bt11.setText(letter2);
             bt12.setText(letter1);
-               /* bt13.setText(letter14);
-                bt14.setText(letter12);
-                bt15.setText(letter10);
-                bt16.setText(letter13);*/
 
 
         } else if (type == 4) {
@@ -1947,10 +1649,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
             bt10.setText(word4);
             bt11.setText(letter12);
             bt12.setText(word2);
-              /*  bt13.setText(letter14);
-                bt14.setText(letter15);
-                bt15.setText(word1);
-                bt16.setText(word2);*/
 
 
         } else if (type == 5) {
@@ -1989,10 +1687,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
             bt10.setText(letter6);
             bt11.setText(letter8);
             bt12.setText(word2);
-               /* bt13.setText(letter14);
-                bt14.setText(letter12);
-                bt15.setText(letter9);
-                bt16.setText(letter10);*/
 
 
         } else if (type == 6) {
@@ -2033,11 +1727,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
             bt10.setText(word1);
             bt11.setText(word3);
             bt12.setText(letter4);
-              /*  bt13.setText(word6);
-                bt14.setText(letter11);
-                bt15.setText(letter13);
-                bt16.setText(word2);
-*/
 
 
         } else if (type == 7) {
@@ -2559,27 +2248,24 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
 
         //  TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView tomarrow_coin_earn = (TextView) openDialog.findViewById(R.id.tomarrow_coin_earn);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView tomarrow_coin_earn = openDialog.findViewById(R.id.tomarrow_coin_earn);
         //   TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         ea = 100;
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                if (cfx.getCount() != 0) {
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + ea;
-                    String aStringx = Integer.toString(spx);
-                    score.setText(aStringx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                    sps.putString(context, "daily_bonus_date", date);
-                }
-
-                openDialog.dismiss();
-
+        ok_y.setOnClickListener(v -> {
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            if (cfx.getCount() != 0) {
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                int spx = skx + ea;
+                String aStringx = Integer.toString(spx);
+                score.setText(aStringx);
+                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+                sps.putString(context, "daily_bonus_date", date);
             }
+
+            openDialog.dismiss();
+
         });
 
         System.out.println("############################^^^^^^^^^^^^^^currentdate" + str_date1);
@@ -2603,16 +2289,12 @@ public class Clue_Game_Hard extends AppCompatActivity {
         }
         prize_data_update(context, ea);
 
-        coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
-      /*  final int vals = reward_play_count * 100;
-        ea = ea + vals;*/
+        coin_value = openDialog.findViewById(R.id.coin_value);
         coin_value.setText("" + ea);
         setval_vid = ea;
         Random rn = new Random();
         randomno = rn.nextInt(maximum - minmum + 1) + minmum;
 
-        //String r= String.valueOf(w_id);
-        //lt_id.setText(r);
         String ran_score = "";
         if (randomno == 1) {
             sps.putInt(context, "daily_bonus_count", 1);
@@ -2628,49 +2310,43 @@ public class Clue_Game_Hard extends AppCompatActivity {
             ran_score = "300";
         }
 
-        extra_coin = (LinearLayout) openDialog.findViewById(R.id.extra_coin);
+        extra_coin = openDialog.findViewById(R.id.extra_coin);
         tomarrow_coin_earn.setText("நாளைய தினத்திற்கான ஊக்க நாணயங்கள் : " + ran_score);
 
-        TextView coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
+        TextView coin_value = openDialog.findViewById(R.id.coin_value);
         ea = 100;
         final int vals = reward_play_count * 100;
         ea = ea + vals;
         coin_value.setText("" + ea);
 
-        extra_coin = (LinearLayout) openDialog.findViewById(R.id.extra_coin);
-        extra_coin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 1;
-                extra_coin_s = 1;
-                if (isNetworkAvailable()) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Clue_Game_Hard.this, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
-                        reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward();
-                                    rewarded_ad();
-                                    Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-
-
-                    }
+        extra_coin = openDialog.findViewById(R.id.extra_coin);
+        extra_coin.setOnClickListener(v -> {
+            rvo = 1;
+            extra_coin_s = 1;
+            if (isNetworkAvailable()) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Clue_Game_Hard.this, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
                 } else {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
+                        reward_progressBar.dismiss();
+                        if (fb_reward == 1) {
+                            show_reward();
+                            // mShowVideoButton.setVisibility(View.VISIBLE);
+                        } else {
+                            //reward();
+                            rewarded_adnew();
+                            Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
 
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
                 }
+            } else {
+
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+
             }
         });
         openDialog.show();
@@ -2699,17 +2375,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
 
         tim = 0;
-
-        if (sps.getInt(Clue_Game_Hard.this, "purchase_ads") == 1) {
-            native_banner_ad_container.setVisibility(View.GONE);
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        } else {
-            if (Utils.isNetworkAvailable(Clue_Game_Hard.this)) {
-                native_banner_ad_container.setVisibility(View.VISIBLE);
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-        }
         w_head.setVisibility(View.VISIBLE);
         bt4.setVisibility(View.VISIBLE);
         bt8.setVisibility(View.VISIBLE);
@@ -2761,10 +2426,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
         list4.setVisibility(View.VISIBLE);
 
 
-        LinearLayout bl1 = (LinearLayout) findViewById(R.id.c_buttonlist1_layout);
-        LinearLayout bl2 = (LinearLayout) findViewById(R.id.c_buttonlist2_layout);
-        LinearLayout bl3 = (LinearLayout) findViewById(R.id.c_buttonlist3_layout);
-        LinearLayout bl4 = (LinearLayout) findViewById(R.id.c_buttonlist4_layout);
+        LinearLayout bl1 = findViewById(R.id.c_buttonlist1_layout);
+        LinearLayout bl2 = findViewById(R.id.c_buttonlist2_layout);
+        LinearLayout bl3 = findViewById(R.id.c_buttonlist3_layout);
+        LinearLayout bl4 = findViewById(R.id.c_buttonlist4_layout);
 
         Animation myFadeInAnimation = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.blink_animation);
         c_clue.startAnimation(myFadeInAnimation);
@@ -2846,9 +2511,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
             Random rn = new Random();
             randomno = rn.nextInt(maximum - minmum + 1) + minmum;
 
-            //String r= String.valueOf(w_id);
-            //lt_id.setText(r);
-
             if (randomno == 1) {
                 simple();
             } else if (randomno == 2) {
@@ -2861,80 +2523,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
                 ///User Premission Showing
 
-                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (sps.getString(Clue_Game_Hard.this, "permission_grand").equals("")) {
-                        sps.putString(Clue_Game_Hard.this, "permission_grand", "yes");
-                        //  First_register("yes");
-                        AlertDialog alertDialog = new AlertDialog.Builder(Clue_Game_Hard.this).create();
-                        alertDialog.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய பின்வரும் permission-யை allow செய்யவேண்டும்");
-                        alertDialog.setCancelable(false);
-                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                            ActivityCompat.requestPermissions(Clue_Game_Hard.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 151);
-                                        } else {
-                                            downloaddata_regular();
-                                        }
-                                    }
-                                });
-
-                        alertDialog.show();
-
-                    } else {
-                        if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                            if (sps.getInt(Clue_Game_Hard.this, "permission") == 2) {
-                                AlertDialog alertDialog = new AlertDialog.Builder(Clue_Game_Hard.this).create();
-                                alertDialog.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய  permission-யை allow செய்யவேண்டும்");
-                                alertDialog.setCancelable(false);
-                                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                                Intent intent = new Intent();
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                                Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                                intent.setData(uri);
-                                                getApplicationContext().startActivity(intent);
-                                                setting_access = 2;
-                                            }
-                                        });
-
-                                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                sps.putString(Clue_Game_Hard.this, "game_area", "on");
-
-                                                finish();
-                                                dialog.dismiss();
-                                            }
-                                        });
-
-
-                                alertDialog.show();
-                            } else {
-                                if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                    ActivityCompat.requestPermissions(Clue_Game_Hard.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 151);
-                                } else {
-                                    downloaddata_regular();
-                                }
-                            }
-                        } else {
-                            if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                ActivityCompat.requestPermissions(Clue_Game_Hard.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 151);
-                            } else {
-                                downloaddata_regular();
-                            }
-                        }
-
-                    }
-                } else {
-                    downloaddata_regular();
-                }*/
-                if (isNetworkAvailable())
-                    downloaddata_regular();
+                if (isNetworkAvailable()) downloaddata_regular();
                 else
                     Toast.makeText(this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
 
@@ -2970,33 +2559,42 @@ public class Clue_Game_Hard extends AppCompatActivity {
             s = 1;
             openDialog_p = new Dialog(Clue_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
             openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+            TextView yes = openDialog_p.findViewById(R.id.yes);
+            TextView no = openDialog_p.findViewById(R.id.no);
 
 
-            yes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            yes.setOnClickListener(v -> {
 
-                    String dates = sps.getString(Clue_Game_Hard.this, "date");
-                    int pos;
-                    if (dates.equals("0")) {
-                        pos = 1;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                String dates = sps.getString(Clue_Game_Hard.this, "date");
+                int pos;
+                if (dates.equals("0")) {
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
 
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                    myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                } else {
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+
+                    myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                }
+                String date = sps.getString(Clue_Game_Hard.this, "date");
+                if (date.equals("0")) {
+                    if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
+                        startActivity(i);
                     } else {
-                        pos = 2;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                        finish();
                     }
-                    String date = sps.getString(Clue_Game_Hard.this, "date");
-                    if (date.equals("0")) {
+                } else {
+                    if (sps.getString(Clue_Game_Hard.this, "Exp_list").equals("on")) {
+                        finish();
+                        Intent i = new Intent(Clue_Game_Hard.this, Expandable_List_View.class);
+                        startActivity(i);
+                    } else {
                         if (main_act.equals("")) {
                             finish();
                             Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
@@ -3004,57 +2602,18 @@ public class Clue_Game_Hard extends AppCompatActivity {
                         } else {
                             finish();
                         }
-                    } else {
-                        if (sps.getString(Clue_Game_Hard.this, "Exp_list").equals("on")) {
-                            finish();
-                            Intent i = new Intent(Clue_Game_Hard.this, Expandable_List_View.class);
-                            startActivity(i);
-                        } else {
-                            if (main_act.equals("")) {
-                                finish();
-                                Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                            }
-                        }
                     }
-
-
-                    //ad
-                    if (sps.getInt(context, "purchase_ads") == 0) {
-                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                    openDialog_p.dismiss();
-                                    game_exit_ins.showAd();
-                                }
-                            }
-                        } else {
-                            openDialog_p.dismiss();
-                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
-                        }
-                    } else {
-                        openDialog_p.dismiss();
-                    }
-                    //ad
-
                 }
+
+                openDialog_p.dismiss();
+
             });
-            no.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    openDialog_p.dismiss();
-                }
-            });
+            no.setOnClickListener(v -> openDialog_p.dismiss());
             openDialog_p.show();
 
 
         }
 
-
-        // return super.onKeyDown(keyCode, event);
     }
 
     public void setSc() {
@@ -3063,49 +2622,46 @@ public class Clue_Game_Hard extends AppCompatActivity {
             s = 0;
         }
 
-        next_continue = (TextView) openDialog_s.findViewById(R.id.continues2);
-        ttscores = (TextView) openDialog_s.findViewById(R.id.tts_score2);
-        final TextView wtp = (TextView) openDialog_s.findViewById(R.id.wtp);
-        final TextView fbs = (TextView) openDialog_s.findViewById(R.id.fbp);
-        final TextView kuduthal = (TextView) openDialog_s.findViewById(R.id.tt22);
-        final TextView gplus = (TextView) openDialog_s.findViewById(R.id.gplus2);
-        final TextView word = (TextView) openDialog_s.findViewById(R.id.arputham2);
-        final LinearLayout rewardvideo = (LinearLayout) openDialog_s.findViewById(R.id.rewardvideo);
-        final LinearLayout vid_earn = (LinearLayout) openDialog_s.findViewById(R.id.vid_earn);
-        LinearLayout ads_layout = (LinearLayout) openDialog_s.findViewById(R.id.fl_adplaceholder);
+        next_continue = openDialog_s.findViewById(R.id.continues2);
+        ttscores = openDialog_s.findViewById(R.id.tts_score2);
+        final TextView wtp = openDialog_s.findViewById(R.id.wtp);
+        final TextView fbs = openDialog_s.findViewById(R.id.fbp);
+        final TextView kuduthal = openDialog_s.findViewById(R.id.tt22);
+        final TextView gplus = openDialog_s.findViewById(R.id.gplus2);
+        final TextView word = openDialog_s.findViewById(R.id.arputham2);
+        final LinearLayout rewardvideo = openDialog_s.findViewById(R.id.rewardvideo);
+        final LinearLayout vid_earn = openDialog_s.findViewById(R.id.vid_earn);
+        LinearLayout ads_layout = openDialog_s.findViewById(R.id.fl_adplaceholder);
 
-        ImageView prize_logo = (ImageView) openDialog_s.findViewById(R.id.prize_logo);
+        ImageView prize_logo = openDialog_s.findViewById(R.id.prize_logo);
         if (sps.getInt(Clue_Game_Hard.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
             prize_logo.setVisibility(View.GONE);
         }
-        prize_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isNetworkAvailable()) {
-                    if (sps.getString(Clue_Game_Hard.this, "price_registration").equals("com")) {
+        prize_logo.setOnClickListener(v -> {
+            if (isNetworkAvailable()) {
+                if (sps.getString(Clue_Game_Hard.this, "price_registration").equals("com")) {
+                    finish();
+                    Intent i = new Intent(Clue_Game_Hard.this, Game_Status.class);
+                    startActivity(i);
+                } else {
+                    if (sps.getString(Clue_Game_Hard.this, "otp_verify").equals("yes")) {
                         finish();
-                        Intent i = new Intent(Clue_Game_Hard.this, Game_Status.class);
+                        Intent i = new Intent(Clue_Game_Hard.this, LoginActivity.class);
                         startActivity(i);
                     } else {
-                        if (sps.getString(Clue_Game_Hard.this, "otp_verify").equals("yes")) {
-                            finish();
-                            Intent i = new Intent(Clue_Game_Hard.this, LoginActivity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            Intent i = new Intent(Clue_Game_Hard.this, Price_Login.class);
-                            startActivity(i);
-                        }
+                        finish();
+                        Intent i = new Intent(Clue_Game_Hard.this, Price_Login.class);
+                        startActivity(i);
                     }
-                } else {
-                    Toast.makeText(Clue_Game_Hard.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(Clue_Game_Hard.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
             }
         });
-        TextView video_earn = (TextView) openDialog_s.findViewById(R.id.video_earn);
-        video_earn.setText("மேலும் " + sps.getInt(Clue_Game_Hard.this, "reward_coin_txt") + "+நாணயங்கள் பெற");
+        TextView video_earn = openDialog_s.findViewById(R.id.video_earn);
+        video_earn.setText("காணொளியை பார்த்து " + sps.getInt(Clue_Game_Hard.this, "reward_coin_txt") + "+ நாணயங்கள் பெற");
 
 
         Animation myFadeInAnimation = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.blink_animation);
@@ -3154,138 +2710,116 @@ public class Clue_Game_Hard extends AppCompatActivity {
             rewardvideo.setVisibility(View.INVISIBLE);
         }
 
-        RelativeLayout adsicon = (RelativeLayout) openDialog_s.findViewById(R.id.adsicon);
+        RelativeLayout adsicon = openDialog_s.findViewById(R.id.adsicon);
         Animation shake;
         shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulam);
         adsicon.startAnimation(shake);
-        rewardvideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 2;
-                if (isNetworkAvailable()) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Clue_Game_Hard.this, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
+        rewardvideo.setOnClickListener(v -> {
+            rvo = 2;
+            if (isNetworkAvailable()) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Clue_Game_Hard.this, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    rewardvideo.setVisibility(View.INVISIBLE);
+                } else {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        rewardvideo.setVisibility(View.INVISIBLE);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward();
-                                    rewarded_ad();
-                                    Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
+                        if (fb_reward == 1) {
+                            show_reward();
+                            // mShowVideoButton.setVisibility(View.VISIBLE);
+                        } else {
+                            //reward();
+                            rewarded_adnew();
+                            Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
 
 
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
             }
         });
 
 
-        vid_earn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 2;
-                if (Utils.isNetworkAvailable(Clue_Game_Hard.this)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Clue_Game_Hard.this, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
+        vid_earn.setOnClickListener(v -> {
+            rvo = 2;
+            if (Utils.isNetworkAvailable(Clue_Game_Hard.this)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Clue_Game_Hard.this, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    vid_earn.setVisibility(View.INVISIBLE);
+                } else {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        vid_earn.setVisibility(View.INVISIBLE);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    vid_earn.setVisibility(View.INVISIBLE);
-                                } else {
-                                    //reward();
-                                    rewarded_ad();
-                                    Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
+                        if (fb_reward == 1) {
+                            show_reward();
+                            vid_earn.setVisibility(View.INVISIBLE);
+                        } else {
+                            //reward();
+                            rewarded_adnew();
+                            Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
 
 
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
                 }
-
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
             }
+
         });
 
-        wtp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
+        wtp.setOnClickListener(view -> {
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.whatsapp");
 
-                        String msg = ("நான் சொல்லிஅடி செயலியில் குறிப்புகள் மூலம் கண்டுபிடி நிலை" + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivity(Intent.createChooser(i, "Share via"));
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 21);
+                    String msg = ("நான் சொல்லிஅடி செயலியில் குறிப்புகள் மூலம் கண்டுபிடி நிலை" + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivity(Intent.createChooser(i, "Share via"));
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 21);
 
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
                 }
+
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             }
         });
-        fbs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        fbs.setOnClickListener(view -> {
 
 
-            }
         });
-        gplus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.google.android.apps.plus");
+        gplus.setOnClickListener(view -> {
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.google.android.apps.plus");
 
-                        String msg = ("நான் சொல்லிஅடி செயலியில் குறிப்புகள் மூலம் கண்டுபிடி நிலை" + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 16);
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
+                    String msg = ("நான் சொல்லிஅடி செயலியில் குறிப்புகள் மூலம் கண்டுபிடி நிலை" + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 16);
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
                 }
 
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             }
 
         });
@@ -3306,58 +2840,40 @@ public class Clue_Game_Hard extends AppCompatActivity {
             r = 0;
         }
 
-        next_continue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (sps.getInt(Clue_Game_Hard.this, "purchase_ads") == 1) {
-                    dia_dismiss = 1;
-                    openDialog_s.dismiss();
-                    next();
-                } else {
-                    sps.putInt(getApplicationContext(), "cluetime", 0);
-                    if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            sps.putInt(getApplicationContext(), "ins_ad_new", 0);
+        next_continue.setOnClickListener(view -> {
+            dia_dismiss = 1;
+            openDialog_s.dismiss();
+            next();
+            noclue = 0;
 
-                            if (ins_game == null || !ins_game.isReady()) {
-                                next();
-                                industrialload_game();
-                                dia_dismiss = 1;
-                                openDialog_s.dismiss();
-                                return;
-                            } else {
-                                ins_game.showAd();
-                            }
-
-                        } else {
-                            dia_dismiss = 1;
-                            openDialog_s.dismiss();
-                            next();
-                        }
-                    } else {
-                        dia_dismiss = 1;
-                        openDialog_s.dismiss();
-                        next();
-                        sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
-                    }
-                    //  advancads();
-                    //   advancads_content();
-                }
-
-                noclue = 0;
-
-            }
         });
 
-        openDialog_s.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (dia_dismiss != 1) {
-                    sps.putString(Clue_Game_Hard.this, "game_area", "on");
+        openDialog_s.setOnDismissListener(dialog -> {
+            if (dia_dismiss != 1) {
+                sps.putString(Clue_Game_Hard.this, "game_area", "on");
 
-                    String date = sps.getString(Clue_Game_Hard.this, "date");
-                    if (date.equals("0")) {
+                String date1 = sps.getString(Clue_Game_Hard.this, "date");
+                if (date1.equals("0")) {
 
+                    if (main_act.equals("")) {
+                        finish();
+                        openDialog_s.dismiss();
+                        Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        openDialog_s.dismiss();
+                        finish();
+                    }
+
+
+                } else {
+                    if (sps.getString(Clue_Game_Hard.this, "Exp_list").equals("on")) {
+                        finish();
+                        openDialog_s.dismiss();
+                        Intent i = new Intent(Clue_Game_Hard.this, Expandable_List_View.class);
+                        startActivity(i);
+
+                    } else {
                         if (main_act.equals("")) {
                             finish();
                             openDialog_s.dismiss();
@@ -3367,34 +2883,14 @@ public class Clue_Game_Hard extends AppCompatActivity {
                             openDialog_s.dismiss();
                             finish();
                         }
-
-
-                    } else {
-                        if (sps.getString(Clue_Game_Hard.this, "Exp_list").equals("on")) {
-                            finish();
-                            openDialog_s.dismiss();
-                            Intent i = new Intent(Clue_Game_Hard.this, Expandable_List_View.class);
-                            startActivity(i);
-
-                        } else {
-                            if (main_act.equals("")) {
-                                finish();
-                                openDialog_s.dismiss();
-                                Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                openDialog_s.dismiss();
-                                finish();
-                            }
-                        }
-
                     }
 
-                } else {
-                    dia_dismiss = 0;
                 }
 
+            } else {
+                dia_dismiss = 0;
             }
+
         });
 
         if (!isFinishing()) {
@@ -3405,7 +2901,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getPackageManager();
-        boolean app_installed = false;
+        boolean app_installed;
         try {
             pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
             app_installed = true;
@@ -3416,8 +2912,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
     }
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager connec = (ConnectivityManager) this
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connec = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
@@ -3452,104 +2947,73 @@ public class Clue_Game_Hard extends AppCompatActivity {
             TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
             transAnimation.setDuration(500);
             c_coin.startAnimation(transAnimation);
-            c_coin.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    c_coin.setVisibility(View.INVISIBLE);
-                }
-            }, transAnimation.getDuration());
+            c_coin.postDelayed(() -> c_coin.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
 
             ////
 
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    c_coin.setVisibility(View.VISIBLE);
-                    int[] locationInWindow = new int[2];
-                    c_coin.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    c_coin.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    score.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    score.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
-                    transAnimation.setDuration(1000);
-                    c_coin.startAnimation(transAnimation);
-                    c_coin.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            c_coin.setVisibility(View.INVISIBLE);
-                        }
-                    }, transAnimation.getDuration());
-                }
+            Handler handler = new Handler(Looper.myLooper());
+            handler.postDelayed(() -> {
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                c_coin.setVisibility(View.VISIBLE);
+                int[] locationInWindow1 = new int[2];
+                c_coin.getLocationInWindow(locationInWindow1);
+                int[] locationOnScreen1 = new int[2];
+                c_coin.getLocationOnScreen(locationOnScreen1);
+                float sourceX1 = locationOnScreen1[0];
+                float sourceY1 = locationOnScreen1[1];
+                int[] locationInWindowSecond1 = new int[2];
+                score.getLocationInWindow(locationInWindowSecond1);
+                int[] locationOnScreenSecond1 = new int[2];
+                score.getLocationOnScreen(locationOnScreenSecond1);
+                float destinationX1 = locationOnScreenSecond1[0];
+                float destinationY1 = locationOnScreenSecond1[1];
+                TranslateAnimation transAnimation1 = new TranslateAnimation(0f, (destinationX1 - sourceX1), 0f, (destinationY1 - sourceY1));
+                transAnimation1.setDuration(1000);
+                c_coin.startAnimation(transAnimation1);
+                c_coin.postDelayed(() -> c_coin.setVisibility(View.INVISIBLE), transAnimation1.getDuration());
             }, 1000);
 
-            Handler handler30 = new Handler();
-            handler30.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
-                    score.startAnimation(levels1);
-                }
+            Handler handler30 = new Handler(Looper.myLooper());
+            handler30.postDelayed(() -> {
+                Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
+                score.startAnimation(levels1);
             }, 2200);
 
-            new Thread(new Runnable() {
-
-                public void run() {
-                    int es = e2 + 20;
-                    while (e2 < es) {
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                        score.post(new Runnable() {
-
-                            public void run() {
-
-                                score.setText("" + e2);
-
-                            }
-
-                        });
-                        e2++;
+            new Thread(() -> {
+                int es = e2 + 20;
+                while (e2 < es) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
                     }
-
+                    score.post(() -> score.setText("" + e2));
+                    e2++;
                 }
 
             }).start();
 
-            Handler handler21 = new Handler();
-            handler21.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    //Score Setting
-                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                    cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + 20;
-                    String aStringx = Integer.toString(spx);
-                    score.setText(aStringx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+            Handler handler21 = new Handler(Looper.myLooper());
+            handler21.postDelayed(() -> {
+                //Score Setting
+                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                cfx.moveToFirst();
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                int spx = skx + 20;
+                String aStringx = Integer.toString(spx);
+                score.setText(aStringx);
+                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
-                    Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
-                    ch.moveToFirst();
-                    int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
-                    int shh = sh + 50;
-                    myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
+                Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
+                ch.moveToFirst();
+                int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
+                int shh = sh + 50;
+                myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
 
-                    setSc();
-                }
+                adShow();
             }, 4000);
         } else if (clue3.length() == 0) {
             //score intial
@@ -3578,73 +3042,50 @@ public class Clue_Game_Hard extends AppCompatActivity {
             TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
             transAnimation.setDuration(600);
             c_coin.startAnimation(transAnimation);
-            c_coin.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    c_coin.setVisibility(View.INVISIBLE);
-                }
-            }, transAnimation.getDuration());
+            c_coin.postDelayed(() -> c_coin.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
 
             ////
-            new Thread(new Runnable() {
-
-                public void run() {
-                    int es = e2 + 15;
-                    while (e2 < es) {
-                        try {
-                            Thread.sleep(150);
-                        } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                        score.post(new Runnable() {
-
-                            public void run() {
-
-                                score.setText("" + e2);
-
-                            }
-
-                        });
-                        e2++;
+            new Thread(() -> {
+                int es = e2 + 15;
+                while (e2 < es) {
+                    try {
+                        Thread.sleep(150);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
                     }
-
+                    score.post(() -> score.setText("" + e2));
+                    e2++;
                 }
 
             }).start();
 
-            Handler handler30 = new Handler();
-            handler30.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
-                    score.startAnimation(levels1);
-                }
+            Handler handler30 = new Handler(Looper.myLooper());
+            handler30.postDelayed(() -> {
+                Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
+                score.startAnimation(levels1);
             }, 1300);
 
-            Handler handler21 = new Handler();
-            handler21.postDelayed(new Runnable() {
-                @Override
-                public void run() {
+            Handler handler21 = new Handler(Looper.myLooper());
+            handler21.postDelayed(() -> {
 //Score Setting
-                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                    cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + 15;
-                    String aStringx = Integer.toString(spx);
-                    score.setText(aStringx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                cfx.moveToFirst();
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                int spx = skx + 15;
+                String aStringx = Integer.toString(spx);
+                score.setText(aStringx);
+                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
 
-                    Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
-                    ch.moveToFirst();
-                    int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
-                    int shh = sh + 40;
-                    myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
-                    //
-                    setSc();
-                }
+                Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
+                ch.moveToFirst();
+                int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
+                int shh = sh + 40;
+                myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
+                //
+                adShow();
             }, 2500);
 
         } else {
@@ -3674,72 +3115,49 @@ public class Clue_Game_Hard extends AppCompatActivity {
             TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
             transAnimation.setDuration(600);
             c_coin.startAnimation(transAnimation);
-            c_coin.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    c_coin.setVisibility(View.INVISIBLE);
-                }
-            }, transAnimation.getDuration());
+            c_coin.postDelayed(() -> c_coin.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
 
-            new Thread(new Runnable() {
-
-                public void run() {
-                    int es = e2 + 10;
-                    while (e2 < es) {
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                        score.post(new Runnable() {
-
-                            public void run() {
-
-                                score.setText("" + e2);
-
-                            }
-
-                        });
-                        e2++;
+            new Thread(() -> {
+                int es = e2 + 10;
+                while (e2 < es) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
                     }
-
+                    score.post(() -> score.setText("" + e2));
+                    e2++;
                 }
 
             }).start();
 
-            Handler handler30 = new Handler();
-            handler30.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
-                    score.startAnimation(levels1);
-                }
+            Handler handler30 = new Handler(Looper.myLooper());
+            handler30.postDelayed(() -> {
+                Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
+                score.startAnimation(levels1);
             }, 1200);
 
-            Handler handler21 = new Handler();
-            handler21.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    //Score Setting
-                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                    cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + 10;
-                    String aStringx = Integer.toString(spx);
-                    score.setText(aStringx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+            Handler handler21 = new Handler(Looper.myLooper());
+            handler21.postDelayed(() -> {
+                //Score Setting
+                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                cfx.moveToFirst();
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                int spx = skx + 10;
+                String aStringx = Integer.toString(spx);
+                score.setText(aStringx);
+                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
-                    Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
-                    ch.moveToFirst();
-                    int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
-                    int shh = sh + 30;
-                    myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
+                Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
+                ch.moveToFirst();
+                int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
+                int shh = sh + 30;
+                myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
-                    //
-                    setSc();
-                }
+                //
+                adShow();
             }, 2500);
         }
     }
@@ -3749,162 +3167,130 @@ public class Clue_Game_Hard extends AppCompatActivity {
         openDialog_earncoin.setContentView(R.layout.earncoin);
 
 
-        RelativeLayout wp = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnwa);
-        RelativeLayout fb = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnfb);
-        RelativeLayout gplus = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earngplus);
+        RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
+        RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
+        RelativeLayout gplus = openDialog_earncoin.findViewById(R.id.earngplus);
 
 
-        TextView cancel = (TextView) openDialog_earncoin.findViewById(R.id.cancel);
-        TextView ss = (TextView) openDialog_earncoin.findViewById(R.id.ssss);
+        TextView cancel = openDialog_earncoin.findViewById(R.id.cancel);
+        TextView ss = openDialog_earncoin.findViewById(R.id.ssss);
 
-        ss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_earncoin.cancel();
-            }
-        });
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_earncoin.cancel();
-            }
-        });
+        ss.setOnClickListener(v -> openDialog_earncoin.cancel());
+        cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
 
-        RelativeLayout video = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnvideo);
-        TextView wpro = (TextView) openDialog_earncoin.findViewById(R.id.wpro);
+        RelativeLayout video = openDialog_earncoin.findViewById(R.id.earnvideo);
+        TextView wpro = openDialog_earncoin.findViewById(R.id.wpro);
         if (i == 1) {
             cancel.setVisibility(View.INVISIBLE);
             wpro.setText("இந்த விளையாட்டை தொடர குறைந்தபட்சம் 100  - நாணயங்கள் தேவை. எனவே கூடுதல் நாணயங்கள் பெற பகிரவும்.");
         }
-        video.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 1;
-                extra_coin_s = 0;
-                if (isNetworkAvailable()) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Clue_Game_Hard.this, "" + "Reward video", "Loading...");
+        video.setOnClickListener(v -> {
+            rvo = 1;
+            extra_coin_s = 0;
+            if (isNetworkAvailable()) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Clue_Game_Hard.this, "" + "Reward video", "Loading...");
 
-                    if (fb_reward == 1) {
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        String date = sps.getString(Clue_Game_Hard.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                            myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                if (fb_reward == 1) {
+                    focus.stop();
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    String date = sps.getString(Clue_Game_Hard.this, "date");
+                    int pos;
+                    if (date.equals("0")) {
+                        myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
 
-                            myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                    } else {
+                        myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
 
-                            myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                        }
+                        myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                    }
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    openDialog_earncoin.cancel();
+
+                    // mShowVideoButton.setVisibility(View.VISIBLE);
+                } else {
+                    fb_reward = 0;
+                    //reward();
+                    rewarded_adnew();
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        openDialog_earncoin.cancel();
 
-                        // mShowVideoButton.setVisibility(View.VISIBLE);
-                    } else {
-                        fb_reward = 0;
-                        //reward();
-                        rewarded_ad();
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
+                        Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
 
-                                Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                    }, 2000);
 
-                            }
-                        }, 2000);
-
-
-                    }
-                } else {
-
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
                 }
+            } else {
+
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
             }
+
         });
 
-        wp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        openDialog_earncoin.cancel();
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 12);
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
+        wp.setOnClickListener(view -> {
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                if (appinstalled) {
+                    openDialog_earncoin.cancel();
+                    Intent i12 = new Intent(Intent.ACTION_SEND);
+                    i12.setType("text/plain");
+                    i12.setPackage("com.whatsapp");
+                    String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                    i12.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i12, "Share via"), 12);
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
                 }
+
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             }
         });
-        fb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        fb.setOnClickListener(view -> {
 
-            }
         });
-        gplus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        gplus.setOnClickListener(view -> {
 
 
-                if (isNetworkAvailable()) {
+            if (isNetworkAvailable()) {
 
 
-                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
-                    if (appinstalled) {
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        String date = sps.getString(Clue_Game_Hard.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                            myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
+                if (appinstalled) {
+                    focus.stop();
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    String date = sps.getString(Clue_Game_Hard.this, "date");
+                    int pos;
+                    if (date.equals("0")) {
+                        myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
 
-                            myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-
-                            myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                        }
-                        openDialog_earncoin.cancel();
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.google.android.apps.plus");
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 15);
-
-
+                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                     } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+                        myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+
+                        myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                     }
+                    openDialog_earncoin.cancel();
+                    Intent i1 = new Intent(Intent.ACTION_SEND);
+                    i1.setType("text/plain");
+                    i1.setPackage("com.google.android.apps.plus");
+                    String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                    i1.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i1, "Share via"), 15);
+
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
                 }
 
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             }
 
         });
@@ -3913,10 +3299,9 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
+        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS"));
 
-
-        // uiHelper.onResume();
-        //AppEventsLogger.activateApp(this);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Clue_Game_Hard.this);
         mFirebaseAnalytics.setCurrentScreen(this, "Clue Game", null);
 
@@ -4019,45 +3404,25 @@ public class Clue_Game_Hard extends AppCompatActivity {
                     }
                 }
             } else {
-                native_banner_ad_container.setVisibility(View.GONE);
                 w_head.setVisibility(View.INVISIBLE);
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Clue_Game_Hard.this);
                 alertDialogBuilder.setCancelable(false);
-                alertDialogBuilder.setMessage("புதிய வினாக்களை பதிவிறக்கம் செய்ய இணையத்தை ஆன் செய்யவும்")
-                        .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // continue with delete
-                                        /*    try {
-                                                startActivityForResult(new Intent(
-                                                        Settings.ACTION_WIRELESS_SETTINGS), 0);
+                alertDialogBuilder.setMessage("புதிய வினாக்களை பதிவிறக்கம் செய்ய இணையத்தை ஆன் செய்யவும்").setPositiveButton("அமைப்பு", (dialog, which) -> {
+                    // continue with delete
+                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                    sps.putInt(Clue_Game_Hard.this, "goto_sett", 1);
+                    dialog.dismiss();
+                }).setNegativeButton("பின்னர்", (dialog, which) -> {
+                    // do nothing
 
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                                startActivityForResult(new Intent(
-                                                        Settings.ACTION_SETTINGS), 0);
-                                            }*/
-                                startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                                sps.putInt(Clue_Game_Hard.this, "goto_sett", 1);
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // do nothing
-
-                                String date = sps.getString(Clue_Game_Hard.this, "date");
-                                if (date.equals("0")) {
-                                    backexitnet();
-                                } else {
-                                    backexitnet();
-                                }
-                               /* Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
-                                startActivity(i);*/
-                                dialog.dismiss();
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
+                    String date = sps.getString(Clue_Game_Hard.this, "date");
+                    if (date.equals("0")) {
+                        backexitnet();
+                    } else {
+                        backexitnet();
+                    }
+                    dialog.dismiss();
+                }).setIcon(android.R.drawable.ic_dialog_alert).show();
             }
         }
         if (requestCode == 15) {
@@ -4190,18 +3555,11 @@ public class Clue_Game_Hard extends AppCompatActivity {
         }
         if (requestCode == 16) {
             if (resultCode == -1) {
-            /*    if (sps.getString(Clue_Game_Hard.this, "gplues").equals("yes")) {
-
-                    sps.putString(Clue_Game_Hard.this, "gplues", "no");
-
-                }*/
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
-                //score.setText(aStringx);
-                // ttscores.setText(aStringx);
                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                 share_earn2(10);
                 ///Reward Share
@@ -4238,79 +3596,23 @@ public class Clue_Game_Hard extends AppCompatActivity {
     }
 
 
-    public void timee() {
-        t1 = new Timer();
-        t1.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-
-                t = sps.getInt(getApplicationContext(), "randomtime");
-                if (t > 0) {
-                    t--;
-                    System.out.println("times---" + t);
-                    sps.putInt(getApplicationContext(), "randomtime", t);
-                    //  sharedPrefAddInt("randomtime", t);
-//                    Toast.makeText(New_Main_Activity.this, ""+t, Toast.LENGTH_SHORT).show();
-                    System.out.println("time " + t);
-                } else {
-
-
-                    t1.cancel();
-
-                }
-
-            }
-        }, 1000, 1000);
-
-    }
-
-    public void timeehr() {
-        th = new Timer();
-        th.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-
-                t2 = sps.getInt(getApplicationContext(), "hr");
-                if (t2 > 0) {
-                    t2--;
-                    System.out.println("times---" + t2);
-                    sps.putInt(getApplicationContext(), "hr", t2);
-                    //  sharedPrefAddInt("randomtime", t);
-//                    Toast.makeText(New_Main_Activity.this, ""+t, Toast.LENGTH_SHORT).show();
-                    System.out.println("time " + t2);
-                } else {
-
-
-                    th.cancel();
-
-                }
-
-            }
-        }, 1000, 1000);
-
-    }
-
-
     @Override
     public void onPause() {
         super.onPause();
-
+        if (handler != null) handler.removeCallbacks(my_runnable);
         focus.stop();
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
         String date = sps.getString(Clue_Game_Hard.this, "date");
         int pos;
         if (date.equals("0")) {
-            pos = 1;
             myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
             myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
         } else {
-            pos = 2;
             myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
             myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
         }
 
-        //pauseGame();
 
-
-        //uiHelper.onPause();
         try {
             t1.cancel();
             th.cancel();
@@ -4324,24 +3626,23 @@ public class Clue_Game_Hard extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        // uiHelper.onDestroy();
         if (openDialog_p != null && openDialog_p.isShowing()) {
             openDialog_p.dismiss();
         }
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+        rewardedAd = null;
+        mInterstitialAd = null;
+        handler = null;
     }
 
 
     public void downloadcheck(final String lastid, final String daily) {
-        native_banner_ad_container.setVisibility(View.GONE);
         w_head.setVisibility(View.INVISIBLE);
         Utils.mProgress(Clue_Game_Hard.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", false).show();
         Utils.mProgress.setCancelable(false);
         new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
 
             @Override
             protected Void doInBackground(Void... params) {
@@ -4350,7 +3651,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 String result = null;
 
                 InputStream is = null;
-                StringBuilder sb = null;
+                StringBuilder sb;
 
                 ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
                 nameValuePairs.add(new BasicNameValuePair("lastid", lastid));
@@ -4376,7 +3677,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
-                    String line = "0";
+                    String line;
                     while ((line = reader.readLine()) != null) {
                         sb.append(line + "\n");
                     }
@@ -4393,7 +3694,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                         JSONArray jArray = new JSONArray(result);
                         System.err.println("Update===" + result);
                         System.out.println("===  " + jArray.length());
-                        JSONObject json_data = null;
+                        JSONObject json_data;
                         //isvalid=""+jArray.length();
                         downok = "" + jArray.length();
                         System.out.print("insert daily ============" + downok);
@@ -4446,7 +3747,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
                 if (downnodata.equals("NoData")) {
                     Utils.mProgress.dismiss();
-                    native_banner_ad_container.setVisibility(View.GONE);
                     w_head.setVisibility(View.INVISIBLE);
                     nextgamesdialog();
 
@@ -4487,7 +3787,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
     }
 
     public void checkmemory() {
-        String url = "";
+        String url;
         url = "https://nithra.mobi/solliadi/" + email + "-filename.zip";
 
 
@@ -4507,7 +3807,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
         }
         int length = connection.getContentLength();
 
-        String hrSize = "";
+        String hrSize;
         DecimalFormat dec = new DecimalFormat("0.00");
         double filesize = (length) * 3 / 1204;
 
@@ -4521,8 +3821,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
 
         StatFs stat = new StatFs(getFilesDir().getPath());
-        double sdAvailSize = (double) stat.getAvailableBlocks()
-                * (double) stat.getBlockSize();
+        double sdAvailSize = (double) stat.getAvailableBlocks() * (double) stat.getBlockSize();
 
         double gigaAvailable = sdAvailSize / 1073741824;
         double megaaAvailable = sdAvailSize / (1024 * 1024);
@@ -4562,23 +3861,14 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
         builder1.setMessage("No free space clean your storage");
         builder1.setCancelable(true);
-        builder1.setPositiveButton("Ok",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+        builder1.setPositiveButton("Ok", (dialog, id) -> {
 
-                        Intent i = new Intent(Intent.ACTION_MANAGE_PACKAGE_STORAGE);
+            Intent i = new Intent(Intent.ACTION_MANAGE_PACKAGE_STORAGE);
 
-                        startActivity(i);
+            startActivity(i);
 
-                    }
-                });
-        builder1.setNegativeButton("Later",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-
-                        dialog.cancel();
-                    }
-                });
+        });
+        builder1.setNegativeButton("Later", (dialog, id) -> dialog.cancel());
 
 
         AlertDialog alert11 = builder1.create();
@@ -4617,10 +3907,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
             @Override
             protected Void doInBackground(Void... params) {
 
-                String result = null;
+                String result;
 
                 InputStream is = null;
-                StringBuilder sb = null;
+                StringBuilder sb;
 
                 ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
 
@@ -4640,7 +3930,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
-                    String line = "0";
+                    String line;
                     while ((line = reader.readLine()) != null) {
                         sb.append(line + "\n");
                     }
@@ -4666,53 +3956,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
     }
 
-    public int unpackZip(String ZIP_FILE_NAME) throws IOException {
-        /*InputStream is;
-        ZipInputStream zis;
-        try {
-
-            String fullPath = getFilesDir() + "/Nithra/solliadi/";
-            is = new FileInputStream(fullPath + ZIP_FILE_NAME);
-            zis = new ZipInputStream(new BufferedInputStream(is));
-            ZipEntry ze;
-
-            while ((ze = zis.getNextEntry()) != null) {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                int count;
-
-                // zapis do souboru
-                String filename = ze.getName();
-                File f = new File(fullPath,filename);
-                String canonicalPath = f.getCanonicalPath();
-                if (!canonicalPath.contains("/Nithra/solliadi/")) {
-                    // SecurityException
-                    return 0;
-                }
-                FileOutputStream fout = new FileOutputStream(fullPath
-                        + filename);
-
-                // cteni zipu a zapis
-                while ((count = zis.read(buffer)) != -1) {
-                    baos.write(buffer, 0, count);
-                    byte[] bytes = baos.toByteArray();
-                    fout.write(bytes);
-                    baos.reset();
-                }
-
-                fout.close();
-                zis.closeEntry();
-            }
-
-            zis.close();
-            File file = new File(fullPath + ZIP_FILE_NAME);
-            file.delete();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return 0;
-        }
-        */
+    public void unpackZip(String ZIP_FILE_NAME) throws IOException {
 
         File destDir = new File(getFilesDir() + "/Nithra/solliadi/");
         if (!destDir.exists()) {
@@ -4722,6 +3966,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
         ZipEntry entry = zipIn.getNextEntry();
         while (entry != null) {
             String filePath = getFilesDir() + "/Nithra/solliadi/" + File.separator + entry.getName();
+            String canonicalPath = destDir.getCanonicalPath();
+            if (!canonicalPath.startsWith(filePath)) {
+                Log.e("Errorrr", canonicalPath);
+            }
             if (!entry.isDirectory()) {
                 extractFile(zipIn, filePath);
             } else {
@@ -4732,30 +3980,16 @@ public class Clue_Game_Hard extends AppCompatActivity {
             entry = zipIn.getNextEntry();
         }
         zipIn.close();
-        return 1;
     }
 
     private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
         byte[] bytesIn = new byte[1024];
-        int read = 0;
+        int read;
         while ((read = zipIn.read(bytesIn)) != -1) {
             bos.write(bytesIn, 0, read);
         }
         bos.close();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //mGoogleApiClient.connect();
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
     }
 
     /**
@@ -4817,12 +4051,12 @@ public class Clue_Game_Hard extends AppCompatActivity {
     public void nextgamesdialog() {
         final Dialog openDialog = new Dialog(Clue_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.nextgame_find);
-        TextView next_game = (TextView) openDialog.findViewById(R.id.next_game);
-        TextView p_game = (TextView) openDialog.findViewById(R.id.picgame);
-        TextView c_game = (TextView) openDialog.findViewById(R.id.hintgame);
-        TextView s_game = (TextView) openDialog.findViewById(R.id.solgame);
-        TextView w_game = (TextView) openDialog.findViewById(R.id.wordgame);
-        TextView exit = (TextView) openDialog.findViewById(R.id.exit);
+        TextView next_game = openDialog.findViewById(R.id.next_game);
+        TextView p_game = openDialog.findViewById(R.id.picgame);
+        TextView c_game = openDialog.findViewById(R.id.hintgame);
+        TextView s_game = openDialog.findViewById(R.id.solgame);
+        TextView w_game = openDialog.findViewById(R.id.wordgame);
+        TextView exit = openDialog.findViewById(R.id.exit);
 
         String date = sps.getString(Clue_Game_Hard.this, "date");
         if (date.equals("0")) {
@@ -4831,55 +4065,40 @@ public class Clue_Game_Hard extends AppCompatActivity {
             next_game.setText("தினசரி குறிப்புகள் மூலம் கண்டுபிடி  புதிய  பதிவுகள் இல்லை. மேலும் நீங்கள்  சிறப்பாக விளையாட காத்திருக்கும்  விளையாட்டுக்கள்.");
         }
         openDialog.setCancelable(false);
-        c_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, Clue_Game_Hard.class);
-                startActivity(i);
-            }
+        c_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, Clue_Game_Hard.class);
+            startActivity(i);
         });
-        s_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, Solukul_Sol.class);
-                startActivity(i);
-            }
+        s_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, Solukul_Sol.class);
+            startActivity(i);
         });
-        w_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, Word_Game_Hard.class);
-                startActivity(i);
-            }
+        w_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, Word_Game_Hard.class);
+            startActivity(i);
         });
-        p_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, Picture_Game_Hard.class);
-                startActivity(i);
-            }
+        p_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, Picture_Game_Hard.class);
+            startActivity(i);
         });
-        exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (main_act.equals("")) {
-                    finish();
-                    Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else {
-                    sps.putString(Clue_Game_Hard.this, "game_area", "on");
-                    finish();
-                }
-                sps.putString(Clue_Game_Hard.this, "date", "0");
+        exit.setOnClickListener(v -> {
+            if (main_act.equals("")) {
+                finish();
+                Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
+                startActivity(i);
+            } else {
+                sps.putString(Clue_Game_Hard.this, "game_area", "on");
+                finish();
             }
+            sps.putString(Clue_Game_Hard.this, "date", "0");
         });
 
         Cursor ct;
@@ -4916,25 +4135,19 @@ public class Clue_Game_Hard extends AppCompatActivity {
             exit.setVisibility(View.VISIBLE);
         }
 
-        TextView odd_man_out = (TextView) openDialog.findViewById(R.id.odd_man_out);
-        TextView matchword = (TextView) openDialog.findViewById(R.id.matchword);
-        matchword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, Match_Word.class);
-                startActivity(i);
-            }
+        TextView odd_man_out = openDialog.findViewById(R.id.odd_man_out);
+        TextView matchword = openDialog.findViewById(R.id.matchword);
+        matchword.setOnClickListener(view -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, Match_Word.class);
+            startActivity(i);
         });
-        odd_man_out.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, Odd_man_out.class);
-                startActivity(i);
-            }
+        odd_man_out.setOnClickListener(view -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, Odd_man_out.class);
+            startActivity(i);
         });
         Cursor cts;
         cts = newhelper.getQry("select * from newmaintable where isfinish='0' order by id limit 1");
@@ -4954,25 +4167,19 @@ public class Clue_Game_Hard extends AppCompatActivity {
             }
         }
 
-        TextView opposite_word = (TextView) openDialog.findViewById(R.id.opposite_word);
-        TextView ote_to_tamil = (TextView) openDialog.findViewById(R.id.ote_to_tamil);
-        opposite_word.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, Opposite_word.class);
-                startActivity(i);
-            }
+        TextView opposite_word = openDialog.findViewById(R.id.opposite_word);
+        TextView ote_to_tamil = openDialog.findViewById(R.id.ote_to_tamil);
+        opposite_word.setOnClickListener(view -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, Opposite_word.class);
+            startActivity(i);
         });
-        ote_to_tamil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, Ote_to_Tamil.class);
-                startActivity(i);
-            }
+        ote_to_tamil.setOnClickListener(view -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, Ote_to_Tamil.class);
+            startActivity(i);
         });
 
         Cursor ctd;
@@ -4994,10 +4201,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
         }
 
 
-        TextView seerpaduthu = (TextView) openDialog.findViewById(R.id.seerpaduthu);
-        TextView puthir = (TextView) openDialog.findViewById(R.id.puthir);
-        TextView tirukural = (TextView) openDialog.findViewById(R.id.tirukural);
-        TextView pilaithiruthu = (TextView) openDialog.findViewById(R.id.pilaithiruthu);
+        TextView seerpaduthu = openDialog.findViewById(R.id.seerpaduthu);
+        TextView puthir = openDialog.findViewById(R.id.puthir);
+        TextView tirukural = openDialog.findViewById(R.id.tirukural);
+        TextView pilaithiruthu = openDialog.findViewById(R.id.pilaithiruthu);
 
 
         if (sps.getString(context, "newgame_notification").equals("start")) {
@@ -5035,45 +4242,33 @@ public class Clue_Game_Hard extends AppCompatActivity {
         }
 
 
-        seerpaduthu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, Makeword_Rightorder.class);
-                startActivity(i);
-            }
+        seerpaduthu.setOnClickListener(view -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, Makeword_Rightorder.class);
+            startActivity(i);
         });
-        puthir.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, Riddle_game.class);
-                startActivity(i);
-            }
+        puthir.setOnClickListener(view -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, Riddle_game.class);
+            startActivity(i);
         });
-        tirukural.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, Tirukural.class);
-                startActivity(i);
-            }
+        tirukural.setOnClickListener(view -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, Tirukural.class);
+            startActivity(i);
         });
-        pilaithiruthu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, WordError_correction.class);
-                startActivity(i);
-            }
+        pilaithiruthu.setOnClickListener(view -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, WordError_correction.class);
+            startActivity(i);
         });
 
-        TextView fill_in_blanks = (TextView) openDialog.findViewById(R.id.fill_in_blanks);
-        TextView eng_to_tamil = (TextView) openDialog.findViewById(R.id.eng_to_tamil);
+        TextView fill_in_blanks = openDialog.findViewById(R.id.fill_in_blanks);
+        TextView eng_to_tamil = openDialog.findViewById(R.id.eng_to_tamil);
 
         Cursor scds;
         scds = newhelper4.getQry("select * from newgamesdb4 where gameid='13' and isfinish='0' order by id limit 1");
@@ -5089,95 +4284,68 @@ public class Clue_Game_Hard extends AppCompatActivity {
             eng_to_tamil.setVisibility(View.VISIBLE);
         }
 
-        fill_in_blanks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, Fill_in_blanks.class);
-                startActivity(i);
-            }
+        fill_in_blanks.setOnClickListener(v -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, Fill_in_blanks.class);
+            startActivity(i);
         });
-        eng_to_tamil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, English_to_tamil.class);
-                startActivity(i);
-            }
-        });
+
         Newgame_DataBaseHelper6 newhelper6 = new Newgame_DataBaseHelper6(Clue_Game_Hard.this);
-        TextView jamble_words = (TextView) openDialog.findViewById(R.id.jamble_words);
+        TextView jamble_words = openDialog.findViewById(R.id.jamble_words);
         Cursor jmp;
         jmp = newhelper6.getQry("select * from newgames5 where gameid='18' and isfinish='0' order by id limit 1");
         if (jmp != null && jmp.moveToFirst()) {
             jamble_words.setVisibility(View.VISIBLE);
         }
 
-        jamble_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, Jamble_word_game.class);
-                startActivity(i);
-            }
+        jamble_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, Jamble_word_game.class);
+            startActivity(i);
         });
-        TextView missing_words = (TextView) openDialog.findViewById(R.id.missing_words);
+        TextView missing_words = openDialog.findViewById(R.id.missing_words);
         Cursor jmps;
         jmps = newhelper6.getQry("select * from newgames5 where gameid='19' and isfinish='0' order by id limit 1");
         if (jmps != null && jmps.moveToFirst()) {
             missing_words.setVisibility(View.VISIBLE);
         }
-        missing_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, Missing_Words.class);
-                startActivity(i);
-            }
+        missing_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, Missing_Words.class);
+            startActivity(i);
         });
-        TextView six_differences = (TextView) openDialog.findViewById(R.id.six_differences);
+        TextView six_differences = openDialog.findViewById(R.id.six_differences);
         Cursor dif;
         dif = newhelper6.getQry("select * from newgames5 where gameid='20' and isfinish='0' order by id limit 1");
         if (dif != null && dif.moveToFirst()) {
             six_differences.setVisibility(View.VISIBLE);
         }
-        six_differences.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-                Intent i = new Intent(Clue_Game_Hard.this, Find_difference_between_pictures.class);
-                startActivity(i);
-            }
+        six_differences.setOnClickListener(v -> {
+            finish();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+            Intent i = new Intent(Clue_Game_Hard.this, Find_difference_between_pictures.class);
+            startActivity(i);
         });
         openDialog.show();
-        openDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+        openDialog.setOnKeyListener((dialog, keyCode, event) -> {
 
-                if (main_act.equals("")) {
+            if (main_act.equals("")) {
 
-                    finish();
-                    //     openDialog_s.dismiss();
-                    Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else {
-                    sps.putString(Clue_Game_Hard.this, "game_area", "on");
-                    finish();
-                }
-                openDialog.dismiss();
-                sps.putString(Clue_Game_Hard.this, "date", "0");
-
-                /*finish();
-                openDialog.dismiss();*/
-               /* Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
-                startActivity(i);*/
-                return keyCode == KeyEvent.KEYCODE_BACK;
+                finish();
+                //     openDialog_s.dismiss();
+                Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
+                startActivity(i);
+            } else {
+                sps.putString(Clue_Game_Hard.this, "game_area", "on");
+                finish();
             }
+            openDialog.dismiss();
+            sps.putString(Clue_Game_Hard.this, "date", "0");
+
+            return keyCode == KeyEvent.KEYCODE_BACK;
         });
 
     }
@@ -5397,7 +4565,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 int cns = cn.getInt(cn.getColumnIndexOrThrow("score"));
                 int time = cn.getInt(cn.getColumnIndexOrThrow("playtime"));
                 int gm1 = cn.getInt(cn.getColumnIndexOrThrow("gm2"));
-                int cnse = 0;
+                int cnse;
                 long ptime;
                 if (ry == 1) {
                     if (clue2.length() == 0) {
@@ -5412,7 +4580,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 }
 
 
-                long ttstime = 0;
+                long ttstime;
                 long timeElapseds = SystemClock.elapsedRealtime() - focus.getBase();
                 int hourss = (int) (timeElapseds / 3600000);
                 int minutess = (int) (timeElapseds - hourss * 3600000) / 60000;
@@ -5442,7 +4610,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                     int cns = cn.getInt(cn.getColumnIndexOrThrow("score"));
                     int time = cn.getInt(cn.getColumnIndexOrThrow("playtime"));
                     int gm1 = cn.getInt(cn.getColumnIndexOrThrow("gm2"));
-                    int cnse = 0;
+                    int cnse;
                     long ptime;
 
                     if (ry == 1) {
@@ -5457,7 +4625,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                         cnse = cns;
                     }
 
-                    long ttstime = 0;
+                    long ttstime;
                     long timeElapseds = SystemClock.elapsedRealtime() - focus.getBase();
                     int hourss = (int) (timeElapseds / 3600000);
                     int minutess = (int) (timeElapseds - hourss * 3600000) / 60000;
@@ -5501,8 +4669,8 @@ public class Clue_Game_Hard extends AppCompatActivity {
             openDialog.setContentView(R.layout.share_dialog2);
             openDialog.setCancelable(false);
             // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-            TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-            TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+            TextView ok_y = openDialog.findViewById(R.id.ok_y);
+            TextView b_scores = openDialog.findViewById(R.id.b_scores);
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
@@ -5512,13 +4680,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
 
             b_scores.setText("" + mCoinCount);
-            ok_y.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    score.setText("" + skx);
-                    openDialog.dismiss();
-                    // //mCoinCount = 0;
-                }
+            ok_y.setOnClickListener(v -> {
+                score.setText("" + skx);
+                openDialog.dismiss();
+                // //mCoinCount = 0;
             });
 
             openDialog.show();
@@ -5534,24 +4699,19 @@ public class Clue_Game_Hard extends AppCompatActivity {
         openDialog.setContentView(R.layout.share_dialog2);
         openDialog.setCancelable(false);
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView b_scores = openDialog.findViewById(R.id.b_scores);
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-/*        int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                score.setText("" + skx);
-                openDialog.dismiss();
-                ////mCoinCount = 0;
-            }
+        ok_y.setOnClickListener(v -> {
+            score.setText("" + skx);
+            openDialog.dismiss();
+            ////mCoinCount = 0;
         });
 
         openDialog.show();
@@ -5564,23 +4724,18 @@ public class Clue_Game_Hard extends AppCompatActivity {
         openDialog.setContentView(R.layout.share_dialog2);
         openDialog.setCancelable(false);
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView b_scores = openDialog.findViewById(R.id.b_scores);
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-/*        int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ttscores.setText("" + skx);
-                score.setText("" + skx);
-                openDialog.dismiss();
-                //  //mCoinCount = 0;
-            }
+        ok_y.setOnClickListener(v -> {
+            ttscores.setText("" + skx);
+            score.setText("" + skx);
+            openDialog.dismiss();
+            //  //mCoinCount = 0;
         });
         openDialog.show();
     }
@@ -5612,121 +4767,83 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
 
         } else {
-            native_banner_ad_container.setVisibility(View.GONE);
             w_head.setVisibility(View.INVISIBLE);
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Clue_Game_Hard.this);
             alertDialogBuilder.setCancelable(false);
-            alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
-                    .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // continue with delete
-                                           /* try {
-                                                startActivityForResult(new Intent(
-                                                        Settings.ACTION_WIRELESS_SETTINGS), 0);
+            alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்").setPositiveButton("அமைப்பு", (dialog, which) -> {
+                // continue with delete
+                startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                sps.putInt(Clue_Game_Hard.this, "goto_sett", 1);
+                dialog.dismiss();
+            }).setNegativeButton("பின்னர்", (dialog, which) -> {
+                // do nothing
 
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                                startActivityForResult(new Intent(
-                                                        Settings.ACTION_SETTINGS), 0);
-                                            }*/
-                            startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                            sps.putInt(Clue_Game_Hard.this, "goto_sett", 1);
-                            dialog.dismiss();
-                        }
-                    })
-                    .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
-
-                            String date = sps.getString(Clue_Game_Hard.this, "date");
-                            if (date.equals("0")) {
-                                backexitnet();
-                            } else {
-                                backexitnet();
-                            }
-                            /*Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
-                            startActivity(i);*/
-                            dialog.dismiss();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
+                String date = sps.getString(Clue_Game_Hard.this, "date");
+                if (date.equals("0")) {
+                    backexitnet();
+                } else {
+                    backexitnet();
+                }
+                dialog.dismiss();
+            }).setIcon(android.R.drawable.ic_dialog_alert).show();
 
         }
     }
 
     public void downloaddata_regular() {
-        native_banner_ad_container.setVisibility(View.GONE);
         w_head.setVisibility(View.INVISIBLE);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Clue_Game_Hard.this);
         // alertDialogBuilder.setTitle("Update available");
         alertDialogBuilder.setMessage("மேலும் விளையாட வினாக்களை பதிவிறக்கம் செய்ய விரும்புகிறீர்களா ?");
         alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setNegativeButton("ஆம்", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //DownLoad Letters and Words
+        alertDialogBuilder.setNegativeButton("ஆம்", (dialog, id) -> {
+            //DownLoad Letters and Words
 
 
-                if (Utils.isNetworkAvailable(Clue_Game_Hard.this)) {
-                    Cursor c1 = myDbHelper.getQry("select id from maintable order by id DESC");
-                    c1.moveToFirst();
+            if (Utils.isNetworkAvailable(Clue_Game_Hard.this)) {
+                Cursor c1 = myDbHelper.getQry("select id from maintable order by id DESC");
+                c1.moveToFirst();
 
 
-                    System.out.print("Count====" + c1.getCount());
+                System.out.print("Count====" + c1.getCount());
 
 
-                    if (c1.getCount() != 0) {
+                if (c1.getCount() != 0) {
 
 
-                        //c1.getString(c1.getColumnIndexOrThrow("id"));
+                    //c1.getString(c1.getColumnIndexOrThrow("id"));
 
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
+                    System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
 
-                        downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
+                    downloadcheck("" + c1.getString(c1.getColumnIndexOrThrow("id")), "ord");
 
-                    } else {
-                        downloadcheck("0", "ord");
-                    }
                 } else {
-                    native_banner_ad_container.setVisibility(View.GONE);
-                    w_head.setVisibility(View.INVISIBLE);
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Clue_Game_Hard.this);
-                    alertDialogBuilder.setCancelable(false);
-                    alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
-                            .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // continue with delete
-                                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                                    sps.putInt(Clue_Game_Hard.this, "goto_sett", 1);
-                                    dialog.dismiss();
-                                }
-                            })
-                            .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // do nothing
-                                    sps.putString(Clue_Game_Hard.this, "game_area", "on");
-                                    String date = sps.getString(Clue_Game_Hard.this, "date");
-                                    if (date.equals("0")) {
-                                        backexitnet();
-                                    } else {
-                                        backexitnet();
-                                    }
-                                   /* Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
-                                    startActivity(i);*/
-                                    dialog.dismiss();
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
+                    downloadcheck("0", "ord");
                 }
+            } else {
+                w_head.setVisibility(View.INVISIBLE);
+                AlertDialog.Builder alertDialogBuilder1 = new AlertDialog.Builder(Clue_Game_Hard.this);
+                alertDialogBuilder1.setCancelable(false);
+                alertDialogBuilder1.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்").setPositiveButton("அமைப்பு", (dialog12, which) -> {
+                    // continue with delete
+                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                    sps.putInt(Clue_Game_Hard.this, "goto_sett", 1);
+                    dialog12.dismiss();
+                }).setNegativeButton("பின்னர்", (dialog1, which) -> {
+                    // do nothing
+                    sps.putString(Clue_Game_Hard.this, "game_area", "on");
+                    String date = sps.getString(Clue_Game_Hard.this, "date");
+                    if (date.equals("0")) {
+                        backexitnet();
+                    } else {
+                        backexitnet();
+                    }
+                    dialog1.dismiss();
+                }).setIcon(android.R.drawable.ic_dialog_alert).show();
+            }
 
-            }
         });
-        alertDialogBuilder.setPositiveButton("இல்லை ", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                finish();
-            }
-        });
+        alertDialogBuilder.setPositiveButton("இல்லை ", (dialog, id) -> finish());
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
 
@@ -5741,122 +4858,21 @@ public class Clue_Game_Hard extends AppCompatActivity {
         String date = sps.getString(Clue_Game_Hard.this, "date");
         int pos;
         if (date.equals("0")) {
-            pos = 1;
             myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
 
             myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
         } else {
-            pos = 2;
             myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
 
             myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
         }
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                helpshare(a);
-            } else {
-                if (sps.getString(Clue_Game_Hard.this, "permission_grand").equals("")) {
-                    sps.putString(Clue_Game_Hard.this, "permission_grand", "yes");
-                    //  First_register("yes");
-                    AlertDialog alertDialog = new AlertDialog.Builder(Clue_Game_Hard.this).create();
-                    alertDialog.setMessage("இந்த நிலையை உங்களது நண்பருக்கு பகிர  பின்வரும் permission-யை  allow செய்யவேண்டும்");
-                    alertDialog.setCancelable(false);
-                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                        ActivityCompat.requestPermissions(Clue_Game_Hard.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                                    } else {
-                                        helpshare(a);
-                                    }
-                                }
-                            });
-
-                    alertDialog.show();
-
-                } else {
-                    if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                        if (sps.getInt(Clue_Game_Hard.this, "permission") == 2) {
-                            AlertDialog alertDialog = new AlertDialog.Builder(Clue_Game_Hard.this).create();
-                            alertDialog.setMessage("இந்த நிலையை உங்களது நண்பருக்கு பகிர settingsல் உள்ள permission-யை allow செய்யவேண்டும்");
-                            alertDialog.setCancelable(false);
-                            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                            Intent intent = new Intent();
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                            Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                            intent.setData(uri);
-                                            getApplicationContext().startActivity(intent);
-                                        }
-                                    });
-
-                            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            String date = sps.getString(Clue_Game_Hard.this, "date");
-                                            int pos;
-                                            Cursor cs;
-                                            long dscore = 0;
-                                            int noofclue = 0;
-                                            if (date.equals("0")) {
-                                                pos = 1;
-                                                cs = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "' and levelid='" + w_id + "'");
-                                                cs.moveToFirst();
-                                                if (cs.getCount() != 0) {
-                                                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-                                                    noofclue = cs.getInt(cs.getColumnIndexOrThrow("noclue"));
-                                                }
-                                            } else {
-                                                pos = 2;
-                                                cs = myDbHelper.getQry("select * from dailytest where gameid='" + gameid + "' and levelid='" + w_id + "'");
-                                                cs.moveToFirst();
-                                                if (cs.getCount() != 0) {
-
-                                                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-                                                    noofclue = cs.getInt(cs.getColumnIndexOrThrow("noclue"));
-                                                }
-                                            }
-                                            //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
-                                            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-                                            focus.start();
-                                            dialog.dismiss();
-                                        }
-                                    });
-
-
-                            alertDialog.show();
-                        } else {
-                            if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                ActivityCompat.requestPermissions(Clue_Game_Hard.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                            } else {
-                                helpshare(a);
-                            }
-                        }
-                    } else {
-                        if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                            ActivityCompat.requestPermissions(Clue_Game_Hard.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                        } else {
-                            helpshare(a);
-                        }
-                    }
-
-                }
-            }
-
-        } else {
-            helpshare(a);
-        }*/
         helpshare(a);
     }
 
     public void ins_app(final Context context, View view1, int vall) {
-        TextView titt = (TextView) view1.findViewById(R.id.txtlist);
-        ImageView logo = (ImageView) view1.findViewById(R.id.imageview);
-        final Button inss = (Button) view1.findViewById(R.id.btn_cont);
+        TextView titt = view1.findViewById(R.id.txtlist);
+        ImageView logo = view1.findViewById(R.id.imageview);
+        final Button inss = view1.findViewById(R.id.btn_cont);
         if (vall == 1 || vall == 0) {
             if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
                 titt.setText("நித்ரா தமிழ் நாட்காட்டி");
@@ -6069,32 +5085,26 @@ public class Clue_Game_Hard extends AppCompatActivity {
             }
         }
 
-        view1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utils.isNetworkAvailable(context)) {
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(inss.getTag().toString())));
-                } else {
-                    Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
-                }
+        view1.setOnClickListener(view -> {
+            if (Utils.isNetworkAvailable(context)) {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(inss.getTag().toString())));
+            } else {
+                Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
             }
         });
 
-        inss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utils.isNetworkAvailable(context)) {
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(view.getTag().toString())));
-                } else {
-                    Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
-                }
+        inss.setOnClickListener(view -> {
+            if (Utils.isNetworkAvailable(context)) {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(view.getTag().toString())));
+            } else {
+                Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
             }
         });
     }
 
     private boolean appInstalledOrNot(Context context, String uri) {
         PackageManager pm = context.getPackageManager();
-        boolean app_installed = false;
+        boolean app_installed;
         try {
             pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
             app_installed = true;
@@ -6109,21 +5119,18 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
     //*** In ad area **
     public void showcase_dismiss() {
-        Handler handler30 = new Handler();
-        handler30.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        Handler handler30 = new Handler(Looper.myLooper());
+        handler30.postDelayed(() -> {
 
-                if (sps.getString(Clue_Game_Hard.this, "showcase_dismiss_c").equals("")) {
-                    showcase_dismiss();
-                } else {
-                    sps.putString(context, "clue_time_start", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
-
-                }
+            if (sps.getString(Clue_Game_Hard.this, "showcase_dismiss_c").equals("")) {
+                showcase_dismiss();
+            } else {
+                sps.putString(context, "clue_time_start", "yes");
+                focus.setBase(SystemClock.elapsedRealtime());
+                focus.start();
 
             }
+
         }, 800);
     }
 
@@ -6176,78 +5183,69 @@ public class Clue_Game_Hard extends AppCompatActivity {
             AlertDialog alertDialog = new AlertDialog.Builder(Clue_Game_Hard.this).create();
             alertDialog.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய Settings-ல் உள்ள permission-யை allow செய்யவேண்டும்");
             alertDialog.setCancelable(false);
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            Intent intent = new Intent();
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                            intent.setData(uri);
-                            getApplicationContext().startActivity(intent);
-                            setting_access = 1;
-                        }
-                    });
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ", (dialog, which) -> {
+                dialog.dismiss();
+                Intent intent = new Intent();
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
+                intent.setData(uri);
+                getApplicationContext().startActivity(intent);
+                setting_access = 1;
+            });
 
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            sps.putString(Clue_Game_Hard.this, "game_area", "on");
-                            String date = sps.getString(Clue_Game_Hard.this, "date");
-                            if (date.equals("0")) {
-                                if (main_act.equals("")) {
-                                    finish();
-                                    Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else {
-                                    finish();
-                                }
-                            } else {
-                                finish();
-                                Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
-                                startActivity(i);
-                            }
-                            dialog.dismiss();
-                        }
-                    });
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ", (dialog, which) -> {
+                sps.putString(Clue_Game_Hard.this, "game_area", "on");
+                String date = sps.getString(Clue_Game_Hard.this, "date");
+                if (date.equals("0")) {
+                    if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        finish();
+                    }
+                } else {
+                    finish();
+                    Intent i = new Intent(Clue_Game_Hard.this, New_Main_Activity.class);
+                    startActivity(i);
+                }
+                dialog.dismiss();
+            });
 
 
             alertDialog.show();
         }
     }
 
-    public void rewarded_ad() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
+    public void rewarded_adnew() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedAd.load(this, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
             @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error.
+                Log.d(TAG, loadAdError.toString());
+                rewardedAd = null;
             }
 
             @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
+            public void onAdLoaded(@NonNull RewardedAd ad) {
+                rewardedAd = ad;
                 fb_reward = 1;
+                adslisner();
+                Log.d(TAG, "Ad was loaded.");
             }
+        });
+
+
+    }
+
+    public void adslisner() {
+        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
 
             @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_ad();
+            public void onAdDismissedFullScreenContent() {
+                rewarded_adnew();
                 if (reward_status == 1) {
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
@@ -6258,43 +5256,37 @@ public class Clue_Game_Hard extends AppCompatActivity {
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
                     }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        if (rvo == 2) {
+                            share_earn2(mCoinCount);
+                        } else {
+                            vidcoinearn();
                         }
                     }, 500);
                 } else {
-                    Toast.makeText(Clue_Game_Hard.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                 }
 
                 fb_reward = 0;
-                rewardedAd.loadAd();
-
 
             }
 
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
         });
-        rewardedAd.loadAd();
+    }
+
+    public void show_reward() {
+        if (rewardedAd != null) {
+            rewardedAd.show(this, rewardItem -> {
+                // Handle the reward.
+                Log.d(TAG, "The user earned the reward.");
+                int rewardAmount = rewardItem.getAmount();
+                String rewardType = rewardItem.getType();
+                reward_status = 1;
+            });
+        } else {
+            Log.d(TAG, "The rewarded ad wasn't ready yet.");
+        }
     }
 
     private enum PendingAction {
@@ -6322,8 +5314,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 // expect HTTP 200 OK, so we don't mistakenly save error report
                 // instead of the file
                 if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    return "Server returned HTTP " + connection.getResponseCode()
-                            + " " + connection.getResponseMessage();
+                    return "Server returned HTTP " + connection.getResponseCode() + " " + connection.getResponseMessage();
                 }
 
                 // this will be useful to display download percentage
@@ -6368,15 +5359,12 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 return e.toString();
             } finally {
                 try {
-                    if (output != null)
-                        output.close();
-                    if (input != null)
-                        input.close();
+                    if (output != null) output.close();
+                    if (input != null) input.close();
                 } catch (IOException ignored) {
                 }
 
-                if (connection != null)
-                    connection.disconnect();
+                if (connection != null) connection.disconnect();
             }
             return null;
 
@@ -6392,19 +5380,17 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Clue_Game_Hard.this);
                 alertDialogBuilder.setCancelable(false);
                 alertDialogBuilder.setTitle("Network connection not available, please check it!");
-                alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                        downloadFileAsync.isCancelled();
-                        downloadFileAsync.cancel(true);
+                alertDialogBuilder.setPositiveButton("Ok", (dialog, id) -> {
+                    dialog.dismiss();
+                    downloadFileAsync.isCancelled();
+                    downloadFileAsync.cancel(true);
 
 
-                        if (exists("https://nithra.mobi/solliadi/" + email + "-filename.zip")) {
-                            System.out.print("========zip ok");
-                            checkmemory();
-                        }
-
+                    if (exists("https://nithra.mobi/solliadi/" + email + "-filename.zip")) {
+                        System.out.print("========zip ok");
+                        checkmemory();
                     }
+
                 });
                 AlertDialog alertDialog = alertDialogBuilder.create();
                 alertDialog.show();

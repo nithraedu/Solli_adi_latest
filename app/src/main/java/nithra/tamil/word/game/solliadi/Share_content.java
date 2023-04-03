@@ -103,8 +103,8 @@ public class Share_content {
     }
 
     class MyAdapter extends BaseAdapter {
-        Context cons;
-        PackageManager pm;
+        final Context cons;
+        final PackageManager pm;
 
         public MyAdapter(Context context) {
             pm = context.getPackageManager();

@@ -84,13 +84,7 @@
         </RelativeLayout>
 
     </RelativeLayout>
-    <com.facebook.ads.NativeAdLayout
-        android:id="@+id/native_banner_ad_container"
-        android:background="@color/white"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="50dp"
-        android:layout_alignParentBottom="true" />
+
 
     <LinearLayout
 

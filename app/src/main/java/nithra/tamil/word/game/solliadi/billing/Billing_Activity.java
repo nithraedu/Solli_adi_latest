@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,7 +43,7 @@ import nithra.tamil.word.game.solliadi.SharedPreference;
 public class Billing_Activity extends AppCompatActivity implements PurchasesUpdatedListener {
 
     private static final String TAG = "Billing";
-    SharedPreference sharedPreference = new SharedPreference();
+    final SharedPreference sharedPreference = new SharedPreference();
     List<ProductDetails> productDetailsList;
     Handler handler;
     Activity activity;
@@ -54,18 +55,12 @@ public class Billing_Activity extends AppCompatActivity implements PurchasesUpda
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        handler = new Handler();
+        handler = new Handler(Looper.myLooper());
         productDetailsList = new ArrayList<>();
         activity = Billing_Activity.this;
 
         initialDialog();
 
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
     }
 
@@ -257,7 +252,7 @@ public class Billing_Activity extends AppCompatActivity implements PurchasesUpda
     }
 
     public class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder> {
-        List<ProductDetails> listdata;
+        final List<ProductDetails> listdata;
 
         // RecyclerView recyclerView;
         public MyListAdapter(List<ProductDetails> listdata) {
@@ -296,8 +291,11 @@ public class Billing_Activity extends AppCompatActivity implements PurchasesUpda
 
         public class ViewHolder extends RecyclerView.ViewHolder {
 
-            public TextView headd, title, price, description;
-            public Button button;
+            public final TextView headd;
+            public final TextView title;
+            public final TextView price;
+            public final TextView description;
+            public final Button button;
 
             public ViewHolder(View itemView) {
                 super(itemView);

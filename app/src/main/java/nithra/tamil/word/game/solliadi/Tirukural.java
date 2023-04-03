@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.util.Log;
@@ -31,7 +32,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -51,7 +51,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.facebook.ads.NativeAdLayout;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
@@ -79,22 +78,25 @@ import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
 public class Tirukural extends AppCompatActivity {
+    static final int mCoinCount = 20;
     public static FrameLayout add, add2, add3;
     public static LinearLayout add_e;
     public static LinearLayout add_sc;
     static int ry;
     static int rvo = 0;
-    static int mCoinCount = 20;
     static SharedPreference spd = new SharedPreference();
+    final SharedPreference sps = new SharedPreference();
+    final int gameid = 12;
+    final int minmum = 1;
+    final int maximum = 3;
+    final Context context = this;
+    final int minmumd = 1;
+    final int maximumd = 4;
     TextView c_button1, c_button2, c_button3, c_button4, c_button5, c_button6, c_button7, c_button8, c_button9, c_button10, c_button11, c_button12;
     TextView to_no, question_txt;
     SQLiteDatabase exdb, dbs, dbn, dbn2;
-    SharedPreference sps = new SharedPreference();
-    int gameid = 12;
     String questionid, question, answer, split_word;
     String answers;
-    int minmum = 1;
-    int maximum = 3;
     int randomno;
     int daily_start = 0;
     String[] first, first1, start;
@@ -123,7 +125,6 @@ public class Tirukural extends AppCompatActivity {
     RelativeLayout adsicon, adsicon2;
     int share_name = 0;
     int setting_access = 0;
-    Context context = this;
     int loadaddcontent = 0;
     Dialog openDialog_p, openDialog_odd_man;
     long ttstop;
@@ -145,13 +146,13 @@ public class Tirukural extends AppCompatActivity {
     int reward_play_count = 0;
     int ea = 0;
     Dialog openDialog;
-    int minmumd = 1;
-    int maximumd = 4;
     int randomnod;
     int setval_vid;
     TextView coin_value;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
+    Handler handler;
+    Runnable my_runnable;
     private InterstitialAd mInterstitialAd;
     private RewardedAd rewardedAd;
 
@@ -160,7 +161,6 @@ public class Tirukural extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tirukural);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
         exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
@@ -187,27 +187,6 @@ public class Tirukural extends AppCompatActivity {
         newhelper2 = new Newgame_DataBaseHelper2(context);
         newhelper3 = new Newgame_DataBaseHelper3(context);
         newhelper4 = new Newgame_DataBaseHelper4(context);
-/*
-        exdb = myDbHelper.getReadableDatabase();
-        dbs = newhelper.getReadableDatabase();
-        dbn = newhelper2.getReadableDatabase();
-        dbn2 = newhelper3.getReadableDatabase();*/
-
-
-
-        /*String gid = "12";
-        String qid = "";
-        for (int i = 0; i<=1329; i++){
-            if (qid.equals("")){
-                qid = "" +i;
-            } else {
-                qid = qid + "," + i;
-            }
-        }
-        System.out.println("---qid : " +qid);
-        System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='17'");
-        newhelper3.executeSql("UPDATE right_order SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='12'");
-*/
 
 
         //Sound Pool Sounds
@@ -221,9 +200,6 @@ public class Tirukural extends AppCompatActivity {
         soundId4 = coin.load(Tirukural.this, R.raw.coins, 1);
 ///
         ImageView prize_logo = findViewById(R.id.prize_logo);
-        /*final Animation pendulam;
-        pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
-        prize_logo.startAnimation(pendulam);*/
         if (sps.getInt(Tirukural.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
@@ -253,13 +229,16 @@ public class Tirukural extends AppCompatActivity {
         });
 
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
+        MobileAds.initialize(this);
         rewarded_adnew();
         if (sps.getInt(Tirukural.this, "purchase_ads") == 0) {
-            MobileAds.initialize(this);
+            Utills.INSTANCE.initializeAdzz(this);
             industrialload();
         }
+
         find();
-        //loads_ads_banner();
+
+        Utills.INSTANCE.load_add_AppLovin(this, adds);
 
         openDialog_s = new Dialog(Tirukural.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
@@ -270,11 +249,6 @@ public class Tirukural extends AppCompatActivity {
 
         LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = layoutInflater.inflate(R.layout.settings, null);
-    /*    popupWindow = new PopupWindow(
-                popupView,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        toggleButton = (TextView) popupView.findViewById(R.id.toggle);*/
         c_settings = findViewById(R.id.c_settings);
         if (snd.equals("off")) {
             //  toggleButton.setBackgroundResource(R.drawable.off);
@@ -330,12 +304,7 @@ public class Tirukural extends AppCompatActivity {
 
             sequence.addSequenceItem(c_ans, "விடையை பார்க்க கேள்விக்குறி பொத்தானை அழுத்தி விடை காணலாம்.", "அடுத்து");
 
-            // sequence.addSequenceItem(verify, "சரிபார்க்க பொத்தானை அழுத்தி விடையை சரிபார்த்துக்கொள்ளவும்.", "அடுத்து");
 
-            //  sequence.addSequenceItem(ex_bones, "தொடர்ந்து சரியான  10 விடைகளை கண்டுபிடித்தால், கூடுதல் விடைகளை நாணயங்கள் குறையாமல் அறிந்து கொள்ளலாம்.", "அடுத்து");
-
-
-            //   sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Tirukural.this).setTarget(helpshare_layout).setDismissText("சரி").setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.").build()).setOnItemDismissedListener((itemView, position) -> {
 
                 if (position == 1) {
@@ -693,8 +662,6 @@ public class Tirukural extends AppCompatActivity {
                     sps.putInt(getApplicationContext(), "ach6_a1", 0);
 
                     //bulb invisible
-                  /*  c_clue.clearAnimation();
-                    c_clue.setVisibility(View.INVISIBLE);*/
 
                     //
                     // Toast.makeText(Tirukural.this, "Ans" + sa, Toast.LENGTH_SHORT).show();
@@ -717,17 +684,10 @@ public class Tirukural extends AppCompatActivity {
                     //  r = 1;
 
 
-                  /*  if (Utils.isNetworkAvailable(getApplicationContext())) {
-                        if (getApiClient().isConnected()) {
-                            if (isSignedIn()) {
-                                savedGamesUpdate();
-                            }
-                        }
-                    }*/
                     focus.stop();
                     // completegame();
-                    Handler handler = new Handler();
-                    handler.postDelayed(() -> adShow(), 3000);
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> adShow("1"), 3000);
 
                 } else {
                     final Dialog openDialog = new Dialog(Tirukural.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -784,10 +744,6 @@ public class Tirukural extends AppCompatActivity {
                         //
                         list4.setVisibility(View.INVISIBLE);
                         setans(sas);
-                         /*   Animation w_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button1and3_animation);
-                            ans_high.startAnimation(w_game);
-                            ans_high.setVisibility(View.VISIBLE);
-                            ans_high.setText(sas);*/
                         //Update QST
                         String datee = sps.getString(Tirukural.this, "date");
                         if (datee.equals("0")) {
@@ -802,8 +758,8 @@ public class Tirukural extends AppCompatActivity {
                         focus.stop();
                         //    completegame();
 
-                        Handler handler = new Handler();
-                        handler.postDelayed(() -> adShow(), 3000);
+                        Handler handler = new Handler(Looper.myLooper());
+                        handler.postDelayed(() -> adShow("2"), 3000);
 
 
                     });
@@ -828,8 +784,6 @@ public class Tirukural extends AppCompatActivity {
 
         String tfoption = sa;
         first = tfoption.split(",");
-        //   type = first.length;
-        //  Toast.makeText(this, "" + sa, Toast.LENGTH_SHORT).show();
         word1.setText("" + first[0]);
         word2.setText("" + first[1]);
         word3.setText("" + first[2]);
@@ -866,14 +820,11 @@ public class Tirukural extends AppCompatActivity {
             coinanim();
             price_update();
             // Toast.makeText(this, "Correct_Answer", Toast.LENGTH_SHORT).show();
-           /* Toast toast = Toast.makeText(this,"Correct_Answer", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();*/
 
 
             correctans();
-            Handler handler = new Handler();
-            handler.postDelayed(() -> adShow(), 2000);
+            /*Handler handler = new Handler(Looper.myLooper());
+            handler.postDelayed(() -> adShow("3"), 2000);*/
         } else {
             if (data1.length() != 0 && data2.length() != 0 && data3.length() != 0 && data4.length() != 0 && data5.length() != 0 && data6.length() != 0 && data7.length() != 0) {
                 wrongans();
@@ -1000,25 +951,6 @@ public class Tirukural extends AppCompatActivity {
         c_ans.setEnabled(true);
 
 
-
-       /* Calendar calendar2 = Calendar.getInstance();
-        int cur_year = calendar2.get(Calendar.YEAR);
-        int cur_month = calendar2.get(Calendar.MONTH);
-        int cur_day = calendar2.get(Calendar.DAY_OF_MONTH);
-
-        String str_month = "" + (cur_month + 1);
-        if (str_month.length() == 1) {
-            str_month = "0" + str_month;
-        }
-
-        String str_day = "" + cur_day;
-        if (str_day.length() == 1) {
-            str_day = "0" + str_day;
-        }
-        String str_date = cur_year + "-" + str_month + "-" + str_day;
-        sps.putString(context,"date",""+str_date);
-*/
-
         Calendar calendar3 = Calendar.getInstance();
         int cur_year1 = calendar3.get(Calendar.YEAR);
         int cur_month1 = calendar3.get(Calendar.MONTH);
@@ -1104,11 +1036,6 @@ public class Tirukural extends AppCompatActivity {
             first = tfoption.split(",");
             //   type = first.length;
 
-          /*  if (sps.getInt(Tirukural.this, "kural_tt") == 0) {
-                newhelper3.executeSql("UPDATE right_order SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                sps.putInt(Tirukural.this, "kural_tt", 1);
-            }*/
-
             Random rn = new Random();
             randomno = rn.nextInt(maximum - minmum + 1) + minmum;
             if (randomno == 1) {
@@ -1137,17 +1064,11 @@ public class Tirukural extends AppCompatActivity {
         } else {
             if (date.equals("0")) {
                 nextgamesdialog();
-             /*   IShowing_dialog iShowing_dialog=(IShowing_dialog)context;
-                iShowing_dialog.dialogs_show(context);*/
-            /* Nextgame_dialog nextgame_dialog=new Nextgame_dialog(context);
-             nextgame_dialog.nextgamesdialog(context);*/
             } else {
                 newhelper3.executeSql("UPDATE right_order SET daily=0 WHERE gameid='" + gameid + "'");
                 next();
             }
         }
-       /* focus.setBase(SystemClock.elapsedRealtime());
-        focus.start();*/
 
     }
 
@@ -1221,15 +1142,11 @@ public class Tirukural extends AppCompatActivity {
         }
         prize_data_update(context, ea);
         coin_value = openDialog.findViewById(R.id.coin_value);
-      /*  final int vals = reward_play_count * 100;
-        ea = ea + vals;*/
         coin_value.setText("" + ea);
         setval_vid = ea;
         Random rn = new Random();
         randomnod = rn.nextInt(maximumd - minmumd + 1) + minmumd;
 
-        //String r= String.valueOf(w_id);
-        //lt_id.setText(r);
         String ran_score = "";
         if (randomnod == 1) {
             sps.putInt(context, "daily_bonus_count", 1);
@@ -1256,7 +1173,7 @@ public class Tirukural extends AppCompatActivity {
                     reward_progressBar.dismiss();
                     show_reward();
                 } else {
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
                         if (fb_reward == 1) {
                             show_reward();
@@ -1278,13 +1195,6 @@ public class Tirukural extends AppCompatActivity {
         });
 
 
-
-                       /* b_close.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                openDialog.dismiss();
-                            }
-                        });*/
         openDialog.show();
     }
 
@@ -1530,12 +1440,6 @@ public class Tirukural extends AppCompatActivity {
             startActivity(i);
         });
 
-        eng_to_tamil.setOnClickListener(v -> {
-            finish();
-            sps.putString(Tirukural.this, "date", "0");
-            Intent i = new Intent(Tirukural.this, English_to_tamil.class);
-            startActivity(i);
-        });
 
         TextView quiz = openDialog.findViewById(R.id.quiz);
         TextView find_words_from_pictures = openDialog.findViewById(R.id.find_words_from_pictures);
@@ -1635,11 +1539,6 @@ public class Tirukural extends AppCompatActivity {
             openDialog.dismiss();
             sps.putString(Tirukural.this, "date", "0");
 
-       /*   finish();
-            openDialog.dismiss();
-            sps.putString(Tirukural.this, "date", "0");
-            Intent i = new Intent(Tirukural.this, New_Main_Activity.class);
-            startActivity(i);*/
             return keyCode == KeyEvent.KEYCODE_BACK;
         });
 
@@ -1665,12 +1564,6 @@ public class Tirukural extends AppCompatActivity {
             c_button9.setText("" + first[5]);
             c_button6.setText("" + first[6]);
 
-           /* c_button3.setText("" + first1[1]);
-            c_button5.setText("" + first1[2]);
-            c_button6.setText("" + first1[3]);
-            c_button7.setText("" + first1[4]);
-            c_button10.setText("" + first1[5]);*/
-
         } else if (i == 2) {
             c_button3.setText("" + first[0]);
             c_button2.setText("" + first[1]);
@@ -1679,12 +1572,6 @@ public class Tirukural extends AppCompatActivity {
             c_button6.setText("" + first[4]);
             c_button9.setText("" + first[5]);
             c_button1.setText("" + first[6]);
-
-         /*   c_button1.setText("" + first1[1]);
-            c_button4.setText("" + first1[2]);
-            c_button7.setText("" + first1[3]);
-            c_button9.setText("" + first1[4]);
-            c_button12.setText("" + first1[5]);*/
 
         } else if (i == 3) {
             c_button5.setText("" + first[0]);
@@ -1695,11 +1582,6 @@ public class Tirukural extends AppCompatActivity {
             c_button3.setText("" + first[5]);
             c_button1.setText("" + first[6]);
 
-           /* c_button2.setText("" + first1[1]);
-            c_button4.setText("" + first1[2]);
-            c_button5.setText("" + first1[3]);
-            c_button7.setText("" + first1[4]);
-            c_button11.setText("" + first1[5]);*/
         }
     }
 
@@ -1734,14 +1616,6 @@ public class Tirukural extends AppCompatActivity {
     }
 
     private void wrongans() {
-
-      /*  word1.setEnabled(false);
-        word2.setEnabled(false);
-        word3.setEnabled(false);
-        word4.setEnabled(false);
-        word5.setEnabled(false);
-        word6.setEnabled(false);
-        word7.setEnabled(false);*/
 
         word1.setBackgroundResource(R.drawable.worng_ans);
         word2.setBackgroundResource(R.drawable.worng_ans);
@@ -2056,10 +1930,11 @@ public class Tirukural extends AppCompatActivity {
     }
 
     public void industrialload() {
+        if (mInterstitialAd != null) return;
         Log.i("TAG", "onAdLoadedCalled");
         AdRequest adRequest = new AdRequest.Builder().build();
 
-        InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
+        InterstitialAd.load(this, getResources().getString(R.string.Game1_Stage_Close_VV), adRequest, new InterstitialAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 // The mInterstitialAd reference will be null until
@@ -2074,6 +1949,7 @@ public class Tirukural extends AppCompatActivity {
                 // Handle the error
                 Log.d("TAG", loadAdError.toString());
                 mInterstitialAd = null;
+                handler = null;
                 Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
             }
         });
@@ -2088,6 +1964,7 @@ public class Tirukural extends AppCompatActivity {
                 // Set the ad reference to null so you don't show the ad a second time.
                 Log.d("TAG", "Ad dismissed fullscreen content.");
                 mInterstitialAd = null;
+                handler = null;
                 Utills.INSTANCE.Loading_Dialog_dismiss();
                 setSc();
                 industrialload();
@@ -2098,27 +1975,30 @@ public class Tirukural extends AppCompatActivity {
                 // Called when ad fails to show.
                 Log.e("TAG", "Ad failed to show fullscreen content.");
                 mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                setSc();
             }
 
 
-            @Override
-            public void onAdShowedFullScreenContent() {
-                // Called when ad is shown.
-                Log.d("TAG", "Ad showed fullscreen content.");
-            }
         });
     }
 
-    public void adShow() {
+    public void adShow(String c) {
+        //Toast.makeText(this, "$"+c, Toast.LENGTH_SHORT).show();
         if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") == Utills.interstitialadCount && mInterstitialAd != null) {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
             Utills.INSTANCE.Loading_Dialog(this);
-            Handler handler = new Handler();
-            handler.postDelayed(() -> {
+            handler = new Handler(Looper.myLooper());
+            my_runnable = () -> {
                 mInterstitialAd.show(this);
-            }, 2500);
+            };
+            handler.postDelayed(my_runnable, 2500);
         } else {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
+            if (sps.getInt(this, "Game1_Stage_Close_VV") > Utills.interstitialadCount)
+                sps.putInt(this, "Game1_Stage_Close_VV", 0);
             setSc();
         }
 
@@ -2211,9 +2091,9 @@ public class Tirukural extends AppCompatActivity {
                     // mShowVideoButton.setVisibility(View.VISIBLE);
                 } else {
                     fb_reward = 0;
-                    //reward(context);
+
                     rewarded_adnew();
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
 
                         Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
@@ -2223,92 +2103,6 @@ public class Tirukural extends AppCompatActivity {
             } else {
                 Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
             }
-           /* rvo = 1;
-            extra_coin_s = 0;
-            if (isNetworkAvailable()) {
-                final ProgressDialog reward_progressBar = ProgressDialog.show(Tirukural.this, "" + "Reward video", "Loading...");
-
-                if (mRewardedVideoAd.isLoaded()) {
-                    focus.stop();
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    String date = sps.getString(Tirukural.this, "date");
-                    int pos;
-                    if (date.equals("0")) {
-                        pos = 1;
-                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-
-                        // myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    } else {
-                        pos = 2;
-                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-
-                        // myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    }
-                    reward_progressBar.dismiss();
-                    showRewardedVideo();
-                    openDialog_earncoin.cancel();
-
-                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                } else {
-                    startGame();
-
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            reward_progressBar.dismiss();
-                            if (mRewardedVideoAd.isLoaded()) {
-                                showRewardedVideo();
-                                openDialog_earncoin.cancel();
-                                // mShowVideoButton.setVisibility(View.VISIBLE);
-                            } else {
-                                startGame();
-                                Toast.makeText(Tirukural.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }, 2000);
-
-
-                }
-            } else {
-
-                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
-            }*/
-         /*   if (Utils.isNetworkAvailable(getApplicationContext())) {
-                if (interstitialAd_game != null) {
-                    if (interstitialAd_game.isLoaded()) {
-                        interstitialAd_game.show();
-                        interstitialAd_game.setAdListener(new AdListener() {
-                            @Override
-                            public void onAdClosed() {
-
-
-                                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                int spx = skx + 50;
-                                String aStringx = Integer.toString(spx);
-                                score.setText(aStringx);
-                                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                ins_video();
-
-                            }
-
-
-                        });
-                    } else {
-                        Toast.makeText(getApplicationContext(), "பிறகு முயற்ச்சிக்கவும் .", Toast.LENGTH_SHORT).show();
-
-                    }
-                }
-            }
-            else{
-                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
-            }
-
-*/
 
 
         });
@@ -2325,27 +2119,6 @@ public class Tirukural extends AppCompatActivity {
                     i12.putExtra(Intent.EXTRA_TEXT, msg);
                     startActivityForResult(Intent.createChooser(i12, "Share via"), 12);
 
-                  /*  if (sps.getString(Clue_Game_Hard.this,"watts_app").equals(""))
-                    {
-                        Handler handler8 = new Handler();
-                        handler8.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                //Score Adding
-                                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                int spx = skx + 20;
-                                String aStringx = Integer.toString(spx);
-                                score.setText(aStringx);
-                                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                sps.putString(Clue_Game_Hard.this, "watts_app", "yes");
-
-                            }
-                        }, 3000);
-                    }*/
-
 
                 } else {
                     Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
@@ -2357,25 +2130,6 @@ public class Tirukural extends AppCompatActivity {
             }
         });
         fb.setOnClickListener(view -> {
-/*
-            if (isNetworkAvailable()) {
-
-                openDialog_earncoin.cancel();
-                btn_str = "invite";
-                if (isLoggedIn()) {
-                    Bundle params = new Bundle();
-                    params.putString("message", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                            "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                    showDialogWithoutNotificationBarInvite("apprequests", params);
-                    // toast("yes");
-                } else {
-                    openFacebookSession();
-                    // toast("no");
-                }
-
-            } else {
-                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-            }   // toast("இணையதள சேவையை சரிபார்க்கவும் ");*/
         });
         gplus.setOnClickListener(view -> {
 
@@ -2423,15 +2177,9 @@ public class Tirukural extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        //mGoogleApiClient.connect();
-
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
+        if (handler != null) handler.removeCallbacks(my_runnable);
 
         focus.stop();
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
@@ -2454,43 +2202,14 @@ public class Tirukural extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
+        //Toast.makeText(this, "" + sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV"), Toast.LENGTH_SHORT).show();
+        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV"));
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Tirukural.this);
         mFirebaseAnalytics.setCurrentScreen(this, "Tirukural Game", null);
 
         //uiHelper.onResume();
-
-        /*if (sps.getInt(Tirukural.this, "addlodedd") == 1) {
-            New_Main_Activity.load_addFromMain(Tirukural.this, adds);
-        } else {
-            if (Utils.isNetworkAvailable(Tirukural.this)) {
-                adds = (LinearLayout) findViewById(R.id.ads_lay);
-                sps.putInt(Tirukural.this, "addlodedd", 2);
-                System.out.println("@IMG");
-                final AdView adView = new AdView(Tirukural.this);
-                adView.setAdUnitId(getString(R.string.main_banner_ori));
-
-                adView.setAdSize(AdSize.SMART_BANNER);
-                AdRequest request = new AdRequest.Builder().build();
-                adView.setAdListener(new AdListener() {
-                    public void onAdLoaded() {
-                        System.out.println("@@@loaded");
-                        adds.removeAllViews();
-                        adds.addView(adView);
-                        adds.setVisibility(View.VISIBLE);
-                        super.onAdLoaded();
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(int i) {
-                        System.out.println("@@@NOt loaded");
-                        super.onAdFailedToLoad(i);
-                    }
-                });
-                adView.loadAd(request);
-
-            }
-        }*/
 
 
         if (sps.getString(Tirukural.this, "Tirukural_time_start").equals("")) {
@@ -2830,18 +2549,11 @@ public class Tirukural extends AppCompatActivity {
         }
         if (requestCode == 16) {
             if (resultCode == -1) {
-            /*    if (sps.getString(Clue_Game_Hard.this, "gplues").equals("yes")) {
-
-                    sps.putString(Clue_Game_Hard.this, "gplues", "no");
-
-                }*/
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
-                //score.setText(aStringx);
-                // ttscores.setText(aStringx);
                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                 share_earn2(10);
                 ///Reward Share
@@ -2888,8 +2600,6 @@ public class Tirukural extends AppCompatActivity {
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-/*        int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
@@ -2913,8 +2623,6 @@ public class Tirukural extends AppCompatActivity {
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-/*        int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
@@ -2935,7 +2643,9 @@ public class Tirukural extends AppCompatActivity {
         if (openDialog_p != null && openDialog_p.isShowing()) {
             openDialog_p.dismiss();
         }
+        rewardedAd = null;
         mInterstitialAd = null;
+        handler = null;
     }
 
 
@@ -2987,7 +2697,7 @@ public class Tirukural extends AppCompatActivity {
         });
 
         TextView video_earn = openDialog_s.findViewById(R.id.video_earn);
-        video_earn.setText("மேலும் " + sps.getInt(Tirukural.this, "reward_coin_txt") + "+நாணயங்கள் பெற");
+        video_earn.setText("காணொளியை பார்த்து " + sps.getInt(Tirukural.this, "reward_coin_txt") + "+ நாணயங்கள் பெற");
         Animation myFadeInAnimation = AnimationUtils.loadAnimation(Tirukural.this, R.anim.blink_animation);
         vid_earn.startAnimation(myFadeInAnimation);
 
@@ -3052,13 +2762,13 @@ public class Tirukural extends AppCompatActivity {
                         show_reward();
                         rewardvideo.setVisibility(View.INVISIBLE);
                     } else {
-                        new Handler().postDelayed(() -> {
+                        new Handler(Looper.myLooper()).postDelayed(() -> {
                             reward_progressBar.dismiss();
                             if (fb_reward == 1) {
                                 show_reward();
                                 // mShowVideoButton.setVisibility(View.VISIBLE);
                             } else {
-                                //reward(context);
+
                                 rewarded_adnew();
                                 Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                             }
@@ -3087,7 +2797,7 @@ public class Tirukural extends AppCompatActivity {
                     show_reward();
                     rewardvideo.setVisibility(View.INVISIBLE);
                 } else {
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
                         if (fb_reward == 1) {
                             show_reward();
@@ -3129,16 +2839,6 @@ public class Tirukural extends AppCompatActivity {
             }
         });
         fbs.setOnClickListener(view -> {
-
-/*
-            btn_str = "share";
-            if (isLoggedIn()) {
-                publishFeedDialog();
-                // toast("yes");
-            } else {
-                openFacebookSession();
-                // toast("no");
-            }*/
 
         });
         gplus.setOnClickListener(view -> {
@@ -3244,15 +2944,6 @@ public class Tirukural extends AppCompatActivity {
             }
 
         });
-      /*  openDialog_s.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-
-
-                // Prevent dialog close on back press button
-                return keyCode == KeyEvent.KEYCODE_BACK;
-            }
-        });*/
         if (!isFinishing()) {
             openDialog_s.show();
         }
@@ -3293,9 +2984,6 @@ public class Tirukural extends AppCompatActivity {
         kural_no_txt.setText("" + first2[0] + "");
         trikural.setText("" + first[0] + " " + first[1] + "" + " " + first[2] + "" + " " + first[3] + "" + "\n" + first[4] + " " + first[5] + " " + first[6]);
 
-        NativeAdLayout native_banner_ad_container = findViewById(R.id.native_banner_ad_container);
-
-
         openDialog_odd_man.show();
     }
 
@@ -3335,7 +3023,7 @@ public class Tirukural extends AppCompatActivity {
 
         ////
 
-        Handler handler = new Handler();
+        Handler handler = new Handler(Looper.myLooper());
         handler.postDelayed(() -> {
             coin.play(soundId4, sv, sv, 0, 0, sv);
             c_coin.setVisibility(View.VISIBLE);
@@ -3357,7 +3045,7 @@ public class Tirukural extends AppCompatActivity {
             c_coin.postDelayed(() -> c_coin.setVisibility(View.INVISIBLE), transAnimation1.getDuration());
         }, 1000);
 
-        Handler handler30 = new Handler();
+        Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
             Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
             score.startAnimation(levels1);
@@ -3378,7 +3066,7 @@ public class Tirukural extends AppCompatActivity {
 
         }).start();
 
-        Handler handler21 = new Handler();
+        Handler handler21 = new Handler(Looper.myLooper());
         handler21.postDelayed(() -> {
             //Score Setting
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
@@ -3396,7 +3084,7 @@ public class Tirukural extends AppCompatActivity {
             myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
 
-            adShow();
+            adShow("4");
         }, 2000);
     }
 
@@ -3435,7 +3123,7 @@ public class Tirukural extends AppCompatActivity {
     }
 
     public void showcase_dismiss() {
-        Handler handler30 = new Handler();
+        Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
 
             if (sps.getString(Tirukural.this, "showcase_dismiss_tir").equals("")) {
@@ -3486,7 +3174,7 @@ public class Tirukural extends AppCompatActivity {
 
     public void rewarded_adnew() {
         AdRequest adRequest = new AdRequest.Builder().build();
-        RewardedAd.load(this, "ca-app-pub-3940256099942544/5224354917", adRequest, new RewardedAdLoadCallback() {
+        RewardedAd.load(this, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 // Handle the error.
@@ -3522,7 +3210,7 @@ public class Tirukural extends AppCompatActivity {
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
                     }
-                    Handler handler = new Handler();
+                    Handler handler = new Handler(Looper.myLooper());
                     handler.postDelayed(() -> {
                         if (rvo == 2) {
                             share_earn2(mCoinCount);

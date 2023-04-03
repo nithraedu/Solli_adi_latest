@@ -21,12 +21,12 @@ import java.util.ArrayList;
 
 public class ExpandListAdapter extends BaseExpandableListAdapter {
 
+    final SharedPreference sps = new SharedPreference();
+    private final Context context;
+    private final ArrayList<Group> groups;
     String[] first;
     String[] firsta;
     SQLiteDatabase exdb;
-    SharedPreference sps = new SharedPreference();
-    private final Context context;
-    private final ArrayList<Group> groups;
 
     public ExpandListAdapter(Context context, ArrayList<Group> groups) {
         this.context = context;
@@ -197,11 +197,6 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
 
 
         System.out.println("%%%%%% Parent Data" + tfoption);
-       /* if (isExpanded) {
-            imageView.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
-        } else {
-            imageView.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
-        }*/
         return convertView;
     }
 

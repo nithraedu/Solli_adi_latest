@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/back_next2"
-    tools:context="sample.mobi.nithra.tamil_odu_vilayadu.Word_Game">
+    android:orientation="vertical">
 
     <RelativeLayout
 
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
 
         <RelativeLayout
@@ -979,10 +979,10 @@
                 android:layout_below="@+id/ttlayout"
                 android:layout_centerHorizontal="true"
                 android:background="@drawable/share_background"
-                android:paddingBottom="@dimen/lrtbp_10"
                 android:paddingLeft="@dimen/lrtbp_10"
-                android:paddingRight="@dimen/lrtbp_10"
                 android:paddingTop="@dimen/lrtbp_10"
+                android:paddingRight="@dimen/lrtbp_10"
+                android:paddingBottom="@dimen/lrtbp_10"
                 android:text="அற்புதம்"
                 android:textColor="@color/white"
                 android:textSize="@dimen/txt_25"
@@ -996,14 +996,14 @@
                 android:layout_below="@+id/bones_yes"
                 android:layout_centerHorizontal="true"
                 android:layout_marginLeft="@dimen/lrtbp_10"
-                android:layout_marginRight="@dimen/lrtbp_10"
                 android:layout_marginTop="@dimen/lrtbp_10"
+                android:layout_marginRight="@dimen/lrtbp_10"
                 android:background="@drawable/bones_button"
                 android:gravity="center"
-                android:paddingBottom="@dimen/lrtbp_10"
                 android:paddingLeft="@dimen/lrtbp_20"
-                android:paddingRight="@dimen/lrtbp_20"
                 android:paddingTop="@dimen/lrtbp_10"
+                android:paddingRight="@dimen/lrtbp_20"
+                android:paddingBottom="@dimen/lrtbp_10"
                 android:text="கூடுதல் நாணயங்கள்"
                 android:textColor="@color/white"
                 android:textSize="@dimen/txt_20"
@@ -1018,10 +1018,10 @@
                 android:layout_below="@+id/ttlayout"
                 android:layout_centerHorizontal="true"
                 android:background="@drawable/bones_button2"
-                android:paddingBottom="@dimen/lrtbp_10"
                 android:paddingLeft="@dimen/lrtbp_10"
-                android:paddingRight="@dimen/lrtbp_10"
                 android:paddingTop="@dimen/lrtbp_10"
+                android:paddingRight="@dimen/lrtbp_10"
+                android:paddingBottom="@dimen/lrtbp_10"
                 android:text="நன்று"
                 android:textColor="@color/white"
                 android:textSize="@dimen/txt_25" />
@@ -1031,10 +1031,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:paddingBottom="@dimen/lrtbp_10"
                 android:paddingLeft="@dimen/lrtbp_10"
+                android:paddingTop="@dimen/lrtbp_10"
                 android:paddingRight="@dimen/lrtbp_10"
-                android:paddingTop="@dimen/lrtbp_10">
+                android:paddingBottom="@dimen/lrtbp_10">
 
                 <ImageView
                     android:layout_width="@dimen/lrtbp_25"
@@ -1063,10 +1063,10 @@
                 android:layout_marginTop="@dimen/lrtbp_10"
                 android:background="@drawable/button1"
                 android:gravity="center"
-                android:paddingBottom="@dimen/lrtbp_10"
                 android:paddingLeft="@dimen/txt_20"
-                android:paddingRight="@dimen/txt_20"
                 android:paddingTop="@dimen/lrtbp_10"
+                android:paddingRight="@dimen/txt_20"
+                android:paddingBottom="@dimen/lrtbp_10"
                 android:text="30"
                 android:textColor="@color/white"
                 android:textSize="@dimen/wh_35"
@@ -1196,9 +1196,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/watsapp"
-                android:layout_marginBottom="@dimen/wh_2"
                 android:layout_marginLeft="@dimen/lrtbp_20"
                 android:layout_marginRight="@dimen/lrtbp_20"
+                android:layout_marginBottom="@dimen/wh_2"
                 android:gravity="center"
                 android:text="கூடுதல் நாணயம் பெற பகிரவும்"
                 android:textColor="@color/white"
@@ -1220,8 +1220,8 @@
                 android:layout_width="@dimen/wh_45"
                 android:layout_height="@dimen/wh_45"
                 android:layout_above="@+id/w_continue"
-                android:layout_marginBottom="@dimen/lrtbp_20"
                 android:layout_marginLeft="@dimen/lrtbp_5"
+                android:layout_marginBottom="@dimen/lrtbp_20"
                 android:layout_toRightOf="@+id/watsapp"
                 android:background="@drawable/fb"
                 android:visibility="invisible" />
@@ -1231,8 +1231,8 @@
                 android:layout_width="@dimen/wh_45"
                 android:layout_height="@dimen/wh_45"
                 android:layout_above="@+id/w_continue"
-                android:layout_marginBottom="@dimen/lrtbp_20"
                 android:layout_marginRight="@dimen/lrtbp_5"
+                android:layout_marginBottom="@dimen/lrtbp_20"
                 android:layout_toLeftOf="@+id/watsapp"
                 android:background="@drawable/twitter"
                 android:visibility="invisible" />
@@ -1246,10 +1246,10 @@
                 android:layout_marginBottom="@dimen/lrtbp_20"
                 android:background="@drawable/verify_background"
                 android:gravity="center"
-                android:paddingBottom="@dimen/lrtbp_10"
                 android:paddingLeft="@dimen/lrtbp_10"
-                android:paddingRight="@dimen/lrtbp_10"
                 android:paddingTop="@dimen/lrtbp_10"
+                android:paddingRight="@dimen/lrtbp_10"
+                android:paddingBottom="@dimen/lrtbp_10"
                 android:text="தொடர்க"
                 android:textColor="@color/white"
                 android:textSize="@dimen/txt_25"
@@ -1263,8 +1263,8 @@
             android:id="@+id/myCoordinatorLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:foregroundGravity="center">
 
@@ -1298,26 +1298,16 @@
 
     </RelativeLayout>
 
-    <com.facebook.ads.NativeAdLayout
-        android:id="@+id/native_banner_ad_container"
-        android:background="@color/white"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="50dp"
-        android:layout_alignParentBottom="true"
-        android:visibility="gone"/>
 
     <LinearLayout
-
         android:id="@+id/ads_lay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:minHeight="50dp"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:minHeight="@dimen/wh_50"
+        android:orientation="horizontal">
 
     </LinearLayout>
 
 
-</RelativeLayout>
+</LinearLayout>

@@ -13,10 +13,10 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -53,8 +53,12 @@ import java.util.Calendar;
 
 public class States_Activity extends AppCompatActivity {
 
-    static SharedPreference sps = new SharedPreference();
-    int fb_reward = 0;
+    static final SharedPreference sps = new SharedPreference();
+    final int fb_reward = 0;
+    final ArrayList<Integer> nos = new ArrayList<Integer>();
+    final ArrayList<String> names = new ArrayList<String>();
+    final ArrayList<Integer> scores = new ArrayList<Integer>();
+    final ArrayList<String> citys = new ArrayList<String>();
     RewardedVideoAd rewardedVideoAd;
     int reward_status = 0;
     customlist_myreport adapt;
@@ -64,11 +68,7 @@ public class States_Activity extends AppCompatActivity {
     ListView list;
     String downok = "";
     TextView yourposition, yourscore;
-    ArrayList<Integer> nos = new ArrayList<Integer>();
     ArrayList<String> date = new ArrayList<String>();
-    ArrayList<String> names = new ArrayList<String>();
-    ArrayList<Integer> scores = new ArrayList<Integer>();
-    ArrayList<String> citys = new ArrayList<String>();
     String str_date1 = null;
     Context contexts;
     TextView weekly, month, shara, title;
@@ -85,7 +85,6 @@ public class States_Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_states_);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
         db1 = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
@@ -258,11 +257,6 @@ public class States_Activity extends AppCompatActivity {
                 db1.execSQL("UPDATE userdata_r SET isfinish=0 WHERE date='" + str_date1 + "'");
                 ex = 1;
                 new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected void onPreExecute() {
-                        super.onPreExecute();
-
-                    }
 
                     @Override
                     protected Void doInBackground(Void... params) {
@@ -345,7 +339,7 @@ public class States_Activity extends AppCompatActivity {
                         rewardedVideoAd.show();
                         rewardvideo.setVisibility(View.INVISIBLE);
                     } else {
-                        new Handler().postDelayed(new Runnable() {
+                        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 reward_progressBar.dismiss();
@@ -353,8 +347,6 @@ public class States_Activity extends AppCompatActivity {
                                     rewardedVideoAd.show();
                                     // mShowVideoButton.setVisibility(View.VISIBLE);
                                 } else {
-                                    // reward(context);
-                                    // Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }, 2000);
@@ -377,11 +369,6 @@ public class States_Activity extends AppCompatActivity {
                     Utils.mProgress.setCancelable(false);
                     ex = 1;
                     new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected void onPreExecute() {
-                            super.onPreExecute();
-
-                        }
 
                         @Override
                         protected Void doInBackground(Void... params) {
@@ -592,43 +579,7 @@ public class States_Activity extends AppCompatActivity {
         });
 
 
-/*
-        nos.add(1);
-        date.add("eadfa");
-        names.add("sakthi");
-        scores.add(100);
-
-        nos.add(2);
-        date.add("eadfa");
-        names.add("sakthi");
-        scores.add(200);
-
-        nos.add(3);
-        date.add("eadfa");
-        names.add("sakthi");
-        scores.add(300);
-
-        nos.add(4);
-        date.add("eadfa");
-        names.add("sakthi");
-        scores.add(400);
-
-        nos.add(5);
-        date.add("eadfa");
-        names.add("sakthi");
-        scores.add(200);
-
-        nos.add(6);
-        date.add("eadfa");
-        names.add("sakthi");
-        scores.add(300);
-
-        nos.add(7);
-        date.add("eadfa");
-        names.add("sakthi");
-        scores.add(400);*/
-
-        // adapt=new customlist_myreport(States_Activity.this,date,nos,names,scores);
+// adapt=new customlist_myreport(States_Activity.this,date,nos,names,scores);
 
 
     }
@@ -650,11 +601,6 @@ public class States_Activity extends AppCompatActivity {
                             db1.execSQL("UPDATE userdata_r SET isfinish=0 WHERE date='" + str_date1 + "'");
                             ex = 1;
                             new AsyncTask<Void, Void, Void>() {
-                                @Override
-                                protected void onPreExecute() {
-                                    super.onPreExecute();
-
-                                }
 
                                 @Override
                                 protected Void doInBackground(Void... params) {
@@ -970,9 +916,6 @@ public class States_Activity extends AppCompatActivity {
                                     db1.delete("udweek", null, null);
                                     db1.delete("udmonth", null, null);
                                     db1.delete("udshare", null, null);
-                              /*  db1.execSQL("DELETE * FROM udweek");
-                                db1.execSQL("DELETE * FROM udmonth");
-                                db1.execSQL("DELETE * FROM udshare");*/
 
 
                                     if (json_data.getString("ws1").equals("null")) {
@@ -1400,27 +1343,6 @@ public class States_Activity extends AppCompatActivity {
                                     System.out.println("=================today" + str_date1);
 
 
-/*
-                                ContentValues cv1 = new ContentValues();
-                                cv1.put("pos", json_data.getString("gameid"));
-                                cv1.put("name", json_data.getString("levelid"));
-                                cv1.put("city", json_data.getString("letters"));
-                                cv1.put("score", json_data.getString("hints"));
-                                cv1.put("time", json_data.getString("hints"));
-                                cv1.put("myscore", json_data.getString("hints"));
-                                cv1.put("mypos", json_data.getString("hints"));
-                                db1.insert("udmonth", null, cv1);
-
-                                ContentValues cv2 = new ContentValues();
-                                cv2.put("pos", json_data.getString("gameid"));
-                                cv2.put("name", json_data.getString("levelid"));
-                                cv2.put("city", json_data.getString("letters"));
-                                cv2.put("score", json_data.getString("hints"));
-                                cv2.put("myscore", json_data.getString("hints"));
-                                cv2.put("mypos", json_data.getString("hints"));
-                                db1.insert("udshare", null, cv2);*/
-
-
                                 }
                             }
                         }
@@ -1438,24 +1360,6 @@ public class States_Activity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-
-
-
-
-
-
-
-             /*   try{
-                    System.out.println("========*==*====try");
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost("https://nithra.mobi/solliadi/userstatus_prize.php");
-                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                    HttpResponse response = httpclient.execute(httppost);
-                    HttpEntity entity = response.getEntity();
-                    is = entity.getContent();
-                }catch(Exception e){
-                    Log.e("log_tag", "Error in https connection" + e.toString());
-                }*/
 
             }
         }
@@ -1477,53 +1381,6 @@ public class States_Activity extends AppCompatActivity {
             // resumeGame();
         }
 
-       /* if (Utils.isNetworkAvailable(States_Activity.this)) {
-            sps.putInt(States_Activity.this, "addloded", 2);
-            com.facebook.ads.AdView adVieww = new com.facebook.ads.AdView(States_Activity.this, "1746769098928603_1797515200520659", com.facebook.ads.AdSize.BANNER_320_50);
-            adVieww.loadAd();
-            adds.addView(adVieww);
-            adds.setVisibility(View.VISIBLE);
-            adVieww.setAdListener(new com.facebook.ads.AdListener() {
-                @Override
-                public void onError(Ad ad, AdError adError) {
-                    System.out.println("####Facebook Faild");
-                    // MainActivity.load_add(MainActivity.add,Picture_Game_Hard.this);
-                    //              sps.putInt(Clue_Game_Hard.this, "addloded", 2);
-                    System.out.println("@IMG");
-                    final AdView adView = new AdView(States_Activity.this);
-                    adView.setAdUnitId("ca-app-pub-4267540560263635/6120401901");
-
-                    adView.setAdSize(AdSize.SMART_BANNER);
-                    AdRequest request = new AdRequest.Builder().build();
-                    adView.setAdListener(new AdListener() {
-                        public void onAdLoaded() {
-                            System.out.println("####ADD MOB loaded");
-                            adds.removeAllViews();
-                            adds.addView(adView);
-                            adds.setVisibility(View.VISIBLE);
-                            super.onAdLoaded();
-                        }
-
-                        @Override
-                        public void onAdFailedToLoad(int i) {
-                            System.out.println("####ADD MOBNOt loaded");
-                            super.onAdFailedToLoad(i);
-                        }
-                    });
-                    adView.loadAd(request);
-                }
-
-                @Override
-                public void onAdLoaded(Ad ad) {
-                    System.out.println("####Facebook Loaded");
-                }
-
-                @Override
-                public void onAdClicked(Ad ad) {
-
-                }
-            });
-        }*/
     }
 
 

@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
@@ -22,7 +21,8 @@ import java.util.List;
 
 public class Expandable_List_View extends AppCompatActivity {
 
-    static SharedPreference sps = new SharedPreference();
+    static final SharedPreference sps = new SharedPreference();
+    final SharedPreference wee = new SharedPreference();
     SQLiteDatabase exdb;
     String[] date_c;
     String[] gameid;
@@ -30,7 +30,6 @@ public class Expandable_List_View extends AppCompatActivity {
     String[] data;
     String gameid_n, gameid_finish, gameid_date, date_n;
     TextView nodata;
-    SharedPreference wee = new SharedPreference();
     int a = 1;
     ExpandableListView expandableListView;
     ExpandableListAdapter expandableListAdapter;
@@ -56,14 +55,6 @@ public class Expandable_List_View extends AppCompatActivity {
         adds = (LinearLayout) findViewById(R.id.ads_lay);
 
 
-
-      /*  if(Utils.isNetworkAvailable(Expandable_List_View.this)){
-
-            MainActivity.load_addFromMain(Expandable_List_View.this, adds);
-        }*/
-
-
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().setDisplayShowHomeEnabled(false);
         View view = getLayoutInflater().inflate(R.layout.action_sole2, null);
         getSupportActionBar().setCustomView(view);
@@ -81,7 +72,7 @@ public class Expandable_List_View extends AppCompatActivity {
             public void onClick(View view) {
                 sps.putInt(Expandable_List_View.this, "addlodedd", 0);
                 finish();
-                Intent intent = new Intent(Expandable_List_View.this, MainActivity.class);
+                Intent intent = new Intent(Expandable_List_View.this, New_Main_Activity.class);
                 startActivity(intent);
 
 
@@ -137,12 +128,6 @@ public class Expandable_List_View extends AppCompatActivity {
                 sps.putString(Expandable_List_View.this, "exp_list", String.valueOf(groupPosition));
                 int count = ExpListItems.get(groupPosition).getItems().size();
                 String title = ExpListItems.get(groupPosition).getName();
-/*
-                if(expandableListView.isGroupExpanded(groupPosition)){
-                    expandableListView.collapseGroup(groupPosition);
-                }else{
-                    expandableListView.expandGroup(groupPosition);
-                }*/
 
             }
         });
@@ -152,94 +137,10 @@ public class Expandable_List_View extends AppCompatActivity {
             @Override
             public void onGroupCollapse(int groupPosition) {
 
-                /*String group_name = ExpListItems.get(groupPosition).getName();
-                showToastMsg(group_name + "\n Expanded");*/
             }
         });
 
-    /*    expListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-
-            @Override
-            public void onGroupExpand(int groupPosition) {
-                if (lastExpandedPosition != -1
-                        && groupPosition != lastExpandedPosition) {
-                    expListView.collapseGroup(lastExpandedPosition);
-                }
-                lastExpandedPosition = groupPosition;
-            }
-        });*/
     }
-
-
-
-
-
-
-
-    /*public HashMap<String, List<String>> getData() {
-        HashMap<String, List<String>> expandableListDetail = new HashMap<String, List<String>>();
-
-
-        Calendar calendar2 = Calendar.getInstance();
-        int cur_year = calendar2.get(Calendar.YEAR);
-        int cur_month = calendar2.get(Calendar.MONTH);
-        int cur_day = calendar2.get(Calendar.DAY_OF_MONTH);
-
-        String str_month = "" + (cur_month + 1);
-        if (str_month.length() == 1) {
-            str_month = "0" + str_month;
-        }
-
-        String str_day = "" + cur_day;
-        if (str_day.length() == 1) {
-            str_day = "0" + str_day;
-        }
-        String std = cur_year + "-" + str_month + "-" + str_day;
-        System.out.println("%%%%%current_date"+std);
-    //  Cursor c = exdb.rawQuery("select * from dailytest where date >'" + std + "' group by date order by date ='" + std + "' desc", null);
-        Cursor c =  exdb.rawQuery("select distinct (date) from dailytest order by substr(date ,7,4) || '-' || substr(date  ,4,2)||'-'||substr(date ,1,2) desc", null);
-       // Cursor c = exdb.rawQuery("SELECT * FROM dailytest where date >'" + std + "' ORDER BY date(date) DESC Limit 1", null);
-
-
-        date_c = new String[c.getCount()];
-        if (c.getCount() != 0) {
-            for (int i=0; i<c.getCount();i++) {
-                c.moveToPosition(i);
-                String date = c.getString(c.getColumnIndexOrThrow("date"));
-                date_n=date;
-
-                Cursor cursor1 = exdb.rawQuery("SELECT * FROM dailytest where date = '"+date+"'", null);
-                List<String> list = new ArrayList<String>();
-                gameid = new String[cursor1.getCount()];
-                System.out.println("%%%%%count"+cursor1.getCount());
-
-                if (cursor1.getCount() != 0) {
-                    for (int j = 0; j < cursor1.getCount(); j++) {
-                        cursor1.moveToPosition(j);
-                        gameid_n = cursor1.getString(cursor1.getColumnIndexOrThrow("gameid"));
-                        gameid_finish = cursor1.getString(cursor1.getColumnIndexOrThrow("isfinish"));
-                        gameid_date = cursor1.getString(cursor1.getColumnIndexOrThrow("date"));
-                        System.out.println("%%%%%gameid_n"+gameid_n+"%%%%%gameid_finish"+gameid_finish+"gameid_date"+gameid_date);
-                        list.add(gameid_date+","+gameid_n+","+gameid_finish);
-                    }
-
-                }
-
-
-
-                System.out.println("%%%%%%%Date"+date+"%%%%%%list"+list);
-                expandableListDetail.put(date, list);
-
-
-            }
-
-        }else {
-            nodata.setText("பதிவுகள் இல்லை");
-            nodata.setVisibility(View.VISIBLE);
-        }
-
-        return expandableListDetail;
-    }*/
 
 
     public ArrayList<Group> SetStandardGroups() {
@@ -318,15 +219,10 @@ public class Expandable_List_View extends AppCompatActivity {
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             finish();
-            Intent intent = new Intent(Expandable_List_View.this, MainActivity.class);
+            Intent intent = new Intent(Expandable_List_View.this, New_Main_Activity.class);
             startActivity(intent);
         }
         return super.onKeyDown(keyCode, event);
     }
 
-    protected void onResume() {
-        super.onResume();
-
-
-    }
 }

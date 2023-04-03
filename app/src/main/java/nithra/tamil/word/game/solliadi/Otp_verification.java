@@ -1,25 +1,21 @@
 package nithra.tamil.word.game.solliadi;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.facebook.ads.NativeAdLayout;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -40,7 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class Otp_verification extends AppCompatActivity {
-    static SharedPreference sps = new SharedPreference();
+    static final SharedPreference sps = new SharedPreference();
     TextView signin, resend;
     EditText otpverify;
     String android_id;
@@ -54,7 +50,6 @@ public class Otp_verification extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otp_verification);
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
         exdb.execSQL("create table if not exists userdetail(id integer,name varchar,upic varchar,email varchar,phno integer,address varchar,city varchar,regid varchar);");
@@ -69,7 +64,7 @@ public class Otp_verification extends AppCompatActivity {
                 Settings.Secure.ANDROID_ID);
         adds = (LinearLayout) findViewById(R.id.ads_lay);
 
-        Handler handler8 = new Handler();
+        Handler handler8 = new Handler(Looper.myLooper());
         handler8.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -143,12 +138,6 @@ public class Otp_verification extends AppCompatActivity {
     public void otp_send(String otp, String action) {
         String email = null;
         email = Utils.android_id(Otp_verification.this);
-      /*  AccountManager am = AccountManager.get(this);
-        Account[] accounts = am.getAccountsByType("com.google");
-        if (accounts.length > 0) {
-            email = accounts[0].name;
-        }
-*/
         JSONArray jArray;
         String result = null;
         InputStream is = null;
@@ -278,61 +267,8 @@ public class Otp_verification extends AppCompatActivity {
 
     public void onBackPressed() {
         finish();
-        Intent i = new Intent(Otp_verification.this, MainActivity.class);
+        Intent i = new Intent(Otp_verification.this, New_Main_Activity.class);
         startActivity(i);
     }
 
-    protected void onResume() {
-        super.onResume();
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-
-        if (sps.getInt(Otp_verification.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
-            native_banner_ad_container.setVisibility(View.GONE);
-
-        } else {
-            if (Utils.isNetworkAvailable(Otp_verification.this)) {
-                fb_native(Otp_verification.this, native_banner_ad_container);
-
-               /* if (sps.getInt(Otp_verification.this, "native_banner_ads") == 1) {
-                    New_Main_Gamelist.inflateAd(Otp_verification.this, native_banner_ad_container);
-                } else {
-                    fb_native(Otp_verification.this, native_banner_ad_container);
-                }*/
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-        }
-
-       /* if (sps.getInt(Otp_verification.this, "addlodedd") == 1) {
-            MainActivity.load_addFromMain(Otp_verification.this, adds);
-        }else {
-            if (Utils.isNetworkAvailable(Otp_verification.this)) {
-                sps.putInt(Otp_verification.this, "addlodedd", 2);
-                System.out.println("@IMG");
-                final AdView adView = new AdView(Otp_verification.this);
-                adView.setAdUnitId(getString(R.string.main_banner_ori));
-
-                adView.setAdSize(AdSize.SMART_BANNER);
-                AdRequest request = new AdRequest.Builder().build();
-                adView.setAdListener(new AdListener() {
-                    public void onAdLoaded() {
-                        System.out.println("@@@loaded");
-                        adds.removeAllViews();
-                        adds.addView(adView);
-                        adds.setVisibility(View.VISIBLE);
-                        super.onAdLoaded();
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(int i) {
-                        System.out.println("@@@NOt loaded");
-                        super.onAdFailedToLoad(i);
-                    }
-                });
-                adView.loadAd(request);
-
-            }
-        }*/
-    }
 }

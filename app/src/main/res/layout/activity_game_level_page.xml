@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/new_background"
-    tools:context="nithra.tamil.letter.crossword.search.game_level_page">
+    android:background="@drawable/new_background">
 
 
     <RelativeLayout
@@ -113,7 +111,7 @@
 
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_above="@+id/native_banner_ad_container"
+
                 android:layout_marginBottom="@dimen/lrtbp_5">
 
             </ListView>
@@ -126,13 +124,6 @@
                 android:orientation="vertical"
                 android:visibility="gone" />
 
-            <com.facebook.ads.NativeAdLayout
-                android:id="@+id/native_banner_ad_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:background="@color/white"
-                android:minHeight="50dp" />
 
         </RelativeLayout>
 

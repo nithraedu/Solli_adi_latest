@@ -10,13 +10,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Chronometer;
 import android.widget.FrameLayout;
@@ -25,8 +25,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.facebook.ads.NativeAdLayout;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,31 +43,28 @@ import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.OnLik
 
 
 public class game_sub_level_page extends Activity implements OnLikeListener, OnAnimationEndListener {
-    public static ArrayList<String> listview_sub_category = new ArrayList<>();
+    public static final ArrayList<String> listview_sub_category = new ArrayList<>();
     public static int game_stage = 0;
+    final ArrayList<String> Ad_loaded = new ArrayList<>();
+    final sub_level_Adapter subLevelAdapter = new sub_level_Adapter();
+    final SharedPreference sp = new SharedPreference();
+    final my_dialog myDialog_class = new my_dialog();
     TextView sub_level_title;
     ImageView go_back_sub_level, sub_view_level;
     ListView sub_level_list_view;
-    ArrayList<String> Ad_loaded = new ArrayList<>();
-
     int native_ad_posion = 5;
-
-    sub_level_Adapter subLevelAdapter = new sub_level_Adapter();
-    SharedPreference sp = new SharedPreference();
     SQLiteDatabase mydb, Inner_mydb, exdb;
-
     Cursor cursor = null;
     String table_name = "", level_category = "", level_id = "";
     ImageView icon_ad_img;
     LinearLayout n_icon_ad;
-    my_dialog myDialog_class = new my_dialog();
     LinearLayout Baner_frame;
     private TinyDB tinyDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
 
         setContentView(R.layout.activity_game_sub_level_page);
 
@@ -86,8 +81,6 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
         if (win_cursor.getCount() != 0) {
             for (int i = 0; i < win_cursor.getCount(); i++) {
                 win_cursor.moveToPosition(i);
-                /*System.out.println("-----------------id : " + win_cursor.getString(win_cursor.getColumnIndexOrThrow("id")));
-                System.out.println("-----------------game_cate : " + win_cursor.getString(win_cursor.getColumnIndexOrThrow("game_cate")));*/
             }
         }
 
@@ -110,8 +103,6 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
         n_icon_ad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //myDialog_class.WST_Native_IconAd_show();
-                //dialog_native_ads.show();
             }
         });
 
@@ -126,29 +117,6 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
 
         game_stage = listview_sub_category.size();
 
-        /*if (sp.getInt(game_sub_level_page.this, "addcontent") == 1)
-        {
-
-            for (int j = 0; j < Ad_loaded.size(); j++) {
-
-                if (j == 2) {
-                    Ad_loaded.add(j, "ad_done");
-                    listview_sub_category.add(j, "ad_done");
-                    native_ad_posion = 5 + j;
-                    System.out.println("wordsearchme levelid"+native_ad_posion);
-
-                } else if (native_ad_posion == j && j>2) {
-                    {
-                        Ad_loaded.add(j,  "ad_done");
-                        listview_sub_category.add(j,  "ad_done");
-                        native_ad_posion += 5;
-                        System.out.println("wordsearchme levelid"+native_ad_posion);
-
-                    }
-                }
-            }
-        }*/
-
 
         sub_level_list_view.setAdapter(subLevelAdapter);
 
@@ -162,7 +130,6 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
 
     @Override
     public void unLiked(LikeButton likeButton) {
-
 
     }
 
@@ -262,65 +229,6 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
         myDialog_class.media_player(getApplicationContext(), R.raw.click, "stop");
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //myDialog_class. WST_Native_IconAd(game_sub_level_page.this,icon_ad_img,n_icon_ad);
-        // myDialog_class.WST_Native_BannerAd(game_sub_level_page.this, Baner_frame);
-
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-
-        if (sp.getInt(game_sub_level_page.this, "purchase_ads") == 1) {
-            Baner_frame.setVisibility(View.GONE);
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            native_banner_ad_container.setVisibility(View.GONE);
-
-        } else {
-            native_banner_ad_container.setVisibility(View.GONE);
-           /* if (Utils.isNetworkAvailable(game_sub_level_page.this)) {
-                fb_native(game_sub_level_page.this, native_banner_ad_container);
-                *//*  if (sp.getInt(game_sub_level_page.this, "native_banner_ads") == 1) {
-                    New_Main_Gamelist.inflateAd(game_sub_level_page.this, native_banner_ad_container);
-                } else {
-                    fb_native(game_sub_level_page.this, native_banner_ad_container);
-                }*//*
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-*/
-            /*if (sp.getInt(game_sub_level_page.this, "addlodedd") == 1) {
-                New_Main_Activity.load_addFromMain(game_sub_level_page.this, Baner_frame);
-            } else {
-                if (Utils.isNetworkAvailable(game_sub_level_page.this)) {
-                    sp.putInt(game_sub_level_page.this, "addlodedd", 2);
-                    System.out.println("@IMG");
-                    final AdView adView = new AdView(game_sub_level_page.this);
-                    adView.setAdUnitId(getString(R.string.main_banner_ori));
-
-                    adView.setAdSize(AdSize.SMART_BANNER);
-                    AdRequest request = new AdRequest.Builder().build();
-                    adView.setAdListener(new AdListener() {
-                        public void onAdLoaded() {
-                            System.out.println("@@@loaded");
-                            Baner_frame.removeAllViews();
-                            Baner_frame.addView(adView);
-                            Baner_frame.setVisibility(View.VISIBLE);
-                            super.onAdLoaded();
-                        }
-
-                        @Override
-                        public void onAdFailedToLoad(int i) {
-                            System.out.println("@@@NOt loaded");
-                            super.onAdFailedToLoad(i);
-                        }
-                    });
-                    adView.loadAd(request);
-
-                }
-            }*/
-        }
-
-    }
 
     @Override
     public void onBackPressed() {
@@ -333,7 +241,7 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
     //***************  Backup funtion   *******************
     public void backup() {
         final ProgressDialog dialog = ProgressDialog.show(game_sub_level_page.this, "TWS", "Creating Backup Please wait....", true);
-        final Handler handler = new Handler() {
+        final Handler handler = new Handler(Looper.myLooper()) {
             public void handleMessage(Message msg) {
                 dialog.dismiss();
 
@@ -353,7 +261,7 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
                     File file = new File(dir, "Inner_DB");
                     FileOutputStream f = new FileOutputStream(file);
                     byte[] buffer = new byte[1024];
-                    int len1 = 0;
+                    int len1;
                     while ((len1 = in.read(buffer)) > 0) {
                         f.write(buffer, 0, len1);
                     }
@@ -552,7 +460,7 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
 
                     myDialog_class.media_player(getApplicationContext(), R.raw.click, "normal");
 
-                    int game_finish = 0;
+                    int game_finish;
 
                     level_id = listview_sub_category.get(position);
 

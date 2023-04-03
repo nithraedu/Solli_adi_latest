@@ -20,11 +20,11 @@ public class ArrowLayout extends RelativeLayout {
 
     private final static double ARROW_ANGLE = Math.PI / 6;
     private final static double ARROW_SIZE = 30;
+    private final Point mPointFrom = new Point();   // current (during animation) arrow start point
+    private final Point mPointTo = new Point();
     int duration = 0;
     private Paint mPaint;
     private boolean mDrawArrow = false, ans_check;
-    private final Point mPointFrom = new Point();   // current (during animation) arrow start point
-    private final Point mPointTo = new Point();
 
     // current (during animation)  arrow end point
 
@@ -73,16 +73,6 @@ public class ArrowLayout extends RelativeLayout {
         }
         canvas.restore();
     }
-
-/*    @Override
-    public void dispatchDraw(Canvas canvas) {
-        super.dispatchDraw(canvas);
-        canvas.save();
-        if (mDrawArrow) {
-            drawArrowLines(mPointFrom, mPointTo, canvas);
-        }
-        canvas.restore();
-    }*/
 
     private Point calcPointFromleft(Rect fromViewBounds) {
         Point pointFrom = new Point();
@@ -145,7 +135,7 @@ public class ArrowLayout extends RelativeLayout {
 
         duration = duration1;
 
-        View from_view = null, to_view = null;
+        View from_view, to_view;
 /*
         if (arrow_move)
         {
@@ -169,8 +159,8 @@ public class ArrowLayout extends RelativeLayout {
 
         // calculate arrow sbegin and end points
 
-        Point pointFrom = null;
-        Point pointTo = null;
+        Point pointFrom;
+        Point pointTo;
 
         if (arrow_move) {
             pointFrom = calcPointFromright(toViewBounds);

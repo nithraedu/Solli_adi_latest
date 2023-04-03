@@ -17,7 +17,7 @@ import nithra.tamil.word.game.solliadi.SharedPreference;
 
 public class my_dialog extends AppCompatActivity {
 
-    SharedPreference sp = new SharedPreference();
+    final SharedPreference sp = new SharedPreference();
     MediaPlayer mediaPlayer = null;
 
     public static boolean isNetworkAvailable(Context context) {
@@ -37,20 +37,6 @@ public class my_dialog extends AppCompatActivity {
     public void media_player(Context context, int resources, String play_mode) {
         mediaPlayer = MediaPlayer.create(context, resources);
 
-    /*    if (sp.getInt(context, "Sound") != 0) {
-            if (play_mode.equals("normal")) {
-                mediaPlayer.start();
-            } else if (play_mode.equals("stop")) {
-                mediaPlayer.stop();
-            }
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-
-                    mediaPlayer.release();
-                }
-            });
-        }*/
         if (sp.getString(context, "snd").equals("on")) {
             if (play_mode.equals("normal")) {
                 mediaPlayer.start();

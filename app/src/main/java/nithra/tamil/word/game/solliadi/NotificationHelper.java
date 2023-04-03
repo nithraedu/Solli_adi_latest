@@ -26,8 +26,8 @@ import java.net.URL;
 
 class NotificationHelper extends ContextWrapper {
     public static final String PRIMARY_CHANNEL = "default";
+    final Context context;
     NotificationChannel chan1 = null;
-    Context context;
     SharedPreference sharedPreference = new SharedPreference();
     private NotificationManager manager;
 
@@ -289,22 +289,6 @@ class NotificationHelper extends ContextWrapper {
                             .setCustomContentView(contentView)
                             .setGroup(bm)
                             .setCustomBigContentView(expandView);
-                   /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-
-                        mBuilder = new Notification.Builder(context, PRIMARY_CHANNEL)
-                            .setSmallIcon(getSmallIcon())
-                            .setGroup("" + titlee)
-                            .setColor(Color.parseColor("#6460AA"))
-                            .setCustomContentView(contentView)
-                            .setCustomBigContentView(expandView);
-                    }else{
-                        mBuilder = new Notification.Builder(context, PRIMARY_CHANNEL)
-                                .setSmallIcon(getSmallIcon())
-                                .setColor(Color.parseColor("#6460AA"))
-                                .setCustomContentView(contentView)
-                                .setGroup(bm)
-                                .setCustomBigContentView(expandView);
-                    }*/
                 }
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

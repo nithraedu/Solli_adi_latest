@@ -2,13 +2,10 @@ package nithra.tamil.word.game.solliadi;
 
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Ragasiya_sorgal_Native_Banner;
 
-import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -24,6 +21,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
@@ -34,10 +32,8 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -45,9 +41,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -56,21 +50,21 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.NativeAdLayout;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -84,10 +78,9 @@ import java.util.Date;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Timer;
-import java.util.TimerTask;
+
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
-import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
@@ -97,29 +90,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
     public static final String TAG = "SavedGames";
     public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
-    //*********************reward videos process 1***********************
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
-
-    // The AppState slot we are editing.  For simplicity this sample only manipulates a single
-    // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
-    // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
-    private static final int APP_STATE_KEY = 1;
-    // Request code used to invoke sign-in UI.
-    private static final int RC_SIGN_IN = 9001;
-    // Request code used to invoke Snapshot selection UI.
-    private static final int RC_SELECT_SNAPSHOT = 9002;
-    /////////native advance////////////
-    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
-    //reward videos process 1***********************
-    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
-    /////////Native_Top_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_Top = "ca-app-pub-4267540560263635/2303543680";
-    /////////Native_Top_Advanced////////////
-    /////////Native_BackPress_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
-    public static FrameLayout add, add2, add3;
-    public static LinearLayout add_e;
-    public static LinearLayout add_sc;
     static int ry;
     static int mCoinCount = 20;
 
@@ -127,6 +97,14 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     // Facebook variable starts
     static int rvo = 0;
     static SharedPreference spd = new SharedPreference();
+    final int gameid = 8;
+    final SharedPreference sps = new SharedPreference();
+    final int minmum = 1;
+    final int maximum = 3;
+    final Context context = this;
+    /////////native advance////////////
+    final int minmumd = 1;
+    final int maximumd = 4;
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     private final PendingAction pendingAction = PendingAction.NONE;
     int fb_reward = 0;
@@ -140,18 +118,13 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     SQLiteDatabase exdb, dbs, dbn, dbn2;
     EditText c_edit;
     int level;
-    int gameid = 8;
     int w_id;
     TextView c_verify, c_clear, ans_high;
     int f_sec;
     TextView c_ans;
-    SharedPreference sps = new SharedPreference();
     TextView bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9, bt10, bt11, bt12, bt13, bt14, bt15, bt16;
     SoundPool click, win, coin, worng;
     int soundId1, soundId2, soundId3, soundId4;
-    // MediaPlayer c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19, c20;
-    // MediaPlayer r1, play1;
-    // MediaPlayer w1;
     int sv = 0;
     int e2;
     TextView c_coin;
@@ -173,8 +146,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     int t, t2;
     LinearLayout qtw;
     TextView earncoin;
-    int minmum = 1;
-    int maximum = 3;
     int randomno;
     TextView next_continue;
     String downok = "", downnodata = "";
@@ -191,7 +162,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     TextView question;
     int share_name = 0;
     int setting_access = 0;
-    Context context = this;
     RelativeLayout adsicon, adsicon2;
     int loadaddcontent = 0;
     /////////Native_BackPress_Advanced////////////
@@ -206,35 +176,20 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     Dialog openDialog;
     int setval_vid;
     TextView coin_value;
-    /////////native advance////////////
-    int minmumd = 1;
-    int maximumd = 4;
     int randomnod;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
     //RewardedVideoAd rewardedVideoAd;
-    private MaxRewardedAd rewardedAd;
-    private boolean mGameOver;
-    private boolean mGamePaused;
-    private long mTimeRemaining;
-    /// Client used to interact with Google APIs.
-    // True when the application is attempting to resolve a sign-in error that has a possible
-    // resolution,
-    private boolean mIsResolving = false;
-    // True immediately after the user clicks the sign-in button/
-    private boolean mSignInClicked = false;
-    // True if we want to automatically attempt to sign in the user at application start.
-    private boolean mAutoStartSignIn = true;
-    private MaxInterstitialAd ins_game, game_exit_ins;
+    Handler handler;
+    Runnable my_runnable;
+    private RewardedAd rewardedAd;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     public void download_completed(String status) {
         System.out.println("#############################status" + status);
-        if (status.equals("nodata")) {
-            nextgamesdialog();
-        } else {
-            next();
-        }
+        if (status.equals("nodata")) nextgamesdialog();
+        else next();
     }
 
     private void backexitnet() {
@@ -242,16 +197,13 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             finish();
             Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
             startActivity(i);
-        } else {
-            finish();
-        }
+        } else finish();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ote_to_tamil_game);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
         Animation myFadeInAnimation = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.blink_animation);
@@ -267,15 +219,12 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
         if (sps.getString(Ote_to_Tamil.this, "new_user_db").equals("")) {
 
+        } else if (sps.getString(Ote_to_Tamil.this, "new_user_db").equals("on")) {
+            sps.putString(Ote_to_Tamil.this, "db_name_start", "Tamil_Game2.db");
+            Commen_string.dbs_name = "Tamil_Game2.db";
         } else {
-            if (sps.getString(Ote_to_Tamil.this, "new_user_db").equals("on")) {
-                sps.putString(Ote_to_Tamil.this, "db_name_start", "Tamil_Game2.db");
-                Commen_string.dbs_name = "Tamil_Game2.db";
-            } else {
-                sps.putString(Ote_to_Tamil.this, "db_name_start", "Solli_Adi");
-                Commen_string.dbs_name = "Solli_Adi";
-            }
-
+            sps.putString(Ote_to_Tamil.this, "db_name_start", "Solli_Adi");
+            Commen_string.dbs_name = "Solli_Adi";
         }
 
         myDbHelper = new DataBaseHelper(context);
@@ -285,42 +234,15 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         newhelper4 = new Newgame_DataBaseHelper4(context);
 
 
-        /*String gid = "8";
-        String qid = "";
-        for (int i = 0; i<=999; i++){
-            if (qid.equals("")){
-                qid = "" +i;
-            } else {
-                qid = qid + "," + i;
-            }
-        }
-        System.out.println("---qid : " +qid);
-        System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
-        newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='8'");
-*/
-
-     /*   exdb = myDbHelper.getReadableDatabase();
-        dbs = newhelper.getReadableDatabase();
-        dbn = newhelper2.getReadableDatabase();
-        dbn2 = newhelper3.getReadableDatabase();*/
-
-
-
         email = sps.getString(Ote_to_Tamil.this, "email");
 
-        rewarded_ad();
+        MobileAds.initialize(this);
+        rewarded_adnew();
         if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 0) {
-            // Make sure to set the mediation provider value to "max" to ensure proper functionality
-            AppLovinSdk.getInstance(Ote_to_Tamil.this).setMediationProvider("max");
-            AppLovinSdk.initializeSdk(Ote_to_Tamil.this, new AppLovinSdk.SdkInitializationListener() {
-                @Override
-                public void onSdkInitialized(final AppLovinSdkConfiguration configuration) {
-                    // AppLovin SDK is initialized, start loading ads
-                    industrialload_game();
-                    game_exit_ins_ad();
-                }
-            });
+            Utills.INSTANCE.initializeAdzz(this);
+            industrialload();
         }
+
 
         click = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
         soundId1 = click.load(Ote_to_Tamil.this, R.raw.click, 1);
@@ -331,67 +253,33 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         coin = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
         soundId4 = coin.load(Ote_to_Tamil.this, R.raw.coins, 1);
 
-        ImageView prize_logo = (ImageView) findViewById(R.id.prize_logo);
-        /*final Animation pendulam;
-        pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
-        prize_logo.startAnimation(pendulam);*/
-        if (sps.getInt(Ote_to_Tamil.this, "remoteConfig_prize") == 1) {
+        ImageView prize_logo = findViewById(R.id.prize_logo);
+        if (sps.getInt(Ote_to_Tamil.this, "remoteConfig_prize") == 1)
             prize_logo.setVisibility(View.VISIBLE);
-        } else {
-            prize_logo.setVisibility(View.GONE);
-        }
-        prize_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isNetworkAvailable()) {
-                    if (sps.getString(Ote_to_Tamil.this, "price_registration").equals("com")) {
-                        finish();
-                        Intent i = new Intent(Ote_to_Tamil.this, Game_Status.class);
-                        startActivity(i);
-                    } else {
-                        if (sps.getString(Ote_to_Tamil.this, "otp_verify").equals("yes")) {
-                            finish();
-                            Intent i = new Intent(Ote_to_Tamil.this, LoginActivity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            Intent i = new Intent(Ote_to_Tamil.this, Price_Login.class);
-                            startActivity(i);
-                        }
-                    }
+        else prize_logo.setVisibility(View.GONE);
+        prize_logo.setOnClickListener(v -> {
+            if (isNetworkAvailable())
+                if (sps.getString(Ote_to_Tamil.this, "price_registration").equals("com")) {
+                    finish();
+                    Intent i = new Intent(Ote_to_Tamil.this, Game_Status.class);
+                    startActivity(i);
+                } else if (sps.getString(Ote_to_Tamil.this, "otp_verify").equals("yes")) {
+                    finish();
+                    Intent i = new Intent(Ote_to_Tamil.this, LoginActivity.class);
+                    startActivity(i);
                 } else {
-                    Toast.makeText(Ote_to_Tamil.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
+                    finish();
+                    Intent i = new Intent(Ote_to_Tamil.this, Price_Login.class);
+                    startActivity(i);
                 }
-            }
+            else
+                Toast.makeText(Ote_to_Tamil.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
         });
 
         openDialog_s = new Dialog(Ote_to_Tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
-        adsicon = (RelativeLayout) openDialog_s.findViewById(R.id.adsicon);
+        adsicon = openDialog_s.findViewById(R.id.adsicon);
 
-        /////////
-
-        if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 1) {
-        } else {
-            // advancads();
-        }
-
-
-        ////////
-
-        /////////
-
-        if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 1) {
-        } else {
-            // advancads_content();
-        }
-
-        ////////
-
-        //builder_dialog = new AdLoader.Builder(this, ADMOB_AD_UNIT_ID_Top);
-        //install_ads_doalug();
-
-        //Sound ON OFF
         String snd = sps.getString(Ote_to_Tamil.this, "snd");
 
         LayoutInflater layoutInflater
@@ -402,8 +290,8 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                 popupView,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        toggleButton = (TextView) popupView.findViewById(R.id.toggle);
-        c_settings = (TextView) findViewById(R.id.c_settings);
+        toggleButton = popupView.findViewById(R.id.toggle);
+        c_settings = findViewById(R.id.c_settings);
         if (snd.equals("off")) {
             //  toggleButton.setBackgroundResource(R.drawable.off);
             c_settings.setBackgroundResource(R.drawable.sound_off);
@@ -414,44 +302,28 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             sv = 1;
             //
         }
-        c_edit = (EditText) findViewById(R.id.clue_ans_editer);
-        c_edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(c_edit.getWindowToken(), 0);
-            }
+        c_edit = findViewById(R.id.clue_ans_editer);
+        c_edit.setOnClickListener(v -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(c_edit.getWindowToken(), 0);
         });
-        c_edit.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(c_edit.getWindowToken(), 0);
+        c_edit.setOnTouchListener((v, event) -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(c_edit.getWindowToken(), 0);
 
-                return true;
-            }
+            return true;
         });
 
 
         //finding and next
         find();
         clicklistner();
-//loads_ads_banner();
-        adds = (LinearLayout) findViewById(R.id.ads_lay);
-        if (sps.getInt(context, "purchase_ads") == 0) {
-            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
+        adds = findViewById(R.id.ads_lay);
+        Utills.INSTANCE.load_add_AppLovin(this, adds);
 
-                Ad_NativieUtils.load_add_facebook(this, getResources().getString(R.string.Ragasiya_sorgal_Native_Banner_new), adds);
-            } else {
-                adds.setVisibility(View.GONE);
-            }
-        } else {
-            adds.setVisibility(View.GONE);
-        }
-
-        c_ans = (TextView) findViewById(R.id.c_ans);
-        h_watts_app = (TextView) findViewById(R.id.ch_watts_app);
-        helpshare_layout = (RelativeLayout) findViewById(R.id.helpshare_layout);
+        c_ans = findViewById(R.id.c_ans);
+        h_watts_app = findViewById(R.id.ch_watts_app);
+        helpshare_layout = findViewById(R.id.helpshare_layout);
         //Dialog for intro
 
         Bundle extras;
@@ -497,17 +369,14 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                             .setDismissText("சரி")
                             .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
                             .build())
-                    .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
-                        @Override
-                        public void onDismiss(MaterialShowcaseView itemView, int position) {
+                    .setOnItemDismissedListener((itemView, position) -> {
 
-                            if (position == 1) {
-                                sps.putString(Ote_to_Tamil.this, "ote_sequence example cn3", "yes");
-                                sps.putString(Ote_to_Tamil.this, "showcase_dismiss_ote", "yes");
-                                focus.setBase(SystemClock.elapsedRealtime());
-                                focus.start();
+                        if (position == 1) {
+                            sps.putString(Ote_to_Tamil.this, "ote_sequence example cn3", "yes");
+                            sps.putString(Ote_to_Tamil.this, "showcase_dismiss_ote", "yes");
+                            focus.setBase(SystemClock.elapsedRealtime());
+                            focus.start();
 
-                            }
                         }
                     });
 
@@ -517,380 +386,341 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
         }
 
-        if (sps.getInt(Ote_to_Tamil.this, "reward_coin_txt") == 0) {
+        if (sps.getInt(Ote_to_Tamil.this, "reward_coin_txt") == 0)
             sps.putInt(Ote_to_Tamil.this, "reward_coin_txt", 20);
-        }
 
-        h_gplues.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                share_name = 3;
-                String a = "com.google.android.apps.plus";
+        h_gplues.setOnClickListener(view -> {
+            share_name = 3;
+            String a = "com.google.android.apps.plus";
 
-                permission(a);
-            }
+            permission(a);
         });
-        h_watts_app.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                share_name = 2;
-                String a = "com.whatsapp";
-                permission(a);
+        h_watts_app.setOnClickListener(view -> {
+            share_name = 2;
+            String a = "com.whatsapp";
+            permission(a);
 
-            }
         });
-        h_facebook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                share_name = 1;
-                final String a = "com.facebook.katana";
-                permission(a);
+        h_facebook.setOnClickListener(view -> {
+            share_name = 1;
+            final String a = "com.facebook.katana";
+            permission(a);
 
+        });
+
+
+    }
+
+    public void rewarded_adnew() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedAd.load(this, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error.
+                Log.d(TAG, loadAdError.toString());
+                rewardedAd = null;
+            }
+
+            @Override
+            public void onAdLoaded(@NonNull RewardedAd ad) {
+                rewardedAd = ad;
+                fb_reward = 1;
+                adslisner();
+                Log.d(TAG, "Ad was loaded.");
             }
         });
 
 
     }
 
-    private void loads_ads_banner() {
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
+    public void adslisner() {
+        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
 
-        if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            adds.setVisibility(View.GONE);
-            native_banner_ad_container.setVisibility(View.GONE);
+            @Override
+            public void onAdDismissedFullScreenContent() {
+                rewarded_adnew();
+                if (reward_status == 1) {
+                    if (extra_coin_s == 0) {
+                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                        cfx.moveToFirst();
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                        int spx = skx + mCoinCount;
+                        String aStringx = Integer.toString(spx);
+                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
+                    }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        if (rvo == 2) share_earn2(mCoinCount);
+                        else vidcoinearn();
+                    }, 500);
+                } else
+                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+
+                fb_reward = 0;
+
+            }
+
+        });
+    }
+
+    public void show_reward() {
+        if (rewardedAd != null) rewardedAd.show(this, rewardItem -> {
+            // Handle the reward.
+            Log.d(TAG, "The user earned the reward.");
+            int rewardAmount = rewardItem.getAmount();
+            String rewardType = rewardItem.getType();
+            reward_status = 1;
+        });
+        else Log.d(TAG, "The rewarded ad wasn't ready yet.");
+    }
+
+    public void industrialload() {
+        if (mInterstitialAd != null) return;
+        Log.i(TAG, "onAdLoadedCalled");
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        InterstitialAd.load(this, getResources().getString(R.string.Game4_Stage_Close_RS), adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                interstiallistener();
+                Log.i(TAG, "onAdLoaded");
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.d(TAG, loadAdError.toString());
+                mInterstitialAd = null;
+                handler = null;
+                Log.i(TAG, "onAdLoadedfailed" + loadAdError.getMessage());
+            }
+        });
+
+    }
+
+    public void interstiallistener() {
+        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override
+            public void onAdDismissedFullScreenContent() {
+                // Called when ad is dismissed.
+                // Set the ad reference to null so you don't show the ad a second time.
+                Log.d(TAG, "Ad dismissed fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                setSc();
+                industrialload();
+            }
+
+            @Override
+            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                // Called when ad fails to show.
+                Log.e(TAG, "Ad failed to show fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                setSc();
+            }
+
+        });
+    }
+
+    public void adShow() {
+        if (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") == Utills.interstitialadCount && mInterstitialAd != null) {
+            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+            Utills.INSTANCE.Loading_Dialog(this);
+            handler = new Handler(Looper.myLooper());
+            my_runnable = () -> {
+                mInterstitialAd.show(this);
+            };
+            handler.postDelayed(my_runnable, 2500);
         } else {
-            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
-                fb_native_Ragasiya_sorgal_Native_Banner(Ote_to_Tamil.this, native_banner_ad_container);
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
+            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") + 1));
+            if (sps.getInt(context, "Game4_Stage_Close_RS") > Utills.interstitialadCount)
+                sps.putInt(context, "Game4_Stage_Close_RS", 0);
 
+            setSc();
+            //Toast.makeText(this, ""+sps.getInt(this, "Game4_Stage_Close_RS"), Toast.LENGTH_SHORT).show();
         }
-    }
-
-    public void game_exit_ins_ad() {
-
-        game_exit_ins = new MaxInterstitialAd(getResources().getString(R.string.Cat_Exit_Ins), this);
-        game_exit_ins.setListener(new MaxAdListener() {
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                openDialog_p.dismiss();
-                game_exit_ins_ad();
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error" + error);
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2" + error);
-            }
-        });
-        game_exit_ins.loadAd();
-
-    }
-
-    public void industrialload_game() {
-
-        ins_game = new MaxInterstitialAd(getResources().getString(R.string.Ragasiya_sorgal_ins), this);
-        ins_game.setListener(new MaxAdListener() {
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                dia_dismiss = 1;
-                openDialog_s.dismiss();
-                next();
-                industrialload_game();
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-
-            }
-        });
-        ins_game.loadAd();
 
     }
 
     public void clicklistner() {
-        c_settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        c_settings.setOnClickListener(v -> {
+            c_settings.setBackgroundResource(R.drawable.sound_off);
+            String snd = sps.getString(Ote_to_Tamil.this, "snd");
+            if (snd.equals("off")) {
+                sps.putString(Ote_to_Tamil.this, "snd", "on");
+                c_settings.setBackgroundResource(R.drawable.sound_on);
+                sv = 1;
+            } else if (snd.equals("on")) {
+                sps.putString(Ote_to_Tamil.this, "snd", "off");
                 c_settings.setBackgroundResource(R.drawable.sound_off);
-                String snd = sps.getString(Ote_to_Tamil.this, "snd");
-                if (snd.equals("off")) {
-                    sps.putString(Ote_to_Tamil.this, "snd", "on");
-                    c_settings.setBackgroundResource(R.drawable.sound_on);
-                    sv = 1;
-                } else if (snd.equals("on")) {
-                    sps.putString(Ote_to_Tamil.this, "snd", "off");
-                    c_settings.setBackgroundResource(R.drawable.sound_off);
-                    sv = 0;
-                }
-                // settings();
+                sv = 0;
             }
+            // settings();
         });
-        earncoin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog(0);
-            }
-        });
-        w_head.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (kx == 2) {
-                    popupWindow.dismiss();
-                    kx = 1;
-                }
+        earncoin.setOnClickListener(v -> dialog(0));
+        w_head.setOnClickListener(view -> {
+            if (kx == 2) {
+                popupWindow.dismiss();
+                kx = 1;
             }
         });
 
 
-        bt1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //c1.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt1.startAnimation(shake);
-                String ts = bt1.getText().toString();
-                c_edit.append(ts);
-            }
+        bt1.setOnClickListener(v -> {
+            //c1.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt1.startAnimation(shake);
+            String ts = bt1.getText().toString();
+            c_edit.append(ts);
         });
-        bt2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c2.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt2.startAnimation(shake);
-                String ts = bt2.getText().toString();
-                c_edit.append(ts);
-            }
+        bt2.setOnClickListener(v -> {
+            // c2.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt2.startAnimation(shake);
+            String ts = bt2.getText().toString();
+            c_edit.append(ts);
         });
-        bt3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c3.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt3.startAnimation(shake);
-                String ts = bt3.getText().toString();
-                c_edit.append(ts);
-            }
+        bt3.setOnClickListener(v -> {
+            // c3.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt3.startAnimation(shake);
+            String ts = bt3.getText().toString();
+            c_edit.append(ts);
         });
-        bt5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //  c4.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt5.startAnimation(shake);
-                String ts = bt5.getText().toString();
-                c_edit.append(ts);
-            }
+        bt5.setOnClickListener(v -> {
+            //  c4.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt5.startAnimation(shake);
+            String ts = bt5.getText().toString();
+            c_edit.append(ts);
         });
-        bt6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c5.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
+        bt6.setOnClickListener(v -> {
+            // c5.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
 
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt6.startAnimation(shake);
-                String ts = bt6.getText().toString();
-                c_edit.append(ts);
-            }
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt6.startAnimation(shake);
+            String ts = bt6.getText().toString();
+            c_edit.append(ts);
         });
-        bt7.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c6.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt7.startAnimation(shake);
-                String ts = bt7.getText().toString();
-                c_edit.append(ts);
-            }
+        bt7.setOnClickListener(v -> {
+            // c6.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt7.startAnimation(shake);
+            String ts = bt7.getText().toString();
+            c_edit.append(ts);
         });
-        bt9.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c7.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt9.startAnimation(shake);
-                String ts = bt9.getText().toString();
-                c_edit.append(ts);
-            }
+        bt9.setOnClickListener(v -> {
+            // c7.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt9.startAnimation(shake);
+            String ts = bt9.getText().toString();
+            c_edit.append(ts);
         });
-        bt10.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c8.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt10.startAnimation(shake);
-                String ts = bt10.getText().toString();
-                c_edit.append(ts);
-            }
+        bt10.setOnClickListener(v -> {
+            // c8.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt10.startAnimation(shake);
+            String ts = bt10.getText().toString();
+            c_edit.append(ts);
         });
-        bt11.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //  c9.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt11.startAnimation(shake);
-                String ts = bt11.getText().toString();
-                c_edit.append(ts);
-            }
+        bt11.setOnClickListener(v -> {
+            //  c9.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt11.startAnimation(shake);
+            String ts = bt11.getText().toString();
+            c_edit.append(ts);
         });
 
-        bt4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c10.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt4.startAnimation(shake);
-                String ts = bt4.getText().toString();
-                c_edit.append(ts);
-            }
+        bt4.setOnClickListener(v -> {
+            // c10.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt4.startAnimation(shake);
+            String ts = bt4.getText().toString();
+            c_edit.append(ts);
         });
 
-        bt8.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c11.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt8.startAnimation(shake);
-                String ts = bt8.getText().toString();
-                c_edit.append(ts);
-            }
+        bt8.setOnClickListener(v -> {
+            // c11.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt8.startAnimation(shake);
+            String ts = bt8.getText().toString();
+            c_edit.append(ts);
         });
-        bt12.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c12.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt12.startAnimation(shake);
-                String ts = bt12.getText().toString();
-                c_edit.append(ts);
+        bt12.setOnClickListener(v -> {
+            // c12.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt12.startAnimation(shake);
+            String ts = bt12.getText().toString();
+            c_edit.append(ts);
 
-            }
         });
-        bt13.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c13.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt13.startAnimation(shake);
-                String ts = bt13.getText().toString();
-                c_edit.append(ts);
-            }
+        bt13.setOnClickListener(v -> {
+            // c13.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt13.startAnimation(shake);
+            String ts = bt13.getText().toString();
+            c_edit.append(ts);
         });
 
-        bt14.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c14.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt14.startAnimation(shake);
-                String ts = bt14.getText().toString();
-                c_edit.append(ts);
-            }
+        bt14.setOnClickListener(v -> {
+            // c14.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt14.startAnimation(shake);
+            String ts = bt14.getText().toString();
+            c_edit.append(ts);
         });
-        bt15.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // c15.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt15.startAnimation(shake);
-                String ts = bt15.getText().toString();
-                c_edit.append(ts);
+        bt15.setOnClickListener(v -> {
+            // c15.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt15.startAnimation(shake);
+            String ts = bt15.getText().toString();
+            c_edit.append(ts);
 
-            }
         });
-        bt16.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //c16.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
-                bt16.startAnimation(shake);
-                String ts = bt16.getText().toString();
-                c_edit.append(ts);
+        bt16.setOnClickListener(v -> {
+            //c16.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            Animation shake = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.button_shake);
+            bt16.startAnimation(shake);
+            String ts = bt16.getText().toString();
+            c_edit.append(ts);
 
-            }
         });
 
-        qtw.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog(0);
-            }
+        qtw.setOnClickListener(v -> dialog(0));
+
+        c_clear.setOnClickListener(v -> {
+            //c17.start();
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            pressKey();
         });
 
-        c_clear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //c17.start();
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                pressKey(KeyEvent.KEYCODE_DEL);
-            }
-        });
-
-        c_clear.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                c_edit.setText("");
-                return false;
-            }
+        c_clear.setOnLongClickListener(v -> {
+            c_edit.setText("");
+            return false;
         });
 
         focus.addTextChangedListener(new TextWatcher() {
@@ -928,32 +758,93 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
         adsicon2.startAnimation(pendulam);
 
-        edit_buttons_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (kx == 2) {
-                    popupWindow.dismiss();
-                    kx = 1;
-                }
+        edit_buttons_layout.setOnClickListener(v -> {
+            if (kx == 2) {
+                popupWindow.dismiss();
+                kx = 1;
             }
         });
 
         //User Verifing Answer
-        c_ans.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
-                cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
-                if (sk >= 100) {
-                    if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
+        c_ans.setOnClickListener(v -> {
+            Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
+            cfw.moveToFirst();
+            int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
+            if (sk >= 100)
+                if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
+                    Cursor cd;
+                    String date = sps.getString(Ote_to_Tamil.this, "date");
+                    if (date.equals("0")) {
+                        cd = newhelper2.getQry("SELECT * FROM newmaintable2 where  questionid='" + w_id + "' and isfinish='0' and gameid='" + gameid + "'");
+                        cd.moveToFirst();
+                    } else {
+                        cd = newhelper2.getQry("SELECT * FROM newmaintable2 where  questionid='" + w_id + "' and daily='0' and gameid='" + gameid + "'");
+                        cd.moveToFirst();
+                    }
+
+                    String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
+                    //Toast.makeText(Ote_to_Tamil.this, "" + sa, Toast.LENGTH_SHORT).show();
+                    //Score Adding
+                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                    cfx.moveToFirst();
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                    int spx = skx - 100;
+                    String aStringx = Integer.toString(spx);
+                    score.setText(aStringx);
+                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+                    c_ans.setBackgroundResource(R.drawable.tick_background);
+                    c_ans.setEnabled(false);
+                    //
+                    sps.putInt(getApplicationContext(), "ach6_a1", 0);
+
+                    //bulb invisible
+
+
+                    //
+                    list4.setVisibility(View.INVISIBLE);
+
+                    Animation w_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button1and3_animation);
+                    ans_high.startAnimation(w_game);
+                    ans_high.setVisibility(View.VISIBLE);
+                    ans_high.setText(sa);
+                    //Update QST
+                    String datee = sps.getString(Ote_to_Tamil.this, "date");
+                    if (datee.equals("0"))
+                        newhelper2.executeSql("UPDATE newmaintable2 SET isfinish=1 WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
+                    else
+                        newhelper2.executeSql("UPDATE newmaintable2 SET daily=1 WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
+                    //Next Function
+                    r = 1;
+
+
+                    focus.stop();
+
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> adShow(), 5000);
+
+                } else {
+                    final Dialog openDialog = new Dialog(Ote_to_Tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                    openDialog.setContentView(R.layout.show_ans);
+                    TextView yes = openDialog.findViewById(R.id.yes);
+                    TextView no = openDialog.findViewById(R.id.no);
+                    TextView txt_ex2 = openDialog.findViewById(R.id.txt_ex2);
+                    txt_ex2.setText("மொத்த நாணயங்களில் 100 குறைக்கப்படும்");
+                    CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                    checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+                        if (isChecked)
+                            sps.putString(getApplicationContext(), "checkbox_ans", "yes");
+                        else sps.putString(getApplicationContext(), "checkbox_ans", "");
+                    });
+
+                    yes.setOnClickListener(v12 -> {
                         Cursor cd;
                         String date = sps.getString(Ote_to_Tamil.this, "date");
                         if (date.equals("0")) {
                             cd = newhelper2.getQry("SELECT * FROM newmaintable2 where  questionid='" + w_id + "' and isfinish='0' and gameid='" + gameid + "'");
                             cd.moveToFirst();
                         } else {
-                            cd = newhelper2.getQry("SELECT * FROM newmaintable2 where  questionid='" + w_id + "' and daily='0' and gameid='" + gameid + "'");
+                            cd = newhelper2.getQry("SELECT * FROM newmaintable2 where  questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
                             cd.moveToFirst();
                         }
 
@@ -984,125 +875,29 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                         ans_high.setText(sa);
                         //Update QST
                         String datee = sps.getString(Ote_to_Tamil.this, "date");
-                        if (datee.equals("0")) {
+                        if (datee.equals("0"))
                             newhelper2.executeSql("UPDATE newmaintable2 SET isfinish=1 WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                        } else {
+                        else
                             newhelper2.executeSql("UPDATE newmaintable2 SET daily=1 WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                        }
                         //Next Function
                         r = 1;
-
+                        openDialog.dismiss();
 
                         focus.stop();
 
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
 
-                                setSc();
-                            }
-                        }, 5000);
-
-                    } else {
-                        final Dialog openDialog = new Dialog(Ote_to_Tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                        openDialog.setContentView(R.layout.show_ans);
-                        TextView yes = (TextView) openDialog.findViewById(R.id.yes);
-                        TextView no = (TextView) openDialog.findViewById(R.id.no);
-                        TextView txt_ex2 = (TextView) openDialog.findViewById(R.id.txt_ex2);
-                        txt_ex2.setText("மொத்த நாணயங்களில் 100 குறைக்கப்படும்");
-                        CheckBox checkbox_ans = (CheckBox) openDialog.findViewById(R.id.checkbox_ans);
-                        checkbox_ans.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                            @Override
-                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                                if (isChecked) {
-                                    sps.putString(getApplicationContext(), "checkbox_ans", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "checkbox_ans", "");
-                                }
-                            }
-                        });
-
-                        yes.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Cursor cd;
-                                String date = sps.getString(Ote_to_Tamil.this, "date");
-                                if (date.equals("0")) {
-                                    cd = newhelper2.getQry("SELECT * FROM newmaintable2 where  questionid='" + w_id + "' and isfinish='0' and gameid='" + gameid + "'");
-                                    cd.moveToFirst();
-                                } else {
-                                    cd = newhelper2.getQry("SELECT * FROM newmaintable2 where  questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
-                                    cd.moveToFirst();
-                                }
-
-                                String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
-                                //Toast.makeText(Ote_to_Tamil.this, "" + sa, Toast.LENGTH_SHORT).show();
-                                //Score Adding
-                                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                int spx = skx - 100;
-                                String aStringx = Integer.toString(spx);
-                                score.setText(aStringx);
-                                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                                c_ans.setBackgroundResource(R.drawable.tick_background);
-                                c_ans.setEnabled(false);
-                                //
-                                sps.putInt(getApplicationContext(), "ach6_a1", 0);
-
-                                //bulb invisible
+                        Handler handler = new Handler(Looper.myLooper());
+                        handler.postDelayed(() -> adShow(), 5000);
 
 
-                                //
-                                list4.setVisibility(View.INVISIBLE);
-
-                                Animation w_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button1and3_animation);
-                                ans_high.startAnimation(w_game);
-                                ans_high.setVisibility(View.VISIBLE);
-                                ans_high.setText(sa);
-                                //Update QST
-                                String datee = sps.getString(Ote_to_Tamil.this, "date");
-                                if (datee.equals("0")) {
-                                    newhelper2.executeSql("UPDATE newmaintable2 SET isfinish=1 WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                                } else {
-                                    newhelper2.executeSql("UPDATE newmaintable2 SET daily=1 WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                                }
-                                //Next Function
-                                r = 1;
-                                openDialog.dismiss();
-
-                                focus.stop();
-
-
-                                Handler handler = new Handler();
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-
-                                        setSc();
-                                    }
-                                }, 5000);
-
-
-                            }
-                        });
-                        no.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                sps.putString(getApplicationContext(), "checkbox_ans", "");
-                                openDialog.dismiss();
-                            }
-                        });
-                        openDialog.show();
-                    }
-
-
-                } else {
-                    dialog(1);
+                    });
+                    no.setOnClickListener(v1 -> {
+                        sps.putString(getApplicationContext(), "checkbox_ans", "");
+                        openDialog.dismiss();
+                    });
+                    openDialog.show();
                 }
-            }
+            else dialog(1);
         });
         //Verifing Answer
         c_edit.addTextChangedListener(new TextWatcher() {
@@ -1140,12 +935,10 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                     //
                     list4.setVisibility(View.INVISIBLE);
                     String date = sps.getString(Ote_to_Tamil.this, "date");
-                    if (date.equals("0")) {
+                    if (date.equals("0"))
                         newhelper2.executeSql("UPDATE newmaintable2 SET isfinish=1 WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                    } else {
+                    else
                         newhelper2.executeSql("UPDATE newmaintable2 SET daily=1 WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                    }
-
 
 
                     focus.stop();
@@ -1175,9 +968,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         String fname = "Solli_Adi.jpg";
         final File file = new File(mydir, fname);
 
-        if (file.exists()) {
-            file.delete();
-        }
+        if (file.exists()) file.delete();
 
         try {
             FileOutputStream out = new FileOutputStream(file);
@@ -1204,17 +995,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
                         //      newhelper2.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
                     }
-                   /* if(date.equals("0")){
-                        pos=1;
-                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-
-                        newhelper2.executeSql("UPDATE newmaintable2 SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                    }else {
-                        pos=2;
-                        newhelper2.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-
-                        newhelper2.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                    }*/
 
                     //Uri uri = Uri.fromFile(file);
                     Uri uri = FileProvider.getUriForFile(Ote_to_Tamil.this, Ote_to_Tamil.this.getPackageName(), file);
@@ -1230,10 +1010,10 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                     startActivity(Intent.createChooser(share, "Share Card Using"));
                 } else {
 
-                    CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout);
+                    CoordinatorLayout coordinatorLayout = findViewById(R.id.myCoordinatorLayout);
                     Snackbar snackbar = Snackbar.make(coordinatorLayout, "இந்த செயலி தங்களிடம் இல்லை", Snackbar.LENGTH_SHORT);
                     final View view = snackbar.getView();
-                    TextView textView = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+                    TextView textView = view.findViewById(com.google.android.material.R.id.snackbar_text);
                     view.setBackgroundResource(R.drawable.answershow);
                     textView.setTextColor(Color.parseColor("#FFFFFF"));
                     textView.setGravity(Gravity.CENTER | Gravity.BOTTOM);
@@ -1256,12 +1036,10 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         noclue = noclue + 1;
         Cursor c;
         String date = sps.getString(Ote_to_Tamil.this, "date");
-        if (date.equals("0")) {
+        if (date.equals("0"))
             c = newhelper2.getQry("select * from newmaintable2 where questionid='" + w_id + "' and gameid='" + gameid + "' and isfinish='0'");
-        } else {
+        else
             c = newhelper2.getQry("select * from newmaintable2 where questionid='" + w_id + "' and gameid='" + gameid + "'  and daily='0'");
-
-        }
         c.moveToFirst();
         if (c.getCount() != 0) {
             String sb = c.getString(c.getColumnIndexOrThrow("hints"));
@@ -1275,61 +1053,56 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         }
     }
 
-    private void pressKey(int keycode) {
-        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, keycode);
-        c_edit.onKeyDown(keycode, event);
+    private void pressKey() {
+        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL);
+        c_edit.onKeyDown(KeyEvent.KEYCODE_DEL, event);
     }
 
     //find view
     public void find() {
-        c_edit = (EditText) findViewById(R.id.clue_ans_editer);
-        c_clear = (TextView) findViewById(R.id.clue_clear);
-        ans_high = (TextView) findViewById(R.id.ans_highlite);
-        edit_buttons_layout = (RelativeLayout) findViewById(R.id.edit_buttons_layout);
-        adsicon2 = (RelativeLayout) findViewById(R.id.adsicon2);
+        c_edit = findViewById(R.id.clue_ans_editer);
+        c_clear = findViewById(R.id.clue_clear);
+        ans_high = findViewById(R.id.ans_highlite);
+        edit_buttons_layout = findViewById(R.id.edit_buttons_layout);
+        adsicon2 = findViewById(R.id.adsicon2);
         // c_verify = (Button) findViewById(R.id.clue_verify);
-        c_clear = (Button) findViewById(R.id.clue_clear);
-        c_ans = (TextView) findViewById(R.id.c_ans);
-        question = (TextView) findViewById(R.id.question);
-        adds = (LinearLayout) findViewById(R.id.ads_lay);
-        list4 = (LinearLayout) findViewById(R.id.list4);
+        c_clear = findViewById(R.id.clue_clear);
+        c_ans = findViewById(R.id.c_ans);
+        question = findViewById(R.id.question);
+        list4 = findViewById(R.id.list4);
 
-        bt1 = (TextView) findViewById(R.id.c_button1);
-        bt2 = (TextView) findViewById(R.id.c_button2);
-        bt3 = (TextView) findViewById(R.id.c_button3);
-        bt4 = (TextView) findViewById(R.id.c_button4);
-        bt5 = (TextView) findViewById(R.id.c_button5);
-        bt6 = (TextView) findViewById(R.id.c_button6);
-        bt7 = (TextView) findViewById(R.id.c_button7);
-        bt8 = (TextView) findViewById(R.id.c_button8);
-        bt9 = (TextView) findViewById(R.id.c_button9);
-        bt10 = (TextView) findViewById(R.id.c_button10);
-        bt11 = (TextView) findViewById(R.id.c_button11);
-        bt12 = (TextView) findViewById(R.id.c_button12);
-        bt13 = (TextView) findViewById(R.id.c_button13);
-        bt14 = (TextView) findViewById(R.id.c_button14);
-        bt15 = (TextView) findViewById(R.id.c_button15);
-        bt16 = (TextView) findViewById(R.id.c_button16);
-        qtw = (LinearLayout) findViewById(R.id.qwt);
-       /* bt13.setVisibility(View.GONE);
-        bt14.setVisibility(View.GONE);
-        bt15.setVisibility(View.GONE);
-        bt16.setVisibility(View.GONE);*/
-        earncoin = (TextView) findViewById(R.id.earncoin);
+        bt1 = findViewById(R.id.c_button1);
+        bt2 = findViewById(R.id.c_button2);
+        bt3 = findViewById(R.id.c_button3);
+        bt4 = findViewById(R.id.c_button4);
+        bt5 = findViewById(R.id.c_button5);
+        bt6 = findViewById(R.id.c_button6);
+        bt7 = findViewById(R.id.c_button7);
+        bt8 = findViewById(R.id.c_button8);
+        bt9 = findViewById(R.id.c_button9);
+        bt10 = findViewById(R.id.c_button10);
+        bt11 = findViewById(R.id.c_button11);
+        bt12 = findViewById(R.id.c_button12);
+        bt13 = findViewById(R.id.c_button13);
+        bt14 = findViewById(R.id.c_button14);
+        bt15 = findViewById(R.id.c_button15);
+        bt16 = findViewById(R.id.c_button16);
+        qtw = findViewById(R.id.qwt);
+        earncoin = findViewById(R.id.earncoin);
 
         //help share
-        w_head = (RelativeLayout) findViewById(R.id.clue_head);
-        h_gplues = (TextView) findViewById(R.id.ch_gplues);
-        h_watts_app = (TextView) findViewById(R.id.ch_watts_app);
-        h_facebook = (TextView) findViewById(R.id.ch_facebook);
+        w_head = findViewById(R.id.clue_head);
+        h_gplues = findViewById(R.id.ch_gplues);
+        h_watts_app = findViewById(R.id.ch_watts_app);
+        h_facebook = findViewById(R.id.ch_facebook);
         //
         //Time Score Making
-        to_no = (TextView) findViewById(R.id.c_word_number);
-        score = (TextView) findViewById(R.id.c_score_edit);
-        focus = (Chronometer) findViewById(R.id.c_time_edit);
-        c_settings = (TextView) findViewById(R.id.c_settings);
+        to_no = findViewById(R.id.c_word_number);
+        score = findViewById(R.id.c_score_edit);
+        focus = findViewById(R.id.c_time_edit);
+        c_settings = findViewById(R.id.c_settings);
         //
-        c_coin = (TextView) findViewById(R.id.c_coins);
+        c_coin = findViewById(R.id.c_coins);
         //score intial
 
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
@@ -1689,10 +1462,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             bt10.setText(letter15);
             bt11.setText(letter4);
             bt12.setText(letter12);
-              /*  bt13.setText(letter10);
-                bt14.setText(letter14);
-                bt15.setText(letter12);
-                bt16.setText(letter13);*/
 
 
         } else if (type == 2) {
@@ -1729,10 +1498,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             bt10.setText(letter13);
             bt11.setText(letter7);
             bt12.setText(word2);
-                /*bt13.setText(letter14);
-                bt14.setText(word2);
-                bt15.setText(letter10);
-                bt16.setText(letter8);*/
 
 
         } else if (type == 3) {
@@ -1769,10 +1534,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             bt10.setText(word2);
             bt11.setText(letter2);
             bt12.setText(letter1);
-               /* bt13.setText(letter14);
-                bt14.setText(letter12);
-                bt15.setText(letter10);
-                bt16.setText(letter13);*/
 
 
         } else if (type == 4) {
@@ -1810,10 +1571,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             bt10.setText(word4);
             bt11.setText(letter12);
             bt12.setText(word2);
-              /*  bt13.setText(letter14);
-                bt14.setText(letter15);
-                bt15.setText(word1);
-                bt16.setText(word2);*/
 
 
         } else if (type == 5) {
@@ -1852,10 +1609,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             bt10.setText(letter6);
             bt11.setText(letter8);
             bt12.setText(word2);
-               /* bt13.setText(letter14);
-                bt14.setText(letter12);
-                bt15.setText(letter9);
-                bt16.setText(letter10);*/
 
 
         } else if (type == 6) {
@@ -1896,11 +1649,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             bt10.setText(word1);
             bt11.setText(word3);
             bt12.setText(letter4);
-              /*  bt13.setText(word6);
-                bt14.setText(letter11);
-                bt15.setText(letter13);
-                bt16.setText(word2);
-*/
 
 
         } else if (type == 7) {
@@ -1942,10 +1690,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             bt10.setText(word1);
             bt11.setText(letter12);
             bt12.setText(word6);
-               /* bt13.setText(letter6);
-                bt14.setText(word1);
-                bt15.setText(letter13);
-                bt16.setText(word3);*/
 
 
         } else if (type == 8) {
@@ -1988,10 +1732,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             bt10.setText(word3);
             bt11.setText(word2);
             bt12.setText(letter8);
-              /*  bt13.setText(letter6);
-                bt14.setText(letter11);
-                bt15.setText(word2);
-                bt16.setText(letter10);*/
 
         } else if (type == 9) {
 
@@ -2033,10 +1773,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             bt10.setText(word3);
             bt11.setText(word8);
             bt12.setText(word7);
-              /*  bt13.setText(letter6);
-                bt14.setText(letter11);
-                bt15.setText(word2);
-                bt16.setText(word8);*/
 
         }
     }
@@ -2421,14 +2157,10 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
 
         String str_month1 = "" + (cur_month1 + 1);
-        if (str_month1.length() == 1) {
-            str_month1 = "0" + str_month1;
-        }
+        if (str_month1.length() == 1) str_month1 = "0" + str_month1;
 
         String str_day1 = "" + cur_day1;
-        if (str_day1.length() == 1) {
-            str_day1 = "0" + str_day1;
-        }
+        if (str_day1.length() == 1) str_day1 = "0" + str_day1;
         final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
 
 
@@ -2443,17 +2175,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
 
         tim = 0;
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-        if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 1) {
-            native_banner_ad_container.setVisibility(View.GONE);
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        } else {
-            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
-                native_banner_ad_container.setVisibility(View.VISIBLE);
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-        }
+
         w_head.setVisibility(View.VISIBLE);
         bt4.setVisibility(View.VISIBLE);
         bt8.setVisibility(View.VISIBLE);
@@ -2475,8 +2197,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         }else
         {
 
-           *//* focus.setBase(SystemClock.elapsedRealtime());
-            focus.start();*//*
+           *//*
         }
 */
 
@@ -2504,37 +2225,13 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         list4.setVisibility(View.VISIBLE);
 
 
-        LinearLayout bl1 = (LinearLayout) findViewById(R.id.c_buttonlist1_layout);
-        LinearLayout bl2 = (LinearLayout) findViewById(R.id.c_buttonlist2_layout);
-        LinearLayout bl3 = (LinearLayout) findViewById(R.id.c_buttonlist3_layout);
-        LinearLayout bl4 = (LinearLayout) findViewById(R.id.c_buttonlist4_layout);
-          /*  Animation h_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.word_button1);
-            Animation h_game2 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.word_button2);
-            bl1.startAnimation(h_game);
-            bl2.startAnimation(h_game2);
-            bl3.startAnimation(h_game);
-            bl4.startAnimation(h_game2);*/
+        LinearLayout bl1 = findViewById(R.id.c_buttonlist1_layout);
+        LinearLayout bl2 = findViewById(R.id.c_buttonlist2_layout);
+        LinearLayout bl3 = findViewById(R.id.c_buttonlist3_layout);
+        LinearLayout bl4 = findViewById(R.id.c_buttonlist4_layout);
 
         Animation myFadeInAnimation = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.blink_animation);
 
-
-       /* Calendar calendar2 = Calendar.getInstance();
-        int cur_year = calendar2.get(Calendar.YEAR);
-        int cur_month = calendar2.get(Calendar.MONTH);
-        int cur_day = calendar2.get(Calendar.DAY_OF_MONTH);
-
-        String str_month = "" + (cur_month + 1);
-        if (str_month.length() == 1) {
-            str_month = "0" + str_month;
-        }
-
-        String str_day = "" + cur_day;
-        if (str_day.length() == 1) {
-            str_day = "0" + str_day;
-        }
-        String str_date = cur_year + "-" + str_month + "-" + str_day;
-        sps.putString(context,"date",""+str_date);
-*/
 
         if (daily_start == 1) {
             Toast.makeText(Ote_to_Tamil.this, "தினசரி விளையாட்டுகள் முடிந்தது.வழக்கமான பிறமொழி சொற்கள் விளையாட்டுக்குள் செல்கிறது. ", Toast.LENGTH_LONG).show();
@@ -2582,25 +2279,22 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             c.moveToFirst();
         }
 
+        //  Toast.makeText(Ote_to_Tamil.this, "தினசரி விளையாட்டுகள் முடிந்தது.வழக்கமான குறிப்பு மூலம் கண்டுபிடி விளையாட்டுக்குள் செல்கிறது. ", Toast.LENGTH_LONG).show();
+        // nextgamesdialog();
         if (c.getCount() != 0) {
             sa = c.getString(c.getColumnIndexOrThrow("sf_words"));
             w_id = c.getInt(c.getColumnIndexOrThrow("questionid"));
             int playtime = c.getInt(c.getColumnIndexOrThrow("playtime"));
             question.setText(c.getString(c.getColumnIndexOrThrow("question")));
-            if (playtime == 0) {
+            if (playtime == 0) if (sps.getString(Ote_to_Tamil.this, "Ote_time_start").equals(""))
+                sps.putString(Ote_to_Tamil.this, "Ote_time_start", "yes");
+            else {
 
+                focus.setBase(SystemClock.elapsedRealtime());
+                focus.start();
 
-                if (sps.getString(Ote_to_Tamil.this, "Ote_time_start").equals("")) {
-                    sps.putString(Ote_to_Tamil.this, "Ote_time_start", "yes");
-
-                } else {
-
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
-
-                }
-
-            } else {
+            }
+            else {
 
                 focus.setBase(SystemClock.elapsedRealtime() + playtime);
                 focus.start();
@@ -2614,38 +2308,20 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             Random rn = new Random();
             randomno = rn.nextInt(maximum - minmum + 1) + minmum;
 
-            //String r= String.valueOf(w_id);
-            //lt_id.setText(r);
-
-            if (randomno == 1) {
-                simple();
-            } else if (randomno == 2) {
-                medium();
-            } else if (randomno == 3) {
-                hard();
-            }
+            if (randomno == 1) simple();
+            else if (randomno == 2) medium();
+            else if (randomno == 3) hard();
+        } else if (date.equals("0")) downloaddata_regular2();
+        else if (sps.getString(Ote_to_Tamil.this, "Exp_list").equals("on")) {
+            finish();
+            Intent i = new Intent(Ote_to_Tamil.this, Expandable_List_View.class);
+            startActivity(i);
         } else {
-            if (date.equals("0")) {
-                downloaddata_regular2();
-                // nextgamesdialog();
-
-            } else {
-                //  Toast.makeText(Ote_to_Tamil.this, "தினசரி விளையாட்டுகள் முடிந்தது.வழக்கமான குறிப்பு மூலம் கண்டுபிடி விளையாட்டுக்குள் செல்கிறது. ", Toast.LENGTH_LONG).show();
-
-                if (sps.getString(Ote_to_Tamil.this, "Exp_list").equals("on")) {
-                    finish();
-                    Intent i = new Intent(Ote_to_Tamil.this, Expandable_List_View.class);
-                    startActivity(i);
-                } else {
-                    Toast.makeText(Ote_to_Tamil.this, "தினசரி விளையாட்டுகள் முடிந்தது.வழக்கமான பிறமொழி சொற்கள் விளையாட்டுக்குள் செல்கிறது. ", Toast.LENGTH_LONG).show();
-                    finish();
-                    sps.putString(Ote_to_Tamil.this, "date", "0");
-                    Intent i = new Intent(Ote_to_Tamil.this, Ote_to_Tamil.class);
-                    startActivity(i);
-                }
-
-
-            }
+            Toast.makeText(Ote_to_Tamil.this, "தினசரி விளையாட்டுகள் முடிந்தது.வழக்கமான பிறமொழி சொற்கள் விளையாட்டுக்குள் செல்கிறது. ", Toast.LENGTH_LONG).show();
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Ote_to_Tamil.class);
+            startActivity(i);
         }
     }
 
@@ -2654,7 +2330,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         openDialog.setContentView(R.layout.daily_bones_newd2);
         openDialog.setCancelable(false);
         //  TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
         //   TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Calendar calendar3 = Calendar.getInstance();
         int cur_year1 = calendar3.get(Calendar.YEAR);
@@ -2662,78 +2338,56 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
 
         String str_month1 = "" + (cur_month1 + 1);
-        if (str_month1.length() == 1) {
-            str_month1 = "0" + str_month1;
-        }
+        if (str_month1.length() == 1) str_month1 = "0" + str_month1;
 
         String str_day1 = "" + cur_day1;
-        if (str_day1.length() == 1) {
-            str_day1 = "0" + str_day1;
-        }
+        if (str_day1.length() == 1) str_day1 = "0" + str_day1;
         final String str_date1 = str_day1 + "-" + str_month1 + "-" + cur_year1;
 
         Date date1 = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24));
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         final String date = sdf.format(date1);
 
-        TextView tomarrow_coin_earn = (TextView) openDialog.findViewById(R.id.tomarrow_coin_earn);
-
-        //TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        //TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
+        TextView tomarrow_coin_earn = openDialog.findViewById(R.id.tomarrow_coin_earn);
 
 
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                int spx = skx + ea;
-                String aStringx = Integer.toString(spx);
-                score.setText(aStringx);
-                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                sps.putString(context, "daily_bonus_date", date);
-                openDialog.dismiss();
+        ok_y.setOnClickListener(v -> {
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            int spx = skx + ea;
+            String aStringx = Integer.toString(spx);
+            score.setText(aStringx);
+            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+            sps.putString(context, "daily_bonus_date", date);
+            openDialog.dismiss();
 
-            }
         });
-        coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
+        coin_value = openDialog.findViewById(R.id.coin_value);
         ea = 100;
         final int vals = reward_play_count * 100;
         ea = ea + vals;
         coin_value.setText("" + ea);
 
-        LinearLayout extra_coin = (LinearLayout) openDialog.findViewById(R.id.extra_coin);
+        LinearLayout extra_coin = openDialog.findViewById(R.id.extra_coin);
         System.out.println("############################^^^^^^^^^^^^^^currentdate" + str_date1);
         System.out.println("############################^^^^^^^^^^^^^^saveddate" + sps.getString(Ote_to_Tamil.this, "daily_bonus_date"));
 
         if (str_date1.equals(sps.getString(Ote_to_Tamil.this, "daily_bonus_date"))) {
 
-        } else {
-            sps.putInt(context, "daily_bonus_count", 0);
-        }
-        if (sps.getInt(context, "daily_bonus_count") == 0) {
-            ea = 100;
-        } else if (sps.getInt(context, "daily_bonus_count") == 1) {
-            ea = 150;
-        } else if (sps.getInt(context, "daily_bonus_count") == 2) {
-            ea = 200;
-        } else if (sps.getInt(context, "daily_bonus_count") == 3) {
-            ea = 250;
-        } else if (sps.getInt(context, "daily_bonus_count") == 4) {
-            ea = 300;
-        }
+        } else sps.putInt(context, "daily_bonus_count", 0);
+        if (sps.getInt(context, "daily_bonus_count") == 0) ea = 100;
+        else if (sps.getInt(context, "daily_bonus_count") == 1) ea = 150;
+        else if (sps.getInt(context, "daily_bonus_count") == 2) ea = 200;
+        else if (sps.getInt(context, "daily_bonus_count") == 3) ea = 250;
+        else if (sps.getInt(context, "daily_bonus_count") == 4) ea = 300;
         prize_data_update(context, ea);
-        coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
-      /*  final int vals = reward_play_count * 100;
-        ea = ea + vals;*/
+        coin_value = openDialog.findViewById(R.id.coin_value);
         coin_value.setText("" + ea);
         setval_vid = ea;
         Random rn = new Random();
         randomnod = rn.nextInt(maximumd - minmumd + 1) + minmumd;
 
-        //String r= String.valueOf(w_id);
-        //lt_id.setText(r);
         String ran_score = "";
         if (randomnod == 1) {
             sps.putInt(context, "daily_bonus_count", 1);
@@ -2752,140 +2406,83 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         tomarrow_coin_earn.setText("நாளைய தினத்திற்கான ஊக்க நாணயங்கள் : " + ran_score);
 
 
-        extra_coin = (LinearLayout) openDialog.findViewById(R.id.extra_coin);
-        extra_coin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                extra_coin_s = 1;
-                if (isNetworkAvailable()) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Ote_to_Tamil.this, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
-                        reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward(Ote_to_Tamil.this);
-                                    rewarded_ad();
-                                    Toast.makeText(Ote_to_Tamil.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-
-
+        extra_coin = openDialog.findViewById(R.id.extra_coin);
+        extra_coin.setOnClickListener(v -> {
+            extra_coin_s = 1;
+            if (isNetworkAvailable()) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Ote_to_Tamil.this, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
+                } else new Handler(Looper.myLooper()).postDelayed(() -> {
+                    reward_progressBar.dismiss();
+                    // mShowVideoButton.setVisibility(View.VISIBLE);
+                    if (fb_reward == 1) show_reward();
+                    else {
+                        //reward(Ote_to_Tamil.this);
+                        rewarded_adnew();
+                        Toast.makeText(Ote_to_Tamil.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }
+                }, 2000);
+            } else
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
-            }
         });
-                     /*   b_close.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                openDialog.dismiss();
-                            }
-                        });*/
         openDialog.show();
     }
 
     public void onBackPressed() {
         sps.putString(Ote_to_Tamil.this, "game_area", "on");
 
-        if (popupWindow.isShowing()) {
-            popupWindow.dismiss();
-        } else {
+        if (popupWindow.isShowing()) popupWindow.dismiss();
+        else {
             sps.putInt(Ote_to_Tamil.this, "addlodedd", 0);
             s = 1;
             openDialog_p = new Dialog(Ote_to_Tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
             openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+            TextView yes = openDialog_p.findViewById(R.id.yes);
+            TextView no = openDialog_p.findViewById(R.id.no);
 
-            yes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            yes.setOnClickListener(v -> {
 
-                    String dates = sps.getString(Ote_to_Tamil.this, "date");
-                    int pos;
-                    if (dates.equals("0")) {
-                        pos = 1;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
+                String dates = sps.getString(Ote_to_Tamil.this, "date");
+                int pos;
+                if (dates.equals("0")) {
+                    pos = 1;
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
 
-                        //    newhelper2.executeSql("UPDATE newmaintable2 SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                    } else {
-                        pos = 2;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
+                    //    newhelper2.executeSql("UPDATE newmaintable2 SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
+                } else {
+                    pos = 2;
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
 
-                        //   newhelper2.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                    }
-
-
-                    String date = sps.getString(Ote_to_Tamil.this, "date");
-                    if (date.equals("0")) {
-
-                        if (main_act.equals("")) {
-                            finish();
-                            Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                        }
-
-                    } else {
-                        if (sps.getString(Ote_to_Tamil.this, "Exp_list").equals("on")) {
-                            finish();
-                            Intent i = new Intent(Ote_to_Tamil.this, Expandable_List_View.class);
-                            startActivity(i);
-                        } else {
-                            if (main_act.equals("")) {
-                                finish();
-                                Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                            }
-                        }
-                    }
-
-                    //ad
-                    if (sps.getInt(context, "purchase_ads") == 0) {
-                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                    openDialog_p.dismiss();
-                                    game_exit_ins.showAd();
-                                }
-                            }
-                        } else {
-                            openDialog_p.dismiss();
-                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
-                        }
-                    } else {
-                        openDialog_p.dismiss();
-                    }
-                    //ad
-
+                    //   newhelper2.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
                 }
-            });
-            no.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
-                    openDialog_p.dismiss();
-                }
+
+                String date = sps.getString(Ote_to_Tamil.this, "date");
+                if (date.equals("0")) if (main_act.equals("")) {
+                    finish();
+                    Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
+                    startActivity(i);
+                } else finish();
+                else if (sps.getString(Ote_to_Tamil.this, "Exp_list").equals("on")) {
+                    finish();
+                    Intent i = new Intent(Ote_to_Tamil.this, Expandable_List_View.class);
+                    startActivity(i);
+                } else if (main_act.equals("")) {
+                    finish();
+                    Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
+                    startActivity(i);
+                } else finish();
+
+                openDialog_p.dismiss();
             });
+            no.setOnClickListener(v -> openDialog_p.dismiss());
             openDialog_p.show();
 
 
@@ -2901,86 +2498,50 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             s = 0;
         }
 
-        next_continue = (TextView) openDialog_s.findViewById(R.id.continues2);
-        ttscores = (TextView) openDialog_s.findViewById(R.id.tts_score2);
-        final TextView wtp = (TextView) openDialog_s.findViewById(R.id.wtp);
-        final TextView fbs = (TextView) openDialog_s.findViewById(R.id.fbp);
-        final TextView kuduthal = (TextView) openDialog_s.findViewById(R.id.tt22);
-        final TextView gplus = (TextView) openDialog_s.findViewById(R.id.gplus2);
-        final TextView word = (TextView) openDialog_s.findViewById(R.id.arputham2);
-        final LinearLayout rewardvideo = (LinearLayout) openDialog_s.findViewById(R.id.rewardvideo);
-        LinearLayout ads_layout = (LinearLayout) openDialog_s.findViewById(R.id.fl_adplaceholder);
-        final LinearLayout vid_earn = (LinearLayout) openDialog_s.findViewById(R.id.vid_earn);
+        next_continue = openDialog_s.findViewById(R.id.continues2);
+        ttscores = openDialog_s.findViewById(R.id.tts_score2);
+        final TextView wtp = openDialog_s.findViewById(R.id.wtp);
+        final TextView fbs = openDialog_s.findViewById(R.id.fbp);
+        final TextView kuduthal = openDialog_s.findViewById(R.id.tt22);
+        final TextView gplus = openDialog_s.findViewById(R.id.gplus2);
+        final TextView word = openDialog_s.findViewById(R.id.arputham2);
+        final LinearLayout rewardvideo = openDialog_s.findViewById(R.id.rewardvideo);
+        LinearLayout ads_layout = openDialog_s.findViewById(R.id.fl_adplaceholder);
+        final LinearLayout vid_earn = openDialog_s.findViewById(R.id.vid_earn);
 
-        ImageView prize_logo = (ImageView) openDialog_s.findViewById(R.id.prize_logo);
-        if (sps.getInt(Ote_to_Tamil.this, "remoteConfig_prize") == 1) {
+        ImageView prize_logo = openDialog_s.findViewById(R.id.prize_logo);
+        if (sps.getInt(Ote_to_Tamil.this, "remoteConfig_prize") == 1)
             prize_logo.setVisibility(View.VISIBLE);
-        } else {
-            prize_logo.setVisibility(View.GONE);
-        }
-        prize_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isNetworkAvailable()) {
-                    if (sps.getString(Ote_to_Tamil.this, "price_registration").equals("com")) {
-                        finish();
-                        Intent i = new Intent(Ote_to_Tamil.this, Game_Status.class);
-                        startActivity(i);
-                    } else {
-                        if (sps.getString(Ote_to_Tamil.this, "otp_verify").equals("yes")) {
-                            finish();
-                            Intent i = new Intent(Ote_to_Tamil.this, LoginActivity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            Intent i = new Intent(Ote_to_Tamil.this, Price_Login.class);
-                            startActivity(i);
-                        }
-                    }
+        else prize_logo.setVisibility(View.GONE);
+        prize_logo.setOnClickListener(v -> {
+            if (isNetworkAvailable())
+                if (sps.getString(Ote_to_Tamil.this, "price_registration").equals("com")) {
+                    finish();
+                    Intent i = new Intent(Ote_to_Tamil.this, Game_Status.class);
+                    startActivity(i);
+                } else if (sps.getString(Ote_to_Tamil.this, "otp_verify").equals("yes")) {
+                    finish();
+                    Intent i = new Intent(Ote_to_Tamil.this, LoginActivity.class);
+                    startActivity(i);
                 } else {
-                    Toast.makeText(Ote_to_Tamil.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
+                    finish();
+                    Intent i = new Intent(Ote_to_Tamil.this, Price_Login.class);
+                    startActivity(i);
                 }
-            }
+            else
+                Toast.makeText(Ote_to_Tamil.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
         });
 
-        TextView video_earn = (TextView) openDialog_s.findViewById(R.id.video_earn);
-        video_earn.setText("மேலும் " + sps.getInt(Ote_to_Tamil.this, "reward_coin_txt") + "+நாணயங்கள் பெற");
+        TextView video_earn = openDialog_s.findViewById(R.id.video_earn);
+        video_earn.setText("காணொளியை பார்த்து " + sps.getInt(Ote_to_Tamil.this, "reward_coin_txt") + "+ நாணயங்கள் பெற");
         Animation myFadeInAnimation = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.blink_animation);
         vid_earn.startAnimation(myFadeInAnimation);
 
-        if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 1) {
-            ads_layout.setVisibility(View.GONE);
-        } else {
-            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
-                //New_Main_Activity.load_add_fb_rect_score_screen(Ote_to_Tamil.this, ads_layout);
-            } else {
-                ads_layout.setVisibility(View.GONE);
-            }
-            //New_Main_Activity.load_addFromMain_multiplayer(Ote_to_Tamil.this, ads_layout);
-         /*   if (loadaddcontent == 1) {
-                if (native_adView3 != null) {
-                    native_adView3.removeAllViews();
-                }
-                LayoutInflater inflater;
-                inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-                View view1 = inflater.inflate(R.layout.remote_config);
-                ins_app(context, view1, sps.getInt(context, "remoteConfig"));
-                ads_layout.addView(view1);
-            }
-
-            if (isNetworkAvailable()) {
-                load_addinstall(context, ads_layout);
-            } else {
-                if (native_adView3 != null) {
-                    native_adView3.removeAllViews();
-                }
-                LayoutInflater inflater;
-                inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-                View view1 = inflater.inflate(R.layout.remote_config);
-                ins_app(context, view1, sps.getInt(context, "remoteConfig"));
-                ads_layout.addView(view1);
-            }*/
-        }
+        //New_Main_Activity.load_addFromMain_multiplayer(Ote_to_Tamil.this, ads_layout);
+        if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 1) ads_layout.setVisibility(View.GONE);
+        else if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
+            //New_Main_Activity.load_add_fb_rect_score_screen(Ote_to_Tamil.this, ads_layout);
+        } else ads_layout.setVisibility(View.GONE);
 
 
         word.setTypeface(tyr);
@@ -2990,9 +2551,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         kuduthal.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
         next_continue.setText("ªî£ì˜è");
         String date = sps.getString(Ote_to_Tamil.this, "date");
-        if (!date.equals("0")) {
-            next_continue.setText("சரி");
-        }
+        if (!date.equals("0")) next_continue.setText("சரி");
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
@@ -3002,162 +2561,108 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
         if (sps.getString(Ote_to_Tamil.this, "complite_reg").equals("yes")) {
             String dates = sps.getString(Ote_to_Tamil.this, "date");
-            if (dates.equals("0")) {
-                rewardvideo.setVisibility(View.VISIBLE);
-            }
+            if (dates.equals("0")) rewardvideo.setVisibility(View.VISIBLE);
         }
 
         if (ry == 1) {
 
-        } else {
-            rewardvideo.setVisibility(View.INVISIBLE);
-        }
+        } else rewardvideo.setVisibility(View.INVISIBLE);
 
-        RelativeLayout adsicon = (RelativeLayout) openDialog_s.findViewById(R.id.adsicon);
+        RelativeLayout adsicon = openDialog_s.findViewById(R.id.adsicon);
         Animation shake;
         shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulam);
         adsicon.startAnimation(shake);
 
 
-        vid_earn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 2;
-                if (Utils.isNetworkAvailable(context)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
-                        reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        rewardvideo.setVisibility(View.INVISIBLE);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward(context);
-                                    rewarded_ad();
-                                    Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
+        vid_earn.setOnClickListener(v -> {
+            rvo = 2;
+            if (Utils.isNetworkAvailable(context)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    rewardvideo.setVisibility(View.INVISIBLE);
+                } else new Handler(Looper.myLooper()).postDelayed(() -> {
+                    reward_progressBar.dismiss();
+                    // mShowVideoButton.setVisibility(View.VISIBLE);
+                    if (fb_reward == 1) show_reward();
+                    else {
+
+                        rewarded_adnew();
+                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                     }
-                } else {
+                }, 2000);
+            } else
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
-                }
-
-            }
         });
 
-        rewardvideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 2;
-                if (Utils.isNetworkAvailable(context)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
-                        reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        rewardvideo.setVisibility(View.INVISIBLE);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward(context);
-                                    rewarded_ad();
-                                    Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
+        rewardvideo.setOnClickListener(v -> {
+            rvo = 2;
+            if (Utils.isNetworkAvailable(context)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    rewardvideo.setVisibility(View.INVISIBLE);
+                } else new Handler(Looper.myLooper()).postDelayed(() -> {
+                    reward_progressBar.dismiss();
+                    // mShowVideoButton.setVisibility(View.VISIBLE);
+                    if (fb_reward == 1) show_reward();
+                    else {
+
+                        rewarded_adnew();
+                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                     }
-                } else {
-
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
-                }
-            }
+                }, 2000);
+            } else
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
         });
 
-        wtp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
+        wtp.setOnClickListener(view -> {
+            // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.whatsapp");
 
-                        String msg = ("நான் சொல்லிஅடி செயலியில் குறிப்புகள் மூலம் கண்டுபிடி நிலை" + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivity(Intent.createChooser(i, "Share via"));
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 21);
+                    String msg = ("நான் சொல்லிஅடி செயலியில் குறிப்புகள் மூலம் கண்டுபிடி நிலை" + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivity(Intent.createChooser(i, "Share via"));
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 21);
 
 
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
+                } else
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
 
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-            }
+            } else
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
         });
-        fbs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        fbs.setOnClickListener(view -> {
 
-/*
-                btn_str = "share";
-                if (isLoggedIn()) {
-
-
-                    publishFeedDialog();
-                    // toast("yes");
-                } else {
-                  //  openFacebookSession();
-                    // toast("no");
-                }*/
-
-            }
         });
-        gplus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.google.android.apps.plus");
+        gplus.setOnClickListener(view -> {
+            // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.google.android.apps.plus");
 
-                        String msg = ("நான் சொல்லிஅடி செயலியில் குறிப்புகள் மூலம் கண்டுபிடி நிலை" + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 16);
+                    String msg = ("நான் சொல்லிஅடி செயலியில் குறிப்புகள் மூலம் கண்டுபிடி நிலை" + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 16);
 
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
+                } else
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
 
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-
-            }
+            } else
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
         });
         word.setText("ï¡Á");
@@ -3168,125 +2673,48 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             r = 0;
         }
 
-        next_continue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                noclue = 0;
-                if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 1) {
-                    dia_dismiss = 1;
+        next_continue.setOnClickListener(view -> {
+            noclue = 0;
+            dia_dismiss = 1;
+            openDialog_s.dismiss();
+            next();
+
+
+        });
+
+        openDialog_s.setOnDismissListener(dialog -> {
+            if (dia_dismiss != 1) {
+                sps.putString(Ote_to_Tamil.this, "game_area", "on");
+                String date1 = sps.getString(Ote_to_Tamil.this, "date");
+                if (date1.equals("0")) if (main_act.equals("")) {
+                    finish();
                     openDialog_s.dismiss();
-                    next();
+                    Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
+                    startActivity(i);
                 } else {
+                    openDialog_s.dismiss();
+                    finish();
+                }
+                else if (sps.getString(Ote_to_Tamil.this, "Exp_list").equals("on")) {
+                    finish();
+                    openDialog_s.dismiss();
+                    Intent i = new Intent(Ote_to_Tamil.this, Expandable_List_View.class);
+                    startActivity(i);
 
-                    sps.putInt(getApplicationContext(), "cluetime", 0);
-                    if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
-                        sps.putInt(getApplicationContext(), "ins_ad_new", 0);
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (ins_game == null || !ins_game.isReady()) {
-                                dia_dismiss = 1;
-                                openDialog_s.dismiss();
-                                next();
-                                industrialload_game();
-                            } else {
-                                ins_game.showAd();
-                            }
-
-
-
-                        /*if (interstitialAd_game != null) {
-                            if (interstitialAd_game.isLoaded()) {
-                                interstitialAd_game.show();
-                                interstitialAd_game.setAdListener(new AdListener() {
-                                    @Override
-                                    public void onAdClosed() {
-
-                                        next();
-
-                                        ins_add();
-
-                                    }
-
-                                });
-                            } else {
-                                next();
-                            }
-                        }*/
-                        } else {
-                            dia_dismiss = 1;
-                            openDialog_s.dismiss();
-                            next();
-                        }
-
-                    } else {
-                        dia_dismiss = 1;
-                        openDialog_s.dismiss();
-                        next();
-                        sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
-                    }
-                    // advancads_content();
-                    //  advancads();
+                } else if (main_act.equals("")) {
+                    finish();
+                    openDialog_s.dismiss();
+                    Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
+                    startActivity(i);
+                } else {
+                    openDialog_s.dismiss();
+                    finish();
                 }
 
+            } else dia_dismiss = 0;
 
-           /*     dia_dismiss = 1;
-                openDialog_s.dismiss();*/
-            }
         });
-
-        openDialog_s.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (dia_dismiss != 1) {
-                    sps.putString(Ote_to_Tamil.this, "game_area", "on");
-                    String date = sps.getString(Ote_to_Tamil.this, "date");
-                    if (date.equals("0")) {
-                        if (main_act.equals("")) {
-                            finish();
-                            openDialog_s.dismiss();
-                            Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                            startActivity(i);
-                        } else {
-                            openDialog_s.dismiss();
-                            finish();
-                        }
-                    } else {
-                        if (sps.getString(Ote_to_Tamil.this, "Exp_list").equals("on")) {
-                            finish();
-                            openDialog_s.dismiss();
-                            Intent i = new Intent(Ote_to_Tamil.this, Expandable_List_View.class);
-                            startActivity(i);
-
-                        } else {
-                            if (main_act.equals("")) {
-                                finish();
-                                openDialog_s.dismiss();
-                                Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                openDialog_s.dismiss();
-                                finish();
-                            }
-                        }
-
-                    }
-
-                } else {
-                    dia_dismiss = 0;
-                }
-
-            }
-        });
-     /*   openDialog_s.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-
-                // Prevent dialog close on back press button
-                return keyCode == KeyEvent.KEYCODE_BACK;
-            }
-        });*/
-        if (!isFinishing()) {
-            openDialog_s.show();
-        }
+        if (!isFinishing()) openDialog_s.show();
 
     }
 
@@ -3335,72 +2763,47 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
         transAnimation.setDuration(600);
         c_coin.startAnimation(transAnimation);
-        c_coin.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                c_coin.setVisibility(View.INVISIBLE);
-            }
-        }, transAnimation.getDuration());
+        c_coin.postDelayed(() -> c_coin.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
 
-        new Thread(new Runnable() {
-
-            public void run() {
-                int es = e2 + 50;
-                while (e2 < es) {
-                    try {
-                        Thread.sleep(20);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    score.post(new Runnable() {
-
-                        public void run() {
-
-                            score.setText("" + e2);
-
-                        }
-
-                    });
-                    e2++;
+        new Thread(() -> {
+            int es = e2 + 50;
+            while (e2 < es) {
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
-
+                score.post(() -> score.setText("" + e2));
+                e2++;
             }
 
         }).start();
 
-        Handler handler30 = new Handler();
-        handler30.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
-                score.startAnimation(levels1);
-            }
+        Handler handler30 = new Handler(Looper.myLooper());
+        handler30.postDelayed(() -> {
+            Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
+            score.startAnimation(levels1);
         }, 1200);
 
-        Handler handler21 = new Handler();
-        handler21.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //Score Setting
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                int spx = skx + 50;
-                String aStringx = Integer.toString(spx);
-                score.setText(aStringx);
-                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+        Handler handler21 = new Handler(Looper.myLooper());
+        handler21.postDelayed(() -> {
+            //Score Setting
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            int spx = skx + 50;
+            String aStringx = Integer.toString(spx);
+            score.setText(aStringx);
+            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
-                Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
-                ch.moveToFirst();
-                int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
-                int shh = sh + 30;
-                myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
-
-                //
-                setSc();
-            }
+            Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
+            ch.moveToFirst();
+            int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
+            int shh = sh + 30;
+            myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
+            adShow();
         }, 2500);
 
     }
@@ -3410,230 +2813,129 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         openDialog_earncoin.setContentView(R.layout.earncoin);
 
 
-        RelativeLayout wp = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnwa);
-        RelativeLayout fb = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnfb);
-        RelativeLayout gplus = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earngplus);
+        RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
+        RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
+        RelativeLayout gplus = openDialog_earncoin.findViewById(R.id.earngplus);
 
 
-        TextView cancel = (TextView) openDialog_earncoin.findViewById(R.id.cancel);
-        TextView ss = (TextView) openDialog_earncoin.findViewById(R.id.ssss);
+        TextView cancel = openDialog_earncoin.findViewById(R.id.cancel);
+        TextView ss = openDialog_earncoin.findViewById(R.id.ssss);
 
 
-        ss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_earncoin.cancel();
-            }
-        });
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_earncoin.cancel();
-            }
-        });
+        ss.setOnClickListener(v -> openDialog_earncoin.cancel());
+        cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
 
-        TextView wpro = (TextView) openDialog_earncoin.findViewById(R.id.wpro);
+        TextView wpro = openDialog_earncoin.findViewById(R.id.wpro);
         if (i == 1) {
             cancel.setVisibility(View.INVISIBLE);
             wpro.setText("இந்த விளையாட்டை தொடர குறைந்தபட்சம் 100 நாணயங்கள் தேவை. எனவே கூடுதல் நாணயங்கள் பெற பகிரவும்.");
         }
 
-        RelativeLayout video = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnvideo);
-        video.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 1;
-                extra_coin_s = 0;
-                if (isNetworkAvailable()) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
+        RelativeLayout video = openDialog_earncoin.findViewById(R.id.earnvideo);
+        video.setOnClickListener(v -> {
+            rvo = 1;
+            extra_coin_s = 0;
+            if (isNetworkAvailable()) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
 
-                    if (fb_reward == 1) {
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        String date = sps.getString(Ote_to_Tamil.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
+                if (fb_reward == 1) {
+                    focus.stop();
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    String date = sps.getString(Ote_to_Tamil.this, "date");
+                    int pos;
+                    if (date.equals("0")) {
+                        pos = 1;
+                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
 
-                            //myDbHelper.executeSql("UPDATE newmaintable2 SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
-
-                            //myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                        }
-                        reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        openDialog_earncoin.cancel();
-
-                        // mShowVideoButton.setVisibility(View.VISIBLE);
+                        //myDbHelper.executeSql("UPDATE newmaintable2 SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
                     } else {
-                        fb_reward = 0;
-                        //reward(context);
-                        rewarded_ad();
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
+                        pos = 2;
+                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
 
-                                Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-
-                            }
-                        }, 2000);
+                        //myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
                     }
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }
-             /*   rvo = 1;
-                extra_coin_s = 0;
-                if (isNetworkAvailable()) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Ote_to_Tamil.this, "" + "Reward video", "Loading...");
-
-                    if (mRewardedVideoAd.isLoaded()) {
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        String date = sps.getString(Ote_to_Tamil.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-
-                            //myDbHelper.executeSql("UPDATE newmaintable2 SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
-
-                            //myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                        }
-                        reward_progressBar.dismiss();
-                        showRewardedVideo();
-                        openDialog_earncoin.cancel();
-
-                        // mShowVideoButton.setVisibility(View.VISIBLE);
-                    } else {
-                        startGame();
-
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (mRewardedVideoAd.isLoaded()) {
-                                    showRewardedVideo();
-                                    openDialog_earncoin.cancel();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    startGame();
-                                    Toast.makeText(Ote_to_Tamil.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-
-
-                    }
-                } else {
-
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
-                }*/
-            }
-        });
-
-        wp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        openDialog_earncoin.cancel();
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 12);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-            }
-        });
-        fb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-              /*  if (isNetworkAvailable()) {
-
+                    reward_progressBar.dismiss();
+                    show_reward();
                     openDialog_earncoin.cancel();
-                    btn_str = "invite";
-                    if (isLoggedIn()) {
-                        Bundle params = new Bundle();
-                        params.putString("message", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        showDialogWithoutNotificationBarInvite("apprequests",
-                                params);
-                        // toast("yes");
-                    } else {
-                      //  openFacebookSession();
-                        // toast("no");
-                    }
 
+                    // mShowVideoButton.setVisibility(View.VISIBLE);
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }   // toast("இணையதள சேவையை சரிபார்க்கவும் ");*/
-            }
-        });
-        gplus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                    fb_reward = 0;
 
+                    rewarded_adnew();
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
+                        reward_progressBar.dismiss();
 
-                if (isNetworkAvailable()) {
+                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
 
-
-                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
-                    if (appinstalled) {
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        String date = sps.getString(Ote_to_Tamil.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-
-                            // newhelper2.executeSql("UPDATE newmaintable2 SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
-
-                            // newhelper2.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                        }
-                        openDialog_earncoin.cancel();
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.google.android.apps.plus");
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 15);
-
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                    }, 2000);
                 }
+            } else
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+        });
 
-            }
+        wp.setOnClickListener(view -> {
+            // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                if (appinstalled) {
+                    openDialog_earncoin.cancel();
+                    Intent i12 = new Intent(Intent.ACTION_SEND);
+                    i12.setType("text/plain");
+                    i12.setPackage("com.whatsapp");
+                    String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
+                            "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                    i12.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i12, "Share via"), 12);
+                } else
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+
+            } else
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+        });
+        fb.setOnClickListener(view -> {
+
+
+        });
+        gplus.setOnClickListener(view -> {
+
+
+            // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+            if (isNetworkAvailable()) {
+
+
+                final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
+                if (appinstalled) {
+                    focus.stop();
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    String date = sps.getString(Ote_to_Tamil.this, "date");
+                    int pos;
+                    if (date.equals("0")) {
+                        pos = 1;
+                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
+
+                        // newhelper2.executeSql("UPDATE newmaintable2 SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
+                    } else {
+                        pos = 2;
+                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
+
+                        // newhelper2.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
+                    }
+                    openDialog_earncoin.cancel();
+                    Intent i1 = new Intent(Intent.ACTION_SEND);
+                    i1.setType("text/plain");
+                    i1.setPackage("com.google.android.apps.plus");
+                    String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
+                            "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                    i1.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i1, "Share via"), 15);
+
+
+                } else
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+
+            } else
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
         });
         openDialog_earncoin.show();
@@ -3641,15 +2943,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
     protected void onResume() {
         super.onResume();
-
-
-        if (!mGameOver && mGamePaused) {
-            //resumeGame();
-        }
-
-
-        //uiHelper.onResume();
-        // AppEventsLogger.activateApp(this);
+        if (handler != null) handler.postDelayed(my_runnable, 1000);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Ote_to_Tamil.this);
         mFirebaseAnalytics.setCurrentScreen(this, "Other language to tamil", null);
 
@@ -3680,21 +2974,13 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             sps.putInt(Ote_to_Tamil.this, "goto_sett", 0);
 
             if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
-             /*   Cursor c3 = myDbHelper.getQry("select gameid,w_id from clue_game order by w_id");
-
-                if (c3.getCount() != 0) {
-                    c3.moveToLast();
-
-                }
-*/
 
             }
         }
 
-        if (sps.getString(Ote_to_Tamil.this, "resume_c_ote").equals("")) {
+        if (sps.getString(Ote_to_Tamil.this, "resume_c_ote").equals(""))
             sps.putString(Ote_to_Tamil.this, "resume_c_ote", "yes");
-
-        } else {
+        else {
             String date = sps.getString(Ote_to_Tamil.this, "date");
             int pos;
             Cursor cs;
@@ -3704,38 +2990,20 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                 pos = 1;
                 cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + w_id + "'");
                 cs.moveToFirst();
-                if (cs.getCount() != 0) {
-                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-//                    noofclue=cs.getInt(cs.getColumnIndexOrThrow("noclue"));
-                }
+                //                    noofclue=cs.getInt(cs.getColumnIndexOrThrow("noclue"));
+                if (cs.getCount() != 0) dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
             } else {
                 pos = 2;
                 cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + w_id + "' and daily='0'");
                 cs.moveToFirst();
-                if (cs.getCount() != 0) {
-
-                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-                    //                   noofclue=cs.getInt(cs.getColumnIndexOrThrow("noclue"));
-                }
+                //                   noofclue=cs.getInt(cs.getColumnIndexOrThrow("noclue"));
+                if (cs.getCount() != 0) dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
             }
-            /*Toast.makeText(Ote_to_Tamil.this, ""+noofclue, Toast.LENGTH_SHORT).show();
-            if (noofclue==1){
-                clue();
-            }else if (noofclue==2){
-                clue();
-                clue();
-            }else if (noofclue==3){
-                clue();
-                clue();
-                clue();
-            }*/
             //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
 
             focus.setBase(SystemClock.elapsedRealtime() + dscore);
             focus.start();
 
-           /* focus.setBase(SystemClock.elapsedRealtime() + ttstop);
-            focus.start();*/
         }
     }
 
@@ -3745,267 +3013,85 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         // uiHelper.onSaveInstanceState(outState);
         outState.putString(PENDING_ACTION_BUNDLE_KEY, pendingAction.name());
     }
-/*
-    public boolean isLoggedIn() {
-        Session session = Session.getActiveSession();
-        return (session != null && session.isOpened());
-    }
-
-    private void publishFeedDialog() {
-        Bundle params = new Bundle();
-        params.putString("name", "சொல்லிஅடி");
-        // params.putString("caption", "");
-
-
-        params.putString("name", "சொல்லிஅடி");
-        // params.putString("message", "my_message");
-        params.putString("link", "https://goo.gl/CcA9a8");
-        params.putString("description", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் +\n" +
-                "                             விளையாட இங்கே கிளிக் செய்யவும் ");
-        params.putString("caption", "நான் சொல்லிஅடி செயலியில் குறிப்பு மூலம் கண்டுபிடி  நிலை " + to_no.getText().toString() + " ஐ முடித்துள்ளேன்");
-
-
-        WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(this,
-                Session.getActiveSession(), params)).setOnCompleteListener(
-                new OnCompleteListener() {
-
-                    @Override
-                    public void onComplete(Bundle values,
-                                           FacebookException error) {
-                        if (error == null) {
-                            // When the story is posted, echo the success
-                            // and the post Id.
-                            final String postId = values.getString("post_id");
-                            if (postId != null) {
-
-
-
-                             *//*   if (sps.getString(Ote_to_Tamil.this, "face_share").equals("")) {
-
-                                    sps.putString(Ote_to_Tamil.this, "face_share", "yes");
-
-                                }*//*
-
-                                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                int spx = skx + 10;
-                                String aStringx = Integer.toString(spx);
-                                // score.setText(aStringx);
-                                ttscores.setText(aStringx);
-                                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                                share_earn2(10);
-                                ///Reward Share
-                                retype = "s";
-                                Calendar calendar3 = Calendar.getInstance();
-                                int cur_year1 = calendar3.get(Calendar.YEAR);
-                                int cur_month1 = calendar3.get(Calendar.MONTH);
-                                int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
-
-                                String str_month1 = "" + (cur_month1 + 1);
-                                if (str_month1.length() == 1) {
-                                    str_month1 = "0" + str_month1;
-                                }
-
-                                String str_day1 = "" + cur_day1;
-                                if (str_day1.length() == 1) {
-                                    str_day1 = "0" + str_day1;
-                                }
-                                final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
-
-                                if (sps.getString(Ote_to_Tamil.this, "complite_reg").equals("yes")) {
-                                    Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
-                                    cn.moveToFirst();
-                                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
-                                    int gm1s = gm1 + 1;
-                                    myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
-                                }
-                                ///Reward Share
-
-
-                            } else {
-                                // User clicked the Cancel button
-                                Toast.makeText(getApplicationContext(),
-                                        "Publish cancelled", Toast.LENGTH_SHORT)
-                                        .show();
-                            }
-                        } else if (error instanceof FacebookOperationCanceledException) {
-                            // User clicked the "x" button
-                            Toast.makeText(getApplicationContext(),
-                                    "Publish cancelled", Toast.LENGTH_SHORT)
-                                    .show();
-                        } else {
-                            // Generic, ex: network error
-                            Toast.makeText(getApplicationContext(),
-                                    "Error posting story", Toast.LENGTH_SHORT)
-                                    .show();
-                        }
-                    }
-
-                }).build();
-        feedDialog.show();
-    }
-
-    private void showDialogWithoutNotificationBarInvite(String action, Bundle params) {
-        final WebDialog dialog = new WebDialog.Builder(Ote_to_Tamil.this,
-                Session.getActiveSession(), action, params)
-                .setOnCompleteListener(new OnCompleteListener() {
-                    @Override
-                    public void onComplete(Bundle values,
-                                           FacebookException error) {
-                        if (error != null
-                                && !(error instanceof FacebookOperationCanceledException)) {
-
-                        }
-
-                        try {
-                            System.out.println("Invitation was sent to "
-                                    + values.toString());
-
-                            for (int i = 0; values.containsKey("to[" + i + "]"); i++) {
-                                String curId = values
-                                        .getString("to[" + i + "]");
-
-                            }
-
-                            // lastearn("invaite friends", (values.size() - 1));
-                            if ((values.size() - 1) >= 1) {
-                                //setcoin(values.size() - 1);
-
-                                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                int spx = (values.size() - 1) * 10;
-                                String aStringx = Integer.toString(spx + skx);
-                                // score.setText(aStringx);
-                                myDbHelper.executeSql("UPDATE score SET coins='" + (spx + skx) + "'");
-                                share_earn(spx);
-                                //Toast.makeText(Ote_to_Tamil.this, "கூடுதல் நாணயங்கள்  "+spx+"  வழங்கப்பட்டது.தற்போது உங்களது மொத்த நாணயங்கள்"+ (spx + skx)+"", Toast.LENGTH_SHORT).show();
-
-                                ///Reward Share
-                                retype = "s";
-                                Calendar calendar3 = Calendar.getInstance();
-                                int cur_year1 = calendar3.get(Calendar.YEAR);
-                                int cur_month1 = calendar3.get(Calendar.MONTH);
-                                int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
-
-                                String str_month1 = "" + (cur_month1 + 1);
-                                if (str_month1.length() == 1) {
-                                    str_month1 = "0" + str_month1;
-                                }
-
-                                String str_day1 = "" + cur_day1;
-                                if (str_day1.length() == 1) {
-                                    str_day1 = "0" + str_day1;
-                                }
-                                final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
-
-                                if (sps.getString(Ote_to_Tamil.this, "complite_reg").equals("yes")) {
-                                    Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
-                                    cn.moveToFirst();
-                                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
-                                    int spxx = (values.size() - 1);
-                                    int gm1s = gm1 + spxx;
-                                    myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
-                                }
-                                ///Reward Share
-
-                            }
-
-                        } catch (Exception e) {
-
-                        }
-                    }
-                }).build();
-
-        Window dialog_window = dialog.getWindow();
-        dialog_window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        // dialogAction = action;
-        // dialogParams = params;
-
-        dialog.show();
-    }
-
-    private void openFacebookSession() {
-        Session.openActiveSession(this, true, Arrays.asList("email",
-                "user_birthday", "user_hometown", "user_location"),
-                new Session.StatusCallback() {
-                    @Override
-                    public void call(Session session, SessionState state,
-                                     Exception exception) {
-
-                        if (session != null && session.isOpened()) {
-                            // toast("open");
-
-                            if (btn_str.equals("share")) {
-
-                                publishFeedDialog();
-                            } else if (btn_str.equals("invite")) {
-
-                                Bundle params = new Bundle();
-                                params.putString("message", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                        "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                                showDialogWithoutNotificationBarInvite(
-                                        "apprequests", params);
-                            }
-                        }
-                    }
-                });
-    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //  uiHelper.onActivityResult(requestCode, resultCode, data, dialogCallback);
 
-        if (requestCode == 0) {
-            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
-                download_datas();
-            } else {
-                NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-                native_banner_ad_container.setVisibility(View.INVISIBLE);
-                w_head.setVisibility(View.INVISIBLE);
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Ote_to_Tamil.this);
-                alertDialogBuilder.setCancelable(false);
-                alertDialogBuilder.setMessage("புதிய வினாக்களை பதிவிறக்கம் செய்ய இணையத்தை ஆன் செய்யவும்")
-                        .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                                sps.putInt(Ote_to_Tamil.this, "goto_sett", 1);
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                String date = sps.getString(Ote_to_Tamil.this, "date");
-                                if (date.equals("0")) {
-                                    backexitnet();
-                                } else {
-                                    backexitnet();
-                                }
-                                dialog.dismiss();
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }
+        if (requestCode == 0) if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) download_datas();
+        else {
+
+
+            w_head.setVisibility(View.INVISIBLE);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Ote_to_Tamil.this);
+            alertDialogBuilder.setCancelable(false);
+            alertDialogBuilder.setMessage("புதிய வினாக்களை பதிவிறக்கம் செய்ய இணையத்தை ஆன் செய்யவும்")
+                    .setPositiveButton("அமைப்பு", (dialog, which) -> {
+                        startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                        sps.putInt(Ote_to_Tamil.this, "goto_sett", 1);
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton("பின்னர்", (dialog, which) -> {
+                        String date = sps.getString(Ote_to_Tamil.this, "date");
+                        if (date.equals("0")) backexitnet();
+                        else backexitnet();
+                        dialog.dismiss();
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
         }
 
 
-        if (requestCode == 15) {
-            if (resultCode == -1) {
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                int spx = skx + 10;
-                String aStringx = Integer.toString(spx);
-                //  score.setText(aStringx);
-                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                //setcoin(1);
-                share_earn(10);
+        if (requestCode == 15) if (resultCode == -1) {
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            int spx = skx + 10;
+            String aStringx = Integer.toString(spx);
+            //  score.setText(aStringx);
+            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+            //setcoin(1);
+            share_earn(10);
 
+            ///Reward Share
+            retype = "s";
+            Calendar calendar3 = Calendar.getInstance();
+            int cur_year1 = calendar3.get(Calendar.YEAR);
+            int cur_month1 = calendar3.get(Calendar.MONTH);
+            int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
+
+            String str_month1 = "" + (cur_month1 + 1);
+            if (str_month1.length() == 1) str_month1 = "0" + str_month1;
+
+            String str_day1 = "" + cur_day1;
+            if (str_day1.length() == 1) str_day1 = "0" + str_day1;
+            final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
+
+            if (sps.getString(Ote_to_Tamil.this, "complite_reg").equals("yes")) {
+                Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
+                cn.moveToFirst();
+                int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
+                int gm1s = gm1 + 1;
+                myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
+            }
+            ///Reward Share
+        } else {
+            //  Toast.makeText(getApplicationContext(), "share and earns", Toast.LENGTH_SHORT).show();
+        }
+        if (requestCode == 12) if (resultCode == -1) {
+
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            int spx = skx + 20;
+            String aStringx = Integer.toString(spx);
+            //score.setText(aStringx);
+            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+            share_earn(20);
+
+            if (sps.getString(Ote_to_Tamil.this, "complite_reg").equals("yes")) {
                 ///Reward Share
                 retype = "s";
                 Calendar calendar3 = Calendar.getInstance();
@@ -4014,120 +3100,60 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                 int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
 
                 String str_month1 = "" + (cur_month1 + 1);
-                if (str_month1.length() == 1) {
-                    str_month1 = "0" + str_month1;
-                }
+                if (str_month1.length() == 1) str_month1 = "0" + str_month1;
 
                 String str_day1 = "" + cur_day1;
-                if (str_day1.length() == 1) {
-                    str_day1 = "0" + str_day1;
-                }
+                if (str_day1.length() == 1) str_day1 = "0" + str_day1;
                 final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
-
-                if (sps.getString(Ote_to_Tamil.this, "complite_reg").equals("yes")) {
-                    Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
-                    cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
-                    int gm1s = gm1 + 1;
-                    myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
-                }
+                ///
+                Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
+                cn.moveToFirst();
+                int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
+                int gm1s = gm1 + 1;
+                myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 ///Reward Share
-            } else {
-                //  Toast.makeText(getApplicationContext(), "share and earns", Toast.LENGTH_SHORT).show();
             }
-        }
-        if (requestCode == 12) {
-            if (resultCode == -1) {
-
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                int spx = skx + 20;
-                String aStringx = Integer.toString(spx);
-                //score.setText(aStringx);
-                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                share_earn(20);
-
-                if (sps.getString(Ote_to_Tamil.this, "complite_reg").equals("yes")) {
-                    ///Reward Share
-                    retype = "s";
-                    Calendar calendar3 = Calendar.getInstance();
-                    int cur_year1 = calendar3.get(Calendar.YEAR);
-                    int cur_month1 = calendar3.get(Calendar.MONTH);
-                    int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
-
-                    String str_month1 = "" + (cur_month1 + 1);
-                    if (str_month1.length() == 1) {
-                        str_month1 = "0" + str_month1;
-                    }
-
-                    String str_day1 = "" + cur_day1;
-                    if (str_day1.length() == 1) {
-                        str_day1 = "0" + str_day1;
-                    }
-                    final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
-                    ///
-                    Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
-                    cn.moveToFirst();
-                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
-                    int gm1s = gm1 + 1;
-                    myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
-                    ///Reward Share
-                }
-            } else {
-            }
+        } else {
         }
 
 
-        if (requestCode == 21) {
-            if (resultCode == -1) {
+        if (requestCode == 21) if (resultCode == -1) {
 
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                int spx = skx + 20;
-                String aStringx = Integer.toString(spx);
-                //score.setText(aStringx);
-                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            int spx = skx + 20;
+            String aStringx = Integer.toString(spx);
+            //score.setText(aStringx);
+            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
-                share_earn2(20);
+            share_earn2(20);
 
 
-            } else {
-            }
+        } else {
         }
-        if (requestCode == 16) {
-            if (resultCode == -1) {
-            /*    if (sps.getString(Ote_to_Tamil.this, "gplues").equals("yes")) {
+        if (requestCode == 16) if (resultCode == -1) {
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            int spx = skx + 10;
+            String aStringx = Integer.toString(spx);
+            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+            share_earn2(10);
+            ///Reward Share
+            retype = "s";
 
-                    sps.putString(Ote_to_Tamil.this, "gplues", "no");
+            ///Reward Share
 
-                }*/
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                int spx = skx + 10;
-                String aStringx = Integer.toString(spx);
-                //score.setText(aStringx);
-                // ttscores.setText(aStringx);
-                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                share_earn2(10);
-                ///Reward Share
-                retype = "s";
-
-                ///Reward Share
-
-            } else {
-                //  Toast.makeText(getApplicationContext(), "share and earns", Toast.LENGTH_SHORT).show();
-            }
+        } else {
+            //  Toast.makeText(getApplicationContext(), "share and earns", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
+        if (handler != null) handler.removeCallbacks(my_runnable);
         focus.stop();
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
@@ -4146,10 +3172,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             //      newhelper2.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
         }
 
-        //pauseGame();
 
-
-        // uiHelper.onPause();
         try {
             t1.cancel();
             th.cancel();
@@ -4163,92 +3186,64 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        //   uiHelper.onDestroy();
-        if (openDialog_p != null && openDialog_p.isShowing()) {
-            openDialog_p.dismiss();
-        }
+        if (openDialog_p != null && openDialog_p.isShowing()) openDialog_p.dismiss();
+        if (mProgressDialog != null && mProgressDialog.isShowing()) mProgressDialog.dismiss();
+        rewardedAd = null;
+        mInterstitialAd = null;
+        handler = null;
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //mGoogleApiClient.connect();
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-    }
     public void nextgamesdialog() {
         final Dialog openDialog = new Dialog(Ote_to_Tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.nextgame_find);
-        TextView next_game = (TextView) openDialog.findViewById(R.id.next_game);
-        TextView p_game = (TextView) openDialog.findViewById(R.id.picgame);
-        TextView c_game = (TextView) openDialog.findViewById(R.id.hintgame);
-        TextView s_game = (TextView) openDialog.findViewById(R.id.solgame);
-        TextView w_game = (TextView) openDialog.findViewById(R.id.wordgame);
+        TextView next_game = openDialog.findViewById(R.id.next_game);
+        TextView p_game = openDialog.findViewById(R.id.picgame);
+        TextView c_game = openDialog.findViewById(R.id.hintgame);
+        TextView s_game = openDialog.findViewById(R.id.solgame);
+        TextView w_game = openDialog.findViewById(R.id.wordgame);
 
-        TextView exit = (TextView) openDialog.findViewById(R.id.exit);
+        TextView exit = openDialog.findViewById(R.id.exit);
 
         String date = sps.getString(Ote_to_Tamil.this, "date");
-        if (date.equals("0")) {
+        if (date.equals("0"))
             next_game.setText("பிறமொழி சொற்கள்  தற்போதைய நிலைகள் முடிவடைந்துவிட்டது தங்களுக்கான புதிய நிலைகள் விரைவில் இணைக்கப்படும்.மேலும் நீங்கள் சிறப்பாக விளையாட  காத்திருக்கும் விளையாட்டுக்கள்.");
-        } else {
+        else
             next_game.setText("தினசரி பிறமொழி சொற்கள்  புதிய  பதிவுகள் இல்லை. மேலும் நீங்கள்  சிறப்பாக விளையாட காத்திருக்கும்  விளையாட்டுக்கள்.");
-        }
         openDialog.setCancelable(false);
-        c_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Ote_to_Tamil.class);
-                startActivity(i);
-            }
+        c_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Ote_to_Tamil.class);
+            startActivity(i);
         });
-        s_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Solukul_Sol.class);
-                startActivity(i);
-            }
+        s_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Solukul_Sol.class);
+            startActivity(i);
         });
-        w_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Word_Game_Hard.class);
-                startActivity(i);
-            }
+        w_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Word_Game_Hard.class);
+            startActivity(i);
         });
-        p_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Picture_Game_Hard.class);
-                startActivity(i);
-            }
+        p_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Picture_Game_Hard.class);
+            startActivity(i);
         });
-        exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (main_act.equals("")) {
-                    finish();
-                    Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else {
-                    sps.putString(Ote_to_Tamil.this, "game_area", "on");
-                    finish();
-                }
-                sps.putString(Ote_to_Tamil.this, "date", "0");
+        exit.setOnClickListener(v -> {
+            if (main_act.equals("")) {
+                finish();
+                Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
+                startActivity(i);
+            } else {
+                sps.putString(Ote_to_Tamil.this, "game_area", "on");
+                finish();
             }
+            sps.putString(Ote_to_Tamil.this, "date", "0");
         });
 
         Cursor ct;
@@ -4258,52 +3253,38 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             Cursor c;
             c = myDbHelper.getQry("select * from maintable where gameid='1' and isfinish='0' order by id limit 1");
             c.moveToFirst();
-            if (c.getCount() != 0) {
-                p_game.setVisibility(View.VISIBLE);
-            }
+            if (c.getCount() != 0) p_game.setVisibility(View.VISIBLE);
             Cursor c2;
             c2 = myDbHelper.getQry("select * from maintable where gameid='3' and isfinish='0' order by id limit 1");
             c2.moveToFirst();
-            if (c2.getCount() != 0) {
-                s_game.setVisibility(View.VISIBLE);
-            }
+            if (c2.getCount() != 0) s_game.setVisibility(View.VISIBLE);
             Cursor c3;
             c3 = myDbHelper.getQry("select * from maintable where gameid='4' and isfinish='0' order by id limit 1");
             c3.moveToFirst();
-            if (c3.getCount() != 0) {
-                w_game.setVisibility(View.VISIBLE);
-            }
+            if (c3.getCount() != 0) w_game.setVisibility(View.VISIBLE);
             Cursor c4;
             c4 = myDbHelper.getQry("select * from maintable where gameid='2' and isfinish='0' order by id limit 1");
             c4.moveToFirst();
-            if (c4.getCount() != 0) {
-                c_game.setVisibility(View.VISIBLE);
-            }
+            if (c4.getCount() != 0) c_game.setVisibility(View.VISIBLE);
         } else {
             next_game.setText("புதிய பதிவுகள் ஏதும் இல்லை.விரைவில் வினாக்கள் பதிவேற்றம் செய்யப்படும்.");
             exit.setText("சரி ");
             exit.setVisibility(View.VISIBLE);
         }
 
-        TextView odd_man_out = (TextView) openDialog.findViewById(R.id.odd_man_out);
-        TextView matchword = (TextView) openDialog.findViewById(R.id.matchword);
-        matchword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Match_Word.class);
-                startActivity(i);
-            }
+        TextView odd_man_out = openDialog.findViewById(R.id.odd_man_out);
+        TextView matchword = openDialog.findViewById(R.id.matchword);
+        matchword.setOnClickListener(view -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Match_Word.class);
+            startActivity(i);
         });
-        odd_man_out.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Odd_man_out.class);
-                startActivity(i);
-            }
+        odd_man_out.setOnClickListener(view -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Odd_man_out.class);
+            startActivity(i);
         });
 
 
@@ -4314,36 +3295,26 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             Cursor sc;
             sc = newhelper.getQry("select * from newmaintable where gameid='5' and isfinish='0' order by id limit 1");
             sc.moveToFirst();
-            if (sc.getCount() != 0) {
-                odd_man_out.setVisibility(View.VISIBLE);
-            }
+            if (sc.getCount() != 0) odd_man_out.setVisibility(View.VISIBLE);
             Cursor scs;
             scs = newhelper.getQry("select * from newmaintable where gameid='6' and isfinish='0' order by id limit 1");
             scs.moveToFirst();
-            if (scs.getCount() != 0) {
-                matchword.setVisibility(View.VISIBLE);
-            }
+            if (scs.getCount() != 0) matchword.setVisibility(View.VISIBLE);
         }
 
-        TextView opposite_word = (TextView) openDialog.findViewById(R.id.opposite_word);
-        TextView ote_to_tamil = (TextView) openDialog.findViewById(R.id.ote_to_tamil);
-        opposite_word.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Opposite_word.class);
-                startActivity(i);
-            }
+        TextView opposite_word = openDialog.findViewById(R.id.opposite_word);
+        TextView ote_to_tamil = openDialog.findViewById(R.id.ote_to_tamil);
+        opposite_word.setOnClickListener(view -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Opposite_word.class);
+            startActivity(i);
         });
-        ote_to_tamil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Ote_to_Tamil.class);
-                startActivity(i);
-            }
+        ote_to_tamil.setOnClickListener(view -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Ote_to_Tamil.class);
+            startActivity(i);
         });
 
         Cursor ctd;
@@ -4353,21 +3324,17 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             Cursor scd;
             scd = newhelper2.getQry("select * from newmaintable2 where gameid='7' and isfinish='0' order by id limit 1");
             scd.moveToFirst();
-            if (scd.getCount() != 0) {
-                opposite_word.setVisibility(View.VISIBLE);
-            }
+            if (scd.getCount() != 0) opposite_word.setVisibility(View.VISIBLE);
             Cursor scdd;
             scdd = newhelper2.getQry("select * from newmaintable2 where gameid='8' and isfinish='0' order by id limit 1");
             scdd.moveToFirst();
-            if (scdd.getCount() != 0) {
-                ote_to_tamil.setVisibility(View.VISIBLE);
-            }
+            if (scdd.getCount() != 0) ote_to_tamil.setVisibility(View.VISIBLE);
         }
 
-        TextView seerpaduthu = (TextView) openDialog.findViewById(R.id.seerpaduthu);
-        TextView puthir = (TextView) openDialog.findViewById(R.id.puthir);
-        TextView tirukural = (TextView) openDialog.findViewById(R.id.tirukural);
-        TextView pilaithiruthu = (TextView) openDialog.findViewById(R.id.pilaithiruthu);
+        TextView seerpaduthu = openDialog.findViewById(R.id.seerpaduthu);
+        TextView puthir = openDialog.findViewById(R.id.puthir);
+        TextView tirukural = openDialog.findViewById(R.id.tirukural);
+        TextView pilaithiruthu = openDialog.findViewById(R.id.pilaithiruthu);
 
         Cursor ctds;
         ctds = newhelper3.getQry("select * from right_order where isfinish='0' order by id limit 1");
@@ -4376,233 +3343,158 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             Cursor scds;
             scds = newhelper3.getQry("select * from right_order where gameid='9' and isfinish='0' order by id limit 1");
             scds.moveToFirst();
-            if (scds.getCount() != 0) {
-                seerpaduthu.setVisibility(View.VISIBLE);
-            }
+            if (scds.getCount() != 0) seerpaduthu.setVisibility(View.VISIBLE);
             Cursor scdds;
             scdds = newhelper3.getQry("select * from right_order where gameid='10' and isfinish='0' order by id limit 1");
             scdds.moveToFirst();
-            if (scdds.getCount() != 0) {
-                puthir.setVisibility(View.VISIBLE);
-            }
+            if (scdds.getCount() != 0) puthir.setVisibility(View.VISIBLE);
 
             Cursor c3s;
             c3s = newhelper3.getQry("select * from right_order where gameid='11' and isfinish='0' order by id limit 1");
             c3s.moveToFirst();
-            if (c3s.getCount() != 0) {
-                pilaithiruthu.setVisibility(View.VISIBLE);
-            }
+            if (c3s.getCount() != 0) pilaithiruthu.setVisibility(View.VISIBLE);
             Cursor c4s;
             c4s = newhelper3.getQry("select * from right_order where gameid='12' and isfinish='0' order by id limit 1");
             c4s.moveToFirst();
-            if (c4s.getCount() != 0) {
-                tirukural.setVisibility(View.VISIBLE);
-            }
+            if (c4s.getCount() != 0) tirukural.setVisibility(View.VISIBLE);
         }
 
 
-        seerpaduthu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Makeword_Rightorder.class);
-                startActivity(i);
-            }
+        seerpaduthu.setOnClickListener(view -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Makeword_Rightorder.class);
+            startActivity(i);
         });
-        puthir.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Riddle_game.class);
-                startActivity(i);
-            }
+        puthir.setOnClickListener(view -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Riddle_game.class);
+            startActivity(i);
         });
-        tirukural.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Tirukural.class);
-                startActivity(i);
-            }
+        tirukural.setOnClickListener(view -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Tirukural.class);
+            startActivity(i);
         });
-        pilaithiruthu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, WordError_correction.class);
-                startActivity(i);
-            }
+        pilaithiruthu.setOnClickListener(view -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, WordError_correction.class);
+            startActivity(i);
         });
 
 
-        TextView fill_in_blanks = (TextView) openDialog.findViewById(R.id.fill_in_blanks);
-        TextView eng_to_tamil = (TextView) openDialog.findViewById(R.id.eng_to_tamil);
+        TextView fill_in_blanks = openDialog.findViewById(R.id.fill_in_blanks);
+        TextView eng_to_tamil = openDialog.findViewById(R.id.eng_to_tamil);
 
         Cursor scds;
         scds = newhelper4.getQry("select * from newgamesdb4 where gameid='13' and isfinish='0' order by id limit 1");
         scds.moveToFirst();
-        if (scds.getCount() != 0) {
-            fill_in_blanks.setVisibility(View.VISIBLE);
-        }
+        if (scds.getCount() != 0) fill_in_blanks.setVisibility(View.VISIBLE);
 
         Cursor scdss;
         scdss = newhelper4.getQry("select * from newgamesdb4 where gameid='14' and isfinish='0' order by id limit 1");
         scdss.moveToFirst();
-        if (scdss.getCount() != 0) {
-            eng_to_tamil.setVisibility(View.VISIBLE);
-        }
+        if (scdss.getCount() != 0) eng_to_tamil.setVisibility(View.VISIBLE);
 
-        fill_in_blanks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Fill_in_blanks.class);
-                startActivity(i);
-            }
-        });
-
-        eng_to_tamil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, English_to_tamil.class);
-                startActivity(i);
-            }
+        fill_in_blanks.setOnClickListener(v -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Fill_in_blanks.class);
+            startActivity(i);
         });
 
 
-        TextView quiz = (TextView) openDialog.findViewById(R.id.quiz);
-        TextView find_words_from_pictures = (TextView) openDialog.findViewById(R.id.find_words_from_pictures);
-        TextView match_words = (TextView) openDialog.findViewById(R.id.match_words);
+        TextView quiz = openDialog.findViewById(R.id.quiz);
+        TextView find_words_from_pictures = openDialog.findViewById(R.id.find_words_from_pictures);
+        TextView match_words = openDialog.findViewById(R.id.match_words);
         Newgame_DataBaseHelper5 newhelper5 = new Newgame_DataBaseHelper5(context);
         Cursor cn28ws = newhelper5.getQry("select * from newgames5 where gameid='15' and isfinish='0'");
         cn28ws.moveToFirst();
-        if (cn28ws.getCount() != 0) {
-            match_words.setVisibility(View.VISIBLE);
-        }
+        if (cn28ws.getCount() != 0) match_words.setVisibility(View.VISIBLE);
         Cursor cn27ws = newhelper5.getQry("select * from newgames5 where gameid='16' and isfinish='0'");
         cn27ws.moveToFirst();
-        if (cn27ws.getCount() != 0) {
-            find_words_from_pictures.setVisibility(View.VISIBLE);
-        }
+        if (cn27ws.getCount() != 0) find_words_from_pictures.setVisibility(View.VISIBLE);
 
         Cursor cn22 = newhelper5.getQry("select * from newgames5 where gameid='17' and isfinish='0'");
         cn22.moveToFirst();
-        if (cn22.getCount() != 0) {
-            quiz.setVisibility(View.VISIBLE);
-        }
+        if (cn22.getCount() != 0) quiz.setVisibility(View.VISIBLE);
 
-        match_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Match_tha_fallows_game.class);
-                startActivity(i);
+        match_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Match_tha_fallows_game.class);
+            startActivity(i);
 
-            }
         });
-        find_words_from_pictures.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Find_words_from_picture.class);
-                startActivity(i);
-            }
+        find_words_from_pictures.setOnClickListener(v -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Find_words_from_picture.class);
+            startActivity(i);
         });
-        quiz.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Quiz_Game.class);
-                startActivity(i);
-            }
+        quiz.setOnClickListener(v -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Quiz_Game.class);
+            startActivity(i);
         });
 
         Newgame_DataBaseHelper6 newhelper6 = new Newgame_DataBaseHelper6(Ote_to_Tamil.this);
-        TextView jamble_words = (TextView) openDialog.findViewById(R.id.jamble_words);
+        TextView jamble_words = openDialog.findViewById(R.id.jamble_words);
         Cursor jmp;
         jmp = newhelper6.getQry("select * from newgames5 where gameid='18' and isfinish='0' order by id limit 1");
         jmp.moveToFirst();
-        if (jmp.getCount() != 0) {
-            jamble_words.setVisibility(View.VISIBLE);
-        }
+        if (jmp.getCount() != 0) jamble_words.setVisibility(View.VISIBLE);
 
-        jamble_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Jamble_word_game.class);
-                startActivity(i);
-            }
+        jamble_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Jamble_word_game.class);
+            startActivity(i);
         });
-        TextView missing_words = (TextView) openDialog.findViewById(R.id.missing_words);
+        TextView missing_words = openDialog.findViewById(R.id.missing_words);
         Cursor jmps;
         jmps = newhelper6.getQry("select * from newgames5 where gameid='19' and isfinish='0' order by id limit 1");
         jmps.moveToFirst();
-        if (jmps.getCount() != 0) {
-            missing_words.setVisibility(View.VISIBLE);
-        }
-        missing_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Missing_Words.class);
-                startActivity(i);
-            }
+        if (jmps.getCount() != 0) missing_words.setVisibility(View.VISIBLE);
+        missing_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Missing_Words.class);
+            startActivity(i);
         });
-        TextView six_differences = (TextView) openDialog.findViewById(R.id.six_differences);
+        TextView six_differences = openDialog.findViewById(R.id.six_differences);
         Cursor dif;
         dif = newhelper6.getQry("select * from newgames5 where gameid='20' and isfinish='0' order by id limit 1");
         dif.moveToFirst();
-        if (dif.getCount() != 0) {
-            six_differences.setVisibility(View.VISIBLE);
-        }
-        six_differences.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-                Intent i = new Intent(Ote_to_Tamil.this, Find_difference_between_pictures.class);
-                startActivity(i);
-            }
+        if (dif.getCount() != 0) six_differences.setVisibility(View.VISIBLE);
+        six_differences.setOnClickListener(v -> {
+            finish();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+            Intent i = new Intent(Ote_to_Tamil.this, Find_difference_between_pictures.class);
+            startActivity(i);
         });
         openDialog.show();
-        openDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+        openDialog.setOnKeyListener((dialog, keyCode, event) -> {
 
-                if (main_act.equals("")) {
+            if (main_act.equals("")) {
 
-                    finish();
-                    //openDialog_s.dismiss();
-                    Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else {
-                    sps.putString(Ote_to_Tamil.this, "game_area", "on");
-                    finish();
-                }
-                openDialog.dismiss();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
-
-
-               /* finish();
-                openDialog.dismiss();
-                sps.putString(Ote_to_Tamil.this, "date", "0");
+                finish();
+                //openDialog_s.dismiss();
                 Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                startActivity(i);*/
-                return keyCode == KeyEvent.KEYCODE_BACK;
+                startActivity(i);
+            } else {
+                sps.putString(Ote_to_Tamil.this, "game_area", "on");
+                finish();
             }
+            openDialog.dismiss();
+            sps.putString(Ote_to_Tamil.this, "date", "0");
+
+
+            return keyCode == KeyEvent.KEYCODE_BACK;
         });
 
     }
@@ -4611,53 +3503,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 150) {
-
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                sps.putInt(Ote_to_Tamil.this, "permission", 1);
-                downloaddata_daily();
-            } else {
-                if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                    boolean showRationale = shouldShowRequestPermissionRationale(permissions[0]);
-                    if (!showRationale) {
-                        sps.putInt(Ote_to_Tamil.this, "permission", 2);
-                        finish();
-                        Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                        startActivity(i);
-                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
-                        sps.putInt(Ote_to_Tamil.this, "permission", 0);
-                        finish();
-                        Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                        startActivity(i);
-                    }
-                }
-            }
-
-        }
-        if (requestCode == 151) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                sps.putInt(Ote_to_Tamil.this, "permission", 1);
-                downloaddata_regular();
-            } else {
-                if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                    boolean showRationale = shouldShowRequestPermissionRationale(permissions[0]);
-                    if (!showRationale) {
-                        sps.putInt(Ote_to_Tamil.this, "permission", 2);
-                        finish();
-                        Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                        startActivity(i);
-                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
-                        sps.putInt(Ote_to_Tamil.this, "permission", 0);
-                        finish();
-                        Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                        startActivity(i);
-                    }
-                }
-            }
-        }
-
-        if (requestCode == 152) {
-
+        if (requestCode == 152)
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 sps.putInt(Ote_to_Tamil.this, "permission", 1);
                 if (share_name == 1) {
@@ -4670,18 +3516,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                     String a = "com.google.android.apps.plus";
                     helpshare(a);
                 }
-            } else {
-                if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                    boolean showRationale = shouldShowRequestPermissionRationale(permissions[0]);
-                    if (!showRationale) {
-                        sps.putInt(Ote_to_Tamil.this, "permission", 2);
-                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
-                        sps.putInt(Ote_to_Tamil.this, "permission", 0);
-                    }
-                }
             }
-
-        }
     }
 
     private void addCoins(int coins) {
@@ -4707,8 +3542,8 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             openDialog.setContentView(R.layout.share_dialog2);
             openDialog.setCancelable(false);
             // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-            TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-            TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+            TextView ok_y = openDialog.findViewById(R.id.ok_y);
+            TextView b_scores = openDialog.findViewById(R.id.b_scores);
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
@@ -4718,13 +3553,10 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
 
             b_scores.setText("" + mCoinCount);
-            ok_y.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    score.setText("" + skx);
-                    openDialog.dismiss();
-                    //mCoinCount = 0;
-                }
+            ok_y.setOnClickListener(v -> {
+                score.setText("" + skx);
+                openDialog.dismiss();
+                //mCoinCount = 0;
             });
 
             openDialog.show();
@@ -4740,24 +3572,19 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         openDialog.setContentView(R.layout.share_dialog2);
         openDialog.setCancelable(false);
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView b_scores = openDialog.findViewById(R.id.b_scores);
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-/*        int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                score.setText("" + skx);
-                openDialog.dismiss();
-                //mCoinCount = 0;
-            }
+        ok_y.setOnClickListener(v -> {
+            score.setText("" + skx);
+            openDialog.dismiss();
+            //mCoinCount = 0;
         });
 
         openDialog.show();
@@ -4768,25 +3595,20 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         openDialog.setContentView(R.layout.share_dialog2);
         openDialog.setCancelable(false);
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView b_scores = openDialog.findViewById(R.id.b_scores);
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-/*        int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ttscores.setText("" + skx);
-                score.setText("" + skx);
-                openDialog.dismiss();
-                //mCoinCount = 0;
-            }
+        ok_y.setOnClickListener(v -> {
+            ttscores.setText("" + skx);
+            score.setText("" + skx);
+            openDialog.dismiss();
+            //mCoinCount = 0;
         });
 
         openDialog.show();
@@ -4802,59 +3624,31 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             System.out.print("Count====" + c1.getCount());
 
 
-            if (c1.getCount() != 0) {
-
-
-                //c1.getString(c1.getColumnIndexOrThrow("id"));
-
+            //c1.getString(c1.getColumnIndexOrThrow("id"));
+            if (c1.getCount() != 0)
                 System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
-
-
-            } else {
-                System.out.print("else====");
-
-
-            }
+            else System.out.print("else====");
 
 
         } else {
-            NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-            native_banner_ad_container.setVisibility(View.INVISIBLE);
+
             w_head.setVisibility(View.INVISIBLE);
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Ote_to_Tamil.this);
             alertDialogBuilder.setCancelable(false);
             alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
-                    .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // continue with delete
-                                           /* try {
-                                                startActivityForResult(new Intent(
-                                                        Settings.ACTION_WIRELESS_SETTINGS), 0);
-
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                                startActivityForResult(new Intent(
-                                                        Settings.ACTION_SETTINGS), 0);
-                                            }*/
-                            startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                            sps.putInt(Ote_to_Tamil.this, "goto_sett", 1);
-                            dialog.dismiss();
-                        }
+                    .setPositiveButton("அமைப்பு", (dialog, which) -> {
+                        // continue with delete
+                        startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                        sps.putInt(Ote_to_Tamil.this, "goto_sett", 1);
+                        dialog.dismiss();
                     })
-                    .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
+                    .setNegativeButton("பின்னர்", (dialog, which) -> {
+                        // do nothing
 
-                            String date = sps.getString(Ote_to_Tamil.this, "date");
-                            if (date.equals("0")) {
-                                backexitnet();
-                            } else {
-                                backexitnet();
-                            }
-                       /*     Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                            startActivity(i);*/
-                            dialog.dismiss();
-                        }
+                        String date = sps.getString(Ote_to_Tamil.this, "date");
+                        if (date.equals("0")) backexitnet();
+                        else backexitnet();
+                        dialog.dismiss();
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
@@ -4863,80 +3657,60 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     }
 
     public void downloaddata_regular() {
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-        native_banner_ad_container.setVisibility(View.INVISIBLE);
+
         w_head.setVisibility(View.INVISIBLE);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Ote_to_Tamil.this);
         // alertDialogBuilder.setTitle("Update available");
         alertDialogBuilder.setMessage("மேலும் விளையாட வினாக்களை பதிவிறக்கம் செய்ய விரும்புகிறீர்களா ?");
         alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setNegativeButton("ஆம்", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //DownLoad Letters and Words
+        alertDialogBuilder.setNegativeButton("ஆம்", (dialog, id) -> {
+            //DownLoad Letters and Words
 
 
-                if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
-                    Cursor c1 = newhelper2.getQry("select id from newmaintable2 order by id DESC");
-                    c1.moveToFirst();
+            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
+                Cursor c1 = newhelper2.getQry("select id from newmaintable2 order by id DESC");
+                c1.moveToFirst();
 
 
-                    System.out.print("Count====" + c1.getCount());
+                System.out.print("Count====" + c1.getCount());
 
 
-                    if (c1.getCount() != 0) {
+                //c1.getString(c1.getColumnIndexOrThrow("id"));
+                if (c1.getCount() != 0)
+                    System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
+                else {
 
-
-                        //c1.getString(c1.getColumnIndexOrThrow("id"));
-
-                        System.out.print("Last ID====" + c1.getString(c1.getColumnIndexOrThrow("id")));
-
-
-                    } else {
-
-                    }
-                } else {
-                    NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-                    native_banner_ad_container.setVisibility(View.INVISIBLE);
-                    w_head.setVisibility(View.INVISIBLE);
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Ote_to_Tamil.this);
-                    alertDialogBuilder.setCancelable(false);
-                    alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
-                            .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // continue with delete
-                                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                                    sps.putInt(Ote_to_Tamil.this, "goto_sett", 1);
-                                    dialog.dismiss();
-                                }
-                            })
-                            .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // do nothing
-                                    sps.putString(Ote_to_Tamil.this, "game_area", "on");
-                                    String date = sps.getString(Ote_to_Tamil.this, "date");
-                                    if (date.equals("0")) {
-                                        backexitnet();
-                                    } else {
-                                        backexitnet();
-                                    }
-                               /*     Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                                    startActivity(i);*/
-                                    dialog.dismiss();
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
                 }
+            } else {
 
+                w_head.setVisibility(View.INVISIBLE);
+                AlertDialog.Builder alertDialogBuilder1 = new AlertDialog.Builder(Ote_to_Tamil.this);
+                alertDialogBuilder1.setCancelable(false);
+                alertDialogBuilder1.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
+                        .setPositiveButton("அமைப்பு", (dialog12, which) -> {
+                            // continue with delete
+                            startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                            sps.putInt(Ote_to_Tamil.this, "goto_sett", 1);
+                            dialog12.dismiss();
+                        })
+                        .setNegativeButton("பின்னர்", (dialog1, which) -> {
+                            // do nothing
+                            sps.putString(Ote_to_Tamil.this, "game_area", "on");
+                            String date = sps.getString(Ote_to_Tamil.this, "date");
+                            if (date.equals("0")) backexitnet();
+                            else backexitnet();
+                            dialog1.dismiss();
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
             }
+
         });
-        alertDialogBuilder.setPositiveButton("இல்லை ", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                sps.putString(Ote_to_Tamil.this, "game_area", "on");
-                Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                startActivity(i);
-                finish();
-            }
+        alertDialogBuilder.setPositiveButton("இல்லை ", (dialog, id) -> {
+            sps.putString(Ote_to_Tamil.this, "game_area", "on");
+            Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
+            startActivity(i);
+            finish();
         });
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
@@ -4960,181 +3734,72 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
             //      newhelper2.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
         }
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if ((ContextCompat.checkSelfPermission(Ote_to_Tamil.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                helpshare(a);
-            } else {
-                if (sps.getString(Ote_to_Tamil.this, "permission_grand").equals("")) {
-                    sps.putString(Ote_to_Tamil.this, "permission_grand", "yes");
-                    //  First_register("yes");
-                    AlertDialog alertDialog = new AlertDialog.Builder(Ote_to_Tamil.this).create();
-                    alertDialog.setMessage("இந்த நிலையை உங்களது நண்பருக்கு பகிர  பின்வரும் permission-யை  allow செய்யவேண்டும்");
-                    alertDialog.setCancelable(false);
-                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    if ((ContextCompat.checkSelfPermission(Ote_to_Tamil.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                        ActivityCompat.requestPermissions(Ote_to_Tamil.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                                    } else {
-                                        helpshare(a);
-                                    }
-                                }
-                            });
-
-                    alertDialog.show();
-
-                } else {
-                    if ((ContextCompat.checkSelfPermission(Ote_to_Tamil.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                        if (sps.getInt(Ote_to_Tamil.this, "permission") == 2) {
-                            AlertDialog alertDialog = new AlertDialog.Builder(Ote_to_Tamil.this).create();
-                            alertDialog.setMessage("இந்த நிலையை உங்களது நண்பருக்கு பகிர settingsல் உள்ள permission-யை allow செய்யவேண்டும்");
-                            alertDialog.setCancelable(false);
-                            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                            Intent intent = new Intent();
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                            Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                            intent.setData(uri);
-                                            getApplicationContext().startActivity(intent);
-                                        }
-                                    });
-
-                            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-
-
-                                            if (sps.getString(Ote_to_Tamil.this, "resume_c_ote").equals("")) {
-                                                sps.putString(Ote_to_Tamil.this, "resume_c_ote", "yes");
-
-                                            } else {
-                                                String date = sps.getString(Ote_to_Tamil.this, "date");
-                                                int pos;
-                                                Cursor cs;
-                                                long dscore = 0;
-                                                int noofclue = 0;
-                                                if (date.equals("0")) {
-                                                    pos = 1;
-                                                    cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + w_id + "'");
-                                                    cs.moveToFirst();
-                                                    if (cs.getCount() != 0) {
-                                                        dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-                                                    }
-                                                } else {
-                                                    pos = 2;
-                                                    cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + w_id + "' and daily='0'");
-                                                    cs.moveToFirst();
-                                                    if (cs.getCount() != 0) {
-
-                                                        dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-                                                        //                   noofclue=cs.getInt(cs.getColumnIndexOrThrow("noclue"));
-                                                    }
-                                                }
-
-                                                //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
-
-                                                focus.setBase(SystemClock.elapsedRealtime() + dscore);
-                                                focus.start();
-                                            }
-                                            dialog.dismiss();
-                                        }
-                                    });
-
-
-                            alertDialog.show();
-                        } else {
-                            if ((ContextCompat.checkSelfPermission(Ote_to_Tamil.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                ActivityCompat.requestPermissions(Ote_to_Tamil.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                            } else {
-                                helpshare(a);
-                            }
-                        }
-                    } else {
-                        if ((ContextCompat.checkSelfPermission(Ote_to_Tamil.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                            ActivityCompat.requestPermissions(Ote_to_Tamil.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                        } else {
-                            helpshare(a);
-                        }
-                    }
-
-                }
-            }
-
-        } else {
-            helpshare(a);
-        }*/
         helpshare(a);
     }
 
     public void ins_app(final Context context, View view1, int vall) {
-        TextView titt = (TextView) view1.findViewById(R.id.txtlist);
-        ImageView logo = (ImageView) view1.findViewById(R.id.imageview);
-        final Button inss = (Button) view1.findViewById(R.id.btn_cont);
-        if (vall == 1 || vall == 0) {
-            if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
-                titt.setText("நித்ரா தமிழ் நாட்காட்டி");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.calender_logo);
-            } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
-                titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
-                inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.dic_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
-                titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.vivasayam_logo);
-            } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
-                titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.samayal_logo);
-            } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
-                titt.setText("நித்ராவின் வேலைவாய்ப்புகள்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.jobs_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
-                titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.crossword_logo);
-            } else {
-                titt.setText("நித்ரா  செயலிகள்");
-                inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
-                logo.setImageResource(R.drawable.nithralogo);
-            }
-        } else if (vall == 2) {
-            if (!appInstalledOrNot(context, "com.bharathdictionary")) {
-                titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
-                inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.dic_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
-                titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.vivasayam_logo);
-            } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
-                titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.samayal_logo);
-            } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
-                titt.setText("நித்ராவின் வேலைவாய்ப்புகள்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.jobs_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
-                titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.crossword_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
-                titt.setText("நித்ரா தமிழ் நாட்காட்டி");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.calender_logo);
-            } else {
-                titt.setText("நித்ரா  செயலிகள்");
-                inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
-                logo.setImageResource(R.drawable.nithralogo);
-            }
-        } else if (vall == 3) {
+        TextView titt = view1.findViewById(R.id.txtlist);
+        ImageView logo = view1.findViewById(R.id.imageview);
+        final Button inss = view1.findViewById(R.id.btn_cont);
+        if (vall == 1 || vall == 0) if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
+            titt.setText("நித்ரா தமிழ் நாட்காட்டி");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.calender_logo);
+        } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
+            titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
+            inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.dic_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
+            titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.vivasayam_logo);
+        } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
+            titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.samayal_logo);
+        } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
+            titt.setText("நித்ராவின் வேலைவாய்ப்புகள்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.jobs_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
+            titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.crossword_logo);
+        } else {
+            titt.setText("நித்ரா  செயலிகள்");
+            inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
+            logo.setImageResource(R.drawable.nithralogo);
+        }
+        else if (vall == 2) if (!appInstalledOrNot(context, "com.bharathdictionary")) {
+            titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
+            inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.dic_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
+            titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.vivasayam_logo);
+        } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
+            titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.samayal_logo);
+        } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
+            titt.setText("நித்ராவின் வேலைவாய்ப்புகள்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.jobs_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
+            titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.crossword_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
+            titt.setText("நித்ரா தமிழ் நாட்காட்டி");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.calender_logo);
+        } else {
+            titt.setText("நித்ரா  செயலிகள்");
+            inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
+            logo.setImageResource(R.drawable.nithralogo);
+        }
+        else if (vall == 3)
             if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
                 titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
                 inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
@@ -5164,148 +3829,133 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                 inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
                 logo.setImageResource(R.drawable.nithralogo);
             }
-        } else if (vall == 4) {
-            if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
-                titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.samayal_logo);
-            } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
-                titt.setText("நித்ராவின் வேலைவாய்ப்புகள்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.jobs_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
-                titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.crossword_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
-                titt.setText("நித்ரா தமிழ் நாட்காட்டி");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.calender_logo);
-            } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
-                titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
-                inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.dic_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
-                titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.vivasayam_logo);
-            } else {
-                titt.setText("நித்ரா  செயலிகள்");
-                inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
-                logo.setImageResource(R.drawable.nithralogo);
-            }
-        } else if (vall == 5) {
-            if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
-                titt.setText("நித்ராவின் வேலைவாய்ப்புகள்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.jobs_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
-                titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.crossword_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
-                titt.setText("நித்ரா தமிழ் நாட்காட்டி");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.calender_logo);
-            } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
-                titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
-                inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.dic_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
-                titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.vivasayam_logo);
-            } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
-                titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.samayal_logo);
-            } else {
-                titt.setText("நித்ரா  செயலிகள்");
-                inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
-                logo.setImageResource(R.drawable.nithralogo);
-            }
-        } else if (vall == 6) {
-            if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
-                titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.crossword_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
-                titt.setText("நித்ரா தமிழ் நாட்காட்டி");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.calender_logo);
-            } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
-                titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
-                inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.dic_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
-                titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.vivasayam_logo);
-            } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
-                titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.samayal_logo);
-            } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
-                titt.setText("நித்ராவின் வேலைவாய்ப்புகள்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.jobs_logo);
-            } else {
-                titt.setText("நித்ரா  செயலிகள்");
-                inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
-                logo.setImageResource(R.drawable.nithralogo);
-            }
+        else if (vall == 4) if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
+            titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.samayal_logo);
+        } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
+            titt.setText("நித்ராவின் வேலைவாய்ப்புகள்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.jobs_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
+            titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.crossword_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
+            titt.setText("நித்ரா தமிழ் நாட்காட்டி");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.calender_logo);
+        } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
+            titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
+            inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.dic_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
+            titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.vivasayam_logo);
         } else {
-            if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
-                titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.crossword_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
-                titt.setText("நித்ரா தமிழ் நாட்காட்டி");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.calender_logo);
-            } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
-                titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
-                inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.dic_logo);
-            } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
-                titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.vivasayam_logo);
-            } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
-                titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.samayal_logo);
-            } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
-                titt.setText("நித்ராவின் வேலைவாய்ப்புகள்");
-                inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
-                logo.setImageResource(R.drawable.jobs_logo);
-            } else {
-                titt.setText("நித்ரா  செயலிகள்");
-                inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
-                logo.setImageResource(R.drawable.nithralogo);
-            }
+            titt.setText("நித்ரா  செயலிகள்");
+            inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
+            logo.setImageResource(R.drawable.nithralogo);
+        }
+        else if (vall == 5) if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
+            titt.setText("நித்ராவின் வேலைவாய்ப்புகள்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.jobs_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
+            titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.crossword_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
+            titt.setText("நித்ரா தமிழ் நாட்காட்டி");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.calender_logo);
+        } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
+            titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
+            inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.dic_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
+            titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.vivasayam_logo);
+        } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
+            titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.samayal_logo);
+        } else {
+            titt.setText("நித்ரா  செயலிகள்");
+            inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
+            logo.setImageResource(R.drawable.nithralogo);
+        }
+        else if (vall == 6) if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
+            titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.crossword_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
+            titt.setText("நித்ரா தமிழ் நாட்காட்டி");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.calender_logo);
+        } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
+            titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
+            inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.dic_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
+            titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.vivasayam_logo);
+        } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
+            titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.samayal_logo);
+        } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
+            titt.setText("நித்ராவின் வேலைவாய்ப்புகள்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.jobs_logo);
+        } else {
+            titt.setText("நித்ரா  செயலிகள்");
+            inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
+            logo.setImageResource(R.drawable.nithralogo);
+        }
+        else if (!appInstalledOrNot(context, "nithra.tamilcrosswordpuzzle")) {
+            titt.setText("தமிழ் குறுக்கெழுத்துப்போட்டி ");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcrosswordpuzzle&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.crossword_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamilcalender")) {
+            titt.setText("நித்ரா தமிழ் நாட்காட்டி");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamilcalender&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.calender_logo);
+        } else if (!appInstalledOrNot(context, "com.bharathdictionary")) {
+            titt.setText("English to Tamil Dictionary Offline - தமிழ் அகராதி");
+            inss.setTag("https://play.google.com/store/apps/details?id=com.bharathdictionary&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.dic_logo);
+        } else if (!appInstalledOrNot(context, "nithra.tamil.vivasayam.agriculture.market")) {
+            titt.setText("நித்ரா விவசாயம், மாடித்தோட்டம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.tamil.vivasayam.agriculture.market&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.vivasayam_logo);
+        } else if (!appInstalledOrNot(context, "nithra.samayalkurippu")) {
+            titt.setText("நித்ரா சமையல் - சைவம் மற்றும் அசைவம்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.samayalkurippu&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.samayal_logo);
+        } else if (!appInstalledOrNot(context, "nithra.jobs.career.placement")) {
+            titt.setText("நித்ராவின் வேலைவாய்ப்புகள்");
+            inss.setTag("https://play.google.com/store/apps/details?id=nithra.jobs.career.placement&referrer=utm_source%3DSOLLIADI_CROSS");
+            logo.setImageResource(R.drawable.jobs_logo);
+        } else {
+            titt.setText("நித்ரா  செயலிகள்");
+            inss.setTag("https://play.google.com/store/apps/developer?id=Nithra");
+            logo.setImageResource(R.drawable.nithralogo);
         }
 
-        view1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utils.isNetworkAvailable(context)) {
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(inss.getTag().toString())));
-                } else {
-                    Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-            }
+        view1.setOnClickListener(view -> {
+            if (Utils.isNetworkAvailable(context))
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(inss.getTag().toString())));
+            else Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
         });
 
-        inss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utils.isNetworkAvailable(context)) {
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(view.getTag().toString())));
-                } else {
-                    Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-            }
+        inss.setOnClickListener(view -> {
+            if (Utils.isNetworkAvailable(context))
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(view.getTag().toString())));
+            else Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
         });
     }
 
@@ -5325,21 +3975,18 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
     //*** In ad area **
     public void showcase_dismiss() {
-        Handler handler30 = new Handler();
-        handler30.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        Handler handler30 = new Handler(Looper.myLooper());
+        handler30.postDelayed(() -> {
 
-                if (sps.getString(Ote_to_Tamil.this, "showcase_dismiss_ote").equals("")) {
-                    showcase_dismiss();
-                } else {
-                    sps.putString(Ote_to_Tamil.this, "ote_sequence example cn3", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
-
-                }
+            if (sps.getString(Ote_to_Tamil.this, "showcase_dismiss_ote").equals(""))
+                showcase_dismiss();
+            else {
+                sps.putString(Ote_to_Tamil.this, "ote_sequence example cn3", "yes");
+                focus.setBase(SystemClock.elapsedRealtime());
+                focus.start();
 
             }
+
         }, 800);
     }
 
@@ -5355,108 +4002,71 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         int sec2 = minutes * 60;
         f_sec = sec + sec2 + seconds;
         String date = sps.getString(Ote_to_Tamil.this, "date");
-        if (date.equals("0")) {
-            if (timeElapsed <= 91300) {
-                prize_data_update(Ote_to_Tamil.this, 75);
-            } else if (timeElapsed > 91300) {
-                prize_data_update(Ote_to_Tamil.this, 50);
-            } else {
-                prize_data_update(Ote_to_Tamil.this, 25);
-            }
-        } else {
-            if (timeElapsed <= 91300) {
-                prize_data_update(Ote_to_Tamil.this, 100);
-            } else if (timeElapsed > 91300) {
-                prize_data_update(Ote_to_Tamil.this, 75);
-            } else {
-                prize_data_update(Ote_to_Tamil.this, 50);
-            }
-        }
+        if (date.equals("0")) if (timeElapsed <= 91300) prize_data_update(Ote_to_Tamil.this, 75);
+        else if (timeElapsed > 91300) prize_data_update(Ote_to_Tamil.this, 50);
+        else prize_data_update(Ote_to_Tamil.this, 25);
+        else if (timeElapsed <= 91300) prize_data_update(Ote_to_Tamil.this, 100);
+        else if (timeElapsed > 91300) prize_data_update(Ote_to_Tamil.this, 75);
+        else prize_data_update(Ote_to_Tamil.this, 50);
         ////////////////Prize//////////////////
     }
 
     public void downloaddata_regular2() {
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-        native_banner_ad_container.setVisibility(View.INVISIBLE);
+
         w_head.setVisibility(View.INVISIBLE);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Ote_to_Tamil.this);
         // alertDialogBuilder.setTitle("Update available");
         alertDialogBuilder.setMessage("மேலும் விளையாட வினாக்களை பதிவிறக்கம் செய்ய விரும்புகிறீர்களா ?");
         alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setNegativeButton("ஆம்", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //DownLoad Letters and Words
+        alertDialogBuilder.setNegativeButton("ஆம்", (dialog, id) -> {
+            //DownLoad Letters and Words
 
-                if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
-                    download_datas();
-                } else {
-                    NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-                    native_banner_ad_container.setVisibility(View.INVISIBLE);
-                    w_head.setVisibility(View.INVISIBLE);
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Ote_to_Tamil.this);                           /* .setTitle("Delete entry")*/
-                    alertDialogBuilder.setCancelable(false);
-                    alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
-                            .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // continue with delete
+            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) download_datas();
+            else {
 
-                                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                                    sps.putInt(Ote_to_Tamil.this, "goto_sett", 1);
+                w_head.setVisibility(View.INVISIBLE);
+                AlertDialog.Builder alertDialogBuilder1 = new AlertDialog.Builder(Ote_to_Tamil.this);                           /* .setTitle("Delete entry")*/
+                alertDialogBuilder1.setCancelable(false);
+                alertDialogBuilder1.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
+                        .setPositiveButton("அமைப்பு", (dialog12, which) -> {
+                            // continue with delete
+
+                            startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                            sps.putInt(Ote_to_Tamil.this, "goto_sett", 1);
 
 
-                                    dialog.dismiss();
-                                }
-                            })
-                            .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // do nothing
-                                    sps.putString(Ote_to_Tamil.this, "game_area", "on");
-                                    String date = sps.getString(Ote_to_Tamil.this, "date");
-                                    if (date.equals("0")) {
-                                        if (main_act.equals("")) {
-                                            finish();
-                                            Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                                            startActivity(i);
-                                        } else {
-                                            finish();
-                                        }
-                                    } else {
-                                        if (date.equals("0")) {
-                                            backexitnet();
-                                        } else {
-                                            backexitnet();
-                                        }
-                                    }
-                                /*    Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                                    startActivity(i);*/
-                                    dialog.dismiss();
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
-                }
-
+                            dialog12.dismiss();
+                        })
+                        .setNegativeButton("பின்னர்", (dialog1, which) -> {
+                            // do nothing
+                            sps.putString(Ote_to_Tamil.this, "game_area", "on");
+                            String date = sps.getString(Ote_to_Tamil.this, "date");
+                            if (date.equals("0")) if (main_act.equals("")) {
+                                finish();
+                                Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
+                                startActivity(i);
+                            } else finish();
+                            else if (date.equals("0")) backexitnet();
+                            else backexitnet();
+                            dialog1.dismiss();
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
             }
+
         });
-        alertDialogBuilder.setPositiveButton("இல்லை ", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                /*Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                startActivity(i);*/
-                sps.putString(Ote_to_Tamil.this, "game_area", "on");
-                String date = sps.getString(Ote_to_Tamil.this, "date");
-                if (date.equals("0")) {
-                    if (main_act.equals("")) {
-                        finish();
-                        Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                        startActivity(i);
-                    } else {
-                        finish();
-                    }
-                } else {
-                    finish();
-                    Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                    startActivity(i);
-                }
+        alertDialogBuilder.setPositiveButton("இல்லை ", (dialog, id) -> {
+            sps.putString(Ote_to_Tamil.this, "game_area", "on");
+            String date = sps.getString(Ote_to_Tamil.this, "date");
+            if (date.equals("0")) if (main_act.equals("")) {
+                finish();
+                Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
+                startActivity(i);
+            } else finish();
+            else {
+                finish();
+                Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
+                startActivity(i);
             }
         });
         AlertDialog alertDialog = alertDialogBuilder.create();
@@ -5469,104 +4079,12 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         Cursor cz = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "'order by questionid desc limit 1");
         String questionid_d = "";
         cz.moveToFirst();
-        if (cz.getCount() != 0) {
+        if (cz.getCount() != 0)
             questionid_d = String.valueOf(cz.getInt(cz.getColumnIndexOrThrow("questionid")));
-        }
         System.out.println("----------------------Download_server");
         Download_data_server download_data_server = new Download_data_server(Ote_to_Tamil.this, questionid_d, "" + gameid);
         download_data_server.execute();
     }
-
-    public void rewarded_ad() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_ad();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-                rewardedAd.loadAd();
-
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                /*retryAttempt++;
-                long delayMillis = TimeUnit.SECONDS.toMillis( (long) Math.pow( 2, Math.min( 6, retryAttempt ) ) );
-
-                new Handler().postDelayed( new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        rewardedAd.loadAd();
-                    }
-                }, delayMillis );*/
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
-    }
-
 
     private enum PendingAction {
         NONE, POST_PHOTO, POST_STATUS_UPDATE

@@ -4,8 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="nithra.tamil.word.game.solliadi.Results">
-  <WebView
-      android:id="@+id/lodadurl"
-      android:layout_width="fill_parent"
-      android:layout_height="fill_parent"></WebView>
+
+    <WebView
+        android:id="@+id/lodadurl"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
 </RelativeLayout>

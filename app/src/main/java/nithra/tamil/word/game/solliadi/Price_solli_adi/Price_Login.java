@@ -13,7 +13,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -49,7 +48,7 @@ import nithra.tamil.word.game.solliadi.SharedPreference;
 import nithra.tamil.word.game.solliadi.Utils;
 
 public class Price_Login extends AppCompatActivity {
-    SharedPreference sp = new SharedPreference();
+    final SharedPreference sp = new SharedPreference();
     EditText editTextone, editTexttwo, editTextthree, editTextfour;
     TextView submit, time_limit, resend_otp, otp_txt;
     ProgressBar progress_bar;
@@ -69,7 +68,7 @@ public class Price_Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_price__login);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         //otp_screen();
         System.out.println("###########################onCreate");
         if (sp.getString(Price_Login.this, "prize_phno").equals("")) {
@@ -489,36 +488,9 @@ public class Price_Login extends AppCompatActivity {
             public void onClick(View v) {
 
                 if (Utils.isNetworkAvailable(getApplicationContext())) {
-                       /* progress_bar.setVisibility(View.VISIBLE);
-                        time_limit.setVisibility(View.VISIBLE);
-
-                        resend_otp.setVisibility(View.GONE);
-                        long minutes = 120000;
-                        myCountDownTimer = new MyCountDownTimer(minutes, 1000);
-                        myCountDownTimer.cancel();
-                        progress_bar.clearAnimation();
-                        progress_bar.setProgress(0);
-                        progress_bar.setMax(120000);
-                        myCountDownTimer.start();*/
                     verify_phno(sp.getString(Price_Login.this, "prize_phno"));
                     Toast.makeText(Price_Login.this, "மீண்டும் OTP பெற அழைப்பு அனுப்பப்பட்டது.", Toast.LENGTH_SHORT).show();
 
-                       /* myCountDownTimer.cancel();
-                        progress_bar.clearAnimation();
-                        myCountDownTimer.onFinish();
-                        time_limit.setVisibility(View.GONE);
-                        progress_bar.setVisibility(View.GONE);
-
-
-                        resend_otp.setVisibility(View.GONE);
-                        time_limit.setVisibility(View.VISIBLE);
-                        progress_bar.setVisibility(View.VISIBLE);
-                        long minutes = 120000;
-                        myCountDownTimer = new MyCountDownTimer(minutes, 1000);
-                        myCountDownTimer.cancel();
-                        progress_bar.setProgress(0);
-                        progress_bar.setMax(120000);
-                        myCountDownTimer.start();*/
                     // Toast.makeText(Price_Login.this, "உங்கள் இணைய இணைப்பை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(Price_Login.this, "உங்கள் இணைய இணைப்பை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
@@ -539,12 +511,6 @@ public class Price_Login extends AppCompatActivity {
         ed_phno.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              /*  long minutes = 0;
-                myCountDownTimer = new MyCountDownTimer(minutes, 1000);
-                progress_bar.setProgress(0);
-                time_limit.setVisibility(View.GONE);
-                progress_bar.setVisibility(View.GONE);
-                resend_otp.setVisibility(View.VISIBLE);*/
 
                 myCountDownTimer.cancel();
                 progress_bar.clearAnimation();
@@ -594,18 +560,12 @@ public class Price_Login extends AppCompatActivity {
                 }
             }
 
-          /*  Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
-            startActivity(i);*/
         }
         //finish();
-       /* Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
-        startActivity(i);*/
     }
 
     public void rule_regulation(String urls) {
         setContentView(R.layout.introsdialog_web);
- /*       final Dialog openDialog = new Dialog(Price_Login.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        openDialog.setContentView(R.layout.introsdialog_web);*/
         WebView intros = (WebView) findViewById(R.id.web_introscreen);
         TextView close = (TextView) findViewById(R.id.close);
         TextView done_exit = (TextView) findViewById(R.id.done_exit);
@@ -796,32 +756,6 @@ public class Price_Login extends AppCompatActivity {
             progress_bar.setVisibility(View.GONE);
 
             resend_otp.setVisibility(View.VISIBLE);
-          /*  if (redail_count==1)
-            {
-                timer_relay_call.setVisibility(View.VISIBLE);
-                condition_timing .setVisibility(View.VISIBLE);
-                condition_timing_text.setVisibility(View.VISIBLE);
-                condition_timing_text.setText(Html.fromHtml("* வேலை நாட்கள் மட்டும் <br> காலை 10.00 முதல் மாலை 5.00 வரை"));
-                timer_relay_call.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Uri calling = Uri.parse("tel:8760255699");
-
-                        Intent i = new Intent(Intent.ACTION_DIAL);
-                        i.setData(calling);
-                        startActivity(i);
-                    }
-                });
-            }*/
-           /* time_limit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    redail_count=1;
-                    type = "resend";
-                    phone_number = mobile_no.getText().toString();
-                    new GetContacts_user_status().execute();
-                }
-            });*/
         }
 
     }

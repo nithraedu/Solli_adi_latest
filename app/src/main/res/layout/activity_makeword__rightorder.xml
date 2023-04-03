@@ -1,515 +1,552 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".Makeword_Rightorder">
-    <RelativeLayout
-        android:layout_above="@+id/ads_lay"
-        android:id="@+id/clue_head"
 
+    <RelativeLayout
+        android:id="@+id/clue_head"
         android:layout_width="match_parent"
-        android:background="@drawable/back_next2"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ads_lay"
+        android:layout_weight="1"
+        android:background="@drawable/back_next2">
 
         <LinearLayout
-            android:background="@drawable/actionbar_back"
             android:id="@+id/time_score_board"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/wh_40">
+            android:layout_height="@dimen/wh_40"
+            android:background="@drawable/actionbar_back"
+            android:orientation="horizontal">
+
             <RelativeLayout
-                android:layout_marginTop="@dimen/lrtbp_5"
-                android:layout_marginBottom="@dimen/lrtbp_5"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:layout_marginBottom="@dimen/lrtbp_5">
+
                 <LinearLayout
                     android:id="@+id/asd"
                     android:layout_width="wrap_content"
-                    android:layout_marginTop="@dimen/wh_2"
-                    android:background="@drawable/time_background"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/lrtbp_5"
-                    android:layout_height="wrap_content">
+                    android:layout_marginTop="@dimen/wh_2"
+                    android:background="@drawable/time_background">
+
                     <ImageView
-                        android:background="@drawable/timeicon"
                         android:layout_width="@dimen/txt_25"
-                        android:layout_height="@dimen/txt_25" />
+                        android:layout_height="@dimen/txt_25"
+                        android:background="@drawable/timeicon" />
+
                     <Chronometer
                         android:id="@+id/c_time_edit"
 
-                        android:layout_marginRight="@dimen/lrtbp_10"
-                        android:layout_marginLeft="@dimen/lrtbp_5"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/txt_18"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:layout_marginRight="@dimen/lrtbp_10"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_18" />
                 </LinearLayout>
 
                 <RelativeLayout
-                    android:layout_toLeftOf="@+id/c_word_number1"
-                    android:layout_toRightOf="@+id/asd"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <ImageView
-                        android:layout_centerInParent="true"
-                        android:id="@+id/prize_logo"
-                        android:visibility="invisible"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/c_word_number1"
+                    android:layout_toRightOf="@+id/asd">
 
+                    <ImageView
+                        android:id="@+id/prize_logo"
                         android:layout_width="@dimen/croll_insbut_height"
-                        android:gravity="center"
                         android:layout_height="@dimen/croll_insbut_height"
-                        android:src="@drawable/gift" />
+
+                        android:layout_centerInParent="true"
+                        android:gravity="center"
+                        android:src="@drawable/gift"
+                        android:visibility="invisible" />
 
                     <RelativeLayout
                         android:id="@+id/adsicon2"
-                        android:visibility="gone"
                         android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:gravity="center"
-                        android:layout_height="match_parent">
+                        android:visibility="gone">
+
                         <ImageView
                             android:id="@+id/ads_logo2"
                             android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            />
+                            android:layout_height="30dp" />
+
                         <ImageView
                             android:id="@+id/adlogo"
-                            android:src="@drawable/adbadge"
                             android:layout_width="10dp"
-                            android:layout_height="10dp" />
+                            android:layout_height="10dp"
+                            android:src="@drawable/adbadge" />
                     </RelativeLayout>
+
                     <TextView
-                        android:visibility="gone"
-                        android:layout_centerInParent="true"
                         android:id="@+id/earncoin"
+                        android:layout_width="@dimen/croll_insbut_height"
+                        android:layout_height="@dimen/croll_insbut_height"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/cn_earn"
                         android:gravity="center"
-                        android:textStyle="bold"
-                        android:paddingBottom="@dimen/wh_2"
-                        android:paddingTop="@dimen/wh_2"
                         android:paddingLeft="@dimen/lrtbp_5"
+                        android:paddingTop="@dimen/wh_2"
                         android:paddingRight="@dimen/lrtbp_5"
+                        android:paddingBottom="@dimen/wh_2"
                         android:textColor="@color/white"
                         android:textSize="@dimen/txt_20"
-                        android:background="@drawable/cn_earn"
-                        android:layout_width="@dimen/croll_insbut_height"
-                        android:layout_height="@dimen/croll_insbut_height" />
+                        android:textStyle="bold"
+                        android:visibility="gone" />
                 </RelativeLayout>
 
                 <RelativeLayout
-                    android:layout_centerInParent="true"
                     android:id="@+id/c_word_number1"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true">
+
                     <TextView
-                        android:background="@drawable/time_background"
                         android:id="@+id/c_word_number"
-                        android:text="no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/icon_margin_top"
+                        android:background="@drawable/time_background"
                         android:paddingLeft="@dimen/lrtbp_5"
                         android:paddingRight="@dimen/lrtbp_5"
+                        android:text="no"
                         android:textColor="@color/white"
-                        android:textStyle="bold"
                         android:textSize="@dimen/txt_20"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:textStyle="bold" />
                 </RelativeLayout>
 
 
                 <RelativeLayout
-                    android:layout_toLeftOf="@+id/qwt"
-                    android:layout_toRightOf="@+id/c_word_number1"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_toLeftOf="@+id/qwt"
+                    android:layout_toRightOf="@+id/c_word_number1">
+
                     <TextView
-                        android:layout_centerInParent="true"
                         android:id="@+id/c_settings"
-                        android:background="@drawable/settings"
                         android:layout_width="@dimen/croll_insbut_height"
-                        android:layout_height="@dimen/croll_insbut_height" />
+                        android:layout_height="@dimen/croll_insbut_height"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/settings" />
 
                 </RelativeLayout>
 
 
                 <LinearLayout
                     android:id="@+id/qwt"
-                    android:background="@drawable/time_background"
-                    android:layout_alignParentRight="true"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
                     android:layout_marginTop="@dimen/wh_2"
                     android:layout_marginRight="@dimen/lrtbp_5"
-                    android:layout_height="wrap_content">
+                    android:background="@drawable/time_background">
 
                     <ImageView
 
-                        android:background="@drawable/cons"
                         android:layout_width="@dimen/txt_25"
-                        android:layout_height="@dimen/txt_25"  />
+                        android:layout_height="@dimen/txt_25"
+                        android:background="@drawable/cons" />
+
                     <TextView
-                        android:layout_marginRight="@dimen/lrtbp_5"
                         android:id="@+id/c_score_edit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/lrtbp_5"
-                        android:text=" SCORE"
-                        android:textColor="@color/white"
+                        android:layout_marginRight="@dimen/lrtbp_5"
 
                         android:paddingRight="@dimen/lrtbp_10"
 
-                        android:textSize="@dimen/txt_18"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:text=" SCORE"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/txt_18" />
                 </LinearLayout>
             </RelativeLayout>
-
 
 
         </LinearLayout>
 
         <RelativeLayout
-            android:background="@drawable/ans_background_cluegame"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/lrtbp_5"
-            android:layout_marginLeft="@dimen/lrtbp_20"
-            android:layout_marginBottom="@dimen/lrtbp_5"
             android:id="@+id/clue_R_layout"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
             android:layout_below="@+id/time_score_board"
-            android:layout_width="match_parent"
-            android:layout_height="150dp">
-<ScrollView
-android:layout_marginTop="@dimen/wh_2"
-    android:layout_marginBottom="@dimen/wh_2"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <LinearLayout
-        android:layout_gravity="center"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="@dimen/lrtbp_5"
-        android:layout_marginBottom="@dimen/wh_2"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/clue_L_layout2"
-        android:id="@+id/clue_L_layout3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="@dimen/lrtbp_20"
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:layout_marginBottom="@dimen/lrtbp_5"
+            android:background="@drawable/ans_background_cluegame">
 
-        <TextView
-            android:textSize="@dimen/txt_24"
-            android:paddingBottom="@dimen/lrtbp_5"
-            android:paddingTop="40dp"
-            android:paddingLeft="@dimen/lrtbp_5"
-            android:paddingRight="@dimen/lrtbp_5"
-            android:textColor="@color/dark_green"
-            android:layout_marginRight="@dimen/lrtbp_10"
-            android:id="@+id/question_txt"
-            android:text="question"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/wh_2"
+                android:layout_marginBottom="@dimen/wh_2">
 
-    </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/clue_L_layout3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/clue_L_layout2"
+                    android:layout_centerInParent="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:layout_marginBottom="@dimen/wh_2">
 
-</ScrollView>
+                    <TextView
+                        android:id="@+id/question_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/lrtbp_10"
+                        android:gravity="center"
+                        android:paddingLeft="@dimen/lrtbp_5"
+                        android:paddingTop="40dp"
+                        android:paddingRight="@dimen/lrtbp_5"
+                        android:paddingBottom="@dimen/lrtbp_5"
+                        android:text="question"
+                        android:textColor="@color/dark_green"
+                        android:textSize="@dimen/txt_24" />
 
+                </LinearLayout>
+
+            </ScrollView>
 
 
         </RelativeLayout>
 
         <TextView
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/yellow_question"
-            android:layout_below="@+id/clue_R_layout"
             android:id="@+id/c_ans"
             android:layout_width="@dimen/wh_35"
-            android:layout_height="@dimen/wh_35" />
+            android:layout_height="@dimen/wh_35"
+            android:layout_below="@+id/clue_R_layout"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/yellow_question" />
+
         <RelativeLayout
-            android:layout_marginTop="@dimen/wh_2"
             android:id="@+id/clue_answer_edit_layout"
-            android:layout_below="@+id/c_ans"
-            android:paddingBottom="@dimen/lrtbp_5"
-            android:paddingTop="@dimen/wh_2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/c_ans"
+            android:layout_marginTop="@dimen/wh_2"
+            android:paddingTop="@dimen/wh_2"
+            android:paddingBottom="@dimen/lrtbp_5">
+
             <LinearLayout
 
                 android:id="@+id/list4"
-                android:layout_centerHorizontal="true"
-                android:background="@drawable/edit_text_background"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/edit_text_background">
+
                 <EditText
-                    android:paddingBottom="@dimen/lrtbp_5"
-                    android:textColor="@color/dark_green"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="@dimen/lrtbp_5"
-                    android:textSize="@dimen/txt_20"
-                    android:gravity="center"
                     android:id="@+id/clue_ans_editer"
                     android:layout_width="@dimen/wh_180"
                     android:layout_height="@dimen/wh_40"
-                    />
-                <Button
-                    android:background="@drawable/x_image"
                     android:layout_gravity="center"
-                    android:textStyle="bold"
+                    android:layout_marginLeft="@dimen/lrtbp_5"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/lrtbp_5"
+                    android:textColor="@color/dark_green"
+                    android:textSize="@dimen/txt_20" />
+
+                <Button
                     android:id="@+id/clue_clear"
                     android:layout_width="@dimen/wh_35"
-                    android:layout_height="@dimen/wh_35" />
+                    android:layout_height="@dimen/wh_35"
+                    android:layout_gravity="center"
+                    android:background="@drawable/x_image"
+                    android:textStyle="bold" />
 
             </LinearLayout>
+
             <Button
-                android:visibility="gone"
-                android:layout_centerInParent="true"
+                android:id="@+id/next_clue"
+                android:layout_width="@dimen/wh_35"
+                android:layout_height="@dimen/wh_35"
                 android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
                 android:layout_marginRight="@dimen/lrtbp_10"
                 android:background="@drawable/bulbs"
-                android:id="@+id/next_clue"
                 android:paddingBottom="@dimen/lrtbp_5"
-                android:layout_width="@dimen/wh_35"
-                android:layout_height="@dimen/wh_35" />
+                android:visibility="gone" />
 
             <TextView
-                android:visibility="invisible"
                 android:id="@+id/ans_highlite"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/wh_40"
                 android:layout_centerHorizontal="true"
-                android:text="Answer"
                 android:background="@drawable/ans_txt"
-                android:paddingRight="@dimen/lrtbp_20"
+                android:gravity="center"
                 android:paddingLeft="@dimen/lrtbp_20"
+                android:paddingRight="@dimen/lrtbp_20"
+                android:text="Answer"
+                android:textColor="@color/white"
                 android:textSize="@dimen/txt_20"
                 android:textStyle="bold"
-                android:textColor="@color/white"
-                android:gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/wh_40" />
+                android:visibility="invisible" />
 
         </RelativeLayout>
 
         <ScrollView
             android:id="@+id/c_sc_view"
-            android:layout_centerInParent="true"
-            android:layout_below="@+id/clue_answer_edit_layout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/clue_answer_edit_layout"
+            android:layout_centerInParent="true">
 
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
                 <RelativeLayout
-                    android:layout_centerInParent="true"
                     android:id="@+id/edit_buttons_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true">
+
                     <RelativeLayout
-                        android:layout_centerInParent="true"
                         android:id="@+id/helpshare_layout"
-                        android:layout_alignParentRight="true"
                         android:layout_width="@dimen/wh_40"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:id="@+id/ch_facebook"
-                            android:background="@drawable/fb"
-                            android:layout_marginRight="@dimen/lrtbp_5"
-                            android:layout_marginTop="@dimen/lrtbp_10"
-                            android:layout_alignParentRight="true"
-                            android:layout_width="@dimen/wh_35"
-                            android:layout_height="@dimen/wh_35" />
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true">
 
                         <TextView
-                            android:layout_below="@+id/ch_facebook"
-                            android:id="@+id/ch_watts_app"
-                            android:layout_marginRight="@dimen/lrtbp_5"
-                            android:background="@drawable/watsapp"
-                            android:layout_marginTop="@dimen/lrtbp_10"
-                            android:layout_alignParentRight="true"
+                            android:id="@+id/ch_facebook"
                             android:layout_width="@dimen/wh_35"
-                            android:layout_height="@dimen/wh_35" />
+                            android:layout_height="@dimen/wh_35"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginTop="@dimen/lrtbp_10"
+                            android:layout_marginRight="@dimen/lrtbp_5"
+                            android:background="@drawable/fb" />
+
                         <TextView
-                            android:visibility="gone"
+                            android:id="@+id/ch_watts_app"
+                            android:layout_width="@dimen/wh_35"
+                            android:layout_height="@dimen/wh_35"
+                            android:layout_below="@+id/ch_facebook"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginTop="@dimen/lrtbp_10"
+                            android:layout_marginRight="@dimen/lrtbp_5"
+                            android:background="@drawable/watsapp" />
+
+                        <TextView
                             android:id="@+id/ch_gplues"
+                            android:layout_width="@dimen/wh_35"
+                            android:layout_height="@dimen/wh_35"
                             android:layout_below="@+id/ch_watts_app"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginTop="@dimen/lrtbp_10"
                             android:layout_marginRight="@dimen/lrtbp_5"
                             android:background="@drawable/gplues"
-                            android:layout_marginTop="@dimen/lrtbp_10"
-                            android:layout_alignParentRight="true"
-                            android:layout_width="@dimen/wh_35"
-                            android:layout_height="@dimen/wh_35" />
+                            android:visibility="gone" />
                     </RelativeLayout>
 
 
                     <LinearLayout
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginTop="@dimen/wh_2"
                         android:id="@+id/c_buttonlist1_layout"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/wh_2">
+
                         <TextView
-                            android:background="@drawable/game_buttons"
-                            android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
                             android:id="@+id/c_button1"
-                            android:gravity="center"
                             android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40" />
-                        <TextView
+                            android:layout_height="@dimen/wh_40"
                             android:background="@drawable/game_buttons"
+                            android:gravity="center"
+                            android:textColor="@color/dark_green"
+                            android:textSize="@dimen/txt_18" />
+
+                        <TextView
                             android:id="@+id/c_button2"
+                            android:layout_width="@dimen/wh_50"
+                            android:layout_height="@dimen/wh_40"
+                            android:layout_marginLeft="@dimen/list_view_marig_left"
+                            android:background="@drawable/game_buttons"
                             android:gravity="center"
                             android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
-                            android:layout_marginLeft="@dimen/list_view_marig_left"
-                            android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40" />
+                            android:textSize="@dimen/txt_18" />
+
                         <TextView
-                            android:background="@drawable/game_buttons"
                             android:id="@+id/c_button3"
+                            android:layout_width="@dimen/wh_50"
+                            android:layout_height="@dimen/wh_40"
+                            android:layout_marginLeft="@dimen/list_view_marig_left"
+                            android:background="@drawable/game_buttons"
                             android:gravity="center"
                             android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
-                            android:layout_marginLeft="@dimen/list_view_marig_left"
-                            android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40" />
+                            android:textSize="@dimen/txt_18" />
+
                         <TextView
-                            android:background="@drawable/game_buttons"
                             android:id="@+id/c_button4"
+                            android:layout_width="@dimen/wh_50"
+                            android:layout_height="@dimen/wh_40"
+                            android:layout_marginLeft="@dimen/list_view_marig_left"
+                            android:background="@drawable/game_buttons"
                             android:gravity="center"
                             android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
-                            android:layout_marginLeft="@dimen/list_view_marig_left"
-                            android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40" />
+                            android:textSize="@dimen/txt_18" />
                     </LinearLayout>
+
                     <LinearLayout
-                        android:layout_marginTop="@dimen/wh_2"
                         android:id="@+id/c_buttonlist2_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_below="@+id/c_buttonlist1_layout"
-                        android:orientation="horizontal"
                         android:layout_centerHorizontal="true"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:orientation="horizontal">
+
                         <TextView
-                            android:background="@drawable/game_buttons"
                             android:id="@+id/c_button5"
-                            android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
+                            android:layout_width="@dimen/wh_50"
+                            android:layout_height="@dimen/wh_40"
+                            android:background="@drawable/game_buttons"
 
                             android:gravity="center"
-                            android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40"/>
+                            android:textColor="@color/dark_green"
+                            android:textSize="@dimen/txt_18" />
+
                         <TextView
-                            android:background="@drawable/game_buttons"
                             android:id="@+id/c_button6"
-                            android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
-                            android:layout_marginLeft="@dimen/list_view_marig_left"
-                            android:gravity="center"
                             android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40" />
-                        <TextView
+                            android:layout_height="@dimen/wh_40"
+                            android:layout_marginLeft="@dimen/list_view_marig_left"
                             android:background="@drawable/game_buttons"
+                            android:gravity="center"
+                            android:textColor="@color/dark_green"
+                            android:textSize="@dimen/txt_18" />
+
+                        <TextView
                             android:id="@+id/c_button7"
-                            android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
-                            android:layout_marginLeft="@dimen/list_view_marig_left"
-                            android:gravity="center"
                             android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40" />
-                        <TextView
+                            android:layout_height="@dimen/wh_40"
+                            android:layout_marginLeft="@dimen/list_view_marig_left"
                             android:background="@drawable/game_buttons"
+                            android:gravity="center"
+                            android:textColor="@color/dark_green"
+                            android:textSize="@dimen/txt_18" />
+
+                        <TextView
                             android:id="@+id/c_button8"
-                            android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
-                            android:layout_marginLeft="@dimen/list_view_marig_left"
-                            android:gravity="center"
                             android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40"/>
+                            android:layout_height="@dimen/wh_40"
+                            android:layout_marginLeft="@dimen/list_view_marig_left"
+                            android:background="@drawable/game_buttons"
+                            android:gravity="center"
+                            android:textColor="@color/dark_green"
+                            android:textSize="@dimen/txt_18" />
                     </LinearLayout>
+
                     <LinearLayout
-                        android:layout_marginTop="@dimen/wh_2"
                         android:id="@+id/c_buttonlist3_layout"
-                        android:layout_below="@+id/c_buttonlist2_layout"
-                        android:orientation="horizontal"
-                        android:layout_centerHorizontal="true"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/c_buttonlist2_layout"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:orientation="horizontal">
+
                         <TextView
-                            android:background="@drawable/game_buttons"
                             android:id="@+id/c_button9"
-                            android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
-                            android:gravity="center"
                             android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40" />
-                        <TextView
+                            android:layout_height="@dimen/wh_40"
                             android:background="@drawable/game_buttons"
+                            android:gravity="center"
                             android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
-                            android:layout_marginLeft="@dimen/list_view_marig_left"
+                            android:textSize="@dimen/txt_18" />
+
+                        <TextView
                             android:id="@+id/c_button10"
-                            android:gravity="center"
                             android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40" />
-                        <TextView
-                            android:background="@drawable/game_buttons"
-                            android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
+                            android:layout_height="@dimen/wh_40"
                             android:layout_marginLeft="@dimen/list_view_marig_left"
+                            android:background="@drawable/game_buttons"
+                            android:gravity="center"
+                            android:textColor="@color/dark_green"
+                            android:textSize="@dimen/txt_18" />
+
+                        <TextView
                             android:id="@+id/c_button11"
+                            android:layout_width="@dimen/wh_50"
+                            android:layout_height="@dimen/wh_40"
+                            android:layout_marginLeft="@dimen/list_view_marig_left"
+                            android:background="@drawable/game_buttons"
 
                             android:gravity="center"
-                            android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40" />
-                        <TextView
-                            android:background="@drawable/game_buttons"
                             android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
-                            android:layout_marginLeft="@dimen/list_view_marig_left"
+                            android:textSize="@dimen/txt_18" />
+
+                        <TextView
                             android:id="@+id/c_button12"
-                            android:gravity="center"
                             android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40" />
+                            android:layout_height="@dimen/wh_40"
+                            android:layout_marginLeft="@dimen/list_view_marig_left"
+                            android:background="@drawable/game_buttons"
+                            android:gravity="center"
+                            android:textColor="@color/dark_green"
+                            android:textSize="@dimen/txt_18" />
                     </LinearLayout>
+
                     <LinearLayout
-                        android:visibility="gone"
+                        android:id="@+id/c_buttonlist4_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/c_buttonlist3_layout"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="@dimen/wh_2"
-                        android:id="@+id/c_buttonlist4_layout"
-                        android:layout_below="@+id/c_buttonlist3_layout"
                         android:orientation="horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:visibility="gone">
+
                         <TextView
-                            android:background="@drawable/game_buttons"
-                            android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
                             android:id="@+id/c_button13"
-                            android:gravity="center"
                             android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40" />
-                        <TextView
+                            android:layout_height="@dimen/wh_40"
                             android:background="@drawable/game_buttons"
+                            android:gravity="center"
                             android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
-                            android:layout_marginLeft="@dimen/list_view_marig_left"
+                            android:textSize="@dimen/txt_18" />
+
+                        <TextView
                             android:id="@+id/c_button14"
-                            android:gravity="center"
                             android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40" />
-                        <TextView
-                            android:background="@drawable/game_buttons"
-                            android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
+                            android:layout_height="@dimen/wh_40"
                             android:layout_marginLeft="@dimen/list_view_marig_left"
+                            android:background="@drawable/game_buttons"
+                            android:gravity="center"
+                            android:textColor="@color/dark_green"
+                            android:textSize="@dimen/txt_18" />
+
+                        <TextView
                             android:id="@+id/c_button15"
-                            android:gravity="center"
                             android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40" />
-                        <TextView
-                            android:background="@drawable/game_buttons"
-                            android:textColor="@color/dark_green"
-                            android:textSize="@dimen/txt_18"
+                            android:layout_height="@dimen/wh_40"
                             android:layout_marginLeft="@dimen/list_view_marig_left"
-                            android:id="@+id/c_button16"
+                            android:background="@drawable/game_buttons"
                             android:gravity="center"
+                            android:textColor="@color/dark_green"
+                            android:textSize="@dimen/txt_18" />
+
+                        <TextView
+                            android:id="@+id/c_button16"
                             android:layout_width="@dimen/wh_50"
-                            android:layout_height="@dimen/wh_40" />
+                            android:layout_height="@dimen/wh_40"
+                            android:layout_marginLeft="@dimen/list_view_marig_left"
+                            android:background="@drawable/game_buttons"
+                            android:gravity="center"
+                            android:textColor="@color/dark_green"
+                            android:textSize="@dimen/txt_18" />
                     </LinearLayout>
 
 
@@ -528,46 +565,36 @@ android:layout_marginTop="@dimen/wh_2"
                 android:layout_height="@dimen/wh_35" />-->
 
         <TextView
-            android:visibility="invisible"
-            android:layout_below="@+id/clue_R_layout"
             android:id="@+id/c_coins"
+            android:layout_width="@dimen/wh_35"
+            android:layout_height="@dimen/wh_35"
+            android:layout_below="@+id/clue_R_layout"
             android:layout_centerHorizontal="true"
             android:background="@drawable/coin"
-            android:layout_width="@dimen/wh_35"
-            android:layout_height="@dimen/wh_35" />
+            android:visibility="invisible" />
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/myCoordinatorLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/myCoordinatorLayout"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            >
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true">
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </RelativeLayout>
 
-    <com.facebook.ads.NativeAdLayout
-        android:id="@+id/native_banner_ad_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/white"
-        android:minHeight="50dp"
-        android:visibility="gone"/>
+
 
     <LinearLayout
-
         android:id="@+id/ads_lay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:background="@color/white"
-        android:minHeight="50dp"
+        android:minHeight="@dimen/wh_50"
         android:orientation="horizontal">
 
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

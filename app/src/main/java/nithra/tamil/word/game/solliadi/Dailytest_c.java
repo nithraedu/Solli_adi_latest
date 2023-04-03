@@ -16,7 +16,7 @@ import java.util.Date;
 
 public class Dailytest_c extends BroadcastReceiver {
     final public static String ONE_TIME = "onetime";
-    SharedPreference sps = new SharedPreference();
+    final SharedPreference sps = new SharedPreference();
     SQLiteDatabase exdb;
     String sb, sa;
     int type;
@@ -31,7 +31,7 @@ public class Dailytest_c extends BroadcastReceiver {
         Time time = new Time();
         time.setToNow();
 
-        String armTodayOrTomo1 = "";
+        String armTodayOrTomo1;
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         Date time1 = sdf.parse(time.hour + ":" + time.minute);
         Date time2 = sdf.parse(selectedHour + ":" + selectedMinute);
@@ -52,7 +52,7 @@ public class Dailytest_c extends BroadcastReceiver {
         noti = new NotificationHelper_offline(context);
         exdb = context.openOrCreateDatabase("Solli_Adi", Context.MODE_PRIVATE, null);
 
-        Boolean isBooted = false;
+        boolean isBooted;
 
         final String BOOT_ACTION = "android.intent.action.BOOT_COMPLETED";
 

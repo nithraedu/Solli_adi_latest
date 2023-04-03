@@ -27,6 +27,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
@@ -35,7 +36,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -56,7 +56,6 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.facebook.ads.NativeAdLayout;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
@@ -103,9 +102,11 @@ import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
 public class Find_words_from_picture extends AppCompatActivity implements Download_completed {
     public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
+    static final int mCoinCount = 20;
     public static int chr = 0;
     static int rvo = 0;
-    static int mCoinCount = 20;
+    final SharedPreference sps = new SharedPreference();
+    final String gameid = "16";
     int fb_reward = 0;
     int reward_status = 0;
     CustomKeyboard mCustomKeyboard;
@@ -114,8 +115,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     TextView score, ans1, ans2, ans3, ans4, ans5, ans6, ans7, clear, questionid, p_facebook, p_watts_app;
     ImageView image_1, value_ans1, value_ans2, value_ans3, value_ans4, value_ans5, value_ans6, value_ans7;
     AppCompatEditText ans_editer;
-    SharedPreference sps = new SharedPreference();
-    String gameid = "16";
     String question_id = "", question = "", answer = "";
     int u_id = 0;
     int rdvalu;
@@ -166,6 +165,9 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     TextView p_coins;
     int e2;
     int setting_access = 0;
+
+    Handler handler;
+    Runnable my_runnable;
     private RewardedAd rewardedAd;
     private InterstitialAd mInterstitialAd;
 
@@ -189,7 +191,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         if (status.equals("nodata")) {
             nextgamesdialog();
         } else {
-            Handler handler = new Handler();
+            Handler handler = new Handler(Looper.myLooper());
             handler.postDelayed(() -> {
                 next();
                 System.out.println("p1");
@@ -213,7 +215,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_words_from_picture);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.xml.hexkbd);
         mCustomKeyboard.registerEditText(R.id.ans_editer);
         newhelper5 = new Newgame_DataBaseHelper5(this);
@@ -239,10 +241,11 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
         }
 
+        MobileAds.initialize(this);
         rewarded_adnew();
         if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 0) {
+            Utills.INSTANCE.initializeAdzz(this);
             // Make sure to set the mediation provider value to "max" to ensure proper functionality
-            MobileAds.initialize(this);
             industrialload();
         }
 
@@ -295,10 +298,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
             sequence.addSequenceItem(verify, "சரிபார்க்க பொத்தானை அழுத்தி விடையை சரிபார்த்துக்கொள்ளவும்.", "அடுத்து");
 
-            // sequence.addSequenceItem(ex_bones, "தொடர்ந்து சரியான  10 விடைகளை கண்டுபிடித்தால், கூடுதல் விடைகளை நாணயங்கள் குறையாமல் அறிந்து கொள்ளலாம்.", "அடுத்து");
-
-            // sequence.addSequenceItem(feedback, "கருத்துக்கள்  பொத்தானை அழுத்தி மேலும் உங்களுக்கு தெரிந்த விடைகளை எங்களுக்கு அனுப்பவும் .", "அடுத்து");
-            //   sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Find_words_from_picture.this).setTarget(p_facebook).setDismissText("சரி").setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.").build()).setOnItemDismissedListener((itemView, position) -> {
 
                 if (position == 2) {
@@ -318,10 +317,11 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
 
     public void industrialload() {
+        if (mInterstitialAd != null) return;
         Log.i("TAG", "onAdLoadedCalled");
         AdRequest adRequest = new AdRequest.Builder().build();
 
-        InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
+        InterstitialAd.load(this, getResources().getString(R.string.Game1_Stage_Close_VV), adRequest, new InterstitialAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 // The mInterstitialAd reference will be null until
@@ -336,6 +336,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 // Handle the error
                 Log.d("TAG", loadAdError.toString());
                 mInterstitialAd = null;
+                handler = null;
                 Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
             }
         });
@@ -350,6 +351,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 // Set the ad reference to null so you don't show the ad a second time.
                 Log.d("TAG", "Ad dismissed fullscreen content.");
                 mInterstitialAd = null;
+                handler = null;
                 Utills.INSTANCE.Loading_Dialog_dismiss();
                 setSc();
                 industrialload();
@@ -360,14 +362,13 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 // Called when ad fails to show.
                 Log.e("TAG", "Ad failed to show fullscreen content.");
                 mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                setSc();
+
             }
 
-
-            @Override
-            public void onAdShowedFullScreenContent() {
-                // Called when ad is shown.
-                Log.d("TAG", "Ad showed fullscreen content.");
-            }
         });
     }
 
@@ -375,13 +376,18 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") == Utills.interstitialadCount && mInterstitialAd != null) {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
             Utills.INSTANCE.Loading_Dialog(this);
-            Handler handler = new Handler();
-            handler.postDelayed(() -> {
+            handler = new Handler(Looper.myLooper());
+            my_runnable = () -> {
                 mInterstitialAd.show(this);
-            }, 2500);
+            };
+            handler.postDelayed(my_runnable, 2500);
         } else {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
+            if (sps.getInt(this, "Game1_Stage_Close_VV") > Utills.interstitialadCount)
+                sps.putInt(this, "Game1_Stage_Close_VV", 0);
+
             setSc();
+            //Toast.makeText(this, ""+sps.getInt(this, "Game1_Stage_Close_VV"), Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -389,11 +395,13 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        rewardedAd = null;
         mInterstitialAd = null;
+        handler = null;
     }
 
     public void showcase_dismiss() {
-        Handler handler30 = new Handler();
+        Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
 
             if (sps.getString(Find_words_from_picture.this, "showcase_dismiss_fn_intro").equals("")) {
@@ -431,14 +439,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         }
         score.setText("" + skx);
         reset();
-
-        NativeAdLayout native_banner_ad_container = findViewById(R.id.native_banner_ad_container);
-        if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 1) {
-            native_banner_ad_container.setVisibility(View.GONE);
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        } else {
-            native_banner_ad_container.setVisibility(View.VISIBLE);
-        }
 
         head.setVisibility(View.VISIBLE);
         ans_editer.requestFocus();
@@ -902,7 +902,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                         }
                         update_price();
                         // completegame();
-                        Handler handler = new Handler();
+                        Handler handler = new Handler(Looper.myLooper());
                         handler.postDelayed(() -> adShow(), 2000);
                     }
                 }
@@ -1025,7 +1025,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                     }
                     // completegame();
                     update_price();
-                    Handler handler = new Handler();
+                    Handler handler = new Handler(Looper.myLooper());
                     handler.postDelayed(() -> adShow(), 2000);
                 }
             }
@@ -1042,7 +1042,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             chr = 1;
             mCustomKeyboard.letter_del_change("1");
             mCustomKeyboard.letter_del_change("1");
-            pressKey(KeyEvent.KEYCODE_DEL);
+            pressKey();
         });
         clear.setOnLongClickListener(v -> {
             chr = 1;
@@ -1139,13 +1139,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
                         b_score = b_score + 10;
 
-                   /*     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + 10;
-                        String aStringx = Integer.toString(spx);
-                        score.setText(aStringx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");*/
                         coinanim();
                         Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                         ch.moveToFirst();
@@ -1166,7 +1159,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                                 myDbHelper.executeSql("UPDATE dailytest SET isfinish='1' WHERE levelid='" + question_id + "'and gameid='" + gameid + "'");
                             }
                             update_price();
-                            Handler handler = new Handler();
+                            Handler handler = new Handler(Looper.myLooper());
                             handler.postDelayed(() -> adShow(), 2000);
                         }
 
@@ -1320,9 +1313,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         score.setText("" + skx);
 
         ImageView prize_logo = findViewById(R.id.prize_logo);
-        /*final Animation pendulam;
-        pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
-        prize_logo.startAnimation(pendulam);*/
         if (sps.getInt(Find_words_from_picture.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
@@ -1351,9 +1341,9 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         });
     }
 
-    private void pressKey(int keycode) {
-        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, keycode);
-        ans_editer.onKeyDown(keycode, event);
+    private void pressKey() {
+        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL);
+        ans_editer.onKeyDown(KeyEvent.KEYCODE_DEL, event);
     }
 
     public void dialog(int i) {
@@ -1406,7 +1396,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                     fb_reward = 0;
                     //reward(Find_words_from_picture.this);
                     rewarded_adnew();
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
 
                         Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
@@ -1480,7 +1470,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getPackageManager();
-        boolean app_installed = false;
+        boolean app_installed;
         try {
             pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
             app_installed = true;
@@ -1523,7 +1513,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         final LinearLayout vid_earn = openDialog_s.findViewById(R.id.vid_earn);
 
         TextView video_earn = openDialog_s.findViewById(R.id.video_earn);
-        video_earn.setText("மேலும் " + sps.getInt(Find_words_from_picture.this, "reward_coin_txt") + "+நாணயங்கள் பெற");
+        video_earn.setText("காணொளியை பார்த்து " + sps.getInt(Find_words_from_picture.this, "reward_coin_txt") + "+ நாணயங்கள் பெற");
 
         ImageView prize_logo = openDialog_s.findViewById(R.id.prize_logo);
         if (sps.getInt(Find_words_from_picture.this, "remoteConfig_prize") == 1) {
@@ -1599,7 +1589,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                     show_reward();
                     rewardvideo.setVisibility(View.INVISIBLE);
                 } else {
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
                         if (fb_reward == 1) {
                             show_reward();
@@ -1628,7 +1618,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                     show_reward();
                     rewardvideo.setVisibility(View.INVISIBLE);
                 } else {
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
                         if (fb_reward == 1) {
                             show_reward();
@@ -1701,8 +1691,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             uans = cd.getCount();
         }
 
-        // Toast.makeText(Find_words_from_picture.this, "u_ans"+uans, Toast.LENGTH_SHORT).show();
-        // Toast.makeText(Find_words_from_picture.this, "answerlength"+answerlength, Toast.LENGTH_SHORT).show();
         int tt_time = 122;
 
 
@@ -1724,19 +1712,19 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             if (!date.equals("0")) {
                 next_continue.setText("சரி");
             }
-            Handler handler1 = new Handler();
+            Handler handler1 = new Handler(Looper.myLooper());
             handler1.postDelayed(() -> {
                 coin.play(soundId4, sv, sv, 0, 0, sv);
                 //play1.start();
                 cns3.setVisibility(View.VISIBLE);
             }, 500);
-            Handler handler2 = new Handler();
+            Handler handler2 = new Handler(Looper.myLooper());
             handler2.postDelayed(() -> {
                 // play2.start();
                 coin.play(soundId4, sv, sv, 0, 0, sv);
                 cns1.setVisibility(View.VISIBLE);
             }, 1000);
-            Handler handler3 = new Handler();
+            Handler handler3 = new Handler(Looper.myLooper());
             handler3.postDelayed(() -> {
                 //  play3.start();
                 coin.play(soundId4, sv, sv, 0, 0, sv);
@@ -1744,7 +1732,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             }, 1500);
 
 
-            Handler handler6 = new Handler();
+            Handler handler6 = new Handler(Looper.myLooper());
             handler6.postDelayed(() -> {
                 int[] locationInWindow = new int[2];
                 cns3.getLocationInWindow(locationInWindow);
@@ -1764,7 +1752,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 cns3.postDelayed(() -> cns3.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
             }, 1500);
-            Handler handler7 = new Handler();
+            Handler handler7 = new Handler(Looper.myLooper());
             handler7.postDelayed(() -> {
                 int[] locationInWindow = new int[2];
                 cns1.getLocationInWindow(locationInWindow);
@@ -1784,7 +1772,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 cns1.postDelayed(() -> cns1.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
             }, 1900);
-            Handler handler8 = new Handler();
+            Handler handler8 = new Handler(Looper.myLooper());
             handler8.postDelayed(() -> {
                 int[] locationInWindow = new int[2];
                 cns2.getLocationInWindow(locationInWindow);
@@ -1833,7 +1821,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             }
 
 
-            Handler handler11 = new Handler();
+            Handler handler11 = new Handler(Looper.myLooper());
             handler11.postDelayed(() -> new Thread(() -> {
 
                 while (tt_case2 < tt_tot2) {
@@ -1849,7 +1837,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
             }).start(), 1500);
 
-            Handler hand = new Handler();
+            Handler hand = new Handler(Looper.myLooper());
             hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 2500);
 
             next_continue.setOnClickListener(view -> {
@@ -1992,8 +1980,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         cfx.moveToFirst();
         if (cfx.getCount() != 0) {
             skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-/*        int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
             b_scores.setText("" + a);
 
 
@@ -2085,6 +2071,9 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     protected void onResume() {
         super.onResume();
 
+        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV"));
+
 
         if (sps.getString(Find_words_from_picture.this, "resume_fp").equals("")) {
             sps.putString(Find_words_from_picture.this, "resume_fp", "yes");
@@ -2119,6 +2108,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     @Override
     protected void onPause() {
         super.onPause();
+        if (handler != null) handler.removeCallbacks(my_runnable);
         focus.stop();
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
@@ -2166,20 +2156,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 if (appinstalled) {
                     focus.stop();
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-
-                 /*   String date = sps.getString(Find_words_from_picture.this, "date");
-                    int pos;
-                    if (date.equals("0")) {
-                        pos = 1;
-                        myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                    } else {
-                        pos = 2;
-                        myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                    }*/
 
                     //Uri uri = Uri.fromFile(file);
                     Uri uri = FileProvider.getUriForFile(Find_words_from_picture.this, Find_words_from_picture.this.getPackageName(), file);
@@ -2542,12 +2518,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             Intent i = new Intent(Find_words_from_picture.this, Fill_in_blanks.class);
             startActivity(i);
         });
-        eng_to_tamil.setOnClickListener(v -> {
-            finish();
-            sps.putString(Find_words_from_picture.this, "date", "0");
-            Intent i = new Intent(Find_words_from_picture.this, English_to_tamil.class);
-            startActivity(i);
-        });
 
         TextView quiz = openDialog.findViewById(R.id.quiz);
         TextView find_words_from_pictures = openDialog.findViewById(R.id.find_words_from_pictures);
@@ -2648,11 +2618,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             sps.putString(Find_words_from_picture.this, "date", "0");
 
 
-          /*  finish();
-            openDialog.dismiss();
-            //sps.putString(Odd_man_out.this, "date", "0");
-            Intent i = new Intent(Odd_man_out.this, New_Main_Activity.class);
-            startActivity(i);*/
             return keyCode == KeyEvent.KEYCODE_BACK;
         });
     }
@@ -2722,8 +2687,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     }
 
     public void downloaddata_regular() {
-        NativeAdLayout native_banner_ad_container = findViewById(R.id.native_banner_ad_container);
-        native_banner_ad_container.setVisibility(View.INVISIBLE);
+
         head.setVisibility(View.INVISIBLE);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Find_words_from_picture.this);
         // alertDialogBuilder.setTitle("Update available");
@@ -2735,8 +2699,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
                 download_datas();
             } else {
-                NativeAdLayout native_banner_ad_container1 = findViewById(R.id.native_banner_ad_container);
-                native_banner_ad_container1.setVisibility(View.INVISIBLE);
+
                 head.setVisibility(View.INVISIBLE);
                 AlertDialog.Builder alertDialogBuilder1 = new AlertDialog.Builder(Find_words_from_picture.this);                           /* .setTitle("Delete entry")*/
                 alertDialogBuilder1.setCancelable(false);
@@ -2757,16 +2720,12 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                     } else {
                         backexitnet();
                     }
-                               /* Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
-                                startActivity(i);*/
                     dialog1.dismiss();
                 }).setIcon(android.R.drawable.ic_dialog_alert).show();
             }
 
         });
         alertDialogBuilder.setPositiveButton("இல்லை ", (dialog, id) -> {
-            /*Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
-            startActivity(i);*/
             sps.putString(Find_words_from_picture.this, "game_area", "on");
             finish();
         });
@@ -2893,25 +2852,20 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     }
 
     public void downpic(final String first, final String last) {
-        NativeAdLayout native_banner_ad_container = findViewById(R.id.native_banner_ad_container);
-        native_banner_ad_container.setVisibility(View.INVISIBLE);
+
         head.setVisibility(View.INVISIBLE);
         Utils.mProgress(Find_words_from_picture.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", true).show();
 
         new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
 
             @Override
             protected Void doInBackground(Void... params) {
 
 
-                String result = null;
+                String result;
 
                 InputStream is = null;
-                StringBuilder sb = null;
+                StringBuilder sb;
 
                 ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
 
@@ -2935,7 +2889,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                     BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
-                    String line = "0";
+                    String line;
                     while ((line = reader.readLine()) != null) {
                         sb.append(line + "\n");
                     }
@@ -2986,7 +2940,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         return null;
     }
 
-    public int unpackZip(String ZIP_FILE_NAME) {
+    public void unpackZip(String ZIP_FILE_NAME) {
 
         InputStream is;
         ZipInputStream zis;
@@ -3024,9 +2978,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
         } catch (IOException e) {
             e.printStackTrace();
-            return 0;
         }
-        return 1;
     }
 
     @Override
@@ -3037,8 +2989,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
                 download_datas();
             } else {
-                NativeAdLayout native_banner_ad_container = findViewById(R.id.native_banner_ad_container);
-                native_banner_ad_container.setVisibility(View.INVISIBLE);
+
                 head.setVisibility(View.INVISIBLE);
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Find_words_from_picture.this);
                 alertDialogBuilder.setCancelable(false);
@@ -3088,8 +3039,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-     /*   int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
@@ -3152,13 +3101,13 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
         }).start();
 
-        Handler handler30 = new Handler();
+        Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
             Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
             score.startAnimation(levels1);
         }, 2200);
 
-        Handler handler21 = new Handler();
+        Handler handler21 = new Handler(Looper.myLooper());
         handler21.postDelayed(() -> {
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
@@ -3216,7 +3165,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
     public void rewarded_adnew() {
         AdRequest adRequest = new AdRequest.Builder().build();
-        RewardedAd.load(this, "ca-app-pub-3940256099942544/5224354917", adRequest, new RewardedAdLoadCallback() {
+        RewardedAd.load(this, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 // Handle the error.
@@ -3252,7 +3201,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
                     }
-                    Handler handler = new Handler();
+                    Handler handler = new Handler(Looper.myLooper());
                     handler.postDelayed(() -> {
                         if (rvo == 2) {
                             share_earn2(mCoinCount);

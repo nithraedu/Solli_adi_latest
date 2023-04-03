@@ -73,14 +73,16 @@
             android:id="@+id/vid_earn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:layout_below="@+id/discription"
             android:layout_centerInParent="true"
             android:layout_centerHorizontal="true"
+            android:layout_marginStart="@dimen/lrtbp_25"
             android:layout_marginTop="@dimen/lrtbp_10"
             android:background="@drawable/game_button_background"
             android:elevation="@dimen/lrtbp_10"
-            android:orientation="horizontal">
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/lrtbp_15">
 
             <ImageView
                 android:layout_width="30dp"
@@ -95,9 +97,10 @@
                 android:layout_centerInParent="true"
                 android:layout_centerHorizontal="true"
                 android:padding="@dimen/lrtbp_5"
+                android:gravity="center"
                 android:text="20+ நாணயங்கள்"
                 android:textColor="#ffff"
-                android:textSize="@dimen/txt_18" />
+                android:textSize="@dimen/txt_12" />
 
         </LinearLayout>
 

@@ -15,7 +15,6 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -26,11 +25,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.facebook.ads.NativeAdLayout;
-
 
 public class Opposite_word_levels extends AppCompatActivity {
     public static SharedPreferences mPreferences;
+    final SharedPreference spa = new SharedPreference();
     TextView time1, time2, time3, score1, score2, score3, levelid, levelname;
     Typeface typ, tyr;
     DataBaseHelper myDbHelper;
@@ -40,7 +38,6 @@ public class Opposite_word_levels extends AppCompatActivity {
     TextView intro;
     TextView ttr_intro;
     MediaPlayer play1;
-    SharedPreference spa = new SharedPreference();
     ImageView lock1, lock2, lock3;
     LinearLayout adds;
     TextView l_word1, l_word2, l_word3;
@@ -73,7 +70,7 @@ public class Opposite_word_levels extends AppCompatActivity {
         levelid = (TextView) findViewById(R.id.l_level_id);
         levelname = (TextView) findViewById(R.id.l_id_name);
         ttr_intro = (TextView) findViewById(R.id.ttr_intro);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         RelativeLayout levels = (RelativeLayout) findViewById(R.id.levels);
         Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button2_animation);
         levels.startAnimation(levels1);
@@ -117,26 +114,11 @@ public class Opposite_word_levels extends AppCompatActivity {
         intro.append(four);
 
 
-   /*     Spannable six = new SpannableString( "\n\n5) கேள்விக்குறியை அழுத்தி விடையைக் காணலாம். அவ்வாறு பார்க்கும்பொழுது 100 நாணயங்கள் குறைக்கப்படும்.");
-
-        six.setSpan(new ForegroundColorSpan(Color.parseColor("#ff6633")), 0, six.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        intro.append(six);*/
-
-
-//
-   /*     exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
-        Cursor c1 = exdb.rawQuery("select * from maintable where gameid= 2", null);
-        c1.moveToFirst();
-
-        Cursor c2 = exdb.rawQuery("select * from maintable where gameid= 2 and isfinish='1'", null);
-        c2.moveToFirst();
-        int cs2 = c2.getCount()+1;
-        l_word1.setText(c2.getCount() + "/" + c1.getCount());
-*/
+        //
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         getSupportActionBar().setDisplayShowHomeEnabled(false);
         View view = getLayoutInflater().inflate(R.layout.action_sole, null);
         getSupportActionBar().setCustomView(view);
@@ -156,8 +138,6 @@ public class Opposite_word_levels extends AppCompatActivity {
             public void onClick(View view) {
                 spa.putInt(Opposite_word_levels.this, "val", 1);
                 finish();
-               /* Intent i = new Intent(Opposite_word_levels.this, New_Main_Activity.class);
-                startActivity(i);*/
             }
         });
 //
@@ -192,59 +172,4 @@ public class Opposite_word_levels extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-    protected void onResume() {
-        super.onResume();
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-
-        if (spa.getInt(Opposite_word_levels.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            native_banner_ad_container.setVisibility(View.GONE);
-        } else {
-            if (Utils.isNetworkAvailable(Opposite_word_levels.this)) {
-                native_banner_ad_container.setVisibility(View.GONE);
-                //fb_native(Opposite_word_levels.this,native_banner_ad_container);
-
-                /* if (spa.getInt(Opposite_word_levels.this,"native_banner_ads")==1){
-                    New_Main_Gamelist.inflateAd(Opposite_word_levels.this,native_banner_ad_container);
-                }else {
-                    fb_native(Opposite_word_levels.this,native_banner_ad_container);
-                }*/
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-
-         /*   if (spa.getInt(Opposite_word_levels.this, "addlodedd") == 1) {
-                New_Main_Activity.load_addFromMain(Opposite_word_levels.this, adds);
-            }else {
-                if (Utils.isNetworkAvailable(Opposite_word_levels.this)) {
-                    spa.putInt(Opposite_word_levels.this, "addlodedd", 2);
-                    System.out.println("@IMG");
-                    final AdView adView = new AdView(Opposite_word_levels.this);
-                    adView.setAdUnitId(getString(R.string.main_banner_ori));
-
-                    adView.setAdSize(AdSize.SMART_BANNER);
-                    AdRequest request = new AdRequest.Builder().build();
-                    adView.setAdListener(new AdListener() {
-                        public void onAdLoaded() {
-                            System.out.println("@@@loaded");
-                            adds.removeAllViews();
-                            adds.addView(adView);
-                            adds.setVisibility(View.VISIBLE);
-                            super.onAdLoaded();
-                        }
-
-                        @Override
-                        public void onAdFailedToLoad(int i) {
-                            System.out.println("@@@NOt loaded");
-                            super.onAdFailedToLoad(i);
-                        }
-                    });
-                    adView.loadAd(request);
-
-                }
-            }*/
-        }
-
-
-    }
 }

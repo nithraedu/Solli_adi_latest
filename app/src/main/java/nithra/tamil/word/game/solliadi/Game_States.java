@@ -1,7 +1,5 @@
 package nithra.tamil.word.game.solliadi;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,7 +10,6 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -20,8 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.facebook.ads.NativeAdLayout;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -45,7 +40,7 @@ import java.util.Calendar;
 public class Game_States extends AppCompatActivity {
 
 
-    static SharedPreference sps = new SharedPreference();
+    static final SharedPreference sps = new SharedPreference();
     SQLiteDatabase exdb;
     RelativeLayout myreport, result, profile, rule;
     LinearLayout adds;
@@ -57,7 +52,6 @@ public class Game_States extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game__states);
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
         exdb.execSQL("create table if not exists userdetail(id integer,name varchar,email varchar,phno integer,address varchar,city varchar,regid varchar);");
@@ -92,12 +86,6 @@ public class Game_States extends AppCompatActivity {
                 System.out.println("=============userstates_send");
                 ///Prgress Bar Running:
                 new AsyncTask<String, String, String>() {
-
-                    @Override
-                    protected void onPreExecute() {
-                        super.onPreExecute();
-                        //   Utils.mProgress(MainActivity.this,"முதல் தடவை தரவுகளை ஏற்றுகிறது. சில நிமிடங்கள் வரை ஆகலாம், காத்திருக்கவும்.....",false).show();
-                    }
 
                     @Override
                     protected String doInBackground(String... params) {
@@ -194,76 +182,22 @@ public class Game_States extends AppCompatActivity {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
 
             finish();
-            Intent i = new Intent(Game_States.this, MainActivity.class);
+            Intent i = new Intent(Game_States.this, New_Main_Activity.class);
             startActivity(i);
 
         }
         return super.onKeyDown(keyCode, event);
     }
 
-    protected void onResume() {
-        super.onResume();
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-
-        if (sps.getInt(Game_States.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
-            native_banner_ad_container.setVisibility(View.GONE);
-        } else {
-            if (Utils.isNetworkAvailable(Game_States.this)) {
-                fb_native(Game_States.this, native_banner_ad_container);
-               /* if (sps.getInt(Game_States.this,"native_banner_ads")==1){
-                    New_Main_Gamelist.inflateAd(Game_States.this,native_banner_ad_container);
-                }else {
-                    fb_native(Game_States.this,native_banner_ad_container);
-                }*/
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-
-          /*  if (sps.getInt(Game_States.this, "addlodedd") == 1) {
-                MainActivity.load_addFromMain(Game_States.this, adds);
-            } else {
-                if (Utils.isNetworkAvailable(Game_States.this)) {
-                    sps.putInt(Game_States.this, "addlodedd", 2);
-                    System.out.println("@IMG");
-                    final AdView adView = new AdView(Game_States.this);
-                    adView.setAdUnitId(getString(R.string.main_banner_ori));
-
-                    adView.setAdSize(AdSize.SMART_BANNER);
-                    AdRequest request = new AdRequest.Builder().build();
-                    adView.setAdListener(new AdListener() {
-                        public void onAdLoaded() {
-                            System.out.println("@@@loaded");
-                            adds.removeAllViews();
-                            adds.addView(adView);
-                            adds.setVisibility(View.VISIBLE);
-                            super.onAdLoaded();
-                        }
-
-                        @Override
-                        public void onAdFailedToLoad(int i) {
-                            System.out.println("@@@NOt loaded");
-                            super.onAdFailedToLoad(i);
-                        }
-                    });
-                    adView.loadAd(request);
-
-                }
-            }*/
-        }
-
-
-    }
-
     public void userstates_send() {
         if (sps.getString(Game_States.this, "complite_reg").equals("yes")) {
             ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-            String date = null;
+            String date;
             String mobileno = null;
             String reg_id = null, email = null, android_id = null;
             String dgame1 = null, dgame2 = null, dgame3 = null, dgame4 = null, dscore = null, dplaytime = null;
-            String rgame1 = null, rgame2 = null, rgame3 = null, rgame4 = null, rscore = null, rplaytime = null;
-            String share_count = null;
+            String rgame1, rgame2, rgame3, rgame4, rscore, rplaytime;
+            String share_count;
 
 
             String dates = "";
@@ -403,7 +337,7 @@ public class Game_States extends AppCompatActivity {
                 String result = null;
 
                 InputStream is = null;
-                StringBuilder sb = null;
+                StringBuilder sb;
                 System.out.println("date###==========" + up_date);
                 try {
                     HttpClient httpclient = new DefaultHttpClient();
@@ -419,7 +353,7 @@ public class Game_States extends AppCompatActivity {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
-                    String line = "0";
+                    String line;
                     while ((line = reader.readLine()) != null) {
                         sb.append(line + "\n");
                     }
@@ -436,7 +370,7 @@ public class Game_States extends AppCompatActivity {
                     JSONArray jArray = new JSONArray(result);
                     System.err.println("#######result===" + result);
                     System.out.println("#######===  " + jArray.length());
-                    JSONObject json_data = null;
+                    JSONObject json_data;
                     //isvalid=""+jArray.length();
                     downok = "" + jArray.length();
                     System.out.print("########insert ord ============" + downok);
