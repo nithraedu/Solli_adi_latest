@@ -1,7 +1,5 @@
 package nithra.tamil.word.game.solliadi;
 
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
-
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -16,7 +14,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,8 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.facebook.ads.NativeAdLayout;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -46,8 +41,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class Main_Login extends AppCompatActivity {
+    static final SharedPreference sps = new SharedPreference();
     public static String android_id;
-    static SharedPreference sps = new SharedPreference();
     EditText phno_edit, otps;
     TextView signin, signup;
     String isregster, register_id, after_otp, before_time;
@@ -64,8 +59,6 @@ public class Main_Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main__login);
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
 
         exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
         exdb.execSQL("create table if not exists userdetail(id integer,name varchar,upic varchar,email varchar,phno integer,address varchar,city varchar,regid varchar);");
@@ -79,68 +72,6 @@ public class Main_Login extends AppCompatActivity {
         android_id = Settings.Secure.getString(getContentResolver(),
                 Settings.Secure.ANDROID_ID);
 
-
-/*
-
-        Cursor c;
-        c = exdb.rawQuery("select * from userdetail", null);
-        c.moveToFirst();
-        if (c.getCount() != 0) {
-
-        }else {
-
-            if(sps.getString(Main_Login.this,"otp_re").equals("yes")) {
-
-                new AsyncTask<Void, Void, Void>() {
-
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        availcheck(""+sps.getString(Main_Login.this,"ph_no"));
-                        System.out.println("====availcheck");
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void aVoid) {
-                        super.onPostExecute(aVoid);
-
-                        if(isregster.equals("com"))
-                        {
-                            //   otp_dialog(1, 0, "yes");
-
-                            int ttimes= Integer.parseInt(before_time);
-                            System.out.println("=====tt====="+ttimes);
-                            if (ttimes<1)
-                            {
-
-                                otp_dialog(0, 1, "no");
-                            }else {
-                                otp_dialog(1, 0, "yes");
-
-                            }
-
-                        }else if(isregster.equals("not"))
-                        {
-                            int ttimes= Integer.parseInt(before_time);
-                            if (ttimes<1)
-                            {
-                                otp_dialog(0, 1, "no");
-
-                            }else {
-                                otp_dialog(1, 0, "yes");
-
-
-                            }
-
-                        }
-                        else if (isregster.equals("new")){
-                            Toast.makeText(Main_Login.this, "You Are Not Registerd User...Please Sign Up  ", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }.execute();
-            }
-        }
-*/
 
         if (sps.getString(Main_Login.this, "otpis").equals("on")) {
             finish();
@@ -180,36 +111,12 @@ public class Main_Login extends AppCompatActivity {
                                     Intent i = new Intent(Main_Login.this, Otp_verification.class);
                                     startActivity(i);
 
-                          /*  sps.putString(Main_Login.this,"ph_no",""+phno);
-                            // otp_dialog(1, 0, "yes");
-
-                            int ttimes= Integer.parseInt(before_time);
-                            System.out.println("=====tt====="+ttimes);
-                            if (ttimes<1)
-                            {
-
-                                otp_dialog(0, 1, "no");
-                            }else {
-                                otp_dialog(1, 0, "yes");
-
-                            }*/
-
                                 } else if (isregster.equals("not")) {
                                     sps.putString(Main_Login.this, "ph_no", "" + phno);
                                     finish();
                                     Intent i = new Intent(Main_Login.this, Otp_verification.class);
                                     startActivity(i);
 
-                           /* int ttimes= Integer.parseInt(before_time);
-                            System.out.println("=====tt====="+ttimes);
-                            if (ttimes<1)
-                            {
-
-                                otp_dialog(0, 1, "no");
-                            }else {
-                                otp_dialog(1, 0, "yes");
-
-                            }*/
                                     // otp_dialog(1, 0, "yes");
                                 } else if (isregster.equals("new")) {
                                     sps.putString(Main_Login.this, "ph_noe", "" + phno);
@@ -246,7 +153,7 @@ public class Main_Login extends AppCompatActivity {
         String result = null;
 
         InputStream is = null;
-        StringBuilder sb = null;
+        StringBuilder sb;
 
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
         nameValuePairs.add(new BasicNameValuePair("mobileno", "" + phno));
@@ -268,7 +175,7 @@ public class Main_Login extends AppCompatActivity {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
             sb = new StringBuilder();
             sb.append(reader.readLine() + "\n");
-            String line = "0";
+            String line;
             while ((line = reader.readLine()) != null) {
                 sb.append(line + "\n");
             }
@@ -282,7 +189,7 @@ public class Main_Login extends AppCompatActivity {
             JSONArray jArray = new JSONArray(result);
             System.err.println("Update===" + result);
             System.out.println("===  " + jArray.length());
-            JSONObject json_data = null;
+            JSONObject json_data;
             //isvalid=""+jArray.length();
             if (jArray.length() > 0) {
                 json_data = jArray.getJSONObject(0);
@@ -301,81 +208,6 @@ public class Main_Login extends AppCompatActivity {
         }
 
     }
-/*    public void availcheck(String name) {
-
-        String email = null;
-        AccountManager am = AccountManager.get(this);
-        Account[] accounts = am.getAccountsByType("com.google");
-        if (accounts.length > 0) {
-            email = accounts[0].name;
-        }
-
-
-        JSONArray jArray;
-        String result = null;
-        InputStream is = null;
-        StringBuilder sb = null;
-
-        String mavatam = null;
-        String adds = null;
-        String per = null;
-        String mo = null;
-        try {
-           // mavatam = URLEncoder.encode(dis, "UTF-8");
-           // adds = URLEncoder.encode(add, "UTF-8");
-            per = URLEncoder.encode(name, "UTF-8");
-            mo = URLEncoder.encode(name, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
-      //  nameValuePairs.add(new BasicNameValuePair("email", "" + email));
-        nameValuePairs.add(new BasicNameValuePair("mobileno", "" + mo));
-        nameValuePairs.add(new BasicNameValuePair("action", "first"));
-        nameValuePairs.add(new BasicNameValuePair("androidid", ""+android_id));
-        System.out.println("===phno" + mo);
-
-        try {
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost("https://nithra.mobi/solliadi/regisrtation.php");
-            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            HttpResponse response = httpclient.execute(httppost);
-            HttpEntity entity = response.getEntity();
-            is = entity.getContent();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
-            sb = new StringBuilder();
-            sb.append(reader.readLine() + "\n");
-            String line = "0";
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            is.close();
-            result = sb.toString();
-
-            System.out.println("====//" + result);
-        } catch (Exception e) {
-
-            System.out.println("===catch" );
-        }
-
-
-        try {
-            jArray = new JSONArray(result);
-            JSONObject json_data = null;
-            for (int i = 0; i < jArray.length(); i++) {
-                json_data = jArray.getJSONObject(i);
-                isregster = json_data.getString("response");
-                register_id = json_data.getString("registrationid");
-                before_time = json_data.getString("timing");
-            }
-        } catch (JSONException e1) {
-        } catch (android.net.ParseException e1) {
-        }
-
-
-    }*/
 
 
     public void otp_dialog(int s, int r, String time) {
@@ -466,10 +298,6 @@ public class Main_Login extends AppCompatActivity {
             img.setImageResource(0);
             img.setImageResource(R.drawable.timeup);
         }
-/*
-    send.setVisibility(View.VISIBLE);
-    otp.setVisibility(View.VISIBLE);
-    textViewShowTime.setVisibility(View.VISIBLE);*/
 
 
         send.setOnClickListener(new View.OnClickListener() {
@@ -617,48 +445,6 @@ public class Main_Login extends AppCompatActivity {
                         }
                     }.execute();
 
-         /*           new AsyncTask<Void, Void, Void>() {
-
-                        @Override
-                        protected Void doInBackground(Void... params) {
-                          //  otp_send("", "resend");
-                            availcheck(""+sps.getString(Main_Login.this,"ph_no"));
-                            return null;
-                        }
-
-                        @Override
-                        protected void onPostExecute(Void aVoid) {
-                            super.onPostExecute(aVoid);
-                            if (register_id.equals("0")) {
-                                if (after_otp.equals("4")) {
-                                    Toast.makeText(Main_Login.this, "Time over", Toast.LENGTH_SHORT).show();
-                                    //resend otp gen
-                                    // otp_send("", "resend");
-                                    countDownTimer.cancel();
-                                    resend.setVisibility(View.VISIBLE);
-                                    mno.setVisibility(View.VISIBLE);
-                                    txt.setText("நேரம் முடிந்துவிட்டது மீண்டும் புதிய OTP எண்னை பெறுவதற்கு கீழே உள்ள பொத்தானை அனுப்பவும் ");
-                                    img.setImageResource(0);
-                                    img.setImageResource(R.drawable.timeup);
-                                    send.setVisibility(View.GONE);
-                                    otp.setVisibility(View.GONE);
-                                    textViewShowTime.setVisibility(View.GONE);
-                                } else if (after_otp.equals("2")) {
-
-                                    Toast.makeText(Main_Login.this, " OTP Wrong,  please type correct OTP number.", Toast.LENGTH_SHORT).show();
-
-                                }
-                            } else {
-                                if (after_otp.equals("5")) {
-
-                                    completd(register_id);
-                                    countDownTimer.cancel();
-                                    dialog.cancel();
-                                }
-                            }
-// Toast.makeText(LoginActivity.this, ""+isregster, Toast.LENGTH_SHORT).show();
-                        }
-                    }.execute();*/
                 } else {
                     Toast.makeText(Main_Login.this, "Please Check Your  10 digit Mobile Number .. ", Toast.LENGTH_SHORT).show();
                 }
@@ -666,36 +452,19 @@ public class Main_Login extends AppCompatActivity {
         });
 
 
-        /*dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-
-                finish();
-                dialog.dismiss();
-                Intent i = new Intent(Main_Login.this, MainActivity.class);
-                startActivity(i);
-
-                return keyCode == KeyEvent.KEYCODE_BACK;
-            }
-        });*/
         dialog.show();
 
 
     }
 
     public void otp_send(String otp, String action) {
-        String email = "null";
+        String email;
         email = Utils.android_id(Main_Login.this);
-     /*   AccountManager am = AccountManager.get(this);
-        Account[] accounts = am.getAccountsByType("com.google");
-        if (accounts.length > 0) {
-            email = accounts[0].name;
-        }*/
 
         JSONArray jArray;
         String result = null;
-        InputStream is = null;
-        StringBuilder sb = null;
+        InputStream is;
+        StringBuilder sb;
 
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
         if (action.equals("otp")) {
@@ -717,7 +486,7 @@ public class Main_Login extends AppCompatActivity {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
             sb = new StringBuilder();
             sb.append(reader.readLine() + "\n");
-            String line = "0";
+            String line;
             while ((line = reader.readLine()) != null) {
                 sb.append(line + "\n");
             }
@@ -729,7 +498,7 @@ public class Main_Login extends AppCompatActivity {
         }
         try {
             jArray = new JSONArray(result);
-            JSONObject json_data = null;
+            JSONObject json_data;
             for (int i = 0; i < jArray.length(); i++) {
                 json_data = jArray.getJSONObject(i);
                 after_otp = json_data.getString("response");
@@ -792,7 +561,7 @@ public class Main_Login extends AppCompatActivity {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
 
             finish();
-            Intent i = new Intent(Main_Login.this, MainActivity.class);
+            Intent i = new Intent(Main_Login.this, New_Main_Activity.class);
             startActivity(i);
 
         }
@@ -800,60 +569,4 @@ public class Main_Login extends AppCompatActivity {
 
         return super.onKeyDown(keyCode, event);
     }
-
-    protected void onResume() {
-        super.onResume();
-
-   /*     if (sps.getInt(Main_Login.this, "addlodedd") == 1) {
-            System.out.println("####Native");
-            MainActivity.load_addFromMain(Main_Login.this, adds);
-        } else {
-            if (Utils.isNetworkAvailable(Main_Login.this)) {
-                sps.putInt(Main_Login.this, "addlodedd", 2);
-                System.out.println("@IMG");
-                final AdView adView = new AdView(Main_Login.this);
-                adView.setAdUnitId(getString(R.string.main_banner_ori));
-
-                adView.setAdSize(AdSize.SMART_BANNER);
-                AdRequest request = new AdRequest.Builder().build();
-                adView.setAdListener(new AdListener() {
-                    public void onAdLoaded() {
-                        System.out.println("@@@loaded");
-                        adds.removeAllViews();
-                        adds.addView(adView);
-                        adds.setVisibility(View.VISIBLE);
-                        super.onAdLoaded();
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(int i) {
-                        System.out.println("@@@NOt loaded");
-                        super.onAdFailedToLoad(i);
-                    }
-                });
-                adView.loadAd(request);
-
-            }
-        }*/
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-
-        if (sps.getInt(Main_Login.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
-            native_banner_ad_container.setVisibility(View.GONE);
-        } else {
-            if (Utils.isNetworkAvailable(Main_Login.this)) {
-                fb_native(Main_Login.this, native_banner_ad_container);
-
-                /* if (sps.getInt(Main_Login.this, "native_banner_ads") == 1) {
-                    New_Main_Gamelist.inflateAd(Main_Login.this, native_banner_ad_container);
-                } else {
-                    fb_native(Main_Login.this, native_banner_ad_container);
-                }*/
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-        }
-
-    }
-
 }

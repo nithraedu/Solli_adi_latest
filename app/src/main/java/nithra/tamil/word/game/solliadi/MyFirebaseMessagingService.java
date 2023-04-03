@@ -14,7 +14,6 @@ import com.google.firebase.messaging.RemoteMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -24,11 +23,11 @@ import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
 
 public class MyFirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
     private static final String TAG = MyFirebaseMessagingService.class.getSimpleName();
+    final int isclose = 0;
+    final String game_mode = "";
     SQLiteDatabase myDB;
     SharedPreference sharedPreference;
     int iddd;
-    int isclose = 0;
-    String game_mode = "";
     private NotificationHelper noti;
 
     @Override
@@ -85,7 +84,7 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
         SharedPreferences pref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, 0);
         SharedPreferences.Editor editor = pref.edit();
         editor.putString("regId", token);
-        editor.commit();
+        editor.apply();
     }
 
     private void handleDataMessage(JSONObject data) {
@@ -302,26 +301,6 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
                             }
                         }
                     }
-                   /* if (ntype.equals("bt")) {
-                        if (sharedPreference.getString(this, "price_registration").equals("com")) {
-                            noti.Notification_custom(iddd, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), Game_Status.class);
-                        } else {
-                            noti.Notification_custom(iddd, title, message, url, "bi", bm, sharedPreference.getInt(this, "sund_chk1"), Price_Login.class);
-                        }
-                    } else if (ntype.equals("bi")) {
-
-                        if (sharedPreference.getString(this, "price_registration").equals("com")) {
-                            noti.Notification_custom(iddd, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), Game_Status.class);
-                        } else {
-                            noti.Notification_custom(iddd, title, message, url, "bi", bm, sharedPreference.getInt(this, "sund_chk1"), Price_Login.class);
-                        }
-                    } else {
-                        if (sharedPreference.getString(this, "price_registration").equals("com")) {
-                            noti.Notification_custom(iddd, title, message, url, "bt", bm, sharedPreference.getInt(this, "sund_chk1"), Game_Status.class);
-                        } else {
-                            noti.Notification_custom(iddd, title, message, url, "bi", bm, sharedPreference.getInt(this, "sund_chk1"), Price_Login.class);
-                        }
-                    }*/
                 } else if (type.equals("ap")) {
                     if (appInstalledOrNot(pac)) {
 
@@ -343,9 +322,6 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
                     }
                 } else if (type.equals("rao")) {
 
-                   /* msgg = message;
-                    titt = title;
-                    bmmm = bm;*/
                     bm = URLDecoder.decode(bm, StandardCharsets.UTF_8);
                     if (sharedPreference.getInt(this, "purchase_ads") == 0) {
                         sharedPreference.putString(this, "ads_dialog", "on");

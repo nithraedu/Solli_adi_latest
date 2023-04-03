@@ -74,7 +74,7 @@
                 android:id="@+id/like_key_lay"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:visibility="gone"></RelativeLayout>
+                android:visibility="gone" />
 
 
         </RelativeLayout>
@@ -210,7 +210,7 @@
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
-                android:visibility="gone"></RelativeLayout>
+                android:visibility="gone" />
 
 
         </RelativeLayout>

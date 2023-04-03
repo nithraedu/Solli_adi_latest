@@ -1,22 +1,18 @@
 package nithra.tamil.word.game.solliadi.word_search_game.Models.chellange;
 
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Senthamil_Thedal_Native_Banner;
 
 import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.location.Address;
-import android.location.Geocoder;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -25,19 +21,19 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Vibrator;
 import android.text.Html;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -45,24 +41,27 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.NativeAdLayout;
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -73,6 +72,7 @@ import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper2;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper3;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
+import nithra.tamil.word.game.solliadi.Utills;
 import nithra.tamil.word.game.solliadi.Utils;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
@@ -86,36 +86,30 @@ import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.LikeB
 import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.OnAnimationEndListener;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.OnLikeListener;
 
-/*import com.facebook.FacebookException;
-import com.facebook.FacebookOperationCanceledException;
 
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
-import com.facebook.widget.FacebookDialog;
-import com.facebook.widget.WebDialog;*/
+public class challenge_WS_GridFragment extends Fragment implements challenge_WS_GridView.OnWordSelectedListener, OnLikeListener, OnAnimationEndListener {
 
 
-public class challenge_WS_GridFragment extends Fragment implements challenge_WS_GridView.OnWordSelectedListener, OnLikeListener, OnAnimationEndListener, RewardedVideoAdListener {
-
-
+    public static final Set<Word> mSolution = new HashSet<Word>();
+    public static final Set<Word> mFoundWords = new HashSet<Word>();
+    public static final ArrayList<String> hints = new ArrayList<>();
     static private final int coinearn = 1;
-    public static RelativeLayout lay_wordsearch;
-    public static Set<Word> mSolution = new HashSet<Word>();
-    public static Set<Word> mFoundWords = new HashSet<Word>();
+    static private final int mCoinCount = 20;
+    public static LinearLayout lay_wordsearch;
     public static int levelId, gridcount;
-    public static ArrayList<String> hints = new ArrayList<>();
     static int rvo = 0;
     private static String[] mWordList = {"வ.ள.ம்", "மு.ய.ல்", "ந.ல.ம்", "நி.ற.ம்", "மு.த.லை", "ந.ம.து", "அ.ள.வு"};
-    static private int mCoinCount = 20;
+    final ArrayList<String> question_list = new ArrayList<>();
+    final SharedPreference sp = new SharedPreference();
+    final my_dialog myDialog_class = new my_dialog();
+    final ArrayList<String> option_array = new ArrayList<>();
+    final List<String> elephantList = new ArrayList<>();
+    final String Dailytest_ok = "";
     private final Direction[] mDirections = Direction.values();
     // Facebook variable starts
-    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     public CountDownTimer countDownTimer;
-    ArrayList<String> question_list = new ArrayList<>();
     challenge_WS_GridView challengeWsGridView;
     MyTableView myTableView;
-    SharedPreference sp = new SharedPreference();
     LinearLayout option_view;
     RelativeLayout toptool, hintview, coin_lay, progress_lay;
     double diagonalInches;
@@ -125,54 +119,23 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     ImageView more_timer, saval_setting;
     View view = null;
     Vibrator vibrate;
-    my_dialog myDialog_class = new my_dialog();
-    String showview = "";
-    ArrayList<String> showcase_shap;
-    ArrayList<View> showcase_id = new ArrayList<View>();
-    ArrayList<String> showcase_content = new ArrayList<String>();
     TextView counton_timer, counts, screatch_txt, question_txt, coin_txt, option1_txt, option2_txt, title_txt;
-    ArrayList<String> option_array = new ArrayList<>();
     ProgressBar ProgressBar;
     int my_progress = 0, time_value = 2, coin_point = 0, leader_point = 0, coin_point1 = 0, goback = 0, total_word = 0, total_finded = 0;
     Dialog my_my_dialog = null;
-    List<String> elephantList = new ArrayList<>();
     SQLiteDatabase mydb, Inner_mydb, exdb;
     Cursor cursor = null, coin_cursor;
     ImageView icon_ad_img;
     LinearLayout n_icon_ad;
-    FrameLayout Baner_frame;
     LinearLayout normal_baner;
-    String Dailytest_ok = "";
     String share_content = "";
     String btn_str = "";
     Dialog Winning_dialog;
     FirebaseAnalytics mFirebaseAnalytics;
-    /* private UiLifecycleHelper uiHelper;
-     private Session.StatusCallback callback = new Session.StatusCallback() {
-         @Override
-         public void call(Session session, SessionState state,
-                          Exception exception) {
-             // onSessionStateChange(session, state, exception);
-         }
-     };
-     private FacebookDialog.Callback dialogCallback = new FacebookDialog.Callback() {
-         @Override
-         public void onError(FacebookDialog.PendingCall pendingCall,
-                             Exception error, Bundle data) {
-             Log.d("HelloFacebook", String.format("Error: %s", error.toString()));
-         }
-
-         @Override
-         public void onComplete(FacebookDialog.PendingCall pendingCall,
-                                Bundle data) {
-             Log.d("HelloFacebook", "Success!");
-         }
-     };*/
     // facebook variable ends
     int extra_coin_s = 0;
     MediaPlayer beep_mp;
     int fb_reward = 0;
-    com.facebook.ads.RewardedVideoAd rewardedVideoAd;
     int reward_status = 0;
     String reward_video = "";
     Newgame_DataBaseHelper newhelper;
@@ -180,6 +143,8 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     Newgame_DataBaseHelper3 newhelper3;
     DataBaseHelper myDbHelper;
     SQLiteDatabase dbs, dbn, dbn2;
+    Handler handler;
+    Runnable my_runnable;
     private int mRows;
     private int mColumns;
     private boolean[][] mLock;
@@ -187,69 +152,20 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     private String[][] mBoard;
     private long totalTimeCountInMilliseconds, timeBlinkInMilliseconds; // total count down time in
     private boolean blink, timer_stop = false;
-    private boolean mGameOver;
-    private boolean mGamePaused;
-    private RewardedVideoAd mRewardedVideoAd;
-    //*********************reward videos process 1***********************
-    private long mTimeRemaining;
-
-    public static String getCountryName(Context context, double latitude, double longitude) {
-        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-        List<Address> addresses;
-        try {
-            addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            if (addresses != null && !addresses.isEmpty()) {
-                return addresses.get(0).getCountryName();
-            }
-        } catch (IOException ioe) {
-        }
-        return null;
-    }
-
-    @Override
-    public void onRewardedVideoCompleted() {
-
-    }
-
-    @Override
-    public void onError(Ad ad, AdError adError) {
-
-    }
-
-    @Override
-    public void onAdLoaded(Ad ad) {
-
-    }
-
-    @Override
-    public void onAdClicked(Ad ad) {
-
-    }
-
-    @Override
-    public void onLoggingImpression(Ad ad) {
-
-    }
-
-    @Override
-    public void onRewardedVideoClosed() {
-
-    }
+    private RewardedAd rewardedAd;
+    private InterstitialAd mInterstitialAd;
 
     public void showcase_dismiss() {
-        Handler handler30 = new Handler();
-        handler30.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        Handler handler30 = new Handler(Looper.myLooper());
+        handler30.postDelayed(() -> {
 
-                if (sp.getString(context, "ws_challenge_showcase_intro").equals("")) {
-                    showcase_dismiss();
-                } else {
-                    startTimer();
-                    sp.putString(getActivity(), "ws_challenge_intro", "no");
-                }
-
+            if (sp.getString(context, "ws_challenge_showcase_intro").equals("")) {
+                showcase_dismiss();
+            } else {
+                startTimer();
+                sp.putString(getActivity(), "ws_challenge_intro", "no");
             }
+
         }, 800);
     }
     //reward videos process 1***********************
@@ -291,21 +207,9 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
                         //  beep_mp = MediaPlayer.create(getActivity(), R.raw.clock);
 
-                       /* beep_mp.setWakeMode(getActivity(), PowerManager.PARTIAL_WAKE_LOCK);
-                        beep_mp.start();
-
-                        beep_mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-
-                                beep_mp.release();
-                            }
-                        });*/
-
                     }
 
-                    counton_timer.setText(String.format("%02d", seconds / 60)
-                            + ":" + String.format("%02d", seconds % 60));
+                    counton_timer.setText(String.format("%02d", seconds / 60) + ":" + String.format("%02d", seconds % 60));
                     // format the textview to show the easily readable format
 
                     int progress = (int) (leftTimeInMilliseconds / 1000);
@@ -328,7 +232,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                         counton_timer.setText("வெற்றி பெற்றுவிட்டீர் !");
                     } else {
                         game_finish = "winning_report";
-                        winning_report(context, "time_up");
+                        adShow();
                     }
 
 
@@ -354,8 +258,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 //                coin_txt.startAnimation(bounce_anim);
             }
         } finally {
-            if (coin_cursor != null)
-                coin_cursor.close();
+            if (coin_cursor != null) coin_cursor.close();
         }
 
         try {
@@ -387,8 +290,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             }
 
         } finally {
-            if (cursor != null)
-                cursor.close();
+            if (cursor != null) cursor.close();
 
         }
 
@@ -421,21 +323,9 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.challenge_view, null);
-        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-      /*  if (sp.getString(getActivity(), "ws_challenge_intro").equals("")) {
-        } else {
-            no_tool();
-        }*/
-
-        //*********************reward videos process 2***********************
-
-//reward videos process 2***********************
-
-
         System.out.println("-----hh Dailytest_ok : " + Dailytest_ok);
 
-        progress_lay = (RelativeLayout) view.findViewById(R.id.progress_lay);
+        progress_lay = view.findViewById(R.id.progress_lay);
 
         if (Dailytest_ok.equals("")) {
             table_name = sp.getString(getActivity(), "table_name");
@@ -491,280 +381,129 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         newhelper2 = new Newgame_DataBaseHelper2(getActivity());
         newhelper3 = new Newgame_DataBaseHelper3(getActivity());
 
-     /*   exdb = myDbHelper.getReadableDatabase();
-        dbs = newhelper.getReadableDatabase();
-        dbn = newhelper2.getReadableDatabase();
-        dbn2 = newhelper3.getReadableDatabase();*/
-
         context = getActivity();
 
         if (my_dialog.isNetworkAvailable(getActivity())) {
-            if (sp.getInt(getActivity(), "purchase_ads") == 1) {
-                System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
-            } else {
-                //fb_addload_score_screen(getActivity());
-
-                /**/
+            MobileAds.initialize(context);
+            if (sp.getInt(context, "purchase_ads") == 0) {
+                Utills.INSTANCE.initializeAdzz(getActivity());
+                industrialload();
             }
-            reward();
+            rewarded_adnew();
         }
+        normal_baner = view.findViewById(R.id.normal_baner);
+        Utills.INSTANCE.load_add_AppLovin(getActivity(), normal_baner);
 
+        coin_lay = view.findViewById(R.id.coin_lay);
+        coin_txt = view.findViewById(R.id.coin_txt);
+        counts = view.findViewById(R.id.counts);
+        counton_timer = view.findViewById(R.id.counton_timer);
+        more_timer = view.findViewById(R.id.more_timer);
+        saval_setting = view.findViewById(R.id.saval_setting);
+        screatch_txt = view.findViewById(R.id.screatch_txt);
+        question_txt = view.findViewById(R.id.question_txt);
 
-        coin_lay = (RelativeLayout) view.findViewById(R.id.coin_lay);
-        coin_txt = (TextView) view.findViewById(R.id.coin_txt);
-        counts = (TextView) view.findViewById(R.id.counts);
-        counton_timer = (TextView) view.findViewById(R.id.counton_timer);
-        more_timer = (ImageView) view.findViewById(R.id.more_timer);
-        saval_setting = (ImageView) view.findViewById(R.id.saval_setting);
-        screatch_txt = (TextView) view.findViewById(R.id.screatch_txt);
-        question_txt = (TextView) view.findViewById(R.id.question_txt);
-
-        option1_txt = (TextView) view.findViewById(R.id.option1_txt);
-        option2_txt = (TextView) view.findViewById(R.id.option2_txt);
-        title_txt = (TextView) view.findViewById(R.id.title_txt);
+        option1_txt = view.findViewById(R.id.option1_txt);
+        option2_txt = view.findViewById(R.id.option2_txt);
+        title_txt = view.findViewById(R.id.title_txt);
         title_txt.setText(sp.getString(getActivity(), "saval_type"));
 
 
-        normal_baner = (LinearLayout) view.findViewById(R.id.normal_baner);
-        Baner_frame = (FrameLayout) view.findViewById(R.id.Baner_frame);
-        icon_ad_img = (ImageView) view.findViewById(R.id.icon_ad_img);
-        n_icon_ad = (LinearLayout) view.findViewById(R.id.n_icon_ad);
-        n_icon_ad.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //  myDialog_class.WST_Native_IconAd_show();
-            }
+        icon_ad_img = view.findViewById(R.id.icon_ad_img);
+        n_icon_ad = view.findViewById(R.id.n_icon_ad);
+        n_icon_ad.setOnClickListener(view -> {
+            //  myDialog_class.WST_Native_IconAd_show();
         });
 
         vibrate = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
 
 
-      /*  option1_txt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-
-
-                Word mWords = null;
-
-                for (Word word : mSolution) {
-                    System.out.println("-------- word  " + word.getWord());
-
-                    if (word.getWord().replace(".", "").equals(question_list.get(mFoundWords.size()).replace(".", ""))) {
-                        mWords = word;
-                        System.out.println("-------- word mWords " + mWords);
-                        break;
-                    }
-
-                }
-
-
-                coin_point1 = Integer.parseInt(coin_txt.getText().toString());
-
-                if (!mFoundWords.contains(mWords)) {
-
-                    if (hints.contains(mWords.getWord())) {
-                        challengeWsGridView.showHint(mWords);
-                    } else {
-
-                        if (select_me.equals("")) {
-                            if (coin_point1 >= 20) {
-                                option_hint_dia(mWords, "all");
-                            } else {
-                                more_coin();
-                            }
-                        } else {
-                            if (coin_point1 >= 10) {
-
-                                select_me = "opt";
-                                option_hint_dia(mWords, "hint");
-
-                            } else {
-                                more_coin();
-                            }
-                        }
-                    }
-                }
-
-
-            }
-        });
-
-        option2_txt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-
-                Word mWords = null;
-
-                for (Word word : mSolution) {
-                    System.out.println("-------- word  " + word.getWord());
-
-                    if (word.getWord().replace(".", "").equals(question_list.get(mFoundWords.size()).replace(".", ""))) {
-                        mWords = word;
-                        System.out.println("-------- word mWords " + mWords);
-                        break;
-                    }
-
-                }
-
-
-                coin_point1 = Integer.parseInt(coin_txt.getText().toString());
-
-                if (!mFoundWords.contains(mWords)) {
-
-                    if (hints.contains(mWords.getWord())) {
-                        challengeWsGridView.showHint(mWords);
-                    } else {
-
-                        if (select_me.equals("")) {
-                            if (coin_point1 >= 20) {
-                                option_hint_dia(mWords, "all");
-                            } else {
-                                more_coin();
-                            }
-                        } else {
-                            if (coin_point1 >= 10) {
-
-                                select_me = "opt";
-                                option_hint_dia(mWords, "hint");
-
-                            } else {
-                                more_coin();
-                            }
-                        }
-                    }
-                }
-            }
-        });*/
-
-
-        ProgressBar = (ProgressBar) view.findViewById(R.id.ProgressBar);
+        ProgressBar = view.findViewById(R.id.ProgressBar);
 
         //bounce_anim = AnimationUtils.loadAnimation(getActivity(), R.anim.bounce_anim);
 
-        option_view = (LinearLayout) view.findViewById(R.id.option_view);
+        option_view = view.findViewById(R.id.option_view);
 
-        question_txt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+        question_txt.setOnClickListener(v -> {
+            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
 
-                Word mWords = null;
+            Word mWords = null;
 
-                for (Word word : mSolution) {
-                    System.out.println("-------- word  " + word.getWord());
+            for (Word word : mSolution) {
+                System.out.println("-------- word  " + word.getWord());
 
-                    if (word.getWord().replace(".", "").equals(question_list.get(mFoundWords.size()).replace(".", ""))) {
-                        mWords = word;
-                        System.out.println("-------- word mWords " + mWords);
-                        break;
-                    }
-
+                if (word.getWord().replace(".", "").equals(question_list.get(mFoundWords.size()).replace(".", ""))) {
+                    mWords = word;
+                    System.out.println("-------- word mWords " + mWords);
+                    break;
                 }
 
+            }
 
-                coin_point1 = Integer.parseInt(coin_txt.getText().toString());
-                if (!mFoundWords.contains(mWords)) {
-                    if (hints.contains(mWords.getWord())) {
-                        challengeWsGridView.showHint(mWords);
-                    } else {
-                        if (coin_point1 >= 20) {
 
-                            if (!game_type.equals("challenge_word")) {
+            coin_point1 = Integer.parseInt(coin_txt.getText().toString());
+            if (!mFoundWords.contains(mWords)) {
+                if (hints.contains(mWords.getWord())) {
+                    challengeWsGridView.showHint(mWords);
+                } else {
+                    if (coin_point1 >= 20) {
 
-                                if (hints.contains(mWords.getWord())) {
-                                    challengeWsGridView.showHint(mWords);
-                                } else {
-                                    if (select_me.equals("")) {
-                                        option_hint_dia(mWords, "all");
-                                    } else {
-                                        select_me = "opt";
-                                        option_hint_dia(mWords, "hint");
-                                    }
-                                }
+                        if (!game_type.equals("challenge_word")) {
 
-                            } else if (sp.getString(getActivity(), "option_show").equals("")) {
-                                hint_dia(mWords);
-                            } /*else {
+                            if (hints.contains(mWords.getWord())) {
+                                challengeWsGridView.showHint(mWords);
+                            } else {
                                 if (select_me.equals("")) {
                                     option_hint_dia(mWords, "all");
+                                } else {
+                                    select_me = "opt";
+                                    option_hint_dia(mWords, "hint");
                                 }
-                            }*/
-                        } else {
-                            more_coin();
-                        }
-                    }
+                            }
 
-                }
-
-              /*  if (sp.getString(getActivity(), "option_show").equals("")) {
-
-                    if (!mFoundWords.contains(mWords)) {
-                        if (hints.contains(mWords.getWord())) {
-                            challengeWsGridView.showHint(mWords);
-                        } else {
+                        } else if (sp.getString(getActivity(), "option_show").equals("")) {
                             hint_dia(mWords);
-                        }
+                        } /*else {
+                            if (select_me.equals("")) {
+                                option_hint_dia(mWords, "all");
+                            }
+                        }*/
+                    } else {
+                        more_coin();
                     }
-                    option_hint_dia(mWords);
-                } else {
-                    if (!mFoundWords.contains(mWords)) {
-                        if (hints.contains(mWords.getWord())) {
-                            challengeWsGridView.showHint(mWords);
-                        } else {
-                            hint_dia(mWords);
-                        }
-                    }
-                }*/
-
-
-            }
-        });
-
-        coin_lay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-
-                more_coin();
-            }
-        });
-
-
-        more_timer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-
-                more_time();
-            }
-        });
-
-        saval_setting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                String snd = sp.getString(getActivity(), "snd");
-                if (snd.equals("off")) {
-                    sp.putString(getActivity(), "snd", "on");
-                    saval_setting.setBackgroundResource(R.drawable.sound_on);
-                } else if (snd.equals("on")) {
-                    sp.putString(getActivity(), "snd", "off");
-                    saval_setting.setBackgroundResource(R.drawable.sound_off);
                 }
 
-
-              /*  myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-                if (Dailytest_ok.equals("")) {
-                    countDownTimer.cancel();
-                }
-
-                sp.putString(getActivity(), "no_setting", "setting");
-                no_setting();*/
-                // myDialog_class.setting(getActivity()).show();
             }
+
+
+        });
+
+        coin_lay.setOnClickListener(v -> {
+            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+
+            more_coin();
+        });
+
+
+        more_timer.setOnClickListener(v -> {
+            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+
+            more_time();
+        });
+
+        saval_setting.setOnClickListener(v -> {
+
+            String snd = sp.getString(getActivity(), "snd");
+            if (snd.equals("off")) {
+                sp.putString(getActivity(), "snd", "on");
+                saval_setting.setBackgroundResource(R.drawable.sound_on);
+            } else if (snd.equals("on")) {
+                sp.putString(getActivity(), "snd", "off");
+                saval_setting.setBackgroundResource(R.drawable.sound_off);
+            }
+
+
+            // myDialog_class.setting(getActivity()).show();
         });
 
         DisplayMetrics metrics = new DisplayMetrics();
@@ -809,14 +548,14 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
         context = getActivity();
 
-        lay_wordsearch = (RelativeLayout) view.findViewById(R.id.lay_wordsearch);
+        lay_wordsearch = view.findViewById(R.id.lay_wordsearch);
 
-        challengeWsGridView = (challenge_WS_GridView) view.findViewById(R.id.grd_challenge);
-        myTableView = (MyTableView) view.findViewById(R.id.mytab);
+        challengeWsGridView = view.findViewById(R.id.grd_challenge);
+        myTableView = view.findViewById(R.id.mytab);
 
 
-        toptool = (RelativeLayout) view.findViewById(R.id.toptool);
-        hintview = (RelativeLayout) view.findViewById(R.id.hintview);
+        toptool = view.findViewById(R.id.toptool);
+        hintview = view.findViewById(R.id.hintview);
 
 
         if (sp.getInt(getContext(), "Grid") == 1) {
@@ -827,27 +566,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         levelId = sp.getInt(getContext(), "LEVEL");
         gridcount = sp.getInt(getContext(), "GRID");
 
-
- /*       if (sp.getString(getActivity(), "saval_showcase").equals("")) {
-            //showcase_view(mp_img);
-
-            showview = "saval_showcase";
-
-            showcase_shap = new ArrayList<>(Arrays.asList("rect", "circle", "circle", "rect"));
-
-            showcase_content.add("செயலியை பகிர்ந்து கூடுதல் நாணயம் பெறலாம் ");
-            showcase_content.add("நேரத்தை அதிகரிக்க இந்த பொத்தானை சொடுக்கவும்");
-            showcase_content.add("விளையாட்டின் செயல்களை உங்கள் கட்டுப்பாட்டில் அமைக்க ");
-            showcase_content.add("குறிப்பு பார்க்க சொல்லை சொடுக்கவும்");
-
-            showcase_id.add(coin_lay);
-            showcase_id.add(more_timer);
-            showcase_id.add(saval_setting);
-            showcase_id.add(question_txt);
-
-            myDialog_class.showcase_view(getActivity(), showview, showcase_id, showcase_shap, showcase_content);
-
-        }*/
 
         String snd = sp.getString(getActivity(), "snd");
 
@@ -873,25 +591,14 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             sequence.addSequenceItem(coin_lay, "செயலியை பகிர்ந்து கூடுதல் நாணயம் பெறலாம்.", "அடுத்து");
 
             sequence.addSequenceItem(more_timer, "நேரத்தை அதிகரிக்க இந்த பொத்தானை சொடுக்கவும்.", "அடுத்து");
-            // sequence.addSequenceItem(saval_setting, "விளையாட்டின் செயல்களை உங்கள் கட்டுப்பாட்டில் அமைக்க.", "அடுத்து");
 
-            //  sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
-
-            sequence.addSequenceItem(new MaterialShowcaseView.Builder(getActivity())
-                            .setTarget(question_txt)
-                            .setDismissText("சரி")
-                            .setContentText("குறிப்பு பார்க்க சொல்லை சொடுக்கவும்.")
-                            .build())
-                    .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
-                        @Override
-                        public void onDismiss(MaterialShowcaseView itemView, int position) {
-                            if (position == 2) {
-                                // startTimer();
-                                sp.putString(getActivity(), "ws_challenge_intro", "no");
-                                sp.putString(getActivity(), "ws_challenge_showcase_intro", "yes");
-                            }
-                        }
-                    });
+            sequence.addSequenceItem(new MaterialShowcaseView.Builder(getActivity()).setTarget(question_txt).setDismissText("சரி").setContentText("குறிப்பு பார்க்க சொல்லை சொடுக்கவும்.").build()).setOnItemDismissedListener((itemView, position) -> {
+                if (position == 2) {
+                    // startTimer();
+                    sp.putString(getActivity(), "ws_challenge_intro", "no");
+                    sp.putString(getActivity(), "ws_challenge_showcase_intro", "yes");
+                }
+            });
 
 
             sequence.start();
@@ -928,9 +635,8 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         super.onPause();
         reward_video = "";
 
-        //******reward video pocess :4
+        if (handler != null) handler.removeCallbacks(my_runnable);
 
-        //reward video pocess :4 ************//
     }
 
 
@@ -939,23 +645,12 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     @Override
     public void onResume() {
         super.onResume();
-        //******reward video pocess :4
-        //loadRewardedVideoAd();
+        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sp.getInt(context, "Game1_Stage_Close_VV"));
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
         mFirebaseAnalytics.setCurrentScreen(getActivity(), "Word Search Challenge", null);
 
-        if (!mGameOver && mGamePaused) {
 
-        }
-
-        //reward video pocess :4 ************//
-
-        if (!sp.getString(getActivity(), "saval_showcase").equals("")) {
-            //  Native_icon_ad.load_add(getActivity(), normal_baner);
-            //myDialog_class.WST_Native_IconAd(getActivity(), icon_ad_img, n_icon_ad);
-            //   myDialog_class.WST_Native_BannerAd(getActivity(), Baner_frame);
-
-        }
         if (timer_stop) {
             if (game_finish.equals("")) {
                 startTimer();
@@ -963,28 +658,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             }
 
         }
-
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) view.findViewById(R.id.native_banner_ad_container_1);
-        System.out.println("=====--check purchase_ads : " + sp.getInt(getActivity(), "purchase_ads"));
-        if (sp.getInt(getActivity(), "purchase_ads") == 1) {
-            normal_baner.setVisibility(View.GONE);
-            native_banner_ad_container.setVisibility(View.GONE);
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        } else {
-            if (Utils.isNetworkAvailable(getActivity())) {
-                native_banner_ad_container.setVisibility(View.GONE);
-                fb_native_Senthamil_Thedal_Native_Banner(getActivity(), native_banner_ad_container);
-                //fb_native(getActivity(),native_banner_ad_container);
-               /* if (sp.getInt(getActivity(), "native_banner_ads") == 1) {
-                    New_Main_Gamelist.inflateAd(getActivity(), native_banner_ad_container);
-                } else {
-                    fb_native(getActivity(), native_banner_ad_container);
-                }*/
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-        }
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -1030,13 +703,11 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
                 int wordStart = (word.getRow() * mColumns) + word.getCol();
 
-                if (question_list.get(mFoundWords.size()).replace(".", "").equals(forwardWord.toString().toLowerCase()) ||
-                        question_list.get(mFoundWords.size()).replace(".", "").equals(reverseWord.toString().toLowerCase())) {
+                if (question_list.get(mFoundWords.size()).replace(".", "").equals(forwardWord.toString().toLowerCase()) || question_list.get(mFoundWords.size()).replace(".", "").equals(reverseWord.toString().toLowerCase())) {
 
 
                     if (wordStart != firstPos && wordStart != lastPos) {
-                        if (word.getWord().equalsIgnoreCase(forwardWord.toString())
-                                || word.getWord().equalsIgnoreCase(reverseWord.toString())) {
+                        if (word.getWord().equalsIgnoreCase(forwardWord.toString()) || word.getWord().equalsIgnoreCase(reverseWord.toString())) {
 
                             Toast.makeText(getContext(), "இந்த வார்த்தை வேறு இடத்தில் உள்ளது ", Toast.LENGTH_SHORT).show();
                         }
@@ -1057,14 +728,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
                     if (found != null) {
 
-                    /*screatch_txt.setVisibility(View.VISIBLE);
-                    screatch_txt.setText(found.getWord().replace(".", ""));*/
-
                         myDialog_class.media_player(getActivity(), R.raw.scretch_done, "normal");
-
-                      /*  if (sp.getInt(getActivity(), "Vibrate") == 1) {
-                            vibrate.vibrate(100);
-                        }*/
 
                         mFoundWords.add(found);
                         challengeWsGridView.clearHint();
@@ -1102,8 +766,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                             }
 
                         } finally {
-                            if (cursor != null)
-                                cursor.close();
+                            if (cursor != null) cursor.close();
                         }
 
                         if (mSolution.size() > mFoundWords.size()) {
@@ -1172,8 +835,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                 }
 
             } finally {
-                if (cursor != null)
-                    cursor.close();
+                if (cursor != null) cursor.close();
 
             }
 
@@ -1217,9 +879,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     @Override
     public void liked(LikeButton likeButton) {
 
-        String share_content = "தமிழ் வார்த்தை விளையாட்டை விளையாட இது உங்களுக்கான சொற்களம்.\n" +
-                "நீங்களும் இக்களத்தில் ஒருவராக இருக்க \n" +
-                "நித்ராவின் செம்மொழி  வேட்டை செயலியை  கீழே உள்ள லிங்கை கிளிக் செய்து தரவிறக்கம் செய்யவும்.\n" + "https://goo.gl/5FhjMM";
+        String share_content = "தமிழ் வார்த்தை விளையாட்டை விளையாட இது உங்களுக்கான சொற்களம்.\n" + "நீங்களும் இக்களத்தில் ஒருவராக இருக்க \n" + "நித்ராவின் செம்மொழி  வேட்டை செயலியை  கீழே உள்ள லிங்கை கிளிக் செய்து தரவிறக்கம் செய்யவும்.\n" + "https://goo.gl/5FhjMM";
 
 
         String root = Environment.getExternalStorageDirectory().toString();
@@ -1267,68 +927,51 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         }
         my_my_dialog = Winning_dialog;
 
-   /*    if (mFoundWords.size() == mSolution.size()){
-           price_update();
-       }
-*/
-        TextView video_earn = (TextView) Winning_dialog.findViewById(R.id.video_earn);
+        TextView video_earn = Winning_dialog.findViewById(R.id.video_earn);
         video_earn.setText("மேலும் " + sp.getInt(getActivity(), "reward_coin_txt") + "+நாணயங்கள் பெற");
 
-        LinearLayout vid_earn = (LinearLayout) Winning_dialog.findViewById(R.id.vid_earn);
+        LinearLayout vid_earn = Winning_dialog.findViewById(R.id.vid_earn);
 
         Animation myFadeInAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.blink_animation);
         vid_earn.startAnimation(myFadeInAnimation);
 
-        vid_earn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 2;
-                extra_coin_s = 0;
-                if (isNetworkAvailable()) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
+        vid_earn.setOnClickListener(v -> {
+            rvo = 2;
+            extra_coin_s = 0;
+            if (isNetworkAvailable()) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
 
-                    if (fb_reward == 1) {
+                if (fb_reward == 1) {
 
-                        reward_progressBar.dismiss();
-                        rewardedVideoAd.show();
+                    reward_progressBar.dismiss();
+                    show_reward();
 
 
-                        // mShowVideoButton.setVisibility(View.VISIBLE);
-                    } else {
-                        fb_reward = 0;
-                        reward();
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-
-                                Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-
-                            }
-                        }, 2000);
-
-
-                    }
+                    // mShowVideoButton.setVisibility(View.VISIBLE);
                 } else {
+                    fb_reward = 0;
+                    rewarded_adnew();
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
+                        reward_progressBar.dismiss();
 
-                    Toast.makeText(context, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+
+                    }, 2000);
+
 
                 }
+            } else {
+
+                Toast.makeText(context, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
             }
+
         });
 
-        LinearLayout fl_adplaceholder = (LinearLayout) Winning_dialog.findViewById(R.id.fl_adplaceholder);
+        LinearLayout fl_adplaceholder = Winning_dialog.findViewById(R.id.fl_adplaceholder);
         if (sp.getInt(getActivity(), "purchase_ads") == 1) {
             fl_adplaceholder.setVisibility(View.GONE);
         } else {
-            //  load_addinstall(getActivity(), fl_adplaceholder);
-            //  New_Main_Activity.load_addFromMain_multiplayer(getActivity(), fl_adplaceholder);
-           /* if (Utils.isNetworkAvailable(getActivity())){
-                //New_Main_Activity.load_add_fb_rect_score_screen(getActivity(), fl_adplaceholder);
-            }else {
-                fl_adplaceholder.setVisibility(View.GONE);
-            }*/
             if (Utils.isNetworkAvailable(context)) {
                 //New_Main_Activity.load_add_fb_rect_score_screen(context, fl_adplaceholder);
             } else {
@@ -1339,14 +982,11 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         //  price_update();
 
         goback = 0;
-        my_my_dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (goback == 0) {
-                    Intent intent = new Intent(getActivity(), Word_search_main.class);
-                    getActivity().finish();
-                    startActivity(intent);
-                }
+        my_my_dialog.setOnDismissListener(dialog -> {
+            if (goback == 0) {
+                Intent intent = new Intent(getActivity(), Word_search_main.class);
+                getActivity().finish();
+                startActivity(intent);
             }
         });
 
@@ -1358,73 +998,60 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                 leader_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("l_points"));
             }
         } finally {
-            if (coin_cursor != null)
-                coin_cursor.close();
+            if (coin_cursor != null) coin_cursor.close();
         }
 
 
-        TextView best_score = (TextView) Winning_dialog.findViewById(R.id.best_score);
-        TextView current_score = (TextView) Winning_dialog.findViewById(R.id.current_score);
-        TextView win_coin = (TextView) Winning_dialog.findViewById(R.id.win_coin);
-        TextView credit_coin = (TextView) Winning_dialog.findViewById(R.id.credit_coin);
-        TextView time_txt = (TextView) Winning_dialog.findViewById(R.id.time_txt);
-        TextView retry_txt = (TextView) Winning_dialog.findViewById(R.id.retry_txt);
-        Chronometer best_chronometer = (Chronometer) Winning_dialog.findViewById(R.id.best_chronometer);
+        TextView best_score = Winning_dialog.findViewById(R.id.best_score);
+        TextView current_score = Winning_dialog.findViewById(R.id.current_score);
+        TextView win_coin = Winning_dialog.findViewById(R.id.win_coin);
+        TextView credit_coin = Winning_dialog.findViewById(R.id.credit_coin);
+        TextView time_txt = Winning_dialog.findViewById(R.id.time_txt);
+        TextView retry_txt = Winning_dialog.findViewById(R.id.retry_txt);
+        Chronometer best_chronometer = Winning_dialog.findViewById(R.id.best_chronometer);
 
-        TextView best_valthu_txt = (TextView) Winning_dialog.findViewById(R.id.best_valthu_txt);
+        TextView best_valthu_txt = Winning_dialog.findViewById(R.id.best_valthu_txt);
         ArrayList<String> best_word = new ArrayList<>(Arrays.asList("மிக சிறப்பு", "வாழ்த்துக்கள்", "அருமை", "அற்புதம்", "தமிழ் வாழ்க", "தமிழன்"));
         String bestword = best_word.get(new Random().nextInt(best_word.size()));
         best_valthu_txt.setText("" + bestword);
 
-        RelativeLayout retry_game = (RelativeLayout) Winning_dialog.findViewById(R.id.retry_game);
-        RelativeLayout next_game = (RelativeLayout) Winning_dialog.findViewById(R.id.next_game);
+        RelativeLayout retry_game = Winning_dialog.findViewById(R.id.retry_game);
+        RelativeLayout next_game = Winning_dialog.findViewById(R.id.next_game);
 
-        LikeButton like_retry_game = (LikeButton) Winning_dialog.findViewById(R.id.like_retry_game);
-        LikeButton like_continue_img = (LikeButton) Winning_dialog.findViewById(R.id.like_continue_img);
-
-        /*like_retry_game.setOnLikeListener(this);
-        like_retry_game.setOnAnimationEndListener(this);
-        like_continue_img.setOnLikeListener(this);
-        like_continue_img.setOnAnimationEndListener(this);*/
+        LikeButton like_retry_game = Winning_dialog.findViewById(R.id.like_retry_game);
+        LikeButton like_continue_img = Winning_dialog.findViewById(R.id.like_continue_img);
 
 
-        retry_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-                goback = 1;
+        retry_game.setOnClickListener(v -> {
+            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+            goback = 1;
 
-                Intent intent = new Intent(getActivity(), Word_search_main.class);
-                getActivity().finish();
-                startActivity(intent);
+            Intent intent = new Intent(getActivity(), Word_search_main.class);
+            getActivity().finish();
+            startActivity(intent);
 
-            }
         });
 
-        next_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
-                goback = 1;
+        next_game.setOnClickListener(v -> {
+            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+            goback = 1;
 
-                try {
-                    coin_cursor = myDbHelper.getQry("select * from score");
-                    if (coin_cursor.getCount() != 0) {
-                        coin_cursor.moveToFirst();
-                        coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coins"));
-                        leader_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("l_points"));
-                        coin_txt.setText("" + coin_point);
+            try {
+                coin_cursor = myDbHelper.getQry("select * from score");
+                if (coin_cursor.getCount() != 0) {
+                    coin_cursor.moveToFirst();
+                    coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coins"));
+                    leader_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("l_points"));
+                    coin_txt.setText("" + coin_point);
 //                coin_txt.startAnimation(bounce_anim);
-                    }
-                } finally {
-                    if (coin_cursor != null)
-                        coin_cursor.close();
                 }
-
-                load_data();
-                Winning_dialog.dismiss();
-
+            } finally {
+                if (coin_cursor != null) coin_cursor.close();
             }
+
+            load_data();
+            Winning_dialog.dismiss();
+
         });
 
 
@@ -1468,8 +1095,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             }
 
         } finally {
-            if (cursor != null)
-                cursor.close();
+            if (cursor != null) cursor.close();
         }
 
 
@@ -1504,14 +1130,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
         challengeWsGridView.setOnWordSelectedListener(this);
         load_data();
-
-
-
-
-
-       /* resetBoard();
-        generateBoard();
-        initBoard();*/
 
 
         challengeWsGridView.setVisibility(View.VISIBLE);
@@ -1555,8 +1173,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
                 }
             } finally {
-                if (cursor != null)
-                    cursor.close();
+                if (cursor != null) cursor.close();
             }
 
 
@@ -1583,8 +1200,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
                     }
                 } finally {
-                    if (cursor != null)
-                        cursor.close();
+                    if (cursor != null) cursor.close();
                 }
                 System.out.println("---------------------content : " + missing_content);
 
@@ -1657,26 +1273,17 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
      * Attempts to add a word to the puzzle anywhere possible.
      *
      * @param word The word added
-     * @return The Word object representing this words position in the puzzle.
-     * Null if the word could not be fit into the puzzle
      */
-    private Word addWord(String word) {
+    private void addWord(String word) {
 
         String[] str = word.split("\\.");
 
-
-
-
-       /* StringBuilder builder = new StringBuilder();
-        for (String s : str) {
-            builder.append(s);
-        }*/
 
         System.out.println("Row" + mRows);
         System.out.println("Columns" + mColumns);
 
         if (str.length > mColumns && str.length > mRows) {
-            return null;
+            return;
         }
 
         Random rand = new Random();
@@ -1725,10 +1332,8 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         if (bestScore >= 0) {
             Word result = new Word(word, bestRow, bestCol, bestDirection);
             placeWord(result);
-            return result;
         }
 
-        return null;
     }
 
     /**
@@ -1801,10 +1406,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             if (getAvailableSpace(direction, row, col) < builder.toString().length()) {
                 return -1;
             }
-
-           /* if (getAvailableSpace(direction, row, col) < word.length()) {
-                return -1;
-            }*/
 
             int curRow = row;
             int curCol = col;
@@ -1900,8 +1501,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
                 Random r = new Random();
                 String s = alphabet[r.nextInt(N)];
-                // char s = alphabet.charAt(r.nextInt(N));
-                //mBoard[i][j] = 'Z';
                 mBoard[i][j] = s;
             }
         }
@@ -1926,12 +1525,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         anims1.setFillAfter(true);
         tv1.startAnimation(anims1);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                lay_wordsearch.removeView(tv1);
-            }
-        }, 1000);
+        new Handler(Looper.myLooper()).postDelayed(() -> lay_wordsearch.removeView(tv1), 1000);
     }
 
     public void more_time() {
@@ -1942,9 +1536,9 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             countDownTimer.cancel();
         }
 
-        TextView cancel_time = (TextView) dialog.findViewById(R.id.cancel_time);
-        TextView done_time = (TextView) dialog.findViewById(R.id.done_time);
-        final CheckBox time_checkbox = (CheckBox) dialog.findViewById(R.id.time_checkbox);
+        TextView cancel_time = dialog.findViewById(R.id.cancel_time);
+        TextView done_time = dialog.findViewById(R.id.done_time);
+        final CheckBox time_checkbox = dialog.findViewById(R.id.time_checkbox);
 
         coin_point1 = Integer.parseInt(coin_txt.getText().toString());
 
@@ -1976,49 +1570,43 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             }
         }
 
-        cancel_time.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+        cancel_time.setOnClickListener(v -> {
+            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
 
-                dialog.dismiss();
-                startTimer();
-            }
+            dialog.dismiss();
+            startTimer();
         });
 
-        done_time.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+        done_time.setOnClickListener(v -> {
+            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
 
-                dialog.dismiss();
+            dialog.dismiss();
 
-                if (coin_point1 >= 100) {
+            if (coin_point1 >= 100) {
 
-                    if (time_checkbox.isChecked()) {
-                        sp.putString(getActivity(), "time_checkbox_" + game_type, "done");
-                    }
-                    coin_point -= 100;
-                    myDbHelper.executeSql("UPDATE score SET coins='" + coin_point + "'");
-
-                    coin_point1 -= 100;
-                    coin_txt.setText("" + coin_point1);
-                    //coin_txt.startAnimation(bounce_anim);
-
-                    totalTimeCountInMilliseconds += (30 * 1000);
-
-                    if ((60L * time_value * 1000) <= totalTimeCountInMilliseconds) {
-                        my_progress = (int) (totalTimeCountInMilliseconds / 1000);
-
-                    }
-                    get_time(30);
-                    startTimer();
-                } else {
-                    more_coin();
+                if (time_checkbox.isChecked()) {
+                    sp.putString(getActivity(), "time_checkbox_" + game_type, "done");
                 }
+                coin_point -= 100;
+                myDbHelper.executeSql("UPDATE score SET coins='" + coin_point + "'");
 
+                coin_point1 -= 100;
+                coin_txt.setText("" + coin_point1);
+                //coin_txt.startAnimation(bounce_anim);
 
+                totalTimeCountInMilliseconds += (30 * 1000);
+
+                if ((60L * time_value * 1000) <= totalTimeCountInMilliseconds) {
+                    my_progress = (int) (totalTimeCountInMilliseconds / 1000);
+
+                }
+                get_time(30);
+                startTimer();
+            } else {
+                more_coin();
             }
+
+
         });
 
     }
@@ -2029,15 +1617,15 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         dialog.setCancelable(false);
         dialog.show();
 
-        final RelativeLayout ans_hint_lay = (RelativeLayout) dialog.findViewById(R.id.ans_hint_lay);
-        final RelativeLayout option_hint_lay = (RelativeLayout) dialog.findViewById(R.id.option_hint_lay);
+        final RelativeLayout ans_hint_lay = dialog.findViewById(R.id.ans_hint_lay);
+        final RelativeLayout option_hint_lay = dialog.findViewById(R.id.option_hint_lay);
 
-        final ImageView option_A_tick = (ImageView) dialog.findViewById(R.id.option_A_tick);
-        final ImageView option_B_tick = (ImageView) dialog.findViewById(R.id.option_B_tick);
+        final ImageView option_A_tick = dialog.findViewById(R.id.option_A_tick);
+        final ImageView option_B_tick = dialog.findViewById(R.id.option_B_tick);
 
 
-        TextView cancel_hint_option = (TextView) dialog.findViewById(R.id.cancel_hint_option);
-        TextView done_hint_option = (TextView) dialog.findViewById(R.id.done_hint_option);
+        TextView cancel_hint_option = dialog.findViewById(R.id.cancel_hint_option);
+        TextView done_hint_option = dialog.findViewById(R.id.done_hint_option);
 
         if (Dailytest_ok.equals("")) {
             countDownTimer.cancel();
@@ -2050,106 +1638,94 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
         coin_point1 = Integer.parseInt(coin_txt.getText().toString());
 
-        ans_hint_lay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+        ans_hint_lay.setOnClickListener(v -> {
+            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
 
-                option_A_tick.setVisibility(View.VISIBLE);
-                option_B_tick.setVisibility(View.INVISIBLE);
-                select_me = "ans";
-            }
+            option_A_tick.setVisibility(View.VISIBLE);
+            option_B_tick.setVisibility(View.INVISIBLE);
+            select_me = "ans";
         });
-        option_hint_lay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+        option_hint_lay.setOnClickListener(v -> {
+            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
 
-                option_A_tick.setVisibility(View.INVISIBLE);
-                option_B_tick.setVisibility(View.VISIBLE);
-                select_me = "opt";
-            }
+            option_A_tick.setVisibility(View.INVISIBLE);
+            option_B_tick.setVisibility(View.VISIBLE);
+            select_me = "opt";
         });
-        cancel_hint_option.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+        cancel_hint_option.setOnClickListener(v -> {
+            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
 
 
-                if (option_show.equals("all")) {
-                    select_me = "";
+            if (option_show.equals("all")) {
+                select_me = "";
+            }
+            dialog.dismiss();
+            startTimer();
+        });
+        done_hint_option.setOnClickListener(v -> {
+            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+
+            if (select_me.equals("ans")) {
+                coin_point -= 10;
+                myDbHelper.executeSql("UPDATE score SET coins='" + coin_point + "'");
+
+                coin_point1 -= 10;
+                coin_txt.setText("" + coin_point1);
+                // coin_txt.startAnimation(bounce_anim);
+
+
+                if (game_type.equals("missing_word")) {
+                    String htmlText = missing_content.replace(question_list.get(mFoundWords.size()).replace(".", ""), "<font color='#faff72'>" + question_list.get(mFoundWords.size()).replace(".", "") + "</font>");
+                    question_txt.setText(Html.fromHtml(htmlText));
+                } else {
+                    if (question_list.get(mFoundWords.size()).replace(".", "").equals(option1_txt.getText().toString())) {
+                        option1_txt.setBackgroundColor(Color.parseColor("#45ea3d"));
+                    } else {
+                        option2_txt.setBackgroundColor(Color.parseColor("#45ea3d"));
+                    }
                 }
                 dialog.dismiss();
                 startTimer();
-            }
-        });
-        done_hint_option.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
 
-                if (select_me.equals("ans")) {
+            } else if (select_me.equals("opt")) {
+
+                if (option_show.equals("hint")) {
                     coin_point -= 10;
                     myDbHelper.executeSql("UPDATE score SET coins='" + coin_point + "'");
-
                     coin_point1 -= 10;
-                    coin_txt.setText("" + coin_point1);
-                    // coin_txt.startAnimation(bounce_anim);
+                } else {
+                    coin_point -= 20;
+                    myDbHelper.executeSql("UPDATE score SET coins='" + coin_point + "'");
+                    coin_point1 -= 20;
+                }
 
 
-                    if (game_type.equals("missing_word")) {
-                        String htmlText = missing_content.replace(question_list.get(mFoundWords.size()).replace(".", ""), "<font color='#faff72'>" + question_list.get(mFoundWords.size()).replace(".", "") + "</font>");
-                        question_txt.setText(Html.fromHtml(htmlText));
-                    } else {
-                        if (question_list.get(mFoundWords.size()).replace(".", "").equals(option1_txt.getText().toString())) {
-                            option1_txt.setBackgroundColor(Color.parseColor("#45ea3d"));
-                        } else {
-                            option2_txt.setBackgroundColor(Color.parseColor("#45ea3d"));
-                        }
-                    }
-                    dialog.dismiss();
-                    startTimer();
-
-                } else if (select_me.equals("opt")) {
-
-                    if (option_show.equals("hint")) {
-                        coin_point -= 10;
-                        myDbHelper.executeSql("UPDATE score SET coins='" + coin_point + "'");
-                        coin_point1 -= 10;
-                    } else {
-                        coin_point -= 20;
-                        myDbHelper.executeSql("UPDATE score SET coins='" + coin_point + "'");
-                        coin_point1 -= 20;
-                    }
-
-
-                    coin_txt.setText("" + coin_point1);
+                coin_txt.setText("" + coin_point1);
 //                    coin_txt.startAnimation(bounce_anim);
 
 
-                    if (game_type.equals("missing_word")) {
-                        String htmlText = missing_content.replace(question_list.get(mFoundWords.size()).replace(".", ""), "<font color='#faff72'>" + question_list.get(mFoundWords.size()).replace(".", "") + "</font>");
-                        question_txt.setText(Html.fromHtml(htmlText));
-                    } else {
-                        if (question_list.get(mFoundWords.size()).replace(".", "").equals(option1_txt.getText().toString())) {
-                            option1_txt.setBackgroundColor(Color.parseColor("#45ea3d"));
-                        } else {
-                            option2_txt.setBackgroundColor(Color.parseColor("#45ea3d"));
-                        }
-                    }
-                    if (!hints.contains(hint_word.getWord())) {
-                        hints.add(hint_word.getWord());
-                    }
-
-                    challengeWsGridView.showHint(hint_word);
-
-                    dialog.dismiss();
-                    startTimer();
+                if (game_type.equals("missing_word")) {
+                    String htmlText = missing_content.replace(question_list.get(mFoundWords.size()).replace(".", ""), "<font color='#faff72'>" + question_list.get(mFoundWords.size()).replace(".", "") + "</font>");
+                    question_txt.setText(Html.fromHtml(htmlText));
                 } else {
-                    Toast.makeText(getActivity(), "மேலேயுள்ள விருப்பத்தை தேர்வு செய்யவும்..", Toast.LENGTH_SHORT).show();
+                    if (question_list.get(mFoundWords.size()).replace(".", "").equals(option1_txt.getText().toString())) {
+                        option1_txt.setBackgroundColor(Color.parseColor("#45ea3d"));
+                    } else {
+                        option2_txt.setBackgroundColor(Color.parseColor("#45ea3d"));
+                    }
+                }
+                if (!hints.contains(hint_word.getWord())) {
+                    hints.add(hint_word.getWord());
                 }
 
+                challengeWsGridView.showHint(hint_word);
+
+                dialog.dismiss();
+                startTimer();
+            } else {
+                Toast.makeText(getActivity(), "மேலேயுள்ள விருப்பத்தை தேர்வு செய்யவும்..", Toast.LENGTH_SHORT).show();
             }
+
         });
 
     }
@@ -2165,9 +1741,9 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             countDownTimer.cancel();
         }
 
-        TextView cancel_hint = (TextView) dialog.findViewById(R.id.cancel_hint);
-        TextView done_hint = (TextView) dialog.findViewById(R.id.done_hint);
-        final CheckBox hint_checkbox = (CheckBox) dialog.findViewById(R.id.hint_checkbox);
+        TextView cancel_hint = dialog.findViewById(R.id.cancel_hint);
+        TextView done_hint = dialog.findViewById(R.id.done_hint);
+        final CheckBox hint_checkbox = dialog.findViewById(R.id.hint_checkbox);
 
         coin_point1 = Integer.parseInt(coin_txt.getText().toString());
 
@@ -2203,49 +1779,43 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             }
         }
 
-        cancel_hint.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+        cancel_hint.setOnClickListener(v -> {
+            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
 
-                dialog.dismiss();
-                startTimer();
+            dialog.dismiss();
+            startTimer();
 
-            }
         });
-        done_hint.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+        done_hint.setOnClickListener(v -> {
+            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
 
 
-                if (coin_point >= 20) {
-                    if (hint_checkbox.isChecked()) {
-                        sp.putString(getActivity(), "hint_checkbox_" + game_type, "done");
-                    }
+            if (coin_point >= 20) {
+                if (hint_checkbox.isChecked()) {
+                    sp.putString(getActivity(), "hint_checkbox_" + game_type, "done");
+                }
 
-                    coin_point -= 20;
-                    myDbHelper.executeSql("UPDATE score SET coins='" + coin_point + "'");
+                coin_point -= 20;
+                myDbHelper.executeSql("UPDATE score SET coins='" + coin_point + "'");
 
-                    coin_point1 -= 20;
-                    coin_txt.setText("" + coin_point1);
+                coin_point1 -= 20;
+                coin_txt.setText("" + coin_point1);
 
 //                    coin_txt.startAnimation(bounce_anim);
 
 
-                    if (!hints.contains(hint_word.getWord())) {
-                        hints.add(hint_word.getWord());
-                    }
-
-                    challengeWsGridView.showHint(hint_word);
-
-                    startTimer();
-                } else {
-                    more_coin();
+                if (!hints.contains(hint_word.getWord())) {
+                    hints.add(hint_word.getWord());
                 }
 
-                dialog.dismiss();
+                challengeWsGridView.showHint(hint_word);
+
+                startTimer();
+            } else {
+                more_coin();
             }
+
+            dialog.dismiss();
         });
     }
 
@@ -2259,231 +1829,90 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         openDialog_earncoin.setContentView(R.layout.earncoin);
 
 
-        RelativeLayout wp = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnwa);
-        RelativeLayout fb = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnfb);
-        RelativeLayout gplus = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earngplus);
-        TextView cancel = (TextView) openDialog_earncoin.findViewById(R.id.cancel);
-        TextView ss = (TextView) openDialog_earncoin.findViewById(R.id.ssss);
+        RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
+        RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
+        RelativeLayout gplus = openDialog_earncoin.findViewById(R.id.earngplus);
+        TextView cancel = openDialog_earncoin.findViewById(R.id.cancel);
+        TextView ss = openDialog_earncoin.findViewById(R.id.ssss);
 
 
-        TextView wpro = (TextView) openDialog_earncoin.findViewById(R.id.wpro);
+        TextView wpro = openDialog_earncoin.findViewById(R.id.wpro);
 
         cancel.setVisibility(View.INVISIBLE);
         //   wpro.setText("இந்த விளையாட்டை தொடர குறைந்தபட்சம் 50  - க்கும் மேற்பட்ட நாணயங்கள் தேவை. எனவே கூடுதல் நாணயங்கள் பெற பகிரவும்.");
 
-        ss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // startTimer();
-                openDialog_earncoin.cancel();
-            }
+        ss.setOnClickListener(v -> {
+            // startTimer();
+            openDialog_earncoin.cancel();
         });
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //  startTimer();
-                openDialog_earncoin.cancel();
-            }
+        cancel.setOnClickListener(v -> {
+            //  startTimer();
+            openDialog_earncoin.cancel();
         });
 
 
-        RelativeLayout video = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnvideo);
+        RelativeLayout video = openDialog_earncoin.findViewById(R.id.earnvideo);
 
-        share_content = "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh";
-      /*  String root = Environment.getExternalStorageDirectory().toString();
-        File mydir = new File(root + "/.nithra/TWS");
-        mydir.mkdirs();
-        String fname = "Image-appshare.jpg";
-        final File file = new File(mydir, fname);*/
+        share_content = "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh";
 
-        video.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        video.setOnClickListener(v -> {
 
-                rvo = 1;
-                extra_coin_s = 0;
-                if (isNetworkAvailable()) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
+            rvo = 1;
+            extra_coin_s = 0;
+            if (isNetworkAvailable()) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
 
-                    if (fb_reward == 1) {
+                if (fb_reward == 1) {
 
-                        reward_progressBar.dismiss();
-                        rewardedVideoAd.show();
-                        openDialog_earncoin.cancel();
-
-                        // mShowVideoButton.setVisibility(View.VISIBLE);
-                    } else {
-                        fb_reward = 0;
-                        reward();
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-
-                                Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-
-                            }
-                        }, 2000);
-
-
-                    }
-                } else {
-
-                    Toast.makeText(context, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
-                }
-
-            }
-        });
-
-        wp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
-
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 21);
-
-/*
-                        if (sps.getString(Clue_Game_Hard.this,"watts_app_s").equals(""))
-                        {
-                            Handler handler8 = new Handler();
-                            handler8.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //Score Adding
-                                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ", null);
-                                    cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                    int spx = skx + 20;
-                                    String aStringx = Integer.toString(spx);
-                                    score.setText(aStringx);
-                                    ttscores.setText(aStringx);
-                                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                    sps.putString(Clue_Game_Hard.this,"watts_app_s","yes");
-
-                                }
-                            }, 3000);
-                        }
-*/
-
-
-                    } else {
-                        Toast.makeText(getActivity(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(getActivity(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-            /*    if (isNetworkAvailable()) {
-                    if (appInstalledOrNot("com.whatsapp")) {
-                        Uri uri = Uri.fromFile(file);
-                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                        shareIntent.setPackage("com.whatsapp");
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            if ((ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-
-                                shareIntent.setType("image/*");
-                                shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-                            } else {
-                                shareIntent.setType("text/plain");
-                            }
-                        } else {
-                            shareIntent.setType("image/*");
-                            shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-                        }
-
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, share_content);
-                        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "சொல்லிஅடி !!");
-                        startActivityForResult(Intent.createChooser(shareIntent, "Share via"), 12);
-                    } else {
-                        Toast.makeText(getActivity(), "இந்த செயலி தங்களிடம் தற்போது இல்லை பிறகு முயற்சிக்கவும் . ", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(getActivity(), "இணையத்தள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }*/
-            }
-        });
-        fb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-              /*  if (isNetworkAvailable()) {
-
+                    reward_progressBar.dismiss();
+                    show_reward();
                     openDialog_earncoin.cancel();
-                    btn_str = "invite";
-                    if (isLoggedIn()) {
-                        Bundle params = new Bundle();
-                        params.putString("message", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        showDialogWithoutNotificationBarInvite("apprequests", params);
-                        // toast("yes");
-                    } else {
-                        openFacebookSession();
-                        // toast("no");
-                    }
 
+                    // mShowVideoButton.setVisibility(View.VISIBLE);
                 } else {
-                    Toast.makeText(getActivity(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }*/
+                    fb_reward = 0;
+                    rewarded_adnew();
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
+                        reward_progressBar.dismiss();
 
-/*
-                if (isNetworkAvailable()) {
+                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
 
-                    System.out.println("-------gg share_content.length() "+share_content.length());
+                    }, 2000);
 
-                    share_content="நித்ராவின் செம்மொழி  வேட்டை \n" + "https://goo.gl/ub45C1";
 
-                    Bundle params = new Bundle();
-                    //params.putString("message", "https://play.google.com/store/apps/details?id=nithra.tamil.letter.crossword.search");
-                    params.putString("message", share_content);
-                    showDialogWithoutNotificationBarInvite("apprequests", params);
-                } else {
-                    Toast.makeText(getActivity(), "இணையத்தள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }*/
-            }
-        });
-        gplus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-
-                    if (appInstalledOrNot("com.google.android.apps.plus")) {
-
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.google.android.apps.plus");
-                        i.putExtra(Intent.EXTRA_TEXT, share_content);
-                        i.putExtra(Intent.EXTRA_SUBJECT, "சொல்லிஅடி !!");
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 15);
-
-                    } else {
-                        Toast.makeText(getActivity(), "இந்த செயலி தங்களிடம் தற்போது இல்லை பிறகு முயற்சிக்கவும் . ", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(getActivity(), "இணையத்தள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+
+                Toast.makeText(context, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+
             }
 
         });
 
-        openDialog_earncoin.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                startTimer();
+        wp.setOnClickListener(view -> {
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.whatsapp");
+
+                    String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 21);
+
+
+                } else {
+                    Toast.makeText(getActivity(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+                }
+
+            } else {
+                Toast.makeText(getActivity(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             }
         });
+
+        openDialog_earncoin.setOnDismissListener(dialog -> startTimer());
         openDialog_earncoin.show();
     }
 
@@ -2496,7 +1925,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getActivity().getPackageManager();
-        boolean app_installed = false;
+        boolean app_installed;
         try {
             pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
             app_installed = true;
@@ -2511,23 +1940,19 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         //animator.setObjectValues(0, (coinearn * 10));
         animator.setObjectValues(0, count);
         animator.setDuration(500);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            public void onAnimationUpdate(ValueAnimator animation) {
-                textView.setText("" + (int) animation.getAnimatedValue());
-            }
-        });
+        animator.addUpdateListener(animation -> textView.setText("" + (int) animation.getAnimatedValue()));
         animator.start();
     }
 
-    private void coin_collection(int share_member, int value) {
+    private void coin_collection(int value) {
 
         final Dialog dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         dialog.setContentView(R.layout.share_dialog2);
         dialog.setCancelable(false);
         dialog.show();
 
-        TextView ok_y = (TextView) dialog.findViewById(R.id.ok_y);
-        final TextView b_scores = (TextView) dialog.findViewById(R.id.b_scores);
+        TextView ok_y = dialog.findViewById(R.id.ok_y);
+        final TextView b_scores = dialog.findViewById(R.id.b_scores);
 
 
         try {
@@ -2537,22 +1962,18 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                 coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coins"));
             }
         } finally {
-            if (coin_cursor != null)
-                coin_cursor.close();
+            if (coin_cursor != null) coin_cursor.close();
         }
-        coin_point += (share_member * value);
-        coin_earned_anim(b_scores, (share_member * value));
+        coin_point += (value);
+        coin_earned_anim(b_scores, (value));
 
         myDbHelper.executeSql("UPDATE score SET coins='" + coin_point + "'");
 
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //  myDialog_class.media_player(getActivity(), R.raw.coin, "normal");
-                dialog.dismiss();
-                coin_txt.setText("" + coin_point);
-                //   coin_txt.startAnimation(bounce_anim);
-            }
+        ok_y.setOnClickListener(v -> {
+            //  myDialog_class.media_player(getActivity(), R.raw.coin, "normal");
+            dialog.dismiss();
+            coin_txt.setText("" + coin_point);
+            //   coin_txt.startAnimation(bounce_anim);
         });
     }
 
@@ -2562,6 +1983,9 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         if (Winning_dialog != null && Winning_dialog.isShowing()) {
             Winning_dialog.dismiss();
         }
+        rewardedAd = null;
+        mInterstitialAd = null;
+        handler = null;
     }
 
     @Override
@@ -2582,7 +2006,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         if (requestCode == 12) {//whats app
             if (resultCode == -1) {
 
-                coin_collection(1, 20);
+                coin_collection(20);
             } else {
                 // Toast.makeText(getApplicationContext(), "share and earns", Toast.LENGTH_SHORT).show();
             }
@@ -2590,7 +2014,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
         if (requestCode == 15) {//g plus
             if (resultCode == -1) {
-                coin_collection(1, 10);
+                coin_collection(10);
             } else {
                 //  Toast.makeText(getApplicationContext(), "share and earns", Toast.LENGTH_SHORT).show();
             }
@@ -2598,58 +2022,12 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
         if (requestCode == 21) {
             if (resultCode == -1) {
-                coin_collection(1, 20);
+                coin_collection(20);
             }
         }
 
     }
 
-    /*
-        private void showDialogWithoutNotificationBarInvite(String action, Bundle params) {
-            final WebDialog dialog = new WebDialog.Builder(getActivity(),
-                    Session.getActiveSession(), action, params)
-                    .setOnCompleteListener(new WebDialog.OnCompleteListener() {
-                        @Override
-                        public void onComplete(Bundle values,
-                                               FacebookException error) {
-                            System.out.println("fb error : " + error);
-                            if (error != null && !(error instanceof FacebookOperationCanceledException)) {
-                                Toast.makeText(getActivity(), "Request Not Send", Toast.LENGTH_SHORT).show();
-                            }
-
-                            try {
-                                System.out.println("Invitation was sent to "
-                                        + values.toString());
-
-                                for (int i = 0; values.containsKey("to[" + i + "]"); i++) {
-                                    String curId = values
-                                            .getString("to[" + i + "]");
-
-                                }
-
-                                // lastearn("invaite friends", (values.size() - 1));
-                                if ((values.size() - 1) >= 1) {
-                                    //setcoin(values.size() - 1);
-
-                                    coin_collection((values.size() - 1), 10);
-                                }
-
-                            } catch (Exception e) {
-
-                            }
-                        }
-                    }).build();
-
-            Window dialog_window = dialog.getWindow();
-            dialog_window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-            // dialogAction = action;
-            // dialogParams = params;
-
-            dialog.show();
-        }
-    */
     public void price_update() {
         ////////////////Prize//////////////////
         if (hints.size() != 0) {
@@ -2660,70 +2038,121 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         ////////////////Prize//////////////////
     }
 
-    public void reward() {
-        rewardedVideoAd = new RewardedVideoAd(context, getString(R.string.fb_rewarded_ins));
-        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
-            @Override
-            public void onError(Ad ad, AdError error) {
-                // Rewarded video ad failed to load
+    public void industrialload() {
+        if (mInterstitialAd != null) return;
+        Log.i("TAG", "onAdLoadedCalled");
+        AdRequest adRequest = new AdRequest.Builder().build();
 
+        InterstitialAd.load(context, getResources().getString(R.string.Game3_Stage_Close_ST), adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                interstiallistener();
+                Log.i("TAG", "onAdLoaded");
             }
 
             @Override
-            public void onAdLoaded(Ad ad) {
-                // Rewarded video ad is loaded and ready to be displayed
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.d("TAG", loadAdError.toString());
+                mInterstitialAd = null;
+                handler = null;
+                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
+            }
+        });
+
+    }
+
+    public void interstiallistener() {
+        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override
+            public void onAdDismissedFullScreenContent() {
+                // Called when ad is dismissed.
+                // Set the ad reference to null so you don't show the ad a second time.
+                Log.d("TAG", "Ad dismissed fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                winning_report(context, "time_up");
+                industrialload();
+            }
+
+            @Override
+            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                // Called when ad fails to show.
+                Log.e("TAG", "Ad failed to show fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sp.putInt(context, "Game3_Stage_Close_ST", 0);
+                winning_report(context, "time_up");
+
+            }
+
+        });
+    }
+
+    public void adShow() {
+        if (sp.getInt(context, "Game3_Stage_Close_ST") == Utills.interstitialadCount && mInterstitialAd != null) {
+            sp.putInt(context, "Game3_Stage_Close_ST", 0);
+            Utills.INSTANCE.Loading_Dialog(requireActivity());
+            handler = new Handler(Looper.myLooper());
+            my_runnable = () -> {
+                mInterstitialAd.show(requireActivity());
+            };
+            handler.postDelayed(my_runnable, 2500);
+        } else {
+            sp.putInt(context, "Game3_Stage_Close_ST", (sp.getInt(context, "Game3_Stage_Close_ST") + 1));
+            if (sp.getInt(context, "Game3_Stage_Close_ST") > Utills.interstitialadCount)
+                sp.putInt(context, "Game3_Stage_Close_ST", 0);
+            winning_report(context, "time_up");
+
+        }
+
+    }
+
+    public void rewarded_adnew() {
+        Log.d("TAG", "====rewarded_adnew");
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedAd.load(context, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error.
+                Log.d("TAG", loadAdError.toString());
+                Log.d("TAG", "====rewarded_adnew" + loadAdError.getMessage());
+
+                rewardedAd = null;
+            }
+
+            @Override
+            public void onAdLoaded(@NonNull RewardedAd ad) {
+                rewardedAd = ad;
                 fb_reward = 1;
-
-
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-                // Rewarded video ad clicked
+                adslisner();
+                Log.d("TAG", "====rewarded_adnew Ad was loaded.");
 
             }
+        });
+
+
+    }
+
+    public void adslisner() {
+        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
 
             @Override
-            public void onLoggingImpression(Ad ad) {
-                // Rewarded Video ad impression - the event will fire when the
-                // video starts playing
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted() {
-                reward_status = 1;
-
-                // Rewarded Video View Complete - the video has been played to the end.
-                // You can use this event to initialize your reward
-
-
-                // Call method to give reward
-                // giveReward();
-            }
-
-            @Override
-            public void onRewardedVideoClosed() {
-                reward();
+            public void onAdDismissedFullScreenContent() {
+                rewarded_adnew();
                 if (reward_status == 1) {
-                  /*  if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }*/
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        if (rvo == 2) {
+                            share_earn2(mCoinCount);
+                        } else {
+                            vidcoinearn();
                         }
                     }, 500);
                 } else {
@@ -2731,12 +2160,24 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                 }
 
                 fb_reward = 0;
+
             }
-        };
-        rewardedVideoAd.loadAd(
-                rewardedVideoAd.buildLoadAdConfig()
-                        .withAdListener(rewardedVideoAdListener)
-                        .build());
+
+        });
+    }
+
+    public void show_reward() {
+        if (rewardedAd != null) {
+            rewardedAd.show(requireActivity(), rewardItem -> {
+                // Handle the reward.
+                Log.d("TAG", "The user earned the reward.");
+                int rewardAmount = rewardItem.getAmount();
+                String rewardType = rewardItem.getType();
+                reward_status = 1;
+            });
+        } else {
+            Log.d("TAG", "The rewarded ad wasn't ready yet.");
+        }
     }
 
     public void share_earn2(int a) {
@@ -2744,26 +2185,17 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         openDialog.setContentView(R.layout.share_dialog2);
         openDialog.setCancelable(false);
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView b_scores = openDialog.findViewById(R.id.b_scores);
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
 
-        /*   Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-        cfx.moveToFirst();
-        final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-        int spx = skx + a;
-        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");*/
-
-/*
+        /*
         final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        ok_y.setOnClickListener(v -> {
 
-                openDialog.dismiss();
-                //  //mCoinCount = 0;
-            }
+            openDialog.dismiss();
+            //  //mCoinCount = 0;
         });
         openDialog.show();
     }
@@ -2778,8 +2210,8 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             openDialog.setContentView(R.layout.share_dialog2);
             openDialog.setCancelable(false);
             // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-            TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-            TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+            TextView ok_y = openDialog.findViewById(R.id.ok_y);
+            TextView b_scores = openDialog.findViewById(R.id.b_scores);
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
@@ -2790,13 +2222,10 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
 
             b_scores.setText("" + mCoinCount);
-            ok_y.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    coin_txt.setText("" + spx);
-                    openDialog.dismiss();
-                    // //mCoinCount = 0;
-                }
+            ok_y.setOnClickListener(v -> {
+                coin_txt.setText("" + spx);
+                openDialog.dismiss();
+                // //mCoinCount = 0;
             });
 
             openDialog.show();

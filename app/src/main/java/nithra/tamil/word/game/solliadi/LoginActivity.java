@@ -1,7 +1,6 @@
 package nithra.tamil.word.game.solliadi;
 
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native;
 import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.price_url;
 
 import android.app.Dialog;
@@ -13,7 +12,6 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -26,7 +24,6 @@ import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.AdapterView;
@@ -39,21 +36,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
-import com.facebook.ads.NativeAdLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -71,13 +60,15 @@ import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 public class LoginActivity extends AppCompatActivity {
 
     static final int CAMERA_CAPTURE = 5;
+    static final SharedPreference sps = new SharedPreference();
     private static final int RESULT_LOAD_IMG = 1;
     private static final int REQUEST_CROP_ICON = 2;
     public static int MY_EMAIL_REQUEST_WRITE = 128;
     public static String android_id;
-    static SharedPreference sps = new SharedPreference();
     final int PIC_CROP = 3;
     final int PICK_IMAGE_REQUEST = 8;
+    final String[] disticts = {"மாவட்டம் ", "அரியலூர்", "சென்னை", "கோயம்புத்தூர்", "கடலூர்", "தர்மபுரி", "திண்டுக்கல்", "ஈரோடு", "காஞ்சிபுரம்", "கன்னியாகுமாரி", "கரூர்", "கிருஷ்ணகிரி", "மதுரை", "நாகப்பட்டினம்", "நாமக்கல்", "நீலகிரி", "பெரம்பலூர்", "புதுக்கோட்டை", "ராமநாதபுரம்", "சேலம்", "சிவகங்கை", "தஞ்சாவூர்", "தேனி", "தூத்துக்குடி", "திருச்சிராப்பள்ளி", "திருநெல்வேலி", "திருப்பூர்", "திருவள்ளூர்", "திருவண்ணாமலை", "திருவாரூர்", "வேலூர்", "விழுப்புரம்", "விருதுநகர்", "புதுச்சேரி", "காரைக்கால்", "யானம்", "மஹி"};
+    final String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
     AppCompatEditText name, emails, phno, address;
     TextView back, login, pfedit;
     String after_otp, register_id, befour_check, before_time;
@@ -87,7 +78,6 @@ public class LoginActivity extends AppCompatActivity {
     boolean blink;                          // controls the blinking .. on and off
     String isregster, rowid;
     String mobile_noo;
-    String[] disticts = {"மாவட்டம் ", "அரியலூர்", "சென்னை", "கோயம்புத்தூர்", "கடலூர்", "தர்மபுரி", "திண்டுக்கல்", "ஈரோடு", "காஞ்சிபுரம்", "கன்னியாகுமாரி", "கரூர்", "கிருஷ்ணகிரி", "மதுரை", "நாகப்பட்டினம்", "நாமக்கல்", "நீலகிரி", "பெரம்பலூர்", "புதுக்கோட்டை", "ராமநாதபுரம்", "சேலம்", "சிவகங்கை", "தஞ்சாவூர்", "தேனி", "தூத்துக்குடி", "திருச்சிராப்பள்ளி", "திருநெல்வேலி", "திருப்பூர்", "திருவள்ளூர்", "திருவண்ணாமலை", "திருவாரூர்", "வேலூர்", "விழுப்புரம்", "விருதுநகர்", "புதுச்சேரி", "காரைக்கால்", "யானம்", "மஹி"};
     Spinner dist;
     String citys;
     SQLiteDatabase exdb;
@@ -108,7 +98,6 @@ public class LoginActivity extends AppCompatActivity {
     String path = "";
     File myDir = null;
     int tm_policy = 0;
-    String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
     LinearLayout upload_ph_lay;
     TextView terms_content;
     String msg = "";
@@ -118,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
 
         if (Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -161,55 +150,7 @@ public class LoginActivity extends AppCompatActivity {
         phno.setText("" + sps.getString(LoginActivity.this, "prize_phno"));
         phno.setEnabled(false);
 
-      /*  Cursor c;
-        c = exdb.rawQuery("select * from userdetail", null);
-        c.moveToFirst();
-        if (c.getCount() != 0) {
-
-            sps.putString(LoginActivity.this, "logincomplite", "yes");
-            login.setVisibility(View.GONE);
-            pfedit.setVisibility(View.VISIBLE);
-
-            int id = c.getInt(c.getColumnIndexOrThrow("id"));
-            String sa = c.getString(c.getColumnIndexOrThrow("name"));
-            String phnos = c.getString(c.getColumnIndexOrThrow("phno"));
-            String email = c.getString(c.getColumnIndexOrThrow("email"));
-            String addresss = c.getString(c.getColumnIndexOrThrow("address"));
-            reg_id = c.getString(c.getColumnIndexOrThrow("regid"));
-            citys = c.getString(c.getColumnIndexOrThrow("city"));
-            myimg = c.getString(c.getColumnIndexOrThrow("upic"));
-
-            String disticts[] = {"மாவட்டம் ", "அரியலூர்", "சென்னை",
-                    "கோயம்புத்தூர்", "கடலூர்", "தர்மபுரி", "திண்டுக்கல்",
-                    "ஈரோடு", "காஞ்சிபுரம்", "கன்னியாகுமாரி", "கரூர்",
-                    "கிருஷ்ணகிரி", "மதுரை", "நாகப்பட்டினம்", "நாமக்கல்",
-                    "நீலகிரி", "பெரம்பலூர்", "புதுக்கோட்டை", "ராமநாதபுரம்",
-                    "சேலம்", "சிவகங்கை", "தஞ்சாவூர்", "தேனி", "தூத்துக்குடி",
-                    "திருச்சிராப்பள்ளி", "திருநெல்வேலி", "திருப்பூர்", "திருவள்ளூர்",
-                    "திருவண்ணாமலை", "திருவாரூர்", "வேலூர்", "விழுப்புரம்", "விருதுநகர்"};
-
-
-            name.setText(sa);
-            emails.setText(email);
-            phno.setText(phnos);
-            address.setText(addresss);
-
-            selection();
-        } else {
-            //eMAIL
-            if (sps.getString(LoginActivity.this, "otpis2").equals("on")) {
-                finish();
-                Intent i = new Intent(LoginActivity.this, Otp_verification.class);
-                startActivity(i);
-            }
-        }
-*/
-
         if (sps.getString(LoginActivity.this, "price_registration").equals("com")) {
-         /*   emails.setEnabled(false);
-            name.setEnabled(false);
-            address.setEnabled(false);
-            dist.setEnabled(false);*/
             // login.setVisibility(View.INVISIBLE);
             login.setText("புதுப்பிக்க");
             msg = "தரவுகள் வெற்றிகரமாக புதுப்பிக்கப்பட்டது.";
@@ -260,28 +201,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
-       /* dist.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                // Check if no view has focus:
-
-                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-            }
-        });*/
-   /*    dist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-           @Override
-           public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-               address.onEditorAction(EditorInfo.IME_ACTION_DONE);
-
-           }
-
-           @Override
-           public void onNothingSelected(AdapterView<?> parent) {
-
-           }
-       });*/
 
         dist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -336,8 +255,6 @@ public class LoginActivity extends AppCompatActivity {
                             finish();
                         }
                     }
-                   /* Intent i = new Intent(LoginActivity.this, New_Main_Activity.class);
-                    startActivity(i);*/
                 }
             }
         });
@@ -674,59 +591,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-
-    protected void onResume() {
-        super.onResume();
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-
-        if (sps.getInt(LoginActivity.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            adds.setVisibility(View.GONE);
-            native_banner_ad_container.setVisibility(View.GONE);
-
-        } else {
-            if (Utils.isNetworkAvailable(LoginActivity.this)) {
-                fb_native(LoginActivity.this, native_banner_ad_container);
-                /* if (sps.getInt(LoginActivity.this, "native_banner_ads") == 1) {
-                    New_Main_Gamelist.inflateAd(LoginActivity.this, native_banner_ad_container);
-                } else {
-                    fb_native(LoginActivity.this, native_banner_ad_container);
-                }*/
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-           /* if (sps.getInt(LoginActivity.this, "addlodedd") == 1) {
-                System.out.println("####Native");
-                New_Main_Activity.load_addFromMain(LoginActivity.this, adds);
-            } else {
-                if (Utils.isNetworkAvailable(LoginActivity.this)) {
-                    sps.putInt(LoginActivity.this, "addlodedd", 2);
-                    System.out.println("@IMG");
-                    final AdView adView = new AdView(LoginActivity.this);
-                    adView.setAdUnitId(getString(R.string.main_banner_ori));
-                    adView.setAdSize(AdSize.SMART_BANNER);
-                    AdRequest request = new AdRequest.Builder().build();
-                    adView.setAdListener(new AdListener() {
-                        public void onAdLoaded() {
-                            System.out.println("@@@loaded");
-                            adds.removeAllViews();
-                            adds.addView(adView);
-                            adds.setVisibility(View.VISIBLE);
-                            super.onAdLoaded();
-                        }
-
-                        @Override
-                        public void onAdFailedToLoad(int i) {
-                            System.out.println("@@@NOt loaded");
-                            super.onAdFailedToLoad(i);
-                        }
-                    });
-                    adView.loadAd(request);
-                }
-            }*/
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -875,9 +739,9 @@ public class LoginActivity extends AppCompatActivity {
 
     public void verify_phno(final String name, final String email, final String ph_no, final String place, final String district) {
         // Showing progress dialog at user registration time.
-        String name_en = null;
-        String place_en = null;
-        String district_en = null;
+        String name_en;
+        String place_en;
+        String district_en;
         String mo = null;
         name_en = URLEncoder.encode(name, StandardCharsets.UTF_8);
         place_en = URLEncoder.encode(place, StandardCharsets.UTF_8);
@@ -886,8 +750,6 @@ public class LoginActivity extends AppCompatActivity {
         String status = "";
         String charset = "UTF-8";
         try {
-     /*       File myDir = null;
-            myDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/profile_img.jpg");*/
             MultipartUtility multipart = new MultipartUtility(price_url, charset);
             multipart.addFormField("mode", "register");
             multipart.addFormField("mobile", ph_no);
@@ -912,7 +774,7 @@ public class LoginActivity extends AppCompatActivity {
             for (String line : response) {
                 Log.v("rht", "Line : " + line);
                 System.out.println("===========line" + line);
-                JSONObject json_data = null;
+                JSONObject json_data;
                 try {
                     if (line != null) {
                         JSONArray jArray = new JSONArray(line);
@@ -984,8 +846,6 @@ public class LoginActivity extends AppCompatActivity {
                     finish();
                 }
             }
-           /* Intent i = new Intent(LoginActivity.this, New_Main_Activity.class);
-            startActivity(i);*/
         }
     }
 }

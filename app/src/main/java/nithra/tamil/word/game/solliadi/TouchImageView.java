@@ -86,6 +86,7 @@ public class TouchImageView extends androidx.appcompat.widget.AppCompatImageView
     private GestureDetector.OnDoubleTapListener doubleTapListener = null;
     private OnTouchListener userTouchListener = null;
     private OnTouchImageViewListener touchImageViewListener = null;
+
     public TouchImageView(Context context) {
         super(context);
         sharedConstructing(context);
@@ -1196,9 +1197,9 @@ public class TouchImageView extends androidx.appcompat.widget.AppCompatImageView
 
     @TargetApi(VERSION_CODES.GINGERBREAD)
     private class CompatScroller {
+        final boolean isPreGingerbread;
         Scroller scroller;
         OverScroller overScroller;
-        boolean isPreGingerbread;
 
         public CompatScroller(Context context) {
             if (VERSION.SDK_INT < VERSION_CODES.GINGERBREAD) {
@@ -1262,10 +1263,10 @@ public class TouchImageView extends androidx.appcompat.widget.AppCompatImageView
     }
 
     private class ZoomVariables {
-        public float scale;
-        public float focusX;
-        public float focusY;
-        public ScaleType scaleType;
+        public final float scale;
+        public final float focusX;
+        public final float focusY;
+        public final ScaleType scaleType;
 
         public ZoomVariables(float scale, float focusX, float focusY, ScaleType scaleType) {
             this.scale = scale;

@@ -5,14 +5,12 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import java.io.IOException;
-
 public class TestAdapter {
     protected static final String TAG = "DataAdapter";
 
     private final Context mContext;
-    private SQLiteDatabase mDb;
     private final DataBaseHelper mDbHelper;
+    private SQLiteDatabase mDb;
 
 
     public TestAdapter(Context context) {
@@ -22,14 +20,9 @@ public class TestAdapter {
     }
 
     public TestAdapter createDatabase() throws SQLException {
-        try {
 
-            mDbHelper.createDataBase();
+        mDbHelper.createDataBase();
 
-        } catch (IOException mIOException) {
-            Log.e(TAG, mIOException + "  UnableToCreateDatabase");
-            throw new Error("UnableToCreateDatabase");
-        }
         return this;
     }
 

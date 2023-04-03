@@ -15,8 +15,10 @@ import android.widget.TextView;
  */
 public class customlist extends BaseAdapter {
 
-    String[] listu, gameid, fin;
-    Context context;
+    final String[] listu;
+    final String[] gameid;
+    final String[] fin;
+    final Context context;
     Typeface typ;
     TextView txtpro;
     TextView date, gamename, playbutton;

@@ -2,7 +2,6 @@ package nithra.tamil.word.game.solliadi;
 
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Puthayal_Sorkal_Native_Banner;
 
 import android.Manifest;
 import android.app.Dialog;
@@ -29,13 +28,13 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -43,7 +42,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
 import android.widget.CompoundButton;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -51,21 +49,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.NativeAdLayout;
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.File;
@@ -78,7 +75,6 @@ import java.util.StringTokenizer;
 
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
-import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
@@ -87,35 +83,15 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
     // facebook variable ends
     public static final String TAG = "SavedGames";
-    //*********************reward videos process 1***********************
-
-    // The AppState slot we are editing.  For simplicity this sample only manipulates a single
-    // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
-    // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
-    private static final int APP_STATE_KEY = 1;
-    // Request code used to invoke sign-in UI.
-    private static final int RC_SIGN_IN = 9001;
-    // Request code used to invoke Snapshot selection UI.
-    private static final int RC_SELECT_SNAPSHOT = 9002;
-    /////////native advance////////////
-    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
-    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
-    //reward videos process 1***********************
-    // Facebook variable starts
-    /////////native advance////////////
-    /////////Native_Top_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_Top = "ca-app-pub-4267540560263635/2303543680";
-    /////////Native_Top_Advanced////////////
-    /////////Native_BackPress_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
-    public static FrameLayout add, add2, add3;
-    public static LinearLayout add_e;
-    public static LinearLayout add_sc;
     static int mCoinCount = 20;
     static int rvo = 0;
-    static SharedPreference spd = new SharedPreference();
-    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
-    private final PendingAction pendingAction = PendingAction.NONE;
+    final SharedPreference sps = new SharedPreference();
+    final int min = 1;
+    final int max = 3;
+    final int gameid = 6;
+    final Context context = this;
+    final int minmumd = 1;
+    final int maximumd = 4;
     int fb_reward = 0;
     int reward_status = 0;
     String btn_str = "";
@@ -123,17 +99,13 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
     ImageView value_ans1, value_ans2, value_ans3, value_ans4, value_ans5, value_ans6, value_ans7, value_ans8, value_ans9, value_ans10;
     TextView button1, button2, button3, button4, button5, button6, button7, button8, button9, button10, button11, button12, button13, button14, button15, button16;
     Animation clickzoom;
-    SharedPreference sps = new SharedPreference();
     LinearLayout adds, anslist2, list2_pic;
     TextView s_word_number, s_score_edit, hint, p_coins, p_coins_red, earncoin, to_no;
     SoundPool click, win, coin, worng, cr_ans;
     Chronometer focus;
     SQLiteDatabase exdb, dbs, dbn, dbn2;
     TextView pm_word;
-    int min = 1;
-    int max = 3;
     int random;
-    int gameid = 6;
     int rdvalu = 2;
     int u_id, questionid;
     String question, answer, suff_words;
@@ -164,7 +136,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
     LinearLayout qwt, pm_layout, top;
     RelativeLayout head;
     int share_name = 0;
-    Context context = this;
     RelativeLayout adsicon, adsicon2;
     int loadaddcontent = 0;
     LinearLayout ads_layout_bottom;
@@ -182,22 +153,16 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
     int reward_play_count = 0;
     int ea = 0;
     TextView coin_value;
-    int minmumd = 1;
-    int maximumd = 4;
     int randomnod;
     Dialog openDialog;
     int setval_vid;
     FirebaseAnalytics mFirebaseAnalytics;
     int f_sec;
     int dia_dismiss = 0;
-    //RewardedVideoAd rewardedVideoAd;
-    private MaxRewardedAd rewardedAd;
-    private boolean mGameOver;
-    private boolean mGamePaused;
-    private long mTimeRemaining;
-    /// Client used to interact with Google APIs.
-    private GoogleApiClient mGoogleApiClient;
-    private MaxInterstitialAd ins_game, game_exit_ins;
+    Handler handler;
+    Runnable my_runnable;
+    private RewardedAd rewardedAd;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     public void download_completed(String status) {
@@ -223,7 +188,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_match__word);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
         dbs = this.openOrCreateDatabase("Newgames.db", MODE_PRIVATE, null);
         dbn = this.openOrCreateDatabase("Newgames2.db", MODE_PRIVATE, null);
@@ -251,67 +216,18 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         newhelper4 = new Newgame_DataBaseHelper4(context);
 
 
-
-
-        /*String gid = "6";
-        String qid = "";
-        for (int i = 0; i<=499; i++){
-            if (qid.equals("")){
-                qid = "" +i;
-            } else {
-                qid = qid + "," + i;
-            }
-        }
-        System.out.println("---qid : " +qid);
-        System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
-        newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='6'");
-*/
-
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
         find();
-
-        // next();
-
-
-        if (sps.getInt(Match_Word.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
-        } else {
-            //fb_addload_score_screen(context);
-
-            /*AdRequest notadRequest = new AdRequest.Builder().build();
-            interstitialAd.loadAd(notadRequest);*/
-        }
-
         versionCode = BuildConfig.VERSION_CODE;
 
-        //uiHelper = new UiLifecycleHelper(this, callback);
-        //reward(context);
-        rewarded_ad();
+        MobileAds.initialize(this);
+        rewarded_adnew();
         if (sps.getInt(context, "purchase_ads") == 0) {
-            // Make sure to set the mediation provider value to "max" to ensure proper functionality
-            AppLovinSdk.getInstance(context).setMediationProvider("max");
-            AppLovinSdk.initializeSdk(context, new AppLovinSdk.SdkInitializationListener() {
-                @Override
-                public void onSdkInitialized(final AppLovinSdkConfiguration configuration) {
-                    // AppLovin SDK is initialized, start loading ads
-                    industrialload_game();
-                    game_exit_ins_ad();
-
-                }
-            });
+            Utills.INSTANCE.initializeAdzz(this);
+            industrialload();
         }
-        //New_Main_Activity.fb_addload(Match_Word.this);
-        //loads_ads_banner();
         adds = (LinearLayout) findViewById(R.id.ads_lay);
-        if (sps.getInt(context, "purchase_ads") == 0) {
-            if (Utils.isNetworkAvailable(Match_Word.this)) {
-                Ad_NativieUtils.load_add_facebook(this, getResources().getString(R.string.Puthayal_Sorkal_Native_Banner_new), adds);
-            } else {
-                adds.setVisibility(View.GONE);
-            }
-        } else {
-            adds.setVisibility(View.GONE);
-        }
+        Utills.INSTANCE.load_add_AppLovin(this, adds);
 
 
         LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -333,27 +249,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         } else {
             prize_logo.setVisibility(View.GONE);
         }
-
-
-        ////////
-
-        /////////
-
-
-        ////////
-        if (sps.getInt(Match_Word.this, "purchase_ads") == 1) {
-
-        } else {
-            //advancads();
-            //advancads_content();
-        }
-
-
-        //builder_dialog = new AdLoader.Builder(this, ADMOB_AD_UNIT_ID_Top);
-        //install_ads_doalug();
-
-        //loadRewardedVideoAd();
-
         p_setting = (TextView) findViewById(R.id.s_settings);
         if (snd.equals("off")) {
             p_setting.setBackgroundResource(R.drawable.sound_off);
@@ -400,8 +295,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(Match_Word.this, "sequence example match2");
             sequence.setConfig(config);
             sequence.addSequenceItem(value_ans1, "விடையை பார்க்க கேள்விக்குறி பொத்தானை அழுத்தி விடை காணலாம்.", "அடுத்து");
-            // sequence.addSequenceItem(pic_clue, "குறிப்பை பார்க்க பச்சை நிற பொத்தானை அழுத்தவும் .", "அடுத்து");
-            //  sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
 
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Match_Word.this).setTarget(p_facebook).setDismissText("சரி").setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.").build()).setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
                 @Override
@@ -852,9 +745,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 return true;
             }
         });
-      /*  final Animation pendulam;
-        pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
-        adsicon2.startAnimation(pendulam);*/
 
         qwt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -890,13 +780,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                     p_setting.setBackgroundResource(R.drawable.sound_off);
                     sv = 0;
                 }
-             /*   if (k == 1) {
-                    showpopup();
-                    k = 2;
-                } else {
-                    popupWindow.dismiss();
-                    k = 1;
-                }*/
             }
         });
 
@@ -999,28 +882,8 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         });
     }
 
-    private void loads_ads_banner() {
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-
-        if (sps.getInt(Match_Word.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            adds.setVisibility(View.GONE);
-            native_banner_ad_container.setVisibility(View.GONE);
-
-        } else {
-            if (Utils.isNetworkAvailable(Match_Word.this)) {
-                fb_native_Puthayal_Sorkal_Native_Banner(Match_Word.this, native_banner_ad_container);
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-        }
-
-    }
-
     private void user_ask() {
 
-        // Toast.makeText(Match_Word.this, "anslength"+answerlength, Toast.LENGTH_SHORT).show();
-        // Toast.makeText(Match_Word.this, "x"+x, Toast.LENGTH_SHORT).show();
         Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
         cfw.moveToFirst();
         int sk = 0;
@@ -1140,11 +1003,11 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                             ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                             focus.stop();
                             price_update();
-                            Handler handler = new Handler();
+                            Handler handler = new Handler(Looper.myLooper());
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    setSc();
+                                    adShow();
                                 }
                             }, 3000);
                         }
@@ -1281,11 +1144,11 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                                     }
                                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                                     focus.stop();
-                                    Handler handler = new Handler();
+                                    Handler handler = new Handler(Looper.myLooper());
                                     handler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
-                                            setSc();
+                                            adShow();
                                         }
                                     }, 3000);
                                 }
@@ -1380,7 +1243,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         button15 = (TextView) findViewById(R.id.button15);
         button16 = (TextView) findViewById(R.id.button16);
         top = (LinearLayout) findViewById(R.id.top);
-        adds = (LinearLayout) findViewById(R.id.ads_lay);
         helpshare_layout = (RelativeLayout) findViewById(R.id.helpshare_layout);
 
         pm_word = (TextView) findViewById(R.id.pm_word);
@@ -1516,7 +1378,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         }
 
 
-        Cursor c1 = null;
+        Cursor c1;
 
         if (date.equals("0")) {
             c1 = newhelper.getQry("select * from newmaintable where gameid='" + gameid + "' and isfinish='0'");
@@ -1527,19 +1389,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         // Cursor c1 = newhelper.getQry("select * from newmaintable where gameid='" + gameid + "' and isfinish='0'");
         c1.moveToFirst();
         if (c1.getCount() != 0) {
-            NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-            if (sps.getInt(Match_Word.this, "purchase_ads") == 1) {
-                native_banner_ad_container.setVisibility(View.GONE);
-                System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            } else {
-                if (Utils.isNetworkAvailable(Match_Word.this)) {
-                    native_banner_ad_container.setVisibility(View.VISIBLE);
-                } else {
-                    native_banner_ad_container.setVisibility(View.GONE);
-                }
-            }
-
-
             head.setVisibility(View.VISIBLE);
             u_id = c1.getInt(c1.getColumnIndexOrThrow("id"));
             questionid = c1.getInt(c1.getColumnIndexOrThrow("questionid"));
@@ -1715,7 +1564,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                         } else {
                             newhelper.executeSql("UPDATE newmaintable SET daily='1' WHERE questionid='" + questionid + "'and gameid='" + gameid + "'");
                         }
-                        setSc();
+                        adShow();
                     }
                     setuserentered(ts);
                 }
@@ -1732,8 +1581,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         openDialog.setCancelable(false);
         //  TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
         TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        //   TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
-        // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
 
         Calendar calendar3 = Calendar.getInstance();
         int cur_year1 = calendar3.get(Calendar.YEAR);
@@ -1756,10 +1603,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         final String date = sdf.format(date1);
 
         TextView tomarrow_coin_earn = (TextView) openDialog.findViewById(R.id.tomarrow_coin_earn);
-
-        //TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-
-        //TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
 
 
         ok_y.setOnClickListener(new View.OnClickListener() {
@@ -1807,15 +1650,11 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         }
         prize_data_update(context, ea);
         coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
-      /*  final int vals = reward_play_count * 100;
-        ea = ea + vals;*/
         coin_value.setText("" + ea);
         setval_vid = ea;
         Random rn = new Random();
         randomnod = rn.nextInt(maximumd - minmumd + 1) + minmumd;
 
-        //String r= String.valueOf(w_id);
-        //lt_id.setText(r);
         String ran_score = "";
         if (randomnod == 1) {
             sps.putInt(context, "daily_bonus_count", 1);
@@ -1843,18 +1682,18 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                     final ProgressDialog reward_progressBar = ProgressDialog.show(Match_Word.this, "" + "Reward video", "Loading...");
                     if (fb_reward == 1) {
                         reward_progressBar.dismiss();
-                        rewardedAd.showAd();
+                        show_reward();
                     } else {
-                        new Handler().postDelayed(new Runnable() {
+                        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 reward_progressBar.dismiss();
                                 if (fb_reward == 1) {
-                                    rewardedAd.showAd();
+                                    show_reward();
                                     // mShowVideoButton.setVisibility(View.VISIBLE);
                                 } else {
                                     //reward(Match_Word.this);
-                                    rewarded_ad();
+                                    rewarded_adnew();
                                     Toast.makeText(Match_Word.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -1867,12 +1706,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 }
             }
         });
-                       /* b_close.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                openDialog.dismiss();
-                            }
-                        });*/
         openDialog.show();
     }
 
@@ -2154,8 +1987,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             ans1.setVisibility(View.VISIBLE);
             ans2.setVisibility(View.VISIBLE);
             value_ans1.setVisibility(View.VISIBLE);
-          /*value_ans1.setVisibility(View.VISIBLE);
-            value_ans2.setVisibility(View.VISIBLE);*/
             if (answer_types == 6) {
                 answerset_new_version(letter_type);
             } else {
@@ -2170,9 +2001,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             ans3.setVisibility(View.VISIBLE);
             value_ans1.setVisibility(View.VISIBLE);
 
-          /*value_ans1.setVisibility(View.VISIBLE);
-            value_ans2.setVisibility(View.VISIBLE);
-            value_ans3.setVisibility(View.VISIBLE);*/
             if (answer_types == 6) {
                 answerset_new_version(letter_type);
             } else {
@@ -2187,11 +2015,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             ans3.setVisibility(View.VISIBLE);
             ans4.setVisibility(View.VISIBLE);
             value_ans1.setVisibility(View.VISIBLE);
-
-         /* value_ans1.setVisibility(View.VISIBLE);
-            value_ans2.setVisibility(View.VISIBLE);
-            value_ans3.setVisibility(View.VISIBLE);
-            value_ans4.setVisibility(View.VISIBLE);*/
 
             if (answer_types == 6) {
                 answerset_new_version(letter_type);
@@ -2210,11 +2033,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             ans5.setVisibility(View.VISIBLE);
             value_ans1.setVisibility(View.VISIBLE);
 
-          /*value_ans1.setVisibility(View.VISIBLE);
-            value_ans2.setVisibility(View.VISIBLE);
-            value_ans3.setVisibility(View.VISIBLE);
-            value_ans4.setVisibility(View.VISIBLE);
-            value_ans5.setVisibility(View.VISIBLE);*/
             if (answer_types == 6) {
                 answerset_new_version(letter_type);
             } else {
@@ -2240,13 +2058,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             ans5.setVisibility(View.VISIBLE);
             ans6.setVisibility(View.VISIBLE);
             value_ans1.setVisibility(View.VISIBLE);
-
-     /*     value_ans1.setVisibility(View.VISIBLE);
-            value_ans2.setVisibility(View.VISIBLE);
-            value_ans3.setVisibility(View.VISIBLE);
-            value_ans4.setVisibility(View.VISIBLE);
-            value_ans5.setVisibility(View.VISIBLE);
-            value_ans6.setVisibility(View.VISIBLE);*/
 
             if (answer_types == 6) {
                 answerset_new_version(letter_type);
@@ -2276,14 +2087,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             ans6.setVisibility(View.VISIBLE);
             ans7.setVisibility(View.VISIBLE);
             value_ans1.setVisibility(View.VISIBLE);
-
-          /*value_ans1.setVisibility(View.VISIBLE);
-            value_ans2.setVisibility(View.VISIBLE);
-            value_ans3.setVisibility(View.VISIBLE);
-            value_ans4.setVisibility(View.VISIBLE);
-            value_ans5.setVisibility(View.VISIBLE);
-            value_ans6.setVisibility(View.VISIBLE);
-            value_ans7.setVisibility(View.VISIBLE);*/
 
             if (answer_types == 6) {
                 answerset_new_version(letter_type);
@@ -2315,15 +2118,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             ans7.setVisibility(View.VISIBLE);
             ans8.setVisibility(View.VISIBLE);
             value_ans1.setVisibility(View.VISIBLE);
-
-          /*value_ans1.setVisibility(View.VISIBLE);
-            value_ans2.setVisibility(View.VISIBLE);
-            value_ans3.setVisibility(View.VISIBLE);
-            value_ans4.setVisibility(View.VISIBLE);
-            value_ans5.setVisibility(View.VISIBLE);
-            value_ans6.setVisibility(View.VISIBLE);
-            value_ans7.setVisibility(View.VISIBLE);
-            value_ans8.setVisibility(View.VISIBLE);*/
 
             if (answer_types == 6) {
                 answerset_new_version(letter_type);
@@ -2357,16 +2151,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             ans8.setVisibility(View.VISIBLE);
             ans9.setVisibility(View.VISIBLE);
             value_ans1.setVisibility(View.VISIBLE);
-
-          /*value_ans1.setVisibility(View.VISIBLE);
-            value_ans2.setVisibility(View.VISIBLE);
-            value_ans3.setVisibility(View.VISIBLE);
-            value_ans4.setVisibility(View.VISIBLE);
-            value_ans5.setVisibility(View.VISIBLE);
-            value_ans6.setVisibility(View.VISIBLE);
-            value_ans7.setVisibility(View.VISIBLE);
-            value_ans8.setVisibility(View.VISIBLE);
-            value_ans9.setVisibility(View.VISIBLE);*/
 
             if (answer_types == 6) {
                 answerset_new_version(letter_type);
@@ -2402,17 +2186,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             ans9.setVisibility(View.VISIBLE);
             ans10.setVisibility(View.VISIBLE);
             value_ans1.setVisibility(View.VISIBLE);
-
-         /* value_ans1.setVisibility(View.VISIBLE);
-            value_ans2.setVisibility(View.VISIBLE);
-            value_ans3.setVisibility(View.VISIBLE);
-            value_ans4.setVisibility(View.VISIBLE);
-            value_ans5.setVisibility(View.VISIBLE);
-            value_ans6.setVisibility(View.VISIBLE);
-            value_ans7.setVisibility(View.VISIBLE);
-            value_ans8.setVisibility(View.VISIBLE);
-            value_ans9.setVisibility(View.VISIBLE);
-            value_ans10.setVisibility(View.VISIBLE);*/
 
             if (answer_types == 6) {
                 answerset_new_version(letter_type);
@@ -2451,27 +2224,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                         finish();
 
                     }
-
-
-                    //ad
-                    if (sps.getInt(context, "purchase_ads") == 0) {
-                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                    openDialog_p.dismiss();
-                                    game_exit_ins.showAd();
-                                }
-                            }
-                        } else {
-                            openDialog_p.dismiss();
-                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
-                        }
-                    } else {
-                        openDialog_p.dismiss();
-                    }
-                    //ad
-
+                    openDialog_p.dismiss();
 
                 }
             });
@@ -2490,6 +2243,9 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
     protected void onResume() {
         super.onResume();
+        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV"));
+
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Match_Word.this);
         mFirebaseAnalytics.setCurrentScreen(this, "Find Equal word Game", null);
 
@@ -2497,9 +2253,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         String date = sps.getString(Match_Word.this, "date");
         int pos;
         if (date.equals("0")) {
-            pos = 1;
         } else {
-            pos = 2;
         }
 
         Cursor cs = newhelper.getQry("select * from newmaintable where gameid='" + gameid + "' and questionid='" + questionid + "'");
@@ -2663,10 +2417,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button15.setText(qt13);
                 button16.setText(qt3);
 
-              /*
-                button8.setText(letters1);
-                button6.setText(letters2);
-                button3.setText(letters3);*/
             } else if (random == 2) {
                 button1.setText(qt1);
                 button2.setText(qt5);
@@ -2685,9 +2435,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button15.setText(letters2);
                 button16.setText(qt3);
 
-               /* button5.setText(letters1);
-                button15.setText(letters2);
-                button12.setText(letters3);*/
             } else if (random == 3) {
 
                 button1.setText(qt1);
@@ -2707,9 +2454,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button15.setText(qt5);
                 button16.setText(qt3);
 
-              /*  button9.setText(letters1);
-                button2.setText(letters2);
-                button14.setText(letters3);*/
             }
 
         } else if (letter_type == 4) {
@@ -2756,10 +2500,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button15.setText(letters2);
                 button16.setText(qt3);
 
-         /*     button9.setText(letters1);
-                button15.setText(letters2);
-                button3.setText(letters3);
-                button1.setText(letters4);*/
             } else if (random == 2) {
 
                 button1.setText(qt6);
@@ -2779,10 +2519,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button15.setText(qt4);
                 button16.setText(qt3);
 
-              /*button6.setText(letters1);
-                button4.setText(letters2);
-                button14.setText(letters3);
-                button7.setText(letters4);*/
             } else if (random == 3) {
 
                 button1.setText(qt6);
@@ -2801,10 +2537,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button14.setText(letters3);
                 button15.setText(qt4);
                 button16.setText(qt3);
-            /*  button8.setText(letters1);
-                button2.setText(letters2);
-                button1.setText(letters3);
-                button13.setText(letters4);*/
             }
 
 
@@ -2849,11 +2581,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button15.setText(qt4);
                 button16.setText(letters2);
 
-               /* button11.setText(letters1);
-                button16.setText(letters2);
-                button3.setText(letters3);
-                button4.setText(letters4);
-                button9.setText(letters5);*/
             } else if (random == 2) {
 
                 button1.setText(letters5);
@@ -2873,12 +2600,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button15.setText(letters1);
                 button16.setText(qt6);
 
-                /*
-                button15.setText(letters1);
-                button9.setText(letters2);
-                button10.setText(letters3);
-                button5.setText(letters4);
-                button1.setText(letters5);*/
             } else if (random == 3) {
 
                 button1.setText(qt10);
@@ -2898,11 +2619,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button15.setText(qt7);
                 button16.setText(qt6);
 
-               /* button8.setText(letters1);
-                button2.setText(letters2);
-                button3.setText(letters3);
-                button4.setText(letters4);
-                button5.setText(letters5);*/
             }
 
         } else if (letter_type == 6) {
@@ -2947,12 +2663,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button16.setText(letters2);
 
 
-               /* button11.setText(letters1);
-                button16.setText(letters2);
-                button3.setText(letters3);
-                button8.setText(letters4);
-                button7.setText(letters5);
-                button6.setText(letters6);*/
             } else if (random == 2) {
 
                 button1.setText(letters6);
@@ -2972,12 +2682,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button15.setText(qt7);
                 button16.setText(letters4);
 
-               /* button13.setText(letters1);
-                button9.setText(letters2);
-                button10.setText(letters3);
-                button16.setText(letters4);
-                button7.setText(letters5);
-                button1.setText(letters6);*/
             } else if (random == 3) {
                 button1.setText(qt8);
                 button2.setText(letters5);
@@ -2996,12 +2700,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button15.setText(letters1);
                 button16.setText(qt6);
 
-              /*  button15.setText(letters1);
-                button8.setText(letters2);
-                button12.setText(letters3);
-                button5.setText(letters4);
-                button2.setText(letters5);
-                button3.setText(letters6);*/
             }
 
 
@@ -3046,13 +2744,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button16.setText(qt6);
 
 
-               /* button12.setText(letters1);
-                button10.setText(letters2);
-                button8.setText(letters3);
-                button9.setText(letters4);
-                button15.setText(letters5);
-                button1.setText(letters6);
-                button7.setText(letters7);*/
             } else if (random == 2) {
 
                 button1.setText(qt3);
@@ -3073,13 +2764,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button16.setText(qt6);
 
 
-          /*      button14.setText(letters1);
-                button2.setText(letters2);
-                button3.setText(letters3);
-                button8.setText(letters4);
-                button9.setText(letters5);
-                button10.setText(letters6);
-                button6.setText(letters7);*/
             } else if (random == 3) {
 
                 button1.setText(qt3);
@@ -3099,13 +2783,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button15.setText(qt2);
                 button16.setText(qt6);
 
-            /*    button6.setText(letters1);
-                button8.setText(letters2);
-                button4.setText(letters3);
-                button13.setText(letters4);
-                button5.setText(letters5);
-                button2.setText(letters6);
-                button3.setText(letters7);*/
             }
 
 
@@ -3151,15 +2828,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button16.setText(qt6);
 
 
-
-            /*  button5.setText(letters1);
-                button6.setText(letters2);
-                button8.setText(letters3);
-                button15.setText(letters4);
-                button12.setText(letters5);
-                button4.setText(letters6);
-                button7.setText(letters7);
-                button9.setText(letters8);*/
             } else if (random == 2) {
                 button1.setText(letters7);
                 button2.setText(letters2);
@@ -3177,15 +2845,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 button14.setText(letters4);
                 button15.setText(qt5);
                 button16.setText(qt6);
-
-             /*   button10.setText(letters1);
-                button2.setText(letters2);
-                button3.setText(letters3);
-                button14.setText(letters4);
-                button11.setText(letters5);
-                button6.setText(letters6);
-                button1.setText(letters7);
-                button9.setText(letters8);*/
 
             } else if (random == 3) {
 
@@ -3607,8 +3266,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
                 if (x <= answerlength) {
                     x++;
-                 /*   Toast.makeText(Match_Word.this, "x"+x, Toast.LENGTH_SHORT).show();
-                    Toast.makeText(Match_Word.this, "answerlength"+answerlength, Toast.LENGTH_SHORT).show();*/
 
                     // Toast.makeText(Match_Word.this, "Correct Answer", Toast.LENGTH_SHORT).show();
 
@@ -3769,11 +3426,11 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                         focus.stop();
 
-                        Handler handler = new Handler();
+                        Handler handler = new Handler(Looper.myLooper());
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                setSc();
+                                adShow();
                             }
                         }, 3000);
                     }
@@ -3855,17 +3512,15 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
     @Override
     protected void onPause() {
         super.onPause();
-
+        if (handler != null) handler.removeCallbacks(my_runnable);
         focus.stop();
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
         String date = sps.getString(Match_Word.this, "date");
         int pos;
         if (date.equals("0")) {
-            pos = 1;
             newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
             //  myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
         } else {
-            pos = 2;
             newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
             //  myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
         }
@@ -3957,69 +3612,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             }
         }, transAnimation.getDuration());
 
-       /* Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
-        cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
-        String tr = String.valueOf(skq);
-        s_score_edit.setText(tr);
-        //
-        e2 = skq;
-        //play1.start();
-        spz4.play(soundId4, sv, sv, 0, 0, sv);
-        p_coins.setVisibility(View.VISIBLE);
-        int[] locationInWindow = new int[2];
-        p_coins.getLocationInWindow(locationInWindow);
-        int[] locationOnScreen = new int[2];
-        p_coins.getLocationOnScreen(locationOnScreen);
-        float sourceX = locationOnScreen[0];
-        float sourceY = locationOnScreen[1];
-        int[] locationInWindowSecond = new int[2];
-        s_score_edit.getLocationInWindow(locationInWindowSecond);
-        int[] locationOnScreenSecond = new int[2];
-        s_score_edit.getLocationOnScreen(locationOnScreenSecond);
-        float destinationX = locationOnScreenSecond[0];
-        float destinationY = locationOnScreenSecond[1];
-        TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
-        transAnimation.setDuration(700);
-        p_coins.startAnimation(transAnimation);
-        p_coins.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                p_coins.setVisibility(View.INVISIBLE);
-            }
-        }, transAnimation.getDuration());
-
-
-
-
-        new Thread(new Runnable() {
-
-            public void run() {
-                int es = e2 + 10;
-                while (e2 < es) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    s_score_edit.post(new Runnable() {
-
-                        public void run() {
-
-                            s_score_edit.setText("" + e2);
-
-                        }
-
-                    });
-                    e2++;
-                }
-
-            }
-
-        }).start();
-*/
-        Handler handler30 = new Handler();
+        Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -4028,7 +3621,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             }
         }, 1500);
 
-        Handler handler21 = new Handler();
+        Handler handler21 = new Handler(Looper.myLooper());
         handler21.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -4091,13 +3684,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
 
         //score intial
-/*
-        Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
-        cfq.moveToFirst();
-        if (cfq.getCount() != 0) {
-            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
-            String tr = String.valueOf(skq);
-        }*/
 
 
         // spz4.play(soundId4, sv, sv, 0, 0, sv);
@@ -4125,7 +3711,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             }
         }, transAnimation.getDuration());
 
-        Handler handler30 = new Handler();
+        Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -4134,7 +3720,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             }
         }, 1500);
 
-        Handler handler21 = new Handler();
+        Handler handler21 = new Handler(Looper.myLooper());
         handler21.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -4289,19 +3875,19 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                     final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
                     if (fb_reward == 1) {
                         reward_progressBar.dismiss();
-                        rewardedAd.showAd();
+                        show_reward();
                         rewardvideo.setVisibility(View.INVISIBLE);
                     } else {
-                        new Handler().postDelayed(new Runnable() {
+                        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 reward_progressBar.dismiss();
                                 if (fb_reward == 1) {
-                                    rewardedAd.showAd();
+                                    show_reward();
                                     // mShowVideoButton.setVisibility(View.VISIBLE);
                                 } else {
-                                    //reward(context);
-                                    rewarded_ad();
+
+                                    rewarded_adnew();
                                     Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -4316,62 +3902,56 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             }
         });
 
-        rewardvideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 2;
-                if (Utils.isNetworkAvailable(context)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
-                        reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        rewardvideo.setVisibility(View.INVISIBLE);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward(context);
-                                    rewarded_ad();
-                                    Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-                    }
+        rewardvideo.setOnClickListener(v -> {
+            rvo = 2;
+            if (Utils.isNetworkAvailable(context)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    rewardvideo.setVisibility(View.INVISIBLE);
                 } else {
+                    new Handler(Looper.myLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            reward_progressBar.dismiss();
+                            if (fb_reward == 1) {
+                                show_reward();
+                                // mShowVideoButton.setVisibility(View.VISIBLE);
+                            } else {
 
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
+                                rewarded_adnew();
+                                Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }, 2000);
                 }
+            } else {
+
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+
             }
         });
-        wtp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
-                        String msg = ("நான் சொல்லிஅடி செயலியில் சொல்லுக்குள் சொல் நிலை " + s_word_number.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivity(Intent.createChooser(i, "Share via"));
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 21);
+        wtp.setOnClickListener(view -> {
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.whatsapp");
+                    String msg = ("நான் சொல்லிஅடி செயலியில் சொல்லுக்குள் சொல் நிலை " + s_word_number.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivity(Intent.createChooser(i, "Share via"));
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 21);
 
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
                 }
+
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             }
         });
         fbs.setOnClickListener(new View.OnClickListener() {
@@ -4422,9 +4002,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             }
         }
 
-        // Toast.makeText(Match_Word.this, "u_ans"+uans, Toast.LENGTH_SHORT).show();
-        // Toast.makeText(Match_Word.this, "answerlength"+answerlength, Toast.LENGTH_SHORT).show();
-        int tt_time = 120;
+        int tt_time;
 
         if (answer_types == 6) {
             tt_time = 123;
@@ -4447,7 +4025,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             if (!date.equals("0")) {
                 next_continue.setText("சரி");
             }
-            Handler handler1 = new Handler();
+            Handler handler1 = new Handler(Looper.myLooper());
             handler1.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -4456,7 +4034,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                     cns3.setVisibility(View.VISIBLE);
                 }
             }, 500);
-            Handler handler2 = new Handler();
+            Handler handler2 = new Handler(Looper.myLooper());
             handler2.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -4465,7 +4043,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                     cns1.setVisibility(View.VISIBLE);
                 }
             }, 1000);
-            Handler handler3 = new Handler();
+            Handler handler3 = new Handler(Looper.myLooper());
             handler3.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -4476,7 +4054,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             }, 1500);
 
 
-            Handler handler6 = new Handler();
+            Handler handler6 = new Handler(Looper.myLooper());
             handler6.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -4504,7 +4082,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
                 }
             }, 1500);
-            Handler handler7 = new Handler();
+            Handler handler7 = new Handler(Looper.myLooper());
             handler7.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -4532,7 +4110,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
                 }
             }, 1900);
-            Handler handler8 = new Handler();
+            Handler handler8 = new Handler(Looper.myLooper());
             handler8.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -4608,7 +4186,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             }
 
 
-            Handler handler11 = new Handler();
+            Handler handler11 = new Handler(Looper.myLooper());
             handler11.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -4642,7 +4220,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 }
             }, 1500);
 
-            Handler hand = new Handler();
+            Handler hand = new Handler(Looper.myLooper());
             hand.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -4654,48 +4232,14 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             next_continue.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (sps.getInt(Match_Word.this, "purchase_ads") == 1) {
-                        y = 0;
-                        case2 = 0;
-                        tot2 = 0;
-                        tt_case2 = 0;
-                        tt_tot2 = 0;
-                        dia_dismiss = 1;
-                        openDialog_s.dismiss();
-                        next();
-                    } else {
-                        y = 0;
-                        case2 = 0;
-                        tot2 = 0;
-                        tt_case2 = 0;
-                        tt_tot2 = 0;
-                        if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
-                            sps.putInt(getApplicationContext(), "ins_ad_new", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (ins_game == null || !ins_game.isReady()) {
-                                    dia_dismiss = 1;
-                                    openDialog_s.dismiss();
-                                    return;
-                                } else {
-                                    ins_game.showAd();
-                                }
-
-
-                            } else {
-                                dia_dismiss = 1;
-                                openDialog_s.dismiss();
-                                next();
-                            }
-
-                        } else {
-                            dia_dismiss = 1;
-                            openDialog_s.dismiss();
-                            next();
-                            sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
-                        }
-                        //  advancads();
-                        // advancads_content();
-                    }
+                    y = 0;
+                    case2 = 0;
+                    tot2 = 0;
+                    tt_case2 = 0;
+                    tt_tot2 = 0;
+                    dia_dismiss = 1;
+                    openDialog_s.dismiss();
+                    next();
 
                 }
             });
@@ -4753,51 +4297,14 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             next_continue.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (sps.getInt(Match_Word.this, "purchase_ads") == 1) {
-                        y = 0;
-                        case2 = 0;
-                        tot2 = 0;
-                        tt_case2 = 0;
-                        tt_tot2 = 0;
-                        dia_dismiss = 1;
-                        openDialog_s.dismiss();
-                        next();
-                    } else {
-                        y = 0;
-                        case2 = 0;
-                        tot2 = 0;
-                        tt_case2 = 0;
-                        tt_tot2 = 0;
-
-                        if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
-                            sps.putInt(getApplicationContext(), "ins_ad_new", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (ins_game == null || !ins_game.isReady()) {
-                                    dia_dismiss = 1;
-                                    openDialog_s.dismiss();
-                                    next();
-                                    industrialload_game();
-                                } else {
-                                    ins_game.showAd();
-                                }
-
-
-                            } else {
-                                dia_dismiss = 1;
-                                openDialog_s.dismiss();
-                                next();
-                            }
-
-                        } else {
-                            dia_dismiss = 1;
-                            openDialog_s.dismiss();
-                            next();
-                            sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
-                        }
-                    }
-
-                    /*dia_dismiss = 1;
-                    openDialog_s.dismiss();*/
+                    y = 0;
+                    case2 = 0;
+                    tot2 = 0;
+                    tt_case2 = 0;
+                    tt_tot2 = 0;
+                    dia_dismiss = 1;
+                    openDialog_s.dismiss();
+                    next();
                 }
             });
         }
@@ -4865,7 +4372,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getPackageManager();
-        boolean app_installed = false;
+        boolean app_installed;
         try {
             pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
             app_installed = true;
@@ -4967,8 +4474,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         }
 
 
-/*        int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
@@ -5000,8 +4505,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             cfx.moveToFirst();
             if (cfx.getCount() != 0) {
                 skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-/*        int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
                 b_scores.setText("" + a);
 
 
@@ -5029,201 +4532,80 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         openDialog.show();
     }
 
-    public void game_exit_ins_ad() {
+    public void industrialload() {
+        if (mInterstitialAd != null) return;
+        Log.i(TAG, "onAdLoadedCalled");
+        AdRequest adRequest = new AdRequest.Builder().build();
 
-        game_exit_ins = new MaxInterstitialAd(getResources().getString(R.string.Cat_Exit_Ins), this);
-        game_exit_ins.setListener(new MaxAdListener() {
+        InterstitialAd.load(this, getResources().getString(R.string.Game2_Stage_Close_PS), adRequest, new InterstitialAdLoadCallback() {
             @Override
-            public void onAdLoaded(MaxAd ad) {
-
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                interstiallistener();
+                Log.i(TAG, "onAdLoaded");
             }
 
             @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                openDialog_p.dismiss();
-                game_exit_ins_ad();
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error" + error);
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2" + error);
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.d(TAG, loadAdError.toString());
+                mInterstitialAd = null;
+                handler = null;
+                Log.i(TAG, "onAdLoadedfailed" + loadAdError.getMessage());
             }
         });
-        game_exit_ins.loadAd();
 
     }
 
-    public void industrialload_game() {
-
-        ins_game = new MaxInterstitialAd(getResources().getString(R.string.Puthayal_Sorkal_Ins_new), this);
-        ins_game.setListener(new MaxAdListener() {
+    public void interstiallistener() {
+        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
             @Override
-            public void onAdLoaded(MaxAd ad) {
-
+            public void onAdDismissedFullScreenContent() {
+                // Called when ad is dismissed.
+                // Set the ad reference to null so you don't show the ad a second time.
+                Log.d(TAG, "Ad dismissed fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                setSc();
+                industrialload();
             }
 
             @Override
-            public void onAdDisplayed(MaxAd ad) {
-
+            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                // Called when ad fails to show.
+                Log.e(TAG, "Ad failed to show fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
+                setSc();
             }
 
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                dia_dismiss = 1;
-                openDialog_s.dismiss();
-                next();
-                industrialload_game();
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-
-            }
         });
-        ins_game.loadAd();
+    }
+
+    public void adShow() {
+        if (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") == Utills.interstitialadCount && mInterstitialAd != null) {
+            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
+            Utills.INSTANCE.Loading_Dialog(this);
+            handler = new Handler(Looper.myLooper());
+            my_runnable = () -> {
+                mInterstitialAd.show(this);
+            };
+            handler.postDelayed(my_runnable, 2500);
+        } else {
+            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") + 1));
+            if (sps.getInt(this, "Game2_Stage_Close_PS") > Utills.interstitialadCount)
+                sps.putInt(this, "Game2_Stage_Close_PS", 0);
+            setSc();
+        }
 
     }
 
-    /*  private void openFacebookSession() {
-          Session.openActiveSession(this, true, Arrays.asList("email",
-                  "user_birthday", "user_hometown", "user_location"),
-                  new Session.StatusCallback() {
-                      @Override
-                      public void call(Session session, SessionState state,
-                                       Exception exception) {
 
-                          if (session != null && session.isOpened()) {
-                              // toast("open");
-
-                              if (btn_str.equals("share")) {
-
-                                  publishFeedDialog();
-                              } else if (btn_str.equals("invite")) {
-
-                                  Bundle params = new Bundle();
-                                  params.putString("message", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                          "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                                  showDialogWithoutNotificationBarInvite(
-                                          "apprequests", params);
-                              }
-                          }
-                      }
-                  });
-      }
-  */
-   /* private void showDialogWithoutNotificationBarInvite(String action, Bundle params) {
-        final WebDialog dialog = new WebDialog.Builder(Match_Word.this,
-                Session.getActiveSession(), action, params)
-                .setOnCompleteListener(new WebDialog.OnCompleteListener() {
-                    @Override
-                    public void onComplete(Bundle values,
-                                           FacebookException error) {
-                        if (error != null
-                                && !(error instanceof FacebookOperationCanceledException)) {
-
-                        }
-
-                        try {
-                            System.out.println("Invitation was sent to "
-                                    + values.toString());
-
-                            for (int i = 0; values.containsKey("to[" + i + "]"); i++) {
-                                String curId = values
-                                        .getString("to[" + i + "]");
-
-                            }
-
-                            // lastearn("invaite friends", (values.size() - 1));
-                            if ((values.size() - 1) >= 1) {
-                                //setcoin(values.size() - 1);
-                                int spx = 0;
-                                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                cfx.moveToFirst();
-                                if (cfx.getCount() != 0) {
-                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                    spx = (values.size() - 1) * 10;
-                                    String aStringx = Integer.toString(spx + skx);
-                                    // s_score.setText(aStringx);
-                                    myDbHelper.executeSql("UPDATE score SET coins='" + (spx + skx) + "'");
-                                }
-
-                                share_earn(spx);
-                                //Toast.makeText(Solukul_Sol.this, "கூடுதல் நாணயங்கள்  "+spx+"  வழங்கப்பட்டது.தற்போது உங்களது மொத்த நாணயங்கள்"+ (spx + skx)+"", Toast.LENGTH_SHORT).show();
-
-
-                                ///Reward Share
-                                retype = "s";
-                                Calendar calendar3 = Calendar.getInstance();
-                                int cur_year1 = calendar3.get(Calendar.YEAR);
-                                int cur_month1 = calendar3.get(Calendar.MONTH);
-                                int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
-
-                                String str_month1 = "" + (cur_month1 + 1);
-                                if (str_month1.length() == 1) {
-                                    str_month1 = "0" + str_month1;
-                                }
-
-                                String str_day1 = "" + cur_day1;
-                                if (str_day1.length() == 1) {
-                                    str_day1 = "0" + str_day1;
-                                }
-                                final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
-
-                                if (sps.getString(Match_Word.this, "complite_reg").equals("yes")) {
-                                    Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
-                                    cn.moveToFirst();
-                                    if (cn.getCount() != 0) {
-                                        int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
-                                        int spxx = (values.size() - 1);
-                                        int gm1s = gm1 + spxx;
-                                        myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
-
-                                    }
-                                }
-                                ///Reward Share
-                            }
-
-                        } catch (Exception e) {
-
-                        }
-                    }
-                }).build();
-
-        Window dialog_window = dialog.getWindow();
-        dialog_window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        // dialogAction = action;
-        // dialogParams = params;
-
-        dialog.show();
-    }
-*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -5233,8 +4615,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             if (Utils.isNetworkAvailable(Match_Word.this)) {
                 download_datas();
             } else {
-                NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-                native_banner_ad_container.setVisibility(View.INVISIBLE);
                 head.setVisibility(View.INVISIBLE);
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Match_Word.this);
                 alertDialogBuilder.setCancelable(false);
@@ -5459,12 +4839,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         }
         if (requestCode == 16) {
             if (resultCode == -1) {
-               /* if (sps.getString(Solukul_Sol.this, "gplues").equals("yes"))
-                {
-
-                    sps.putString(Solukul_Sol.this, "gplues", "no");
-
-                }*/
                 Cursor cfx = null;
                 try {
                     cfx = myDbHelper.getQry("SELECT * FROM score ");
@@ -5473,8 +4847,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                         int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                         int spx = skx + 10;
                         String aStringx = Integer.toString(spx);
-                        // s_score.setText(aStringx);
-                        //ttscores.setText(aStringx);
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                     }
                 } catch (Exception e) {
@@ -5533,110 +4905,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         }
     }
 
-/*    public boolean isLoggedIn() {
-        Session session = Session.getActiveSession();
-        return (session != null && session.isOpened());
-    }
-
-    private void publishFeedDialog() {
-        Bundle params = new Bundle();
-        params.putString("name", "சொல்லிஅடி");
-        // params.putString("caption", "");
-
-
-        params.putString("name", "சொல்லிஅடி");
-        // params.putString("message", "my_message");
-        params.putString("link", "https://goo.gl/CcA9a8");
-        params.putString("description", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் +\n" +
-                "                             விளையாட இங்கே கிளிக் செய்யவும் ");
-
-        params.putString("caption", "நான் சொல்லிஅடி செயலியில் சொல்லுக்குள் சொல்   நிலை " + s_score_edit.getText().toString() + " ஐ முடித்துள்ளேன்.");
-        // params.putString("picture","https://s3-ap-southeast-1.amazonaws.com/nithra-tamil/solliadi_logo.webp");
-        WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(this,
-                Session.getActiveSession(), params)).setOnCompleteListener(
-                new WebDialog.OnCompleteListener() {
-
-                    @Override
-                    public void onComplete(Bundle values,
-                                           FacebookException error) {
-                        if (error == null) {
-                            // When the story is posted, echo the success
-                            // and the post Id.
-                            final String postId = values.getString("post_id");
-                            if (postId != null) {
-
-
-                            *//*    if (sps.getString(Solukul_Sol.this, "face_share").equals("")) {
-
-                                    sps.putString(Solukul_Sol.this, "face_share", "yes");
-
-                                }*//*
-                                String aStringx = "";
-                                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                cfx.moveToFirst();
-                                if (cfx.getCount() != 0) {
-                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                    int spx = skx + 10;
-                                    aStringx = Integer.toString(spx);
-                                    ttscores.setText(aStringx);
-                                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                                }
-
-                                // s_score.setText(aStringx);
-
-                                share_earn2(10);
-                                ///Reward Share
-                                retype = "s";
-                                Calendar calendar3 = Calendar.getInstance();
-                                int cur_year1 = calendar3.get(Calendar.YEAR);
-                                int cur_month1 = calendar3.get(Calendar.MONTH);
-                                int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
-
-                                String str_month1 = "" + (cur_month1 + 1);
-                                if (str_month1.length() == 1) {
-                                    str_month1 = "0" + str_month1;
-                                }
-
-                                String str_day1 = "" + cur_day1;
-                                if (str_day1.length() == 1) {
-                                    str_day1 = "0" + str_day1;
-                                }
-                                final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
-
-                                if (sps.getString(Match_Word.this, "complite_reg").equals("yes")) {
-                                    Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
-                                    cn.moveToFirst();
-                                    if (cn.getCount() != 0) {
-                                        int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
-                                        int gm1s = gm1 + 1;
-                                        myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
-                                    }
-
-                                }
-                                ///Reward Share
-
-                            } else {
-                                // User clicked the Cancel button
-                                Toast.makeText(getApplicationContext(),
-                                        "Publish cancelled", Toast.LENGTH_SHORT)
-                                        .show();
-                            }
-                        } else if (error instanceof FacebookOperationCanceledException) {
-                            // User clicked the "x" button
-                            Toast.makeText(getApplicationContext(),
-                                    "Publish cancelled", Toast.LENGTH_SHORT)
-                                    .show();
-                        } else {
-                            // Generic, ex: network error
-                            Toast.makeText(getApplicationContext(),
-                                    "Error posting story", Toast.LENGTH_SHORT)
-                                    .show();
-                        }
-                    }
-
-                }).build();
-        feedDialog.show();
-    }*/
 
     public void dialog(int i) {
         openDialog_earncoin = new Dialog(Match_Word.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -5683,23 +4951,21 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                         String date = sps.getString(Match_Word.this, "date");
                         int pos;
                         if (date.equals("0")) {
-                            pos = 1;
                             newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
                             //  myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                         } else {
-                            pos = 2;
                             newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
                             //  myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                         }
                         reward_progressBar.dismiss();
-                        rewardedAd.showAd();
+                        show_reward();
                         openDialog_earncoin.cancel();
 
                         // mShowVideoButton.setVisibility(View.VISIBLE);
                     } else {
-                        //reward(context);
-                        rewarded_ad();
-                        new Handler().postDelayed(new Runnable() {
+
+                        rewarded_adnew();
+                        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 reward_progressBar.dismiss();
@@ -5719,56 +4985,8 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                     final ProgressDialog reward_progressBar = ProgressDialog.show(Match_Word.this, "" + "Reward video", "Loading...");
 
 
-                   *//* ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    focus.stop();
-                    String date = sps.getString(Odd_man_out.this, "date");
-                    int pos;
-                    if (date.equals("0")) {
-                        pos = 1;
-                        myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                    } else {
-                        pos = 2;
-                        myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                    }*//*
-                 *//* if (mRewardedVideoAd.isLoaded()) {
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        String date = sps.getString(Match_Word.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                            newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                            //  myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-                            //  myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                        }
-                        reward_progressBar.dismiss();
-                        showRewardedVideo();
-                        openDialog_earncoin.cancel();
-                        // mShowVideoButton.setVisibility(View.VISIBLE);
-                    } else {
-                        startGame();
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (mRewardedVideoAd.isLoaded()) {
-                                    showRewardedVideo();
-                                    openDialog_earncoin.cancel();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    startGame();
-                                    Toast.makeText(Match_Word.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-                    }*//*
+                   *//*
+                 *//*
                 } else {
 
                     Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
@@ -5791,25 +5009,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                         String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
                         i.putExtra(Intent.EXTRA_TEXT, msg);
                         startActivityForResult(Intent.createChooser(i, "Share via"), 12);
-                   /*     if (sps.getString(Picture_Game_Hard.this, "watts_app").equals("")) {
-                            Handler handler8 = new Handler();
-                            handler8.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //Score Adding
-                                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                    cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                    int spx = skx + 20;
-                                    String aStringx = Integer.toString(spx);
-                                    score.setText(aStringx);
-                                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                    sps.putString(Picture_Game_Hard.this, "watts_app", "yes");
-
-                                }
-                            }, 3000);
-                        }*/
 
                         ///shareing reward
                     } else {
@@ -5825,25 +5024,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         fb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            /*    if (isNetworkAvailable()) {
-                    openDialog_earncoin.dismiss();
-
-                    btn_str = "invite";
-                    if (isLoggedIn()) {
-                        Bundle params = new Bundle();
-                        params.putString("message", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        showDialogWithoutNotificationBarInvite("apprequests",
-                                params);
-                        // toast("yes");
-                    } else {
-                        //openFacebookSession();
-                        // toast("no");
-                    }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }   // toast("இணையதள சேவையை சரிபார்க்கவும் ");*/
 
             }
         });
@@ -5854,21 +5034,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 if (isNetworkAvailable()) {
                     final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
                     if (appinstalled) {
-                       /* ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        String date = sps.getString(Picture_Game_Hard.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                            myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                            myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                            myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                        }*/
                         openDialog_earncoin.dismiss();
                         Intent i = new Intent(Intent.ACTION_SEND);
                         i.setType("text/plain");
@@ -5925,19 +5090,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                     focus.stop();
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                     newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                    /* String date = sps.getString(Picture_Game_Hard.this, "date");
-                    int pos;
-                    if (date.equals("0")) {
-                        pos = 1;
-                        myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                    } else {
-                        pos = 2;
-                        myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                    }*/
 
                     //Uri uri = Uri.fromFile(file);
                     Uri uri = FileProvider.getUriForFile(Match_Word.this, Match_Word.this.getPackageName(), file);
@@ -5952,18 +5104,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                     startActivity(Intent.createChooser(share, "Share Card Using"));
                 } else {
                     Toast.makeText(Match_Word.this, "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    /*CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout);
-                    Snackbar snackbar = Snackbar.make(coordinatorLayout, "இந்த செயலி தங்களிடம் இல்லை", Snackbar.LENGTH_SHORT);
-                    final View view = snackbar.getView();
-                    TextView textView = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
-                    view.setBackgroundResource(R.drawable.answershow);
-                    textView.setTextColor(Color.parseColor("#FFFFFF"));
-                    textView.setGravity(Gravity.CENTER | Gravity.BOTTOM);
-                    textView.setTextSize(17);
-                    CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
-                    params.gravity = Gravity.TOP;
-                    view.setLayoutParams(params);
-                    snackbar.show();*/
                 }
 
 
@@ -5982,111 +5122,14 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         String date = sps.getString(Match_Word.this, "date");
         int pos;
         if (date.equals("0")) {
-            pos = 1;
             newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
 
             //  myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
         } else {
-            pos = 2;
             newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
 
             //  myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
         }
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if ((ContextCompat.checkSelfPermission(Match_Word.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                helpshare(a);
-            } else {
-                if (sps.getString(Match_Word.this, "permission_grand").equals("")) {
-                    sps.putString(Match_Word.this, "permission_grand", "yes");
-                    //  First_register("yes");
-                    AlertDialog alertDialog = new AlertDialog.Builder(Match_Word.this).create();
-                    alertDialog.setMessage("இந்த நிலையை உங்களது நண்பருக்கு பகிர பின்வரும் permission-யை allow செய்யவேண்டும்");
-                    alertDialog.setCancelable(false);
-                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    if ((ContextCompat.checkSelfPermission(Match_Word.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                        ActivityCompat.requestPermissions(Match_Word.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                                    } else {
-                                        helpshare(a);
-                                    }
-                                }
-                            });
-
-                    alertDialog.show();
-
-                } else {
-                    if ((ContextCompat.checkSelfPermission(Match_Word.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                        if (sps.getInt(Match_Word.this, "permission") == 2) {
-                            AlertDialog alertDialog = new AlertDialog.Builder(Match_Word.this).create();
-                            alertDialog.setMessage("இந்த நிலையை உங்களது நண்பருக்கு பகிர settingsல் உள்ள permission-யை allow செய்யவேண்டும்");
-                            alertDialog.setCancelable(false);
-                            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                            Intent intent = new Intent();
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                            Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                            intent.setData(uri);
-                                            getApplicationContext().startActivity(intent);
-                                        }
-                                    });
-
-                            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            String date = sps.getString(Match_Word.this, "date");
-                                            int pos;
-                                            if (date.equals("0")) {
-                                                pos = 1;
-                                            } else {
-                                                pos = 2;
-                                            }
-
-                                            Cursor cs = newhelper.getQry("select * from newmaintable where gameid='" + gameid + "' and questionid='" + questionid + "'");
-                                            cs.moveToFirst();
-                                            long dscore = 0;
-                                            if (cs.getCount() != 0) {
-                                                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-                                            }
-                                            //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
-
-                                            if (sps.getString(Match_Word.this, "mtc_time_start").equals("")) {
-
-                                            } else {
-                                                focus.setBase(SystemClock.elapsedRealtime() + dscore);
-                                                focus.start();
-                                            }
-                                            dialog.dismiss();
-                                        }
-                                    });
-
-
-                            alertDialog.show();
-                        } else {
-                            if ((ContextCompat.checkSelfPermission(Match_Word.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                ActivityCompat.requestPermissions(Match_Word.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                            } else {
-                                helpshare(a);
-                            }
-                        }
-                    } else {
-                        if ((ContextCompat.checkSelfPermission(Match_Word.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                            ActivityCompat.requestPermissions(Match_Word.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 151);
-                        } else {
-                            helpshare(a);
-                        }
-                    }
-
-                }
-            }
-
-        } else {
-            helpshare(a);
-        }*/
         helpshare(a);
     }
 
@@ -6409,15 +5452,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             }
         });
 
-        eng_to_tamil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Match_Word.this, "date", "0");
-                Intent i = new Intent(Match_Word.this, English_to_tamil.class);
-                startActivity(i);
-            }
-        });
+
         Newgame_DataBaseHelper6 newhelper6 = new Newgame_DataBaseHelper6(Match_Word.this);
         TextView jamble_words = (TextView) openDialog.findViewById(R.id.jamble_words);
         Cursor jmp;
@@ -6488,8 +5523,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 }
                 openDialog.dismiss();
                 //sps.putString(Odd_man_out.this, "date", "0");
-              /*  Intent i = new Intent(Match_Word.this, New_Main_Activity.class);
-                startActivity(i);*/
                 return keyCode == KeyEvent.KEYCODE_BACK;
             }
         });
@@ -6736,7 +5769,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
     private boolean appInstalledOrNot(Context context, String uri) {
         PackageManager pm = context.getPackageManager();
-        boolean app_installed = false;
+        boolean app_installed;
         try {
             pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
             app_installed = true;
@@ -6754,6 +5787,9 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         if (openDialog_p != null && openDialog_p.isShowing()) {
             openDialog_p.dismiss();
         }
+        rewardedAd = null;
+        mInterstitialAd = null;
+        handler = null;
     }
 
 
@@ -6855,8 +5891,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
     }
 
     public void downloaddata_regular() {
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-        native_banner_ad_container.setVisibility(View.INVISIBLE);
+
         head.setVisibility(View.INVISIBLE);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Match_Word.this);
         // alertDialogBuilder.setTitle("Update available");
@@ -6869,8 +5904,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 if (Utils.isNetworkAvailable(Match_Word.this)) {
                     download_datas();
                 } else {
-                    NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-                    native_banner_ad_container.setVisibility(View.INVISIBLE);
+
                     head.setVisibility(View.INVISIBLE);
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Match_Word.this);                           /* .setTitle("Delete entry")*/
                     alertDialogBuilder.setCancelable(false);
@@ -6905,8 +5939,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                                     backexitnet();
                                 }
                             }
-                                   /* Intent i = new Intent(Match_Word.this, New_Main_Activity.class);
-                                    startActivity(i);*/
                             dialog.dismiss();
                         }
                     }).setIcon(android.R.drawable.ic_dialog_alert).show();
@@ -6916,8 +5948,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         });
         alertDialogBuilder.setPositiveButton("இல்லை ", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                /*Intent i = new Intent(Match_Word.this, New_Main_Activity.class);
-                startActivity(i);*/
                 sps.putString(Match_Word.this, "game_area", "on");
                 String date = sps.getString(Match_Word.this, "date");
                 if (date.equals("0")) {
@@ -6939,37 +5969,34 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         alertDialog.show();
     }
 
-    public void rewarded_ad() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
+    public void rewarded_adnew() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedAd.load(this, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
             @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error.
+                Log.d(TAG, loadAdError.toString());
+                rewardedAd = null;
             }
 
             @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
+            public void onAdLoaded(@NonNull RewardedAd ad) {
+                rewardedAd = ad;
                 fb_reward = 1;
+                adslisner();
+                Log.d(TAG, "Ad was loaded.");
             }
+        });
+
+
+    }
+
+    public void adslisner() {
+        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
 
             @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_ad();
+            public void onAdDismissedFullScreenContent() {
+                rewarded_adnew();
                 if (reward_status == 1) {
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
@@ -6980,15 +6007,12 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
                     }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        if (rvo == 2) {
+                            share_earn2(mCoinCount);
+                        } else {
+                            vidcoinearn();
                         }
                     }, 500);
                 } else {
@@ -6997,42 +6021,23 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
                 fb_reward = 0;
 
-                rewardedAd.loadAd();
-
-
             }
 
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                /*retryAttempt++;
-                long delayMillis = TimeUnit.SECONDS.toMillis( (long) Math.pow( 2, Math.min( 6, retryAttempt ) ) );
-
-                new Handler().postDelayed( new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        rewardedAd.loadAd();
-                    }
-                }, delayMillis );*/
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
         });
-        rewardedAd.loadAd();
     }
 
-
-    private enum PendingAction {
-        NONE, POST_PHOTO, POST_STATUS_UPDATE
+    public void show_reward() {
+        if (rewardedAd != null) {
+            rewardedAd.show(this, rewardItem -> {
+                // Handle the reward.
+                Log.d(TAG, "The user earned the reward.");
+                int rewardAmount = rewardItem.getAmount();
+                String rewardType = rewardItem.getType();
+                reward_status = 1;
+            });
+        } else {
+            Log.d(TAG, "The rewarded ad wasn't ready yet.");
+        }
     }
 
 }

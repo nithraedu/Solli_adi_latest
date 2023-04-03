@@ -2,7 +2,6 @@ package nithra.tamil.word.game.solliadi.word_search_game.Models.extra;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 import nithra.tamil.word.game.solliadi.SharedPreference;
 
@@ -10,7 +9,7 @@ import nithra.tamil.word.game.solliadi.SharedPreference;
  * Created by NITHRA-G7 on 5/4/2017.
  */
 
-public class MyTextView extends TextView {
+public class MyTextView extends androidx.appcompat.widget.AppCompatTextView {
 
     SharedPreference sp = new SharedPreference();
 
@@ -31,15 +30,6 @@ public class MyTextView extends TextView {
     }
 
     private void init() {
-       /* if(sp.getString(getContext(),"Fonts").equals("")){
-
-            Typeface tf = Typeface.createFromAsset(getContext().getAssets(), "enbold.ttf");
-            setTypeface(tf);
-        }else{
-
-            Typeface tf = Typeface.createFromAsset(getContext().getAssets(), sp.getString(getContext(),"Fonts"));
-            setTypeface(tf);
-        }*/
 
         //Typeface tf = Typeface.createFromAsset(getContext().getAssets(), sp.getString(getContext(),"Fonts"));
         ///setTypeface(tf);

@@ -102,61 +102,23 @@
     <string name="base64_key">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwvB2PRbiaHt07CB1JWpQgitJoe+wCEw65Qb+sPyhVBVALCjgC4jSg8CITqrV+w/73cEAD/BR2PfhjvnHKDmfS0vsdvez0jJ8xihSaSGapnuIvgYvTP5J4OdoG/ZSGXw3qi5Mc5LtA803vMqaHPsZLoJX35lEb6ApGkD0qOZwQOms/FfikuD8b08AYBNAsDaCLiI14N2mcyatWyKupPJvyroflApCaCH7c0uBCj9mHP5inFyWgTEdWILxV8OUJjfIs2NmzVImNGTeqSmYc4BkA+gpKiz8vcrP4GSJSs557drJot1Kkq8iU8jy2SOsZJBCA2zUld5zEkHdukQ1CFtMHwIDAQAB</string>
 
 
-    <string name="fb_exit_dia">1746769098928603_2532947946977377</string>
-    <string name="fb_score_rec">1746769098928603_2532948420310663</string>
-    <string name="fb_multiplayer_rec">1746769098928603_2532948576977314</string>
-    <string name="fb_rewarded_ins">1746769098928603_2532948850310620</string>
+    <string name="Game1_Stage_Close_VV">ca-app-pub-3940256099942544/1033173712</string>
 
-    <string name="fb_noti_banner">1746769098928603_2536275049978000</string>
-    <string name="fb_noti_industrial">1746769098928603_1849279258677586</string>
+    <string name="Game2_Stage_Close_PS">ca-app-pub-3940256099942544/1033173712</string>
 
-    <string name="industrial_between">1746769098928603_2532949073643931</string>
-    <string name="Puthayal_Sorkal_Ins">1746769098928603_2542216169383888</string>
-    <string name="Senthamil_Thedal_Ins">1746769098928603_2542216412717197</string>
-    <string name="Ragasiya_sorgal_Ins">1746769098928603_2542216602717178</string>
+    <string name="Game3_Stage_Close_ST">ca-app-pub-3940256099942544/1033173712</string>
 
-    <string name="fb_native_banner">1746769098928603_2532949333643905</string>
-    <string name="Puthayal_Sorkal_Native_Banner">1746769098928603_2542217409383764</string>
-    <string name="Senthamil_Thedal_Native_Banner">1746769098928603_2542217632717075</string>
-    <string name="Ragasiya_sorgal_Native_Banner">1746769098928603_2542218286050343</string>
+    <string name="Game4_Stage_Close_RS">ca-app-pub-3940256099942544/1033173712</string>
 
-
-    <!--applovin-->
-    <string name="Noti_Banner">2d8dc94d4a113f25</string>
-    <string name="Noti_Exit_INS">e5187e79f6180517</string>
-
-    <string name="Viliyodu_Vilaiyadu_Ins">5e11d3d404441478</string>
-    <string name="Viliyodu_Vilaiyadu_Native_Banner_new">b426fdb889827cea</string>
-
-
-    <string name="Puthayal_Sorkal_Ins_new">489542293b12c52d</string>
-    <string name="Puthayal_Sorkal_Native_Banner_new">dd3fe3a5697468f8</string>
-
-    <string name="Senthamil_Thedal_Ins_new">3115a52bb21a9f6d</string>
-    <string name="Senthamil_Thedal_Native_Banner_new">67496545534bae5e</string>
-
-    <string name="Ragasiya_sorgal_ins">cc5177a5d9d8697c</string>
-    <string name="Ragasiya_sorgal_Native_Banner_new">e470391d057cdc9f</string>
-
-
-    <string name="Reward_Ins">4035191e86eb48ed</string>
-    <string name="App_Exit_Ins">3131a2b2c46d46b0</string>
-    <string name="Game_Exit_Rec">9aa81d9b09537904</string>
-    <string name="Cat_Exit_Ins">29757919cd348ccb</string>
-
-
-    <string name="Game1_Stage_Close_VV">ca-app-pub-5984266422386694/8708439468</string>
-
-    <string name="Game2_Stage_Close_PS">ca-app-pub-5984266422386694/4066895995</string>
-
-    <string name="Game3_Stage_Close_ST">ca-app-pub-5984266422386694/1479690280</string>
-
-    <string name="Game4_Stage_Close_RS">ca-app-pub-5984266422386694/1490749834</string>
-
+<!--
     <string name="Noti_Content_Bottom">ca-app-pub-5984266422386694/8490121078</string>
+-->
+    <string name="Noti_Content_Bottom">ca-app-pub-3940256099942544/6300978111</string>
 
-    <string name="Noti_Content_Close">ca-app-pub-5984266422386694/4302893230</string>
+    <string name="Noti_Content_Close">ca-app-pub-3940256099942544/1033173712</string>
 
-    <string name="Reward">ca-app-pub-5984266422386694/7401552068</string>
+    <string name="Rewardoriginal">ca-app-pub-5984266422386694/7401552068</string><!--original-->
+    <string name="Reward">ca-app-pub-3940256099942544/5224354917</string>
+    <string name="Bottom_Banner">cad3a4886f7b9db5</string>
 
 </resources>

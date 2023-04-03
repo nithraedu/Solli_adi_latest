@@ -15,7 +15,6 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -26,11 +25,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.facebook.ads.NativeAdLayout;
-
 
 public class Fill_in_blanks_levels extends AppCompatActivity {
     public static SharedPreferences mPreferences;
+    final SharedPreference spa = new SharedPreference();
     TextView time1, time2, time3, score1, score2, score3, levelid, levelname;
     Typeface typ, tyr;
     DataBaseHelper myDbHelper;
@@ -40,7 +38,6 @@ public class Fill_in_blanks_levels extends AppCompatActivity {
     TextView intro;
     TextView ttr_intro;
     MediaPlayer play1;
-    SharedPreference spa = new SharedPreference();
     ImageView lock1, lock2, lock3;
     LinearLayout adds;
     TextView l_word1, l_word2, l_word3;
@@ -73,7 +70,7 @@ public class Fill_in_blanks_levels extends AppCompatActivity {
         levelid = (TextView) findViewById(R.id.l_level_id);
         levelname = (TextView) findViewById(R.id.l_id_name);
         ttr_intro = (TextView) findViewById(R.id.ttr_intro);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         RelativeLayout levels = (RelativeLayout) findViewById(R.id.levels);
         Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button2_animation);
         levels.startAnimation(levels1);
@@ -125,29 +122,11 @@ public class Fill_in_blanks_levels extends AppCompatActivity {
         six.setSpan(new ForegroundColorSpan(Color.parseColor("#ff6633")), 0, six.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         intro.append(six);
 
-       /* Spannable seven = new SpannableString( "\n\n5)இந்த விளையாட்டில் கொடுக்கப்பட்டுள்ள அனைத்து வார்த்தைகளையும் 30 விநாடிகள் கண்டு பிடித்தால் தங்களுக்கு கூடுதலாக 30 நாணயங்கள் வழங்கப்படும்.");
-
-        seven.setSpan(new ForegroundColorSpan(Color.parseColor("#ff6633")), 0, seven.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        intro.append(seven);
-
-        Spannable sev = new SpannableString( "\n\n6)(?) குறியை பயன்படுத்தாமல் அனைத்து விடைகளையும் கண்டுபிடிக்கும் பட்சத்தில் கூடுதலாக 30 சிறப்பு நாணயங்கள் வழங்கப்படும். ");
-
-        sev.setSpan(new ForegroundColorSpan(Color.parseColor("#ff6633")), 0, sev.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        intro.append(sev);*/
         //
-   /*     exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
-        Cursor c1 = exdb.rawQuery("select * from maintable where gameid= 2", null);
-        c1.moveToFirst();
-
-        Cursor c2 = exdb.rawQuery("select * from maintable where gameid= 2 and isfinish='1'", null);
-        c2.moveToFirst();
-        int cs2 = c2.getCount()+1;
-        l_word1.setText(c2.getCount() + "/" + c1.getCount());
-*/
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         getSupportActionBar().setDisplayShowHomeEnabled(false);
         View view = getLayoutInflater().inflate(R.layout.action_sole_m, null);
         getSupportActionBar().setCustomView(view);
@@ -167,8 +146,6 @@ public class Fill_in_blanks_levels extends AppCompatActivity {
             public void onClick(View view) {
                 spa.putInt(Fill_in_blanks_levels.this, "val", 1);
                 finish();
-               /* Intent i = new Intent(Match_words_levels.this, New_Main_Activity.class);
-                startActivity(i);*/
             }
         });
 
@@ -199,68 +176,9 @@ public class Fill_in_blanks_levels extends AppCompatActivity {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             spa.putInt(Fill_in_blanks_levels.this, "val", 1);
             finish();
-            /*Intent i = new Intent(Match_words_levels.this, New_Main_Activity.class);
-            startActivity(i);*/
 
         }
         return super.onKeyDown(keyCode, event);
     }
 
-    protected void onResume() {
-        super.onResume();
-
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-
-        if (spa.getInt(Fill_in_blanks_levels.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            native_banner_ad_container.setVisibility(View.GONE);
-        } else {
-            if (spa.getInt(Fill_in_blanks_levels.this, "addlodedd") == 1) {
-
-            } else {
-                if (Utils.isNetworkAvailable(Fill_in_blanks_levels.this)) {
-                    native_banner_ad_container.setVisibility(View.GONE);
-                    // fb_native(Fill_in_blanks_levels.this,native_banner_ad_container);
-
-                    /* if (spa.getInt(Fill_in_blanks_levels.this,"native_banner_ads")==1){
-
-                              New_Main_Gamelist.inflateAd(Fill_in_blanks_levels.this,native_banner_ad_container);
-                    }else {
-                        fb_native(Fill_in_blanks_levels.this,native_banner_ad_container);
-                    }*/
-                } else {
-                    native_banner_ad_container.setVisibility(View.GONE);
-                }
-/*
-                if (Utils.isNetworkAvailable(Fill_in_blanks_levels.this)) {
-                    spa.putInt(Fill_in_blanks_levels.this, "addlodedd", 2);
-                    System.out.println("@IMG");
-                    final AdView adView = new AdView(Fill_in_blanks_levels.this);
-                    adView.setAdUnitId(getString(R.string.main_banner_ori));
-
-                    adView.setAdSize(AdSize.SMART_BANNER);
-                    AdRequest request = new AdRequest.Builder().build();
-                    adView.setAdListener(new AdListener() {
-                        public void onAdLoaded() {
-                            System.out.println("@@@loaded");
-                            adds.removeAllViews();
-                            adds.addView(adView);
-                            adds.setVisibility(View.VISIBLE);
-                            super.onAdLoaded();
-                        }
-
-                        @Override
-                        public void onAdFailedToLoad(int i) {
-                            System.out.println("@@@NOt loaded");
-                            super.onAdFailedToLoad(i);
-                        }
-                    });
-                    adView.loadAd(request);
-
-                }
-*/
-            }
-        }
-
-    }
 }

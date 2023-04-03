@@ -12,6 +12,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -51,23 +52,24 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
 
     public static int clearSelection = 0;
     public static float[] touchPoint;
-    private final float mScale = getResources().getDisplayMetrics().density;
-    private final float mMinDistance = (int) (50.0 * mScale + 0.5);
-    String[] colors = {"#F44336", "#9C27B0", "#2196F3", "#4CAF50", "#FFC107", "#00BCD4",
+    final String[] colors = {"#F44336", "#9C27B0", "#2196F3", "#4CAF50", "#FFC107", "#00BCD4",
             "#E91E63", "#673AB7", "#009688", "#CDDC39", "#FF5722", "#607D8B", "#3F51B5",
             "#FF1744", "#0091EA", "#00C853", "#FFAB00", "#795548", "#827717", "#006064"};
-    SharedPreference sp = new SharedPreference();
+    final SharedPreference sp = new SharedPreference();
+    final List<Integer> listPos = new ArrayList<>();
+    private final float mScale = getResources().getDisplayMetrics().density;
+    private final float mMinDistance = (int) (50.0 * mScale + 0.5);
+    private final int mColumns;
+    private final int mRows;
+    private final Matrix matrix = new Matrix();
     int i = 0, k = 0;
     Animation animShake, zoomIn, zoomOut;
     View view;
     MediaPlayer mp;
     Animation wobble;
-    List<Integer> listPos = new ArrayList<>();
     private int mDefaultColor;
     private int mSelectionColor;
     private int mColumnWidth;
-    private final int mColumns;
-    private final int mRows;
     private float mCornerRadius;
     /**
      * Vars related to selection and selection drawing
@@ -90,7 +92,6 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
     private OnWordSelectedListener mOnWordSelectedListener;
     private boolean mFocusSelected;
     private String mLastWordFound;
-    private final Matrix matrix = new Matrix();
 
     public challenge_WS_GridView(Context context) {
         super(context);
@@ -306,7 +307,7 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
         mSelectionSteps = null;
     }
 
-    public boolean selectionChanged(float xPos, float yPos) {
+    public void selectionChanged(float xPos, float yPos) {
         if (mSelStartPosition == null) {
             int position = pointToPosition((int) xPos, (int) yPos);
             if (position >= 0) {
@@ -321,7 +322,7 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
             double distance = Math.hypot(xDelta, yDelta);
             Log.d("Angle", "DIST: " + (int) distance + ", MIN: " + mMinDistance);
             if (isInTouchMode() && distance < mMinDistance) {
-                return false;
+                return;
             }
 
             Direction previousDirection = mSelectionDirection;
@@ -338,7 +339,7 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
             if (mSelectionDirection != previousDirection || mSelectionSteps != previousSteps) {
                 List<View> selectedViews = getSelectionViews();
                 if (selectedViews == null) {
-                    return false;
+                    return;
                 }
 
                 // Selection no longer includes these characters so
@@ -408,7 +409,6 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
                 postInvalidate();
             }
         }
-        return true;
     }
 
     public void setBoard(String[][] board) {
@@ -485,7 +485,7 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
 
         view = v;
 
-        new Handler().postDelayed(new Runnable() {
+        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
 
@@ -561,35 +561,6 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
 
             float smallestWidth = Math.min(widthDp, heightDp);
 
-            /*TranslateAnimation anims = null;
-
-            if (smallestWidth == 240) {
-
-                anims = new TranslateAnimation(250, 250, 450, 80);
-
-            } else if (smallestWidth == 320) {
-
-                anims = new TranslateAnimation(200, 200, 400, 80);
-            } else if (smallestWidth == 360) {
-
-                anims = new TranslateAnimation(300, 300, 600, 100);
-            } else if (smallestWidth > 360 && smallestWidth <= 480) {
-
-                anims = new TranslateAnimation(600, 600, 1000, 100);
-            } else if (smallestWidth >= 480 && smallestWidth <= 600) {
-
-                anims = new TranslateAnimation(600, 600, 1000, 100);
-            } else if (smallestWidth >= 600 && smallestWidth <= 720) {
-
-                anims = new TranslateAnimation(700, 700, 1000, 150);
-            } else if (smallestWidth >= 720 && smallestWidth <= 820) {
-
-                anims = new TranslateAnimation(750, 750, 1050, 200);
-            } else {
-
-                anims = new TranslateAnimation(300, 300, 600, 100);
-            }*/
-
             TranslateAnimation anims = new TranslateAnimation(touchPoint[0], 100, touchPoint[1], 100);
             //TranslateAnimation anims = new TranslateAnimation(550, 450, 850, 100);
             anims.setDuration(1500);
@@ -601,7 +572,7 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
             animation.addAnimation(fadeOut);
             tv.setAnimation(animation);
 
-            new Handler().postDelayed(new Runnable() {
+            new Handler(Looper.myLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
 
@@ -681,8 +652,6 @@ public class challenge_WS_GridView extends LinearLayout implements OnKeyListener
             setMeasuredDimension(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
             mColumnWidth = (int) ((float) getMeasuredWidth() / (float) mColumns);
         } else {
-            // Display display = ((WindowManager)
-            // getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
             if (getResources().getDisplayMetrics().widthPixels > getResources().getDisplayMetrics().heightPixels) {
                 super.onMeasure(heightMeasureSpec, heightMeasureSpec);
                 setMeasuredDimension(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));

@@ -2,13 +2,11 @@ package nithra.tamil.word.game.solliadi;
 
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
-import static nithra.tamil.word.game.solliadi.New_Main_Gamelist.fb_native_Senthamil_Thedal_Native_Banner;
 
 import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -24,24 +22,23 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -49,24 +46,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.NativeAdLayout;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -81,7 +74,6 @@ import java.util.StringTokenizer;
 
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
-import nithra.tamil.word.game.solliadi.adutils.Ad_NativieUtils;
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
@@ -95,6 +87,13 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     static int ry;
     static int rvo = 0;
     static int mCoinCount = 20;
+    final String gameid = "13";
+    final int maximum_s = 3;
+    final int minmum_s = 1;
+    final int maximum_show = 3;
+    final int minmum_show = 1;
+    final SharedPreference sps = new SharedPreference();
+    final ArrayList<String> mylist = new ArrayList<String>();
     int fb_reward = 0;
     int reward_status = 0;
     Newgame_DataBaseHelper newhelper;
@@ -103,30 +102,25 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     Newgame_DataBaseHelper3 newhelper3;
     Newgame_DataBaseHelper4 newhelper4;
     TextView ed1, ed2, ed3, ed4, ed5, ed6, ed7, ed8;
-    TextView c_button1, c_button2, c_button3, c_button4, c_button5, c_button6, c_button7, c_button8, c_button9, c_button10, c_button11,
-            c_button12, c_button13, c_button14, c_button15, c_button16;
+    TextView c_button1, c_button2, c_button3, c_button4, c_button5, c_button6, c_button7, c_button8, c_button9, c_button10, c_button11, c_button12, c_button13, c_button14, c_button15, c_button16;
     TextView score;
     String letters = "";
-    String gameid = "13", answers;
+    String answers;
     int levelid = 0;
     int letter_length;
     int minmum = 1;
-    int maximum_s = 3;
     int maximum = 3;
-    int minmum_s = 1;
     int randomno;
     int randomno_set = 0;
     int word_type_random;
     int word_maximum = 3;
     int word_minimum = 2;
     TextView c_word_number, c_coins, c_settings, c_ans;
-    int maximum_show = 3, minmum_show = 1, randomno_show;
+    int randomno_show;
     Chronometer focus;
     DataBaseHelper myDbHelper;
-    SharedPreference sps = new SharedPreference();
     int sv = 0;
     String string_arrange_value = "";
-    ArrayList<String> mylist = new ArrayList<String>();
     int e2 = 0;
     SoundPool click, win, coin, worng;
     int soundId1, soundId2, soundId3, soundId4;
@@ -159,12 +153,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     int setval_vid;
     int dia_dismiss = 0;
     int coin_anim = 0;
-    //RewardedVideoAd rewardedVideoAd;
-    private MaxRewardedAd rewardedAd;
-    private boolean mGameOver;
-    private boolean mGamePaused;
-    private long mTimeRemaining;
-    private MaxInterstitialAd ins_game, game_exit_ins;
+    Handler handler;
+    Runnable my_runnable;
+    private RewardedAd rewardedAd;
+    private InterstitialAd mInterstitialAd;
 
     private void backexitnet() {
         if (main_act.equals("")) {
@@ -180,29 +172,13 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fill_in_blanks);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         newhelper = new Newgame_DataBaseHelper(Fill_in_blanks.this);
         newhelper2 = new Newgame_DataBaseHelper2(Fill_in_blanks.this);
         newhelper3 = new Newgame_DataBaseHelper3(Fill_in_blanks.this);
         newhelper4 = new Newgame_DataBaseHelper4(Fill_in_blanks.this);
         myDbHelper = new DataBaseHelper(Fill_in_blanks.this);
 
-
-
-
-        /*String gid = "13";
-        String qid = "";
-        for (int i = 0; i<=999; i++){
-            if (qid.equals("")){
-                qid = "" +i;
-            } else {
-                qid = qid + "," + i;
-            }
-        }
-        System.out.println("---qid : " +qid);
-        System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
-        newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='13'");
-*/
 
         //Sound Pool Sounds
         click = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
@@ -214,37 +190,31 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         coin = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
         soundId4 = coin.load(Fill_in_blanks.this, R.raw.coins, 1);
 
-        ImageView prize_logo = (ImageView) findViewById(R.id.prize_logo);
-        /*final Animation pendulam;
-        pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
-        prize_logo.startAnimation(pendulam);*/
+        ImageView prize_logo = findViewById(R.id.prize_logo);
         if (sps.getInt(Fill_in_blanks.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
             prize_logo.setVisibility(View.GONE);
         }
-        prize_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isNetworkAvailable()) {
-                    if (sps.getString(Fill_in_blanks.this, "price_registration").equals("com")) {
+        prize_logo.setOnClickListener(v -> {
+            if (isNetworkAvailable()) {
+                if (sps.getString(Fill_in_blanks.this, "price_registration").equals("com")) {
+                    finish();
+                    Intent i = new Intent(Fill_in_blanks.this, Game_Status.class);
+                    startActivity(i);
+                } else {
+                    if (sps.getString(Fill_in_blanks.this, "otp_verify").equals("yes")) {
                         finish();
-                        Intent i = new Intent(Fill_in_blanks.this, Game_Status.class);
+                        Intent i = new Intent(Fill_in_blanks.this, LoginActivity.class);
                         startActivity(i);
                     } else {
-                        if (sps.getString(Fill_in_blanks.this, "otp_verify").equals("yes")) {
-                            finish();
-                            Intent i = new Intent(Fill_in_blanks.this, LoginActivity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            Intent i = new Intent(Fill_in_blanks.this, Price_Login.class);
-                            startActivity(i);
-                        }
+                        finish();
+                        Intent i = new Intent(Fill_in_blanks.this, Price_Login.class);
+                        startActivity(i);
                     }
-                } else {
-                    Toast.makeText(Fill_in_blanks.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(Fill_in_blanks.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -266,33 +236,18 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         find();
         click();
         next();
-        //reward(Fill_in_blanks.this);
-        rewarded_ad();
-        if (sps.getInt(Fill_in_blanks.this, "purchase_ads") == 0) {
+        MobileAds.initialize(this);
+        rewarded_adnew();
             // Make sure to set the mediation provider value to "max" to ensure proper functionality
-            AppLovinSdk.getInstance(Fill_in_blanks.this).setMediationProvider("max");
-            AppLovinSdk.initializeSdk(Fill_in_blanks.this, new AppLovinSdk.SdkInitializationListener() {
-                @Override
-                public void onSdkInitialized(final AppLovinSdkConfiguration configuration) {
-                    // AppLovin SDK is initialized, start loading ads
-                    industrialload_game();
-                    game_exit_ins_ad();
-                }
-            });
-        }
-
-        //loads_ads_banner();
-        adds = (LinearLayout) findViewById(R.id.ads_lay);
-        if (sps.getInt(Fill_in_blanks.this, "purchase_ads") == 0) {
-            if (Utils.isNetworkAvailable(Fill_in_blanks.this)) {
-
-                Ad_NativieUtils.load_add_facebook(this, getResources().getString(R.string.Senthamil_Thedal_Native_Banner_new), adds);
-            } else {
-                adds.setVisibility(View.GONE);
+            if (sps.getInt(this, "purchase_ads") == 0) {
+                Utills.INSTANCE.initializeAdzz(this);
+                industrialload();
             }
-        } else {
-            adds.setVisibility(View.GONE);
-        }
+
+
+        adds = findViewById(R.id.ads_lay);
+
+        Utills.INSTANCE.load_add_AppLovin(this, adds);
 
 
         if (sps.getString(Fill_in_blanks.this, "fill_to_intro").equals("")) {
@@ -306,25 +261,17 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
             sequence.addSequenceItem(c_ans, "விடையை பார்க்க கேள்விக்குறி பொத்தானை அழுத்தி விடை காணலாம்.", "அடுத்து");
 
-            sequence.addSequenceItem(new MaterialShowcaseView.Builder(Fill_in_blanks.this)
-                            .setTarget(helpshare_layout)
-                            .setDismissText("சரி")
-                            .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
-                            .build())
-                    .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
-                        @Override
-                        public void onDismiss(MaterialShowcaseView itemView, int position) {
+            sequence.addSequenceItem(new MaterialShowcaseView.Builder(Fill_in_blanks.this).setTarget(helpshare_layout).setDismissText("சரி").setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.").build()).setOnItemDismissedListener((itemView, position) -> {
 
-                            if (position == 1) {
-                                sps.putString(Fill_in_blanks.this, "fill_intro_time_start", "yes");
-                                sps.putString(Fill_in_blanks.this, "showcase_dismiss_fill_intro", "yes");
+                if (position == 1) {
+                    sps.putString(Fill_in_blanks.this, "fill_intro_time_start", "yes");
+                    sps.putString(Fill_in_blanks.this, "showcase_dismiss_fill_intro", "yes");
 
-                                focus.setBase(SystemClock.elapsedRealtime());
-                                focus.start();
+                    focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();
 
-                            }
-                        }
-                    });
+                }
+            });
 
             sps.putString(Fill_in_blanks.this, "fill_to_intro", "no");
             sequence.start();
@@ -334,37 +281,9 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
     }
 
-    private void loads_ads_banner() {
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-
-        if (sps.getInt(Fill_in_blanks.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            adds.setVisibility(View.GONE);
-            native_banner_ad_container.setVisibility(View.GONE);
-
-        } else {
-            if (Utils.isNetworkAvailable(Fill_in_blanks.this)) {
-                fb_native_Senthamil_Thedal_Native_Banner(Fill_in_blanks.this, native_banner_ad_container);
-
-                /*  if (sps.getInt(Fill_in_blanks.this,"native_banner_ads")==1){
-                    New_Main_Gamelist.inflateAd(Fill_in_blanks.this,native_banner_ad_container);
-                }else {
-                    fb_native(Fill_in_blanks.this,native_banner_ad_container);
-                }*/
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-        }
-    }
-
     private void click_txt_change() {
 
-        earncoin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog(0);
-            }
-        });
+        earncoin.setOnClickListener(v -> dialog(0));
 
         ed1.addTextChangedListener(new TextWatcher() {
             @Override
@@ -385,14 +304,11 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 } else if (letter_length == 5) {
                     ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString();
                 } else if (letter_length == 6) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString();
                 } else if (letter_length == 7) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString();
                 } else if (letter_length == 8) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
                 }
                 System.out.println("################ED1" + ans_verify);
                 verifyed(ans_verify);
@@ -418,14 +334,11 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 } else if (letter_length == 5) {
                     ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString();
                 } else if (letter_length == 6) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString();
                 } else if (letter_length == 7) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString();
                 } else if (letter_length == 8) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
                 }
                 System.out.println("################ED1" + ans_verify);
                 verifyed(ans_verify);
@@ -450,14 +363,11 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 } else if (letter_length == 5) {
                     ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString();
                 } else if (letter_length == 6) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString();
                 } else if (letter_length == 7) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString();
                 } else if (letter_length == 8) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
                 }
                 System.out.println("################ED1" + ans_verify);
                 verifyed(ans_verify);
@@ -482,14 +392,11 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 } else if (letter_length == 5) {
                     ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString();
                 } else if (letter_length == 6) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString();
                 } else if (letter_length == 7) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString();
                 } else if (letter_length == 8) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
                 }
                 System.out.println("################ED1" + ans_verify);
                 verifyed(ans_verify);
@@ -514,14 +421,11 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 } else if (letter_length == 5) {
                     ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString();
                 } else if (letter_length == 6) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString();
                 } else if (letter_length == 7) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString();
                 } else if (letter_length == 8) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
                 }
                 System.out.println("################ED1" + ans_verify);
                 verifyed(ans_verify);
@@ -546,14 +450,11 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 } else if (letter_length == 5) {
                     ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString();
                 } else if (letter_length == 6) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString();
                 } else if (letter_length == 7) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString();
                 } else if (letter_length == 8) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
                 }
                 System.out.println("################ED1" + ans_verify);
                 verifyed(ans_verify);
@@ -578,14 +479,11 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 } else if (letter_length == 5) {
                     ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString();
                 } else if (letter_length == 6) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString();
                 } else if (letter_length == 7) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString();
                 } else if (letter_length == 8) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
                 }
                 System.out.println("################ED1" + ans_verify);
                 verifyed(ans_verify);
@@ -610,14 +508,11 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 } else if (letter_length == 5) {
                     ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString();
                 } else if (letter_length == 6) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString();
                 } else if (letter_length == 7) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString();
                 } else if (letter_length == 8) {
-                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString()
-                            + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
+                    ans_verify = ed1.getText().toString() + "" + ed2.getText().toString() + "" + ed3.getText().toString() + "" + ed4.getText().toString() + "" + ed5.getText().toString() + "" + ed6.getText().toString() + "" + ed7.getText().toString() + "" + ed8.getText().toString();
                 }
                 System.out.println("################ED1" + ans_verify);
                 verifyed(ans_verify);
@@ -693,10 +588,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
     public void wrongans() {
         worng.play(soundId2, sv, sv, 0, 0, sv);
-        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout);
+        CoordinatorLayout coordinatorLayout = findViewById(R.id.myCoordinatorLayout);
         Snackbar snackbar = Snackbar.make(coordinatorLayout, "தவறான பதில்", Snackbar.LENGTH_SHORT);
         final View view = snackbar.getView();
-        TextView textView = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+        TextView textView = view.findViewById(com.google.android.material.R.id.snackbar_text);
         view.setBackgroundResource(R.drawable.answershow);
         textView.setTextColor(Color.parseColor("#FFFFFF"));
         //textView.setGravity(Gravity.CENTER | Gravity.BOTTOM);
@@ -814,101 +709,70 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
         transAnimation.setDuration(500);
         c_coin.startAnimation(transAnimation);
-        c_coin.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                c_coin.setVisibility(View.INVISIBLE);
-            }
-        }, transAnimation.getDuration());
+        c_coin.postDelayed(() -> c_coin.setVisibility(View.INVISIBLE), transAnimation.getDuration());
         ////
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                coin.play(soundId4, sv, sv, 0, 0, sv);
-                c_coin.setVisibility(View.VISIBLE);
-                int[] locationInWindow = new int[2];
-                c_coin.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                c_coin.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                score.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                score.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
-                transAnimation.setDuration(1000);
-                c_coin.startAnimation(transAnimation);
-                c_coin.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        c_coin.setVisibility(View.INVISIBLE);
-                    }
-                }, transAnimation.getDuration());
-            }
+        Handler handler = new Handler(Looper.myLooper());
+        handler.postDelayed(() -> {
+            coin.play(soundId4, sv, sv, 0, 0, sv);
+            c_coin.setVisibility(View.VISIBLE);
+            int[] locationInWindow1 = new int[2];
+            c_coin.getLocationInWindow(locationInWindow1);
+            int[] locationOnScreen1 = new int[2];
+            c_coin.getLocationOnScreen(locationOnScreen1);
+            float sourceX1 = locationOnScreen1[0];
+            float sourceY1 = locationOnScreen1[1];
+            int[] locationInWindowSecond1 = new int[2];
+            score.getLocationInWindow(locationInWindowSecond1);
+            int[] locationOnScreenSecond1 = new int[2];
+            score.getLocationOnScreen(locationOnScreenSecond1);
+            float destinationX1 = locationOnScreenSecond1[0];
+            float destinationY1 = locationOnScreenSecond1[1];
+            TranslateAnimation transAnimation1 = new TranslateAnimation(0f, (destinationX1 - sourceX1), 0f, (destinationY1 - sourceY1));
+            transAnimation1.setDuration(1000);
+            c_coin.startAnimation(transAnimation1);
+            c_coin.postDelayed(() -> c_coin.setVisibility(View.INVISIBLE), transAnimation1.getDuration());
         }, 1000);
 
-        Handler handler30 = new Handler();
-        handler30.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
-                score.startAnimation(levels1);
-            }
+        Handler handler30 = new Handler(Looper.myLooper());
+        handler30.postDelayed(() -> {
+            Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
+            score.startAnimation(levels1);
         }, 2200);
 
-        new Thread(new Runnable() {
-
-            public void run() {
-                int es = e2 + 20;
-                while (e2 < es) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    score.post(new Runnable() {
-
-                        public void run() {
-
-                            score.setText("" + e2);
-
-                        }
-
-                    });
-                    e2++;
+        new Thread(() -> {
+            int es = e2 + 20;
+            while (e2 < es) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
-
+                score.post(() -> score.setText("" + e2));
+                e2++;
             }
 
         }).start();
 
-        Handler handler21 = new Handler();
-        handler21.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //Score Setting
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                int spx = skx + 20;
-                String aStringx = Integer.toString(spx);
-                score.setText(aStringx);
-                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+        Handler handler21 = new Handler(Looper.myLooper());
+        handler21.postDelayed(() -> {
+            //Score Setting
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            int spx = skx + 20;
+            String aStringx = Integer.toString(spx);
+            score.setText(aStringx);
+            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
-                Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
-                ch.moveToFirst();
-                int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
-                int shh = sh + 50;
-                myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
+            Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
+            ch.moveToFirst();
+            int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
+            int shh = sh + 50;
+            myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
 
 
-                setSc();
-            }
+            adShow();
         }, 3000);
     }
 
@@ -917,17 +781,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         coin_anim = 0;
         Random rns = new Random();
         randomno_set = rns.nextInt(maximum_s - minmum_s + 1) + minmum_s;
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-        if (sps.getInt(Fill_in_blanks.this, "purchase_ads") == 1) {
-            native_banner_ad_container.setVisibility(View.GONE);
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        } else {
-            if (Utils.isNetworkAvailable(Fill_in_blanks.this)) {
-                native_banner_ad_container.setVisibility(View.VISIBLE);
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-        }
+
         w_head.setVisibility(View.VISIBLE);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
@@ -1370,8 +1224,6 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 ed8.setText("" + word8);
             }
 
-            //String r= String.valueOf(w_id);
-            //lt_id.setText(r);
             System.out.println("############randomno" + randomno);
             System.out.println("############letters" + letters);
             System.out.println("############randomno_set" + randomno_set);
@@ -1461,36 +1313,113 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     }
 
     private void click() {
-        qwt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog(0);
-            }
-        });
-        c_ans.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        qwt.setOnClickListener(v -> dialog(0));
+        c_ans.setOnClickListener(v -> {
 
-                Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
-                cfw.moveToFirst();
-                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
-                if (sk >= 50) {
+            Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
+            cfw.moveToFirst();
+            int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
+            if (sk >= 50) {
+                c_ans.setEnabled(false);
+                r = 1;
+                if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
+
+
+                    Cursor cd;
+                    String date = sps.getString(Fill_in_blanks.this, "date");
+                    if (date.equals("0")) {
+                        cd = newhelper4.getQry("SELECT * FROM newgamesdb4 where  levelid='" + levelid + "' and isfinish='0' and gameid='" + gameid + "'");
+                        cd.moveToFirst();
+                    } else {
+                        cd = newhelper4.getQry("SELECT * FROM newgamesdb4 where  levelid='" + levelid + "' and gameid='" + gameid + "'");
+                        cd.moveToFirst();
+                    }
+
+                    String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
+                    //Toast.makeText(Clue_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
+                    //Score Adding
+                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                    cfx.moveToFirst();
+                    if (cfx.getCount() != 0) {
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                        int spx = skx - 50;
+                        String aStringx = Integer.toString(spx);
+                        score.setText(aStringx);
+                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                    }
+
+                    c_ans.setBackgroundResource(R.drawable.tick_background);
                     c_ans.setEnabled(false);
-                    r = 1;
-                    if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
+                    //
+                    sps.putInt(getApplicationContext(), "ach6_a1", 0);
+
+                    //bulb invisible
+
+                    //
+                    // list4.setVisibility(View.INVISIBLE);
+                    ed1.setVisibility(View.INVISIBLE);
+                    ed2.setVisibility(View.INVISIBLE);
+                    ed3.setVisibility(View.INVISIBLE);
+                    ed4.setVisibility(View.INVISIBLE);
+                    ed5.setVisibility(View.INVISIBLE);
+                    ed6.setVisibility(View.INVISIBLE);
+                    ed7.setVisibility(View.INVISIBLE);
+                    ed8.setVisibility(View.INVISIBLE);
+                    Animation w_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button1and3_animation);
+                    ans_high.startAnimation(w_game);
+                    ans_high.setVisibility(View.VISIBLE);
+                    ans_high.setText(sa);
+                    //Update QST
+                    String datee = sps.getString(Fill_in_blanks.this, "date");
+                    if (datee.equals("0")) {
+                        newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish=1 WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
+                    } else {
+                        newhelper4.executeSql("UPDATE newgamesdb4 SET daily=1 WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
+                    }
+                    sps.putString(Fill_in_blanks.this, "value_data_blanks", "");
+                    //Next Function
+                    //  r = 1;
 
 
+                    focus.stop();
+                    // completegame();
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> adShow(), 3000);
+
+                } else {
+                    final Dialog openDialog = new Dialog(Fill_in_blanks.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                    openDialog.setContentView(R.layout.show_ans);
+                    TextView yes = openDialog.findViewById(R.id.yes);
+                    TextView no = openDialog.findViewById(R.id.no);
+                    TextView txt_ex2 = openDialog.findViewById(R.id.txt_ex2);
+                    txt_ex2.setText("மொத்த நாணயங்களில் 50 குறைக்கப்படும்");
+                    CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                    checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+                        if (isChecked) {
+                            sps.putString(getApplicationContext(), "checkbox_ans", "yes");
+                        } else {
+                            sps.putString(getApplicationContext(), "checkbox_ans", "");
+                        }
+                    });
+
+                    yes.setOnClickListener(v12 -> {
+                        c_ans.setEnabled(false);
                         Cursor cd;
                         String date = sps.getString(Fill_in_blanks.this, "date");
                         if (date.equals("0")) {
                             cd = newhelper4.getQry("SELECT * FROM newgamesdb4 where  levelid='" + levelid + "' and isfinish='0' and gameid='" + gameid + "'");
+
                             cd.moveToFirst();
                         } else {
-                            cd = newhelper4.getQry("SELECT * FROM newgamesdb4 where  levelid='" + levelid + "' and gameid='" + gameid + "'");
+                            cd = newhelper4.getQry("SELECT * FROM newgamesdb4 where  levelid='" + levelid + "'  and gameid='" + gameid + "'");
                             cd.moveToFirst();
                         }
-
-                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
+                        String sas = null;
+                        if (cd.getCount() != 0) {
+                            sas = cd.getString(cd.getColumnIndexOrThrow("answer"));
+                        }
                         //Toast.makeText(Clue_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
                         //Score Adding
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
@@ -1501,18 +1430,13 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                             String aStringx = Integer.toString(spx);
                             score.setText(aStringx);
                             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
                         }
 
                         c_ans.setBackgroundResource(R.drawable.tick_background);
                         c_ans.setEnabled(false);
                         //
                         sps.putInt(getApplicationContext(), "ach6_a1", 0);
-
                         //bulb invisible
-                      /*  c_clue.clearAnimation();
-                        c_clue.setVisibility(View.INVISIBLE);*/
-
                         //
                         // list4.setVisibility(View.INVISIBLE);
                         ed1.setVisibility(View.INVISIBLE);
@@ -1523,10 +1447,11 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                         ed6.setVisibility(View.INVISIBLE);
                         ed7.setVisibility(View.INVISIBLE);
                         ed8.setVisibility(View.INVISIBLE);
+
                         Animation w_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button1and3_animation);
                         ans_high.startAnimation(w_game);
                         ans_high.setVisibility(View.VISIBLE);
-                        ans_high.setText(sa);
+                        ans_high.setText(sas);
                         //Update QST
                         String datee = sps.getString(Fill_in_blanks.this, "date");
                         if (datee.equals("0")) {
@@ -1534,650 +1459,477 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                         } else {
                             newhelper4.executeSql("UPDATE newgamesdb4 SET daily=1 WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
                         }
-                        sps.putString(Fill_in_blanks.this, "value_data_blanks", "");
                         //Next Function
-                        //  r = 1;
+                        // r = 1;
+                        sps.putString(Fill_in_blanks.this, "value_data_blanks", "");
+                        openDialog.dismiss();
 
-
-                      /*  if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (getApiClient().isConnected()) {
-                                if (isSignedIn()) {
-                                    savedGamesUpdate();
-                                }
-                            }
-                        }*/
                         focus.stop();
-                        // completegame();
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
+                        //    completegame();
 
-                                setSc();
-                            }
-                        }, 3000);
+                        Handler handler = new Handler(Looper.myLooper());
+                        handler.postDelayed(() -> adShow(), 3000);
+                    });
+                    no.setOnClickListener(v1 -> {
+                        c_ans.setEnabled(true);
+                        sps.putString(getApplicationContext(), "checkbox_ans", "");
+                        openDialog.dismiss();
+                    });
+                    openDialog.show();
+                }
+
+            } else {
+                dialog(1);
+            }
+        });
+        h_gplues.setOnClickListener(view -> {
+            share_name = 3;
+            String a = "com.google.android.apps.plus";
+            permission(a);
+        });
+        h_watts_app.setOnClickListener(view -> {
+            share_name = 2;
+            String a = "com.whatsapp";
+            permission(a);
+        });
+        h_facebook.setOnClickListener(view -> {
+            share_name = 1;
+            final String a = "com.facebook.katana";
+            permission(a);
+        });
+        clear_value.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            clear_data = 0;
+            System.out.println("==================Collections old" + mylist);
+            Collections.sort(mylist, Collections.reverseOrder());
+            System.out.println("==================Collections" + mylist);
+            for (int i = 0; i < mylist.size(); i++) {
+
+                if (clear_data == 0) {
+                    if (ed8.getText().toString().equals("")) {
 
                     } else {
-                        final Dialog openDialog = new Dialog(Fill_in_blanks.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                        openDialog.setContentView(R.layout.show_ans);
-                        TextView yes = (TextView) openDialog.findViewById(R.id.yes);
-                        TextView no = (TextView) openDialog.findViewById(R.id.no);
-                        TextView txt_ex2 = (TextView) openDialog.findViewById(R.id.txt_ex2);
-                        txt_ex2.setText("மொத்த நாணயங்களில் 50 குறைக்கப்படும்");
-                        CheckBox checkbox_ans = (CheckBox) openDialog.findViewById(R.id.checkbox_ans);
-                        checkbox_ans.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                            @Override
-                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                                if (isChecked) {
-                                    sps.putString(getApplicationContext(), "checkbox_ans", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "checkbox_ans", "");
-                                }
-                            }
-                        });
-
-                        yes.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                c_ans.setEnabled(false);
-                                Cursor cd;
-                                String date = sps.getString(Fill_in_blanks.this, "date");
-                                if (date.equals("0")) {
-                                    cd = newhelper4.getQry("SELECT * FROM newgamesdb4 where  levelid='" + levelid + "' and isfinish='0' and gameid='" + gameid + "'");
-
-                                    cd.moveToFirst();
-                                } else {
-                                    cd = newhelper4.getQry("SELECT * FROM newgamesdb4 where  levelid='" + levelid + "'  and gameid='" + gameid + "'");
-                                    cd.moveToFirst();
-                                }
-                                String sas = null;
-                                if (cd.getCount() != 0) {
-                                    sas = cd.getString(cd.getColumnIndexOrThrow("answer"));
-                                }
-                                //Toast.makeText(Clue_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
-                                //Score Adding
-                                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                cfx.moveToFirst();
-                                if (cfx.getCount() != 0) {
-                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                    int spx = skx - 50;
-                                    String aStringx = Integer.toString(spx);
-                                    score.setText(aStringx);
-                                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                                }
-
-                                c_ans.setBackgroundResource(R.drawable.tick_background);
-                                c_ans.setEnabled(false);
-                                //
-                                sps.putInt(getApplicationContext(), "ach6_a1", 0);
-                                //bulb invisible
-                                //
-                                // list4.setVisibility(View.INVISIBLE);
-                                ed1.setVisibility(View.INVISIBLE);
-                                ed2.setVisibility(View.INVISIBLE);
-                                ed3.setVisibility(View.INVISIBLE);
-                                ed4.setVisibility(View.INVISIBLE);
-                                ed5.setVisibility(View.INVISIBLE);
-                                ed6.setVisibility(View.INVISIBLE);
-                                ed7.setVisibility(View.INVISIBLE);
-                                ed8.setVisibility(View.INVISIBLE);
-
-                                Animation w_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button1and3_animation);
-                                ans_high.startAnimation(w_game);
-                                ans_high.setVisibility(View.VISIBLE);
-                                ans_high.setText(sas);
-                                //Update QST
-                                String datee = sps.getString(Fill_in_blanks.this, "date");
-                                if (datee.equals("0")) {
-                                    newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish=1 WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
-                                } else {
-                                    newhelper4.executeSql("UPDATE newgamesdb4 SET daily=1 WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
-                                }
-                                //Next Function
-                                // r = 1;
-                                sps.putString(Fill_in_blanks.this, "value_data_blanks", "");
-                                openDialog.dismiss();
-
-                                focus.stop();
-                                //    completegame();
-
-                                Handler handler = new Handler();
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        setSc();
-                                    }
-                                }, 3000);
-                            }
-                        });
-                        no.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                c_ans.setEnabled(true);
-                                sps.putString(getApplicationContext(), "checkbox_ans", "");
-                                openDialog.dismiss();
-                            }
-                        });
-                        openDialog.show();
-                    }
-
-                } else {
-                    dialog(1);
-                }
-            }
-        });
-        h_gplues.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                share_name = 3;
-                String a = "com.google.android.apps.plus";
-                permission(a);
-            }
-        });
-        h_watts_app.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                share_name = 2;
-                String a = "com.whatsapp";
-                permission(a);
-            }
-        });
-        h_facebook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                share_name = 1;
-                final String a = "com.facebook.katana";
-                permission(a);
-            }
-        });
-        clear_value.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                clear_data = 0;
-                System.out.println("==================Collections old" + mylist);
-                Collections.sort(mylist, Collections.reverseOrder());
-                System.out.println("==================Collections" + mylist);
-                for (int i = 0; i < mylist.size(); i++) {
-
-                    if (clear_data == 0) {
-                        if (ed8.getText().toString().equals("")) {
-
-                        } else {
-                            if (mylist.get(i).equals("8")) {
-                                ed8.setText("");
-                                clear_data = 1;
-                            }
+                        if (mylist.get(i).equals("8")) {
+                            ed8.setText("");
+                            clear_data = 1;
                         }
                     }
-                    if (clear_data == 0) {
-                        if (ed7.getText().toString().equals("")) {
+                }
+                if (clear_data == 0) {
+                    if (ed7.getText().toString().equals("")) {
 
-                        } else {
-                            if (mylist.get(i).equals("7")) {
-                                ed7.setText("");
-                                clear_data = 1;
-                            }
+                    } else {
+                        if (mylist.get(i).equals("7")) {
+                            ed7.setText("");
+                            clear_data = 1;
                         }
                     }
-                    if (clear_data == 0) {
-                        if (ed6.getText().toString().equals("")) {
+                }
+                if (clear_data == 0) {
+                    if (ed6.getText().toString().equals("")) {
 
-                        } else {
-                            if (mylist.get(i).equals("6")) {
-                                ed6.setText("");
-                                clear_data = 1;
-                            }
+                    } else {
+                        if (mylist.get(i).equals("6")) {
+                            ed6.setText("");
+                            clear_data = 1;
                         }
                     }
+                }
 
-                    if (clear_data == 0) {
-                        if (ed5.getText().toString().equals("")) {
+                if (clear_data == 0) {
+                    if (ed5.getText().toString().equals("")) {
 
-                        } else {
-                            if (mylist.get(i).equals("5")) {
-                                ed5.setText("");
-                                clear_data = 1;
-                            }
+                    } else {
+                        if (mylist.get(i).equals("5")) {
+                            ed5.setText("");
+                            clear_data = 1;
                         }
                     }
+                }
 
-                    if (clear_data == 0) {
-                        if (ed4.getText().toString().equals("")) {
+                if (clear_data == 0) {
+                    if (ed4.getText().toString().equals("")) {
 
-                        } else {
-                            if (mylist.get(i).equals("4")) {
-                                ed4.setText("");
-                                clear_data = 1;
-                            }
+                    } else {
+                        if (mylist.get(i).equals("4")) {
+                            ed4.setText("");
+                            clear_data = 1;
                         }
                     }
-                    if (clear_data == 0) {
-                        if (ed3.getText().toString().equals("")) {
+                }
+                if (clear_data == 0) {
+                    if (ed3.getText().toString().equals("")) {
 
-                        } else {
-                            if (mylist.get(i).equals("3")) {
-                                ed3.setText("");
-                                clear_data = 1;
-                            }
+                    } else {
+                        if (mylist.get(i).equals("3")) {
+                            ed3.setText("");
+                            clear_data = 1;
                         }
                     }
-                    if (clear_data == 0) {
-                        if (ed2.getText().toString().equals("")) {
+                }
+                if (clear_data == 0) {
+                    if (ed2.getText().toString().equals("")) {
 
-                        } else {
-                            if (mylist.get(i).equals("2")) {
-                                ed2.setText("");
-                                clear_data = 1;
-                            }
+                    } else {
+                        if (mylist.get(i).equals("2")) {
+                            ed2.setText("");
+                            clear_data = 1;
                         }
                     }
-                    if (clear_data == 0) {
-                        if (ed1.getText().toString().equals("")) {
+                }
+                if (clear_data == 0) {
+                    if (ed1.getText().toString().equals("")) {
 
-                        } else {
-                            if (mylist.get(i).equals("1")) {
-                                ed1.setText("");
-                                clear_data = 1;
-                            }
+                    } else {
+                        if (mylist.get(i).equals("1")) {
+                            ed1.setText("");
+                            clear_data = 1;
                         }
                     }
+                }
 
-                }
             }
         });
-        c_button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button1.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button1.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button1.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button1.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button1.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button1.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button1.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button1.getText().toString());
-                }
+        c_button1.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button1.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button1.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button1.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button1.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button1.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button1.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button1.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button1.getText().toString());
             }
         });
-        c_button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button2.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button2.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button2.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button2.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button2.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button2.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button2.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button2.getText().toString());
-                }
+        c_button2.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button2.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button2.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button2.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button2.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button2.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button2.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button2.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button2.getText().toString());
             }
         });
 
-        c_button3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button3.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button3.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button3.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button3.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button3.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button3.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button3.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button3.getText().toString());
-                }
+        c_button3.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button3.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button3.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button3.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button3.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button3.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button3.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button3.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button3.getText().toString());
             }
         });
-        c_button4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button4.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button4.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button4.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button4.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button4.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button4.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button4.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button4.getText().toString());
-                }
+        c_button4.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button4.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button4.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button4.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button4.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button4.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button4.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button4.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button4.getText().toString());
             }
         });
-        c_button5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button5.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button5.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button5.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button5.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button5.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button5.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button5.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button5.getText().toString());
-                }
+        c_button5.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button5.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button5.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button5.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button5.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button5.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button5.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button5.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button5.getText().toString());
             }
         });
-        c_button6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button6.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button6.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button6.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button6.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button6.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button6.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button6.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button6.getText().toString());
-                }
+        c_button6.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button6.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button6.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button6.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button6.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button6.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button6.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button6.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button6.getText().toString());
             }
         });
-        c_button7.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button7.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button7.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button7.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button7.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button7.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button7.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button7.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button7.getText().toString());
-                }
+        c_button7.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button7.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button7.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button7.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button7.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button7.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button7.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button7.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button7.getText().toString());
             }
         });
-        c_button8.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button8.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button8.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button8.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button8.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button8.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button8.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button8.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button8.getText().toString());
-                }
+        c_button8.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button8.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button8.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button8.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button8.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button8.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button8.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button8.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button8.getText().toString());
             }
         });
-        c_button9.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button9.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button9.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button9.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button9.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button9.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button9.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button9.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button9.getText().toString());
-                }
+        c_button9.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button9.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button9.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button9.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button9.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button9.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button9.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button9.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button9.getText().toString());
             }
         });
-        c_button10.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button10.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button10.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button10.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button10.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button10.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button10.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button10.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button10.getText().toString());
-                }
+        c_button10.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button10.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button10.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button10.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button10.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button10.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button10.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button10.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button10.getText().toString());
             }
         });
-        c_button11.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button11.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button11.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button11.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button11.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button11.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button11.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button11.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button11.getText().toString());
-                }
+        c_button11.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button11.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button11.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button11.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button11.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button11.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button11.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button11.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button11.getText().toString());
             }
         });
-        c_button12.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button12.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button12.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button12.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button12.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button12.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button12.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button12.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button12.getText().toString());
-                }
+        c_button12.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button12.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button12.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button12.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button12.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button12.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button12.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button12.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button12.getText().toString());
             }
         });
-        c_button13.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button13.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button13.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button13.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button13.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button13.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button13.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button13.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button13.getText().toString());
-                }
+        c_button13.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button13.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button13.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button13.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button13.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button13.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button13.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button13.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button13.getText().toString());
             }
         });
-        c_button14.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button14.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button14.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button14.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button14.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button14.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button14.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button14.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button14.getText().toString());
-                }
+        c_button14.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button14.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button14.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button14.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button14.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button14.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button14.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button14.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button14.getText().toString());
             }
         });
-        c_button15.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button15.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button15.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button15.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button15.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button15.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button15.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button15.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button15.getText().toString());
-                }
+        c_button15.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button15.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button15.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button15.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button15.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button15.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button15.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button15.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button15.getText().toString());
             }
         });
-        c_button16.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click.play(soundId1, sv, sv, 0, 0, sv);
-                if (ed1.getText().toString().equals("")) {
-                    ed1.setText("" + c_button16.getText().toString());
-                } else if (ed2.getText().toString().equals("")) {
-                    ed2.setText("" + c_button16.getText().toString());
-                } else if (ed3.getText().toString().equals("")) {
-                    ed3.setText("" + c_button16.getText().toString());
-                } else if (ed4.getText().toString().equals("")) {
-                    ed4.setText("" + c_button16.getText().toString());
-                } else if (ed5.getText().toString().equals("")) {
-                    ed5.setText("" + c_button16.getText().toString());
-                } else if (ed6.getText().toString().equals("")) {
-                    ed6.setText("" + c_button16.getText().toString());
-                } else if (ed7.getText().toString().equals("")) {
-                    ed7.setText("" + c_button16.getText().toString());
-                } else if (ed8.getText().toString().equals("")) {
-                    ed8.setText("" + c_button16.getText().toString());
-                }
+        c_button16.setOnClickListener(v -> {
+            click.play(soundId1, sv, sv, 0, 0, sv);
+            if (ed1.getText().toString().equals("")) {
+                ed1.setText("" + c_button16.getText().toString());
+            } else if (ed2.getText().toString().equals("")) {
+                ed2.setText("" + c_button16.getText().toString());
+            } else if (ed3.getText().toString().equals("")) {
+                ed3.setText("" + c_button16.getText().toString());
+            } else if (ed4.getText().toString().equals("")) {
+                ed4.setText("" + c_button16.getText().toString());
+            } else if (ed5.getText().toString().equals("")) {
+                ed5.setText("" + c_button16.getText().toString());
+            } else if (ed6.getText().toString().equals("")) {
+                ed6.setText("" + c_button16.getText().toString());
+            } else if (ed7.getText().toString().equals("")) {
+                ed7.setText("" + c_button16.getText().toString());
+            } else if (ed8.getText().toString().equals("")) {
+                ed8.setText("" + c_button16.getText().toString());
             }
         });
 
-        c_settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        c_settings.setOnClickListener(v -> {
+            c_settings.setBackgroundResource(R.drawable.sound_off);
+            String snd = sps.getString(Fill_in_blanks.this, "snd");
+            if (snd.equals("off")) {
+                sps.putString(Fill_in_blanks.this, "snd", "on");
+                c_settings.setBackgroundResource(R.drawable.sound_on);
+                sv = 1;
+            } else if (snd.equals("on")) {
+                sps.putString(Fill_in_blanks.this, "snd", "off");
                 c_settings.setBackgroundResource(R.drawable.sound_off);
-                String snd = sps.getString(Fill_in_blanks.this, "snd");
-                if (snd.equals("off")) {
-                    sps.putString(Fill_in_blanks.this, "snd", "on");
-                    c_settings.setBackgroundResource(R.drawable.sound_on);
-                    sv = 1;
-                } else if (snd.equals("on")) {
-                    sps.putString(Fill_in_blanks.this, "snd", "off");
-                    c_settings.setBackgroundResource(R.drawable.sound_off);
-                    sv = 0;
-                }
+                sv = 0;
             }
         });
 
     }
 
     private void find() {
-        c_settings = (TextView) findViewById(R.id.c_settings);
+        c_settings = findViewById(R.id.c_settings);
         String snd = sps.getString(Fill_in_blanks.this, "snd");
         if (snd.equals("off")) {
             c_settings.setBackgroundResource(R.drawable.sound_off);
@@ -2186,52 +1938,51 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             c_settings.setBackgroundResource(R.drawable.sound_on);
             sv = 1;
         }
-        helpshare_layout = (RelativeLayout) findViewById(R.id.helpshare_layout);
-        w_head = (RelativeLayout) findViewById(R.id.clue_head);
+        helpshare_layout = findViewById(R.id.helpshare_layout);
+        w_head = findViewById(R.id.clue_head);
 
-        to_no = (TextView) findViewById(R.id.c_word_number);
-        ed1 = (TextView) findViewById(R.id.ed1);
-        ed2 = (TextView) findViewById(R.id.ed2);
-        ed3 = (TextView) findViewById(R.id.ed3);
-        ed4 = (TextView) findViewById(R.id.ed4);
-        ed5 = (TextView) findViewById(R.id.ed5);
-        ed6 = (TextView) findViewById(R.id.ed6);
-        ed7 = (TextView) findViewById(R.id.ed7);
-        ed8 = (TextView) findViewById(R.id.ed8);
-        clear_value = (TextView) findViewById(R.id.clear_value);
-        ans_high = (TextView) findViewById(R.id.ans_highlite);
-        list4 = (LinearLayout) findViewById(R.id.list4);
+        to_no = findViewById(R.id.c_word_number);
+        ed1 = findViewById(R.id.ed1);
+        ed2 = findViewById(R.id.ed2);
+        ed3 = findViewById(R.id.ed3);
+        ed4 = findViewById(R.id.ed4);
+        ed5 = findViewById(R.id.ed5);
+        ed6 = findViewById(R.id.ed6);
+        ed7 = findViewById(R.id.ed7);
+        ed8 = findViewById(R.id.ed8);
+        clear_value = findViewById(R.id.clear_value);
+        ans_high = findViewById(R.id.ans_highlite);
+        list4 = findViewById(R.id.list4);
 
-        to_no = (TextView) findViewById(R.id.c_word_number);
-        c_coin = (TextView) findViewById(R.id.c_coins);
-        c_button1 = (TextView) findViewById(R.id.c_button1);
-        c_button2 = (TextView) findViewById(R.id.c_button2);
-        c_button3 = (TextView) findViewById(R.id.c_button3);
-        c_button4 = (TextView) findViewById(R.id.c_button4);
-        c_button5 = (TextView) findViewById(R.id.c_button5);
-        c_button6 = (TextView) findViewById(R.id.c_button6);
-        c_button7 = (TextView) findViewById(R.id.c_button7);
-        c_button8 = (TextView) findViewById(R.id.c_button8);
-        c_button9 = (TextView) findViewById(R.id.c_button9);
-        c_button10 = (TextView) findViewById(R.id.c_button10);
-        c_button11 = (TextView) findViewById(R.id.c_button11);
-        c_button12 = (TextView) findViewById(R.id.c_button12);
-        c_button13 = (TextView) findViewById(R.id.c_button13);
-        c_button14 = (TextView) findViewById(R.id.c_button14);
-        c_button15 = (TextView) findViewById(R.id.c_button15);
-        c_button16 = (TextView) findViewById(R.id.c_button16);
-        score = (TextView) findViewById(R.id.c_score_edit);
-        c_coins = (TextView) findViewById(R.id.c_coins);
-        c_ans = (TextView) findViewById(R.id.c_ans);
-        c_word_number = (TextView) findViewById(R.id.c_word_number);
-        focus = (Chronometer) findViewById(R.id.c_time_edit);
+        to_no = findViewById(R.id.c_word_number);
+        c_coin = findViewById(R.id.c_coins);
+        c_button1 = findViewById(R.id.c_button1);
+        c_button2 = findViewById(R.id.c_button2);
+        c_button3 = findViewById(R.id.c_button3);
+        c_button4 = findViewById(R.id.c_button4);
+        c_button5 = findViewById(R.id.c_button5);
+        c_button6 = findViewById(R.id.c_button6);
+        c_button7 = findViewById(R.id.c_button7);
+        c_button8 = findViewById(R.id.c_button8);
+        c_button9 = findViewById(R.id.c_button9);
+        c_button10 = findViewById(R.id.c_button10);
+        c_button11 = findViewById(R.id.c_button11);
+        c_button12 = findViewById(R.id.c_button12);
+        c_button13 = findViewById(R.id.c_button13);
+        c_button14 = findViewById(R.id.c_button14);
+        c_button15 = findViewById(R.id.c_button15);
+        c_button16 = findViewById(R.id.c_button16);
+        score = findViewById(R.id.c_score_edit);
+        c_coins = findViewById(R.id.c_coins);
+        c_ans = findViewById(R.id.c_ans);
+        c_word_number = findViewById(R.id.c_word_number);
+        focus = findViewById(R.id.c_time_edit);
 
-        h_gplues = (TextView) findViewById(R.id.ch_gplues);
-        h_watts_app = (TextView) findViewById(R.id.ch_watts_app);
-        h_facebook = (TextView) findViewById(R.id.ch_facebook);
-        adds = (LinearLayout) findViewById(R.id.ads_lay);
-        earncoin = (TextView) findViewById(R.id.earncoin);
-        qwt = (LinearLayout) findViewById(R.id.qwt);
+        h_gplues = findViewById(R.id.ch_gplues);
+        h_watts_app = findViewById(R.id.ch_watts_app);
+        h_facebook = findViewById(R.id.ch_facebook);
+        earncoin = findViewById(R.id.earncoin);
+        qwt = findViewById(R.id.qwt);
         ed1.setVisibility(View.GONE);
         ed2.setVisibility(View.GONE);
         ed3.setVisibility(View.GONE);
@@ -2242,125 +1993,77 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         ed8.setVisibility(View.GONE);
         c_coins.setVisibility(View.INVISIBLE);
 
-        ed1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-            }
+        ed1.setOnClickListener(v -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
         });
-        ed1.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-                return true;
-            }
+        ed1.setOnTouchListener((v, event) -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
+            return true;
         });
-        ed2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-            }
+        ed2.setOnClickListener(v -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
         });
-        ed2.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-                return true;
-            }
+        ed2.setOnTouchListener((v, event) -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
+            return true;
         });
-        ed3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-            }
+        ed3.setOnClickListener(v -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
         });
-        ed3.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-                return true;
-            }
+        ed3.setOnTouchListener((v, event) -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
+            return true;
         });
-        ed4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-            }
+        ed4.setOnClickListener(v -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
         });
-        ed4.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-                return true;
-            }
+        ed4.setOnTouchListener((v, event) -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
+            return true;
         });
-        ed5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-            }
+        ed5.setOnClickListener(v -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
         });
-        ed5.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-                return true;
-            }
+        ed5.setOnTouchListener((v, event) -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
+            return true;
         });
-        ed6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-            }
+        ed6.setOnClickListener(v -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
         });
-        ed6.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-                return true;
-            }
+        ed6.setOnTouchListener((v, event) -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
+            return true;
         });
-        ed7.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-            }
+        ed7.setOnClickListener(v -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
         });
-        ed7.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-                return true;
-            }
+        ed7.setOnTouchListener((v, event) -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
+            return true;
         });
-        ed8.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-            }
+        ed8.setOnClickListener(v -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
         });
-        ed8.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
-                return true;
-            }
+        ed8.setOnTouchListener((v, event) -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ed1.getWindowToken(), 0);
+            return true;
         });
 
     }
@@ -2716,10 +2419,6 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             c_button10.setText(letter15);
             c_button11.setText(letter4);
             c_button12.setText(letter12);
-              /*  c_button13.setText(letter10);
-                c_button14.setText(letter14);
-                c_button15.setText(letter12);
-                c_button16.setText(letter13);*/
 
 
         } else if (letter_length == 2) {
@@ -2756,10 +2455,6 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             c_button10.setText(letter13);
             c_button11.setText(letter7);
             c_button12.setText(word2);
-                /*c_button13.setText(letter14);
-                c_button14.setText(word2);
-                c_button15.setText(letter10);
-                c_button16.setText(letter8);*/
 
 
         } else if (letter_length == 3) {
@@ -2796,10 +2491,6 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             c_button10.setText(word2);
             c_button11.setText(letter2);
             c_button12.setText(letter1);
-               /* c_button13.setText(letter14);
-                c_button14.setText(letter12);
-                c_button15.setText(letter10);
-                c_button16.setText(letter13);*/
 
 
         } else if (letter_length == 4) {
@@ -2837,10 +2528,6 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             c_button10.setText(word4);
             c_button11.setText(letter12);
             c_button12.setText(word2);
-              /*  c_button13.setText(letter14);
-                c_button14.setText(letter15);
-                c_button15.setText(word1);
-                c_button16.setText(word2);*/
 
 
         } else if (letter_length == 5) {
@@ -2879,10 +2566,6 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             c_button10.setText(letter6);
             c_button11.setText(letter8);
             c_button12.setText(word2);
-               /* c_button13.setText(letter14);
-                c_button14.setText(letter12);
-                c_button15.setText(letter9);
-                c_button16.setText(letter10);*/
 
 
         } else if (letter_length == 6) {
@@ -2923,11 +2606,6 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             c_button10.setText(word1);
             c_button11.setText(word3);
             c_button12.setText(letter4);
-              /*  c_button13.setText(word6);
-                c_button14.setText(letter11);
-                c_button15.setText(letter13);
-                c_button16.setText(word2);
-*/
 
 
         } else if (letter_length == 7) {
@@ -2969,10 +2647,6 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             c_button10.setText(word1);
             c_button11.setText(letter12);
             c_button12.setText(word6);
-               /* c_button13.setText(letter6);
-                c_button14.setText(word1);
-                c_button15.setText(letter13);
-                c_button16.setText(word3);*/
 
 
         } else if (letter_length == 8) {
@@ -3015,10 +2689,6 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             c_button10.setText(word3);
             c_button11.setText(word2);
             c_button12.setText(letter8);
-              /*  c_button13.setText(letter6);
-                c_button14.setText(letter11);
-                c_button15.setText(word2);
-                c_button16.setText(letter10);*/
 
         } else if (letter_length == 9) {
 
@@ -3060,10 +2730,6 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             c_button10.setText(word3);
             c_button11.setText(word8);
             c_button12.setText(word7);
-              /*  c_button13.setText(letter6);
-                c_button14.setText(letter11);
-                c_button15.setText(word2);
-                c_button16.setText(word8);*/
 
         }
     }
@@ -3451,48 +3117,45 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             s = 0;
         }
 
-        next_continue = (TextView) openDialog_s.findViewById(R.id.continues2);
-        ttscores = (TextView) openDialog_s.findViewById(R.id.tts_score2);
-        final TextView wtp = (TextView) openDialog_s.findViewById(R.id.wtp);
-        final TextView fbs = (TextView) openDialog_s.findViewById(R.id.fbp);
-        final TextView kuduthal = (TextView) openDialog_s.findViewById(R.id.tt22);
-        final TextView gplus = (TextView) openDialog_s.findViewById(R.id.gplus2);
-        final TextView word = (TextView) openDialog_s.findViewById(R.id.arputham2);
-        final LinearLayout rewardvideo = (LinearLayout) openDialog_s.findViewById(R.id.rewardvideo);
-        final LinearLayout vid_earn = (LinearLayout) openDialog_s.findViewById(R.id.vid_earn);
-        LinearLayout ads_layout = (LinearLayout) openDialog_s.findViewById(R.id.fl_adplaceholder);
+        next_continue = openDialog_s.findViewById(R.id.continues2);
+        ttscores = openDialog_s.findViewById(R.id.tts_score2);
+        final TextView wtp = openDialog_s.findViewById(R.id.wtp);
+        final TextView fbs = openDialog_s.findViewById(R.id.fbp);
+        final TextView kuduthal = openDialog_s.findViewById(R.id.tt22);
+        final TextView gplus = openDialog_s.findViewById(R.id.gplus2);
+        final TextView word = openDialog_s.findViewById(R.id.arputham2);
+        final LinearLayout rewardvideo = openDialog_s.findViewById(R.id.rewardvideo);
+        final LinearLayout vid_earn = openDialog_s.findViewById(R.id.vid_earn);
+        LinearLayout ads_layout = openDialog_s.findViewById(R.id.fl_adplaceholder);
 
-        ImageView prize_logo = (ImageView) openDialog_s.findViewById(R.id.prize_logo);
+        ImageView prize_logo = openDialog_s.findViewById(R.id.prize_logo);
         if (sps.getInt(Fill_in_blanks.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
             prize_logo.setVisibility(View.GONE);
         }
-        prize_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isNetworkAvailable()) {
-                    if (sps.getString(Fill_in_blanks.this, "price_registration").equals("com")) {
+        prize_logo.setOnClickListener(v -> {
+            if (isNetworkAvailable()) {
+                if (sps.getString(Fill_in_blanks.this, "price_registration").equals("com")) {
+                    finish();
+                    Intent i = new Intent(Fill_in_blanks.this, Game_Status.class);
+                    startActivity(i);
+                } else {
+                    if (sps.getString(Fill_in_blanks.this, "otp_verify").equals("yes")) {
                         finish();
-                        Intent i = new Intent(Fill_in_blanks.this, Game_Status.class);
+                        Intent i = new Intent(Fill_in_blanks.this, LoginActivity.class);
                         startActivity(i);
                     } else {
-                        if (sps.getString(Fill_in_blanks.this, "otp_verify").equals("yes")) {
-                            finish();
-                            Intent i = new Intent(Fill_in_blanks.this, LoginActivity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            Intent i = new Intent(Fill_in_blanks.this, Price_Login.class);
-                            startActivity(i);
-                        }
+                        finish();
+                        Intent i = new Intent(Fill_in_blanks.this, Price_Login.class);
+                        startActivity(i);
                     }
-                } else {
-                    Toast.makeText(Fill_in_blanks.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(Fill_in_blanks.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
             }
         });
-        TextView video_earn = (TextView) openDialog_s.findViewById(R.id.video_earn);
+        TextView video_earn = openDialog_s.findViewById(R.id.video_earn);
         video_earn.setText("மேலும் " + sps.getInt(Fill_in_blanks.this, "reward_coin_txt") + "+நாணயங்கள் பெற");
 
         Animation myFadeInAnimation = AnimationUtils.loadAnimation(Fill_in_blanks.this, R.anim.blink_animation);
@@ -3507,29 +3170,6 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             } else {
                 ads_layout.setVisibility(View.GONE);
             }
-          /*  if (loadaddcontent == 1) {
-                if (native_adView3 != null) {
-                    native_adView3.removeAllViews();
-                }
-                LayoutInflater inflater;
-                inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-                View view1 = inflater.inflate(R.layout.remote_config);
-                ins_app(context, view1, sps.getInt(context, "remoteConfig"));
-                ads_layout.addView(view1);
-            }
-
-            if (isNetworkAvailable()) {
-                load_addinstall(context, ads_layout);
-            } else {
-                if (native_adView3 != null) {
-                    native_adView3.removeAllViews();
-                }
-                LayoutInflater inflater;
-                inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-                View view1 = inflater.inflate(R.layout.remote_config);
-                ins_app(context, view1, sps.getInt(context, "remoteConfig"));
-                ads_layout.addView(view1);
-            }*/
         }
 
 
@@ -3567,169 +3207,112 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             rewardvideo.setVisibility(View.INVISIBLE);
         }
 
-        RelativeLayout adsicon = (RelativeLayout) openDialog_s.findViewById(R.id.adsicon);
+        RelativeLayout adsicon = openDialog_s.findViewById(R.id.adsicon);
         Animation shake;
         shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulam);
         adsicon.startAnimation(shake);
         //  final LinearLayout vid_earn = (LinearLayout) openDialog_s.findViewById(R.id.vid_earn);
 
-        vid_earn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 2;
-                if (Utils.isNetworkAvailable(Fill_in_blanks.this)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Fill_in_blanks.this, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
-                        reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        rewardvideo.setVisibility(View.INVISIBLE);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward(Fill_in_blanks.this);
-                                    rewarded_ad();
-                                    Toast.makeText(Fill_in_blanks.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-                    }
+        vid_earn.setOnClickListener(v -> {
+            rvo = 2;
+            if (Utils.isNetworkAvailable(Fill_in_blanks.this)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Fill_in_blanks.this, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    rewardvideo.setVisibility(View.INVISIBLE);
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
-
-        rewardvideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 2;
-                if (Utils.isNetworkAvailable(Fill_in_blanks.this)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Fill_in_blanks.this, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        rewardvideo.setVisibility(View.INVISIBLE);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward(Fill_in_blanks.this);
-                                    rewarded_ad();
-                                    Toast.makeText(Fill_in_blanks.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        wtp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
-
-                        String msg = ("நான் சொல்லிஅடி செயலியில் குறிப்புகள் மூலம் கண்டுபிடி நிலை" + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivity(Intent.createChooser(i, "Share via"));
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 21);
-
-/*
-
-                        if (sps.getString(Fill_in_blanks.this,"watts_app_s").equals(""))
-                        {
-                            Handler handler8 = new Handler();
-                            handler8.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //Score Adding
-                                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                    cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                    int spx = skx + 20;
-                                    String aStringx = Integer.toString(spx);
-                                    score.setText(aStringx);
-                                    ttscores.setText(aStringx);
-                                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                    sps.putString(Fill_in_blanks.this,"watts_app_s","yes");
-
-                                }
-                            }, 3000);
+                        if (fb_reward == 1) {
+                            show_reward();
+                            // mShowVideoButton.setVisibility(View.VISIBLE);
+                        } else {
+                            //reward(Fill_in_blanks.this);
+                            rewarded_adnew();
+                            Toast.makeText(Fill_in_blanks.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
-*/
-
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                    }, 2000);
                 }
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
+        rewardvideo.setOnClickListener(v -> {
+            rvo = 2;
+            if (Utils.isNetworkAvailable(Fill_in_blanks.this)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Fill_in_blanks.this, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    rewardvideo.setVisibility(View.INVISIBLE);
+                } else {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
+                        reward_progressBar.dismiss();
+                        if (fb_reward == 1) {
+                            show_reward();
+                            // mShowVideoButton.setVisibility(View.VISIBLE);
+                        } else {
+                            //reward(Fill_in_blanks.this);
+                            rewarded_adnew();
+                            Toast.makeText(Fill_in_blanks.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
             }
         });
-        fbs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-/*
-                btn_str = "share";
-                if (isLoggedIn()) {
-                    publishFeedDialog();
-                    // toast("yes");
-                } else {
-                    openFacebookSession();
-                    // toast("no");
-                }*/
+        wtp.setOnClickListener(view -> {
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.whatsapp");
 
-            }
-        });
-        gplus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.google.android.apps.plus");
+                    String msg = ("நான் சொல்லிஅடி செயலியில் குறிப்புகள் மூலம் கண்டுபிடி நிலை" + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivity(Intent.createChooser(i, "Share via"));
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 21);
 
-                        String msg = ("நான் சொல்லிஅடி செயலியில் குறிப்புகள் மூலம் கண்டுபிடி நிலை" + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 16);
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
                 }
 
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+            }
+        });
+        fbs.setOnClickListener(view -> {
+
+        });
+        gplus.setOnClickListener(view -> {
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.google.android.apps.plus");
+
+                    String msg = ("நான் சொல்லிஅடி செயலியில் குறிப்புகள் மூலம் கண்டுபிடி நிலை" + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 16);
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+                }
+
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             }
 
         });
@@ -3769,88 +3352,36 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         /////////////////////////////////////////Reward tittle////////////////////////////////////////////
 
 
-        next_continue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (sps.getInt(Fill_in_blanks.this, "purchase_ads") == 1) {
-                    dia_dismiss = 1;
-                    openDialog_s.dismiss();
-                    next();
-                } else {
-
-                    sps.putInt(getApplicationContext(), "cluetime", 0);
-                    if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
-                        sps.putInt(getApplicationContext(), "ins_ad_new", 0);
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (ins_game == null || !ins_game.isReady()) {
-                                next();
-                                industrialload_game();
-                                dia_dismiss = 1;
-                                openDialog_s.dismiss();
-                            } else {
-                                ins_game.showAd();
-                            }
+        next_continue.setOnClickListener(view -> {
+            dia_dismiss = 1;
+            openDialog_s.dismiss();
+            next();
 
 
-
-                      /*  if (interstitialAd_game != null) {
-                            if (interstitialAd_game.isLoaded()) {
-                                interstitialAd_game.show();
-                                interstitialAd_game.setAdListener(new AdListener() {
-                                    @Override
-                                    public void onAdClosed() {
-                                        next();
-                                        ins_add();
-                                    }
-                                });
-                            } else {
-                                next();
-                            }
-                        }*/
-                        } else {
-                            dia_dismiss = 1;
-                            openDialog_s.dismiss();
-                            next();
-                        }
-
-                    } else {
-                        dia_dismiss = 1;
-                        openDialog_s.dismiss();
-                        next();
-                        sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
-                    }
-                    // advancads_content();
-                    //  advancads();
-                }
-                //noclue=0;
-
-
-                /*if (Utils.isNetworkAvailable(getApplicationContext())) {
-                    if(getApiClient().isConnected()) {
-                        if (isSignedIn()) {
-                            int k1 = 0;
-                            Cursor sc2 = myDbHelper.getQry("select * from score ");
-                            sc2.moveToFirst();
-                            if (sc2.getCount() != 0) {
-                                k1 = sc2.getInt(sc2.getColumnIndexOrThrow("l_points"));
-                            }
-                            Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard), k1);
-                        }
-                    }
-                }*/
-
-              /*  dia_dismiss=1;
-                openDialog_s.dismiss();*/
-            }
         });
 
-        openDialog_s.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (dia_dismiss != 1) {
-                    sps.putString(Fill_in_blanks.this, "game_area", "on");
-                    String date = sps.getString(Fill_in_blanks.this, "date");
-                    if (date.equals("0")) {
+        openDialog_s.setOnDismissListener(dialog -> {
+            if (dia_dismiss != 1) {
+                sps.putString(Fill_in_blanks.this, "game_area", "on");
+                String date1 = sps.getString(Fill_in_blanks.this, "date");
+                if (date1.equals("0")) {
+                    if (main_act.equals("")) {
+                        finish();
+                        openDialog_s.dismiss();
+                        Intent i = new Intent(Fill_in_blanks.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        finish();
+                        openDialog_s.dismiss();
+                    }
+                } else {
+                    if (sps.getString(Fill_in_blanks.this, "Exp_list").equals("on")) {
+                        finish();
+                        openDialog_s.dismiss();
+                        Intent i = new Intent(Fill_in_blanks.this, Expandable_List_View.class);
+                        startActivity(i);
+
+                    } else {
                         if (main_act.equals("")) {
                             finish();
                             openDialog_s.dismiss();
@@ -3860,44 +3391,17 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                             finish();
                             openDialog_s.dismiss();
                         }
-                    } else {
-                        if (sps.getString(Fill_in_blanks.this, "Exp_list").equals("on")) {
-                            finish();
-                            openDialog_s.dismiss();
-                            Intent i = new Intent(Fill_in_blanks.this, Expandable_List_View.class);
-                            startActivity(i);
-
-                        } else {
-                            if (main_act.equals("")) {
-                                finish();
-                                openDialog_s.dismiss();
-                                Intent i = new Intent(Fill_in_blanks.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                                openDialog_s.dismiss();
-                            }
-                        }
-
                     }
 
-
-                } else {
-                    dia_dismiss = 0;
                 }
 
+
+            } else {
+                dia_dismiss = 0;
             }
+
         });
 
-      /*  openDialog_s.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-
-
-                // Prevent dialog close on back press button
-                return keyCode == KeyEvent.KEYCODE_BACK;
-            }
-        });*/
         if (!isFinishing()) {
             openDialog_s.show();
         }
@@ -3907,7 +3411,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getPackageManager();
-        boolean app_installed = false;
+        boolean app_installed;
         try {
             pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
             app_installed = true;
@@ -3919,98 +3423,83 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager connec = (ConnectivityManager) this
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connec = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+    public void industrialload() {
+        if (mInterstitialAd != null) return;
+        Log.i("TAG", "onAdLoadedCalled");
+        AdRequest adRequest = new AdRequest.Builder().build();
 
-    public void game_exit_ins_ad() {
-
-        game_exit_ins = new MaxInterstitialAd(getResources().getString(R.string.Cat_Exit_Ins), this);
-        game_exit_ins.setListener(new MaxAdListener() {
+        InterstitialAd.load(this, getResources().getString(R.string.Game3_Stage_Close_ST), adRequest, new InterstitialAdLoadCallback() {
             @Override
-            public void onAdLoaded(MaxAd ad) {
-
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                interstiallistener();
+                Log.i("TAG", "onAdLoaded");
             }
 
             @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                openDialog_p.dismiss();
-                game_exit_ins_ad();
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error" + error);
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2" + error);
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.d("TAG", loadAdError.toString());
+                mInterstitialAd = null;
+                handler = null;
+                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
             }
         });
-        game_exit_ins.loadAd();
 
     }
 
-    public void industrialload_game() {
-
-        ins_game = new MaxInterstitialAd(getResources().getString(R.string.Senthamil_Thedal_Ins_new), this);
-        ins_game.setListener(new MaxAdListener() {
+    public void interstiallistener() {
+        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
             @Override
-            public void onAdLoaded(MaxAd ad) {
-
+            public void onAdDismissedFullScreenContent() {
+                // Called when ad is dismissed.
+                // Set the ad reference to null so you don't show the ad a second time.
+                Log.d("TAG", "Ad dismissed fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                setSc();
+                industrialload();
             }
 
             @Override
-            public void onAdDisplayed(MaxAd ad) {
-
+            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                // Called when ad fails to show.
+                Log.e("TAG", "Ad failed to show fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
+                setSc();
             }
 
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                dia_dismiss = 1;
-                openDialog_s.dismiss();
-                next();
-                industrialload_game();
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-
-            }
         });
-        ins_game.loadAd();
-
     }
 
+    public void adShow() {
+        if (sps.getInt(getApplicationContext(), "Game3_Stage_Close_ST") == Utills.interstitialadCount && mInterstitialAd != null) {
+            sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
+            Utills.INSTANCE.Loading_Dialog(this);
+            handler = new Handler(Looper.myLooper());
+            my_runnable = () -> {
+                mInterstitialAd.show(this);
+            };
+            handler.postDelayed(my_runnable, 2500);
+        } else {
+            sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", (sps.getInt(getApplicationContext(), "Game3_Stage_Close_ST") + 1));
+            if (sps.getInt(this, "Game3_Stage_Close_ST") > Utills.interstitialadCount)
+                sps.putInt(this, "Game3_Stage_Close_ST", 0);
 
-    private void addCoins(int coins) {
-        mCoinCount = coins;
-        sps.putInt(Fill_in_blanks.this, "reward_coin_txt", coins);
-        //mCoinCountText.setText("Coins: " + mCoinCount);
+            setSc();
+        }
+
     }
 
     public void share_earn2(int a) {
@@ -4018,25 +3507,20 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         openDialog.setContentView(R.layout.share_dialog2);
         openDialog.setCancelable(false);
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView b_scores = openDialog.findViewById(R.id.b_scores);
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-/*        int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ttscores.setText("" + skx);
-                score.setText("" + skx);
-                openDialog.dismiss();
-                //mCoinCount = 0;
-            }
+        ok_y.setOnClickListener(v -> {
+            ttscores.setText("" + skx);
+            score.setText("" + skx);
+            openDialog.dismiss();
+            //mCoinCount = 0;
         });
 
         openDialog.show();
@@ -4055,8 +3539,8 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             openDialog.setContentView(R.layout.share_dialog2);
             openDialog.setCancelable(false);
             // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-            TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-            TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+            TextView ok_y = openDialog.findViewById(R.id.ok_y);
+            TextView b_scores = openDialog.findViewById(R.id.b_scores);
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
@@ -4066,13 +3550,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
 
             b_scores.setText("" + mCoinCount);
-            ok_y.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    score.setText("" + skx);
-                    openDialog.dismiss();
-                    //mCoinCount = 0;
-                }
+            ok_y.setOnClickListener(v -> {
+                score.setText("" + skx);
+                openDialog.dismiss();
+                //mCoinCount = 0;
             });
 
             openDialog.show();
@@ -4087,108 +3568,12 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         String date = sps.getString(Fill_in_blanks.this, "date");
         int pos;
         if (date.equals("0")) {
-            pos = 1;
             newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
             //  myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
         } else {
-            pos = 2;
             newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
             //  myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
         }
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if ((ContextCompat.checkSelfPermission(Fill_in_blanks.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                helpshare(a);
-            }else {
-                if (sps.getString(Fill_in_blanks.this, "permission_grand").equals("")) {
-                    sps.putString(Fill_in_blanks.this, "permission_grand", "yes");
-                    //  First_register("yes");
-                    AlertDialog alertDialog = new AlertDialog.Builder(Fill_in_blanks.this).create();
-                    alertDialog.setMessage("இந்த நிலையை உங்களது நண்பருக்கு பகிர  பின்வரும் permission-யை  allow செய்யவேண்டும்");
-                    alertDialog.setCancelable(false);
-                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    if ((ContextCompat.checkSelfPermission(Fill_in_blanks.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                        ActivityCompat.requestPermissions(Fill_in_blanks.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                                    } else {
-                                        helpshare(a);
-                                    }
-                                }
-                            });
-
-                    alertDialog.show();
-
-                } else {
-                    if ((ContextCompat.checkSelfPermission(Fill_in_blanks.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                        if (sps.getInt(Fill_in_blanks.this, "permission") == 2) {
-                            AlertDialog alertDialog = new AlertDialog.Builder(Fill_in_blanks.this).create();
-                            alertDialog.setMessage("இந்த நிலையை உங்களது நண்பருக்கு பகிர settingsல் உள்ள permission-யை allow செய்யவேண்டும்");
-                            alertDialog.setCancelable(false);
-                            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                            Intent intent = new Intent();
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                            Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                            intent.setData(uri);
-                                            getApplicationContext().startActivity(intent);
-                                        }
-                                    });
-
-                            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            if (sps.getString(Fill_in_blanks.this, "riddle_time_start").equals("")) {
-                                                sps.putString(Fill_in_blanks.this, "riddle_time_start", "yes");
-                                            } else {
-                                                String date = sps.getString(Fill_in_blanks.this, "date");
-                                                int pos;
-                                                Cursor cs;
-                                                long dscore = 0;
-                                                int noofclue = 0;
-                                                if (date.equals("0")) {
-                                                    pos = 1;
-                                                    cs = newhelper4.getQry("select * from newgamesdb4 where gameid='" + gameid + "' and levelid='" + levelid + "'");
-                                                    cs.moveToFirst();
-                                                    if (cs.getCount() != 0) {
-                                                        dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-                                                    }
-                                                } else {
-                                                    pos = 2;
-                                                }
-                                                focus.setBase(SystemClock.elapsedRealtime() + dscore);
-                                                focus.start();
-                                            }
-                                            dialog.dismiss();
-                                        }
-                                    });
-
-
-                            alertDialog.show();
-                        } else {
-                            if ((ContextCompat.checkSelfPermission(Fill_in_blanks.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                ActivityCompat.requestPermissions(Fill_in_blanks.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                            } else {
-                                helpshare(a);
-                            }
-                        }
-                    } else {
-                        if ((ContextCompat.checkSelfPermission(Fill_in_blanks.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                            ActivityCompat.requestPermissions(Fill_in_blanks.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                        } else {
-                            helpshare(a);
-                        }
-                    }
-
-                }
-            }
-
-        } else {
-            helpshare(a);
-        }*/
         helpshare(a);
     }
 
@@ -4228,11 +3613,9 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                     String date = sps.getString(Fill_in_blanks.this, "date");
                     int pos;
                     if (date.equals("0")) {
-                        pos = 1;
                         newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
                         //myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                     } else {
-                        pos = 2;
                         newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
                         // myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                     }
@@ -4245,16 +3628,15 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                     share.setType("image/*");
                     share.putExtra(Intent.EXTRA_STREAM, uri);
                     share.putExtra(Intent.EXTRA_TEXT, " நித்ராவின் சொல்லிஅடி செயலியை விளையாடிக் கொண்டிருக்கிறேன் விடுபட்ட எழுத்துக்களை கண்டுபிடி இதற்கான விடையை என்னோடு பகிர்ந்து கொள்ளுங்கள்  https://goo.gl/bRqmah");
-                    share.putExtra(Intent.EXTRA_SUBJECT,
-                            "Solli_Adi");
+                    share.putExtra(Intent.EXTRA_SUBJECT, "Solli_Adi");
                     //  share.putExtra(android.content.Intent.EXTRA_TEXT,"Shared via Tamil Calendar Offline.\nClick here to download"+ "\nhttps://goo.gl/ITvWGu");
                     startActivity(Intent.createChooser(share, "Share Card Using"));
                 } else {
 
-                    CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout);
+                    CoordinatorLayout coordinatorLayout = findViewById(R.id.myCoordinatorLayout);
                     Snackbar snackbar = Snackbar.make(coordinatorLayout, "இந்த செயலி தங்களிடம் இல்லை", Snackbar.LENGTH_SHORT);
                     final View view = snackbar.getView();
-                    TextView textView = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+                    TextView textView = view.findViewById(com.google.android.material.R.id.snackbar_text);
                     view.setBackgroundResource(R.drawable.answershow);
                     textView.setTextColor(Color.parseColor("#FFFFFF"));
                     textView.setGravity(Gravity.CENTER | Gravity.BOTTOM);
@@ -4310,47 +3692,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
     protected void onResume() {
         super.onResume();
-
-        if (!mGameOver && mGamePaused) {
-            //resumeGame();
-        }
-
-        //uiHelper.onResume();
-
-
-
-
-      /*  if (sps.getInt(Riddle_game.this, "addlodedd") == 1) {
-            New_Main_Activity.load_addFromMain(Riddle_game.this, adds);
-        } else {
-            if (Utils.isNetworkAvailable(Riddle_game.this)) {
-                adds = (LinearLayout) findViewById(R.id.ads_lay);
-                sps.putInt(Riddle_game.this, "addlodedd", 2);
-                System.out.println("@IMG");
-                final AdView adView = new AdView(Riddle_game.this);
-                adView.setAdUnitId(getString(R.string.main_banner_ori));
-
-                adView.setAdSize(AdSize.SMART_BANNER);
-                AdRequest request = new AdRequest.Builder().build();
-                adView.setAdListener(new AdListener() {
-                    public void onAdLoaded() {
-                        System.out.println("@@@loaded");
-                        adds.removeAllViews();
-                        adds.addView(adView);
-                        adds.setVisibility(View.VISIBLE);
-                        super.onAdLoaded();
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(int i) {
-                        System.out.println("@@@NOt loaded");
-                        super.onAdFailedToLoad(i);
-                    }
-                });
-                adView.loadAd(request);
-
-            }
-        }*/
+        if (handler != null) handler.postDelayed(my_runnable, 1000);
 
         if (sps.getString(Fill_in_blanks.this, "riddle_time_start").equals("")) {
             sps.putString(Fill_in_blanks.this, "riddle_time_start", "yes");
@@ -4361,19 +3703,12 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             long dscore = 0;
             int noofclue = 0;
             if (date.equals("0")) {
-                pos = 1;
                 cs = newhelper4.getQry("select * from newgamesdb4 where gameid='" + gameid + "' and levelid='" + levelid + "'");
                 cs.moveToFirst();
                 if (cs.getCount() != 0) {
                     dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                 }
             } else {
-                pos = 2;
-               /* cs = newhelper3.getQry("select * from right_order where gameid='" + gameid + "' and questionid='" + questionid + "'");
-                cs.moveToFirst();
-                if (cs.getCount() != 0) {
-                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-                }*/
             }
             focus.setBase(SystemClock.elapsedRealtime() + dscore);
             focus.start();
@@ -4394,34 +3729,43 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         s = 1;
         openDialog_p = new Dialog(Fill_in_blanks.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_p.setContentView(R.layout.back_pess);
-        TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-        TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+        TextView yes = openDialog_p.findViewById(R.id.yes);
+        TextView no = openDialog_p.findViewById(R.id.no);
 
 
-        yes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        yes.setOnClickListener(v -> {
 
-                String dates = sps.getString(Fill_in_blanks.this, "date");
-                int pos;
-                if (dates.equals("0")) {
-                    pos = 1;
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    focus.stop();
-                    newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
+            String dates = sps.getString(Fill_in_blanks.this, "date");
+            int pos;
+            if (dates.equals("0")) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
 
-                    //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+            } else {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
+
+                //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+            }
+
+            String date = sps.getString(Fill_in_blanks.this, "date");
+            if (date.equals("0")) {
+                if (main_act.equals("")) {
+                    finish();
+                    Intent i = new Intent(Fill_in_blanks.this, New_Main_Activity.class);
+                    startActivity(i);
                 } else {
-                    pos = 2;
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    focus.stop();
-                    newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
-
-                    //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                    finish();
                 }
-
-                String date = sps.getString(Fill_in_blanks.this, "date");
-                if (date.equals("0")) {
+            } else {
+                if (sps.getString(Fill_in_blanks.this, "Exp_list").equals("on")) {
+                    finish();
+                    Intent i = new Intent(Fill_in_blanks.this, Expandable_List_View.class);
+                    startActivity(i);
+                } else {
                     if (main_act.equals("")) {
                         finish();
                         Intent i = new Intent(Fill_in_blanks.this, New_Main_Activity.class);
@@ -4429,50 +3773,12 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                     } else {
                         finish();
                     }
-                } else {
-                    if (sps.getString(Fill_in_blanks.this, "Exp_list").equals("on")) {
-                        finish();
-                        Intent i = new Intent(Fill_in_blanks.this, Expandable_List_View.class);
-                        startActivity(i);
-                    } else {
-                        if (main_act.equals("")) {
-                            finish();
-                            Intent i = new Intent(Fill_in_blanks.this, New_Main_Activity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                        }
-                    }
                 }
-
-                //ad
-                if (sps.getInt(Fill_in_blanks.this, "purchase_ads") == 0) {
-                    if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                        sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                openDialog_p.dismiss();
-                                game_exit_ins.showAd();
-                            }
-                        }
-                    } else {
-                        openDialog_p.dismiss();
-                        sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
-                    }
-                } else {
-                    openDialog_p.dismiss();
-                }
-                //ad
-
             }
-        });
-        no.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                openDialog_p.dismiss();
-            }
+            openDialog_p.dismiss();
         });
+        no.setOnClickListener(v -> openDialog_p.dismiss());
         openDialog_p.show();
 
 
@@ -4483,16 +3789,15 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     protected void onPause() {
         super.onPause();
 
+        if (handler != null) handler.removeCallbacks(my_runnable);
         focus.stop();
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
         String date = sps.getString(Fill_in_blanks.this, "date");
         int pos;
         if (date.equals("0")) {
-            pos = 1;
             newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
             //  myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
         } else {
-            pos = 2;
             newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
             //  myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
         }
@@ -4503,281 +3808,126 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         openDialog_earncoin.setContentView(R.layout.earncoin);
 
 
-        RelativeLayout wp = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnwa);
-        RelativeLayout fb = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnfb);
-        RelativeLayout gplus = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earngplus);
+        RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
+        RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
+        RelativeLayout gplus = openDialog_earncoin.findViewById(R.id.earngplus);
 
 
-        TextView cancel = (TextView) openDialog_earncoin.findViewById(R.id.cancel);
-        TextView ss = (TextView) openDialog_earncoin.findViewById(R.id.ssss);
+        TextView cancel = openDialog_earncoin.findViewById(R.id.cancel);
+        TextView ss = openDialog_earncoin.findViewById(R.id.ssss);
 
-        ss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_earncoin.cancel();
-            }
-        });
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_earncoin.cancel();
-            }
-        });
-        TextView wpro = (TextView) openDialog_earncoin.findViewById(R.id.wpro);
+        ss.setOnClickListener(v -> openDialog_earncoin.cancel());
+        cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
+        TextView wpro = openDialog_earncoin.findViewById(R.id.wpro);
         if (i == 1) {
             cancel.setVisibility(View.INVISIBLE);
             wpro.setText("இந்த விளையாட்டை தொடர குறைந்தபட்சம் 50  - க்கும் மேற்பட்ட நாணயங்கள் தேவை. எனவே கூடுதல் நாணயங்கள் பெற பகிரவும்.");
         }
-        RelativeLayout video = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnvideo);
-        video.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 1;
-                extra_coin_s = 0;
-                if (isNetworkAvailable()) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Fill_in_blanks.this, "" + "Reward video", "Loading...");
+        RelativeLayout video = openDialog_earncoin.findViewById(R.id.earnvideo);
+        video.setOnClickListener(v -> {
+            rvo = 1;
+            extra_coin_s = 0;
+            if (isNetworkAvailable()) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Fill_in_blanks.this, "" + "Reward video", "Loading...");
 
-                    if (fb_reward == 1) {
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        String date = sps.getString(Fill_in_blanks.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                            newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
+                if (fb_reward == 1) {
+                    focus.stop();
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    String date = sps.getString(Fill_in_blanks.this, "date");
+                    int pos;
+                    if (date.equals("0")) {
+                        newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
 
-                            // myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
-
-                            // myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                        }
-                        reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        openDialog_earncoin.cancel();
-
-                        // mShowVideoButton.setVisibility(View.VISIBLE);
+                        // myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                     } else {
-                        //reward(Fill_in_blanks.this);
-                        rewarded_ad();
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
+                        newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
 
-                                Toast.makeText(Fill_in_blanks.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-
-                            }
-                        }, 2000);
+                        // myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                     }
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }
-               /* rvo = 1;
-                extra_coin_s = 0;
-                if (isNetworkAvailable()) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Fill_in_blanks.this, "" + "Reward video", "Loading...");
-
-                    if (mRewardedVideoAd.isLoaded()) {
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        String date = sps.getString(Fill_in_blanks.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                            newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
-
-                            // myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
-
-                            // myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                        }
-                        reward_progressBar.dismiss();
-                        showRewardedVideo();
-                        openDialog_earncoin.cancel();
-
-                        // mShowVideoButton.setVisibility(View.VISIBLE);
-                    } else {
-                        startGame();
-
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (mRewardedVideoAd.isLoaded()) {
-                                    showRewardedVideo();
-                                    openDialog_earncoin.cancel();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    startGame();
-                                    Toast.makeText(Fill_in_blanks.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-
-
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }*/
-             /*   if (Utils.isNetworkAvailable(getApplicationContext())) {
-                    if (interstitialAd_game != null) {
-                        if (interstitialAd_game.isLoaded()) {
-                            interstitialAd_game.show();
-                            interstitialAd_game.setAdListener(new AdListener() {
-                                @Override
-                                public void onAdClosed() {
-
-
-                                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                    cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                    int spx = skx + 50;
-                                    String aStringx = Integer.toString(spx);
-                                    score.setText(aStringx);
-                                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                    ins_video();
-
-                                }
-
-
-                            });
-                        } else {
-                            Toast.makeText(getApplicationContext(), "பிறகு முயற்ச்சிக்கவும் .", Toast.LENGTH_SHORT).show();
-
-                        }
-                    }
-                }
-                else{
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
-                }
-
-*/
-
-
-            }
-        });
-
-        wp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        openDialog_earncoin.cancel();
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 12);
-
-                      /*  if (sps.getString(Clue_Game_Hard.this,"watts_app").equals(""))
-                        {
-                            Handler handler8 = new Handler();
-                            handler8.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //Score Adding
-                                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                    cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                    int spx = skx + 20;
-                                    String aStringx = Integer.toString(spx);
-                                    score.setText(aStringx);
-                                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                    sps.putString(Clue_Game_Hard.this, "watts_app", "yes");
-
-                                }
-                            }, 3000);
-                        }*/
-
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-            }
-        });
-        fb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-               /* if (isNetworkAvailable()) {
-
+                    reward_progressBar.dismiss();
+                    show_reward();
                     openDialog_earncoin.cancel();
-                    btn_str = "invite";
-                    if (isLoggedIn()) {
-                        Bundle params = new Bundle();
-                        params.putString("message", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        showDialogWithoutNotificationBarInvite("apprequests", params);
-                        // toast("yes");
-                    } else {
-                        openFacebookSession();
-                        // toast("no");
-                    }
 
+                    // mShowVideoButton.setVisibility(View.VISIBLE);
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }   // toast("இணையதள சேவையை சரிபார்க்கவும் ");*/
+                    //reward(Fill_in_blanks.this);
+                    rewarded_adnew();
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
+                        reward_progressBar.dismiss();
+
+                        Toast.makeText(Fill_in_blanks.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+
+                    }, 2000);
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
             }
+
+
         });
-        gplus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
+        wp.setOnClickListener(view -> {
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                if (appinstalled) {
+                    openDialog_earncoin.cancel();
+                    Intent i12 = new Intent(Intent.ACTION_SEND);
+                    i12.setType("text/plain");
+                    i12.setPackage("com.whatsapp");
+                    String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                    i12.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i12, "Share via"), 12);
 
-                if (isNetworkAvailable()) {
-
-
-                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
-                    if (appinstalled) {
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        String date = sps.getString(Fill_in_blanks.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                            newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
-
-                            //  myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
-
-                            // myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                        }
-                        openDialog_earncoin.cancel();
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.google.android.apps.plus");
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 15);
-
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
                 }
 
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+            }
+        });
+        fb.setOnClickListener(view -> {
+
+        });
+        gplus.setOnClickListener(view -> {
+
+
+            if (isNetworkAvailable()) {
+
+
+                final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
+                if (appinstalled) {
+                    focus.stop();
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    String date = sps.getString(Fill_in_blanks.this, "date");
+                    int pos;
+                    if (date.equals("0")) {
+                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
+
+                        //  myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                    } else {
+                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
+
+                        // myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                    }
+                    openDialog_earncoin.cancel();
+                    Intent i1 = new Intent(Intent.ACTION_SEND);
+                    i1.setType("text/plain");
+                    i1.setPackage("com.google.android.apps.plus");
+                    String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                    i1.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i1, "Share via"), 15);
+
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+                }
+
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             }
 
         });
@@ -4787,13 +3937,13 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     public void nextgamesdialog() {
         final Dialog openDialog = new Dialog(Fill_in_blanks.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.nextgame_find);
-        TextView next_game = (TextView) openDialog.findViewById(R.id.next_game);
-        TextView p_game = (TextView) openDialog.findViewById(R.id.picgame);
-        TextView c_game = (TextView) openDialog.findViewById(R.id.hintgame);
-        TextView s_game = (TextView) openDialog.findViewById(R.id.solgame);
-        TextView w_game = (TextView) openDialog.findViewById(R.id.wordgame);
+        TextView next_game = openDialog.findViewById(R.id.next_game);
+        TextView p_game = openDialog.findViewById(R.id.picgame);
+        TextView c_game = openDialog.findViewById(R.id.hintgame);
+        TextView s_game = openDialog.findViewById(R.id.solgame);
+        TextView w_game = openDialog.findViewById(R.id.wordgame);
 
-        TextView exit = (TextView) openDialog.findViewById(R.id.exit);
+        TextView exit = openDialog.findViewById(R.id.exit);
 
         String date = sps.getString(Fill_in_blanks.this, "date");
         if (date.equals("0")) {
@@ -4802,48 +3952,31 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             next_game.setText("தினசரி விடுபட்ட எழுத்துக்களை கண்டுபிடி  புதிய  பதிவுகள் இல்லை. மேலும் நீங்கள்  சிறப்பாக விளையாட காத்திருக்கும்  விளையாட்டுக்கள்.");
         }
         openDialog.setCancelable(false);
-        c_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Fill_in_blanks.class);
-                startActivity(i);
-            }
+        c_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Fill_in_blanks.class);
+            startActivity(i);
         });
-        s_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Solukul_Sol.class);
-                startActivity(i);
-            }
+        s_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Solukul_Sol.class);
+            startActivity(i);
         });
-        w_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Word_Game_Hard.class);
-                startActivity(i);
-            }
+        w_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Word_Game_Hard.class);
+            startActivity(i);
         });
-        p_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Picture_Game_Hard.class);
-                startActivity(i);
-            }
+        p_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Picture_Game_Hard.class);
+            startActivity(i);
         });
-        exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        exit.setOnClickListener(v -> finish());
 
         Cursor ct;
         ct = myDbHelper.getQry("select * from maintable where isfinish='0' order by id limit 1");
@@ -4879,25 +4012,19 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             exit.setVisibility(View.VISIBLE);
         }
 
-        TextView odd_man_out = (TextView) openDialog.findViewById(R.id.odd_man_out);
-        TextView matchword = (TextView) openDialog.findViewById(R.id.matchword);
-        matchword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Match_Word.class);
-                startActivity(i);
-            }
+        TextView odd_man_out = openDialog.findViewById(R.id.odd_man_out);
+        TextView matchword = openDialog.findViewById(R.id.matchword);
+        matchword.setOnClickListener(view -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Match_Word.class);
+            startActivity(i);
         });
-        odd_man_out.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Odd_man_out.class);
-                startActivity(i);
-            }
+        odd_man_out.setOnClickListener(view -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Odd_man_out.class);
+            startActivity(i);
         });
 
 
@@ -4919,25 +4046,19 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         }
 
-        TextView opposite_word = (TextView) openDialog.findViewById(R.id.opposite_word);
-        TextView ote_to_tamil = (TextView) openDialog.findViewById(R.id.ote_to_tamil);
-        opposite_word.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Opposite_word.class);
-                startActivity(i);
-            }
+        TextView opposite_word = openDialog.findViewById(R.id.opposite_word);
+        TextView ote_to_tamil = openDialog.findViewById(R.id.ote_to_tamil);
+        opposite_word.setOnClickListener(view -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Opposite_word.class);
+            startActivity(i);
         });
-        ote_to_tamil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Ote_to_Tamil.class);
-                startActivity(i);
-            }
+        ote_to_tamil.setOnClickListener(view -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Ote_to_Tamil.class);
+            startActivity(i);
         });
 
         Cursor ctd;
@@ -4958,10 +4079,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         }
 
-        TextView seerpaduthu = (TextView) openDialog.findViewById(R.id.seerpaduthu);
-        TextView puthir = (TextView) openDialog.findViewById(R.id.puthir);
-        TextView tirukural = (TextView) openDialog.findViewById(R.id.tirukural);
-        TextView pilaithiruthu = (TextView) openDialog.findViewById(R.id.pilaithiruthu);
+        TextView seerpaduthu = openDialog.findViewById(R.id.seerpaduthu);
+        TextView puthir = openDialog.findViewById(R.id.puthir);
+        TextView tirukural = openDialog.findViewById(R.id.tirukural);
+        TextView pilaithiruthu = openDialog.findViewById(R.id.pilaithiruthu);
 
         Cursor ctds;
         ctds = newhelper3.getQry("select * from right_order where isfinish='0' order by id limit 1");
@@ -4995,45 +4116,33 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         }
 
 
-        seerpaduthu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Makeword_Rightorder.class);
-                startActivity(i);
-            }
+        seerpaduthu.setOnClickListener(view -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Makeword_Rightorder.class);
+            startActivity(i);
         });
-        puthir.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Fill_in_blanks.class);
-                startActivity(i);
-            }
+        puthir.setOnClickListener(view -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Fill_in_blanks.class);
+            startActivity(i);
         });
-        tirukural.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Tirukural.class);
-                startActivity(i);
-            }
+        tirukural.setOnClickListener(view -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Tirukural.class);
+            startActivity(i);
         });
-        pilaithiruthu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, WordError_correction.class);
-                startActivity(i);
-            }
+        pilaithiruthu.setOnClickListener(view -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, WordError_correction.class);
+            startActivity(i);
         });
 
-        TextView fill_in_blanks = (TextView) openDialog.findViewById(R.id.fill_in_blanks);
-        TextView eng_to_tamil = (TextView) openDialog.findViewById(R.id.eng_to_tamil);
+        TextView fill_in_blanks = openDialog.findViewById(R.id.fill_in_blanks);
+        TextView eng_to_tamil = openDialog.findViewById(R.id.eng_to_tamil);
 
         Cursor scds;
         scds = newhelper4.getQry("select * from newgamesdb4 where gameid='13' and isfinish='0' order by id limit 1");
@@ -5049,28 +4158,22 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             eng_to_tamil.setVisibility(View.VISIBLE);
         }
 
-        fill_in_blanks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Fill_in_blanks.class);
-                startActivity(i);
-            }
+        fill_in_blanks.setOnClickListener(v -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Fill_in_blanks.class);
+            startActivity(i);
         });
-        eng_to_tamil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Fill_in_blanks.class);
-                startActivity(i);
-            }
+        eng_to_tamil.setOnClickListener(v -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Fill_in_blanks.class);
+            startActivity(i);
         });
 
-        TextView quiz = (TextView) openDialog.findViewById(R.id.quiz);
-        TextView find_words_from_pictures = (TextView) openDialog.findViewById(R.id.find_words_from_pictures);
-        TextView match_words = (TextView) openDialog.findViewById(R.id.match_words);
+        TextView quiz = openDialog.findViewById(R.id.quiz);
+        TextView find_words_from_pictures = openDialog.findViewById(R.id.find_words_from_pictures);
+        TextView match_words = openDialog.findViewById(R.id.match_words);
         Newgame_DataBaseHelper5 newhelper5 = new Newgame_DataBaseHelper5(Fill_in_blanks.this);
         Cursor cn28ws = newhelper5.getQry("select * from newgames5 where gameid='15' and isfinish='0'");
         cn28ws.moveToFirst();
@@ -5089,36 +4192,27 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             quiz.setVisibility(View.VISIBLE);
         }
 
-        match_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Match_tha_fallows_game.class);
-                startActivity(i);
+        match_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Match_tha_fallows_game.class);
+            startActivity(i);
 
-            }
         });
-        find_words_from_pictures.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Find_words_from_picture.class);
-                startActivity(i);
-            }
+        find_words_from_pictures.setOnClickListener(v -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Find_words_from_picture.class);
+            startActivity(i);
         });
-        quiz.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Quiz_Game.class);
-                startActivity(i);
-            }
+        quiz.setOnClickListener(v -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Quiz_Game.class);
+            startActivity(i);
         });
         Newgame_DataBaseHelper6 newhelper6 = new Newgame_DataBaseHelper6(Fill_in_blanks.this);
-        TextView jamble_words = (TextView) openDialog.findViewById(R.id.jamble_words);
+        TextView jamble_words = openDialog.findViewById(R.id.jamble_words);
         Cursor jmp;
         jmp = newhelper6.getQry("select * from newgames5 where gameid='18' and isfinish='0' order by id limit 1");
         jmp.moveToFirst();
@@ -5126,90 +4220,70 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             jamble_words.setVisibility(View.VISIBLE);
         }
 
-        jamble_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Jamble_word_game.class);
-                startActivity(i);
-            }
+        jamble_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Jamble_word_game.class);
+            startActivity(i);
         });
-        TextView missing_words = (TextView) openDialog.findViewById(R.id.missing_words);
+        TextView missing_words = openDialog.findViewById(R.id.missing_words);
         Cursor jmps;
         jmps = newhelper6.getQry("select * from newgames5 where gameid='19' and isfinish='0' order by id limit 1");
         jmps.moveToFirst();
         if (jmps.getCount() != 0) {
             missing_words.setVisibility(View.VISIBLE);
         }
-        missing_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Missing_Words.class);
-                startActivity(i);
-            }
+        missing_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Missing_Words.class);
+            startActivity(i);
         });
-        TextView six_differences = (TextView) openDialog.findViewById(R.id.six_differences);
+        TextView six_differences = openDialog.findViewById(R.id.six_differences);
         Cursor dif;
         dif = newhelper6.getQry("select * from newgames5 where gameid='20' and isfinish='0' order by id limit 1");
         dif.moveToFirst();
         if (dif.getCount() != 0) {
             six_differences.setVisibility(View.VISIBLE);
         }
-        six_differences.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-                Intent i = new Intent(Fill_in_blanks.this, Find_difference_between_pictures.class);
-                startActivity(i);
-            }
+        six_differences.setOnClickListener(v -> {
+            finish();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+            Intent i = new Intent(Fill_in_blanks.this, Find_difference_between_pictures.class);
+            startActivity(i);
         });
         openDialog.show();
-        openDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                if (main_act.equals("")) {
+        openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+            if (main_act.equals("")) {
 
-                    finish();
-                    //     openDialog_s.dismiss();
-                    Intent i = new Intent(Fill_in_blanks.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else {
-                    sps.putString(Fill_in_blanks.this, "game_area", "on");
-                    finish();
-                }
-                openDialog.dismiss();
-                sps.putString(Fill_in_blanks.this, "date", "0");
-
-               /* finish();
-                openDialog.dismiss();
-                sps.putString(Riddle_game.this, "date", "0");
-                Intent i = new Intent(Riddle_game.this, New_Main_Activity.class);
-                startActivity(i);*/
-                return keyCode == KeyEvent.KEYCODE_BACK;
+                finish();
+                //     openDialog_s.dismiss();
+                Intent i = new Intent(Fill_in_blanks.this, New_Main_Activity.class);
+                startActivity(i);
+            } else {
+                sps.putString(Fill_in_blanks.this, "game_area", "on");
+                finish();
             }
+            openDialog.dismiss();
+            sps.putString(Fill_in_blanks.this, "date", "0");
+
+            return keyCode == KeyEvent.KEYCODE_BACK;
         });
 
     }
 
     public void showcase_dismiss() {
-        Handler handler30 = new Handler();
-        handler30.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("##########################sps.getString" + sps.getString(Fill_in_blanks.this, "showcase_dismiss_fill_intro"));
-                if (sps.getString(Fill_in_blanks.this, "showcase_dismiss_fill_intro").equals("")) {
-                    System.out.println("######################showcase_dismiss");
-                    showcase_dismiss();
-                } else {
-                    System.out.println("######################en_to_intro_time_start");
-                    sps.putString(Fill_in_blanks.this, "fill_intro_time_start", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
-                }
+        Handler handler30 = new Handler(Looper.myLooper());
+        handler30.postDelayed(() -> {
+            System.out.println("##########################sps.getString" + sps.getString(Fill_in_blanks.this, "showcase_dismiss_fill_intro"));
+            if (sps.getString(Fill_in_blanks.this, "showcase_dismiss_fill_intro").equals("")) {
+                System.out.println("######################showcase_dismiss");
+                showcase_dismiss();
+            } else {
+                System.out.println("######################en_to_intro_time_start");
+                sps.putString(Fill_in_blanks.this, "fill_intro_time_start", "yes");
+                focus.setBase(SystemClock.elapsedRealtime());
+                focus.start();
             }
         }, 800);
     }
@@ -5222,32 +4296,23 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             if (Utils.isNetworkAvailable(Fill_in_blanks.this)) {
                 download_datas();
             } else {
-                NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-                native_banner_ad_container.setVisibility(View.INVISIBLE);
+
                 w_head.setVisibility(View.INVISIBLE);
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Fill_in_blanks.this);
                 alertDialogBuilder.setCancelable(false);
-                alertDialogBuilder.setMessage("புதிய வினாக்களை பதிவிறக்கம் செய்ய இணையத்தை ஆன் செய்யவும்")
-                        .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                                sps.putInt(Fill_in_blanks.this, "goto_sett", 1);
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                String date = sps.getString(Fill_in_blanks.this, "date");
-                                if (date.equals("0")) {
-                                    backexitnet();
-                                } else {
-                                    backexitnet();
-                                }
-                                dialog.dismiss();
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
+                alertDialogBuilder.setMessage("புதிய வினாக்களை பதிவிறக்கம் செய்ய இணையத்தை ஆன் செய்யவும்").setPositiveButton("அமைப்பு", (dialog, which) -> {
+                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                    sps.putInt(Fill_in_blanks.this, "goto_sett", 1);
+                    dialog.dismiss();
+                }).setNegativeButton("பின்னர்", (dialog, which) -> {
+                    String date = sps.getString(Fill_in_blanks.this, "date");
+                    if (date.equals("0")) {
+                        backexitnet();
+                    } else {
+                        backexitnet();
+                    }
+                    dialog.dismiss();
+                }).setIcon(android.R.drawable.ic_dialog_alert).show();
             }
         }
         if (requestCode == 12) {
@@ -5273,24 +4338,19 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         openDialog.setContentView(R.layout.share_dialog2);
         openDialog.setCancelable(false);
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView b_scores = openDialog.findViewById(R.id.b_scores);
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-     /*   int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                score.setText("" + skx);
-                openDialog.dismiss();
-                //mCoinCount = 0;
-            }
+        ok_y.setOnClickListener(v -> {
+            score.setText("" + skx);
+            openDialog.dismiss();
+            //mCoinCount = 0;
         });
 
         openDialog.show();
@@ -5322,27 +4382,24 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
 
         //  TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView tomarrow_coin_earn = (TextView) openDialog.findViewById(R.id.tomarrow_coin_earn);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView tomarrow_coin_earn = openDialog.findViewById(R.id.tomarrow_coin_earn);
         //   TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         ea = 100;
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                if (cfx.getCount() != 0) {
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + ea;
-                    String aStringx = Integer.toString(spx);
-                    score.setText(aStringx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                    sps.putString(Fill_in_blanks.this, "daily_bonus_date", date);
-                }
-
-                openDialog.dismiss();
-
+        ok_y.setOnClickListener(v -> {
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            if (cfx.getCount() != 0) {
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                int spx = skx + ea;
+                String aStringx = Integer.toString(spx);
+                score.setText(aStringx);
+                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+                sps.putString(Fill_in_blanks.this, "daily_bonus_date", date);
             }
+
+            openDialog.dismiss();
+
         });
 
         System.out.println("############################^^^^^^^^^^^^^^currentdate" + str_date1);
@@ -5365,16 +4422,12 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             ea = 300;
         }
         prize_data_update(Fill_in_blanks.this, ea);
-        coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
-      /*  final int vals = reward_play_count * 100;
-        ea = ea + vals;*/
+        coin_value = openDialog.findViewById(R.id.coin_value);
         coin_value.setText("" + ea);
         setval_vid = ea;
         Random rn = new Random();
         randomno = rn.nextInt(maximum - minmum + 1) + minmum;
 
-        //String r= String.valueOf(w_id);
-        //lt_id.setText(r);
         String ran_score = "";
         if (randomno == 1) {
             sps.putInt(Fill_in_blanks.this, "daily_bonus_count", 1);
@@ -5390,55 +4443,43 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             ran_score = "300";
         }
 
-        extra_coin = (LinearLayout) openDialog.findViewById(R.id.extra_coin);
+        extra_coin = openDialog.findViewById(R.id.extra_coin);
         tomarrow_coin_earn.setText("நாளைய தினத்திற்கான ஊக்க நாணயங்கள் : " + ran_score);
 
-        TextView coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
+        TextView coin_value = openDialog.findViewById(R.id.coin_value);
         ea = 100;
         final int vals = reward_play_count * 100;
         ea = ea + vals;
         coin_value.setText("" + ea);
 
-        extra_coin = (LinearLayout) openDialog.findViewById(R.id.extra_coin);
-        extra_coin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 1;
-                extra_coin_s = 1;
-                if (isNetworkAvailable()) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Fill_in_blanks.this, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
-                        reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward(Fill_in_blanks.this);
-                                    rewarded_ad();
-                                    Toast.makeText(Fill_in_blanks.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-
-
-                    }
+        extra_coin = openDialog.findViewById(R.id.extra_coin);
+        extra_coin.setOnClickListener(v -> {
+            rvo = 1;
+            extra_coin_s = 1;
+            if (isNetworkAvailable()) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Fill_in_blanks.this, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
+                        reward_progressBar.dismiss();
+                        if (fb_reward == 1) {
+                            show_reward();
+                            // mShowVideoButton.setVisibility(View.VISIBLE);
+                        } else {
+                            //reward(Fill_in_blanks.this);
+                            rewarded_adnew();
+                            Toast.makeText(Fill_in_blanks.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
+
+
                 }
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
             }
         });
-                     /*   b_close.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                openDialog.dismiss();
-                            }
-                        });*/
         openDialog.show();
     }
 
@@ -5485,65 +4526,47 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     }
 
     public void downloaddata_regular2() {
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-        native_banner_ad_container.setVisibility(View.INVISIBLE);
+
         w_head.setVisibility(View.INVISIBLE);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Fill_in_blanks.this);
         // alertDialogBuilder.setTitle("Update available");
         alertDialogBuilder.setMessage("மேலும் விளையாட வினாக்களை பதிவிறக்கம் செய்ய விரும்புகிறீர்களா ?");
         alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setNegativeButton("ஆம்", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //DownLoad Letters and Words
+        alertDialogBuilder.setNegativeButton("ஆம்", (dialog, id) -> {
+            //DownLoad Letters and Words
 
-                if (Utils.isNetworkAvailable(Fill_in_blanks.this)) {
-                    download_datas();
-                } else {
-                    NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-                    native_banner_ad_container.setVisibility(View.INVISIBLE);
-                    w_head.setVisibility(View.INVISIBLE);
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Fill_in_blanks.this);                           /* .setTitle("Delete entry")*/
-                    alertDialogBuilder.setCancelable(false);
-                    alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
-                            .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // continue with delete
+            if (Utils.isNetworkAvailable(Fill_in_blanks.this)) {
+                download_datas();
+            } else {
 
-                                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                                    sps.putInt(Fill_in_blanks.this, "goto_sett", 1);
+                w_head.setVisibility(View.INVISIBLE);
+                AlertDialog.Builder alertDialogBuilder1 = new AlertDialog.Builder(Fill_in_blanks.this);                           /* .setTitle("Delete entry")*/
+                alertDialogBuilder1.setCancelable(false);
+                alertDialogBuilder1.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்").setPositiveButton("அமைப்பு", (dialog12, which) -> {
+                    // continue with delete
+
+                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                    sps.putInt(Fill_in_blanks.this, "goto_sett", 1);
 
 
-                                    dialog.dismiss();
-                                }
-                            })
-                            .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // do nothing
-                                    sps.putString(Fill_in_blanks.this, "game_area", "on");
-                                    String date = sps.getString(Fill_in_blanks.this, "date");
-                                    if (date.equals("0")) {
-                                        backexitnet();
-                                    } else {
-                                        backexitnet();
-                                    }
-                                   /* Intent i = new Intent(Fill_in_blanks.this, New_Main_Activity.class);
-                                    startActivity(i);*/
-                                    dialog.dismiss();
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
-                }
-
+                    dialog12.dismiss();
+                }).setNegativeButton("பின்னர்", (dialog1, which) -> {
+                    // do nothing
+                    sps.putString(Fill_in_blanks.this, "game_area", "on");
+                    String date = sps.getString(Fill_in_blanks.this, "date");
+                    if (date.equals("0")) {
+                        backexitnet();
+                    } else {
+                        backexitnet();
+                    }
+                    dialog1.dismiss();
+                }).setIcon(android.R.drawable.ic_dialog_alert).show();
             }
+
         });
-        alertDialogBuilder.setPositiveButton("இல்லை ", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-               /* Intent i = new Intent(Fill_in_blanks.this, New_Main_Activity.class);
-                startActivity(i);*/
-                sps.putString(Fill_in_blanks.this, "game_area", "on");
-                finish();
-            }
+        alertDialogBuilder.setPositiveButton("இல்லை ", (dialog, id) -> {
+            sps.putString(Fill_in_blanks.this, "game_area", "on");
+            finish();
         });
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
@@ -5564,37 +4587,34 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     }
 
 
-    public void rewarded_ad() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
+    public void rewarded_adnew() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedAd.load(this, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
             @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error.
+                Log.d("TAG", loadAdError.toString());
+                rewardedAd = null;
             }
 
             @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
+            public void onAdLoaded(@NonNull RewardedAd ad) {
+                rewardedAd = ad;
                 fb_reward = 1;
+                adslisner();
+                Log.d("TAG", "Ad was loaded.");
             }
+        });
+
+
+    }
+
+    public void adslisner() {
+        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
 
             @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_ad();
+            public void onAdDismissedFullScreenContent() {
+                rewarded_adnew();
                 if (reward_status == 1) {
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
@@ -5605,15 +4625,12 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
                     }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        if (rvo == 2) {
+                            share_earn2(mCoinCount);
+                        } else {
+                            vidcoinearn();
                         }
                     }, 500);
                 } else {
@@ -5621,45 +4638,34 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 }
 
                 fb_reward = 0;
-                rewardedAd.loadAd();
-
 
             }
 
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                /*retryAttempt++;
-                long delayMillis = TimeUnit.SECONDS.toMillis( (long) Math.pow( 2, Math.min( 6, retryAttempt ) ) );
-
-                new Handler().postDelayed( new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        rewardedAd.loadAd();
-                    }
-                }, delayMillis );*/
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
         });
-        rewardedAd.loadAd();
+    }
+
+    public void show_reward() {
+        if (rewardedAd != null) {
+            rewardedAd.show(this, rewardItem -> {
+                // Handle the reward.
+                Log.d("TAG", "The user earned the reward.");
+                int rewardAmount = rewardItem.getAmount();
+                String rewardType = rewardItem.getType();
+                reward_status = 1;
+            });
+        } else {
+            Log.d("TAG", "The rewarded ad wasn't ready yet.");
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // uiHelper.onDestroy();
         if (openDialog_p != null && openDialog_p.isShowing()) {
             openDialog_p.dismiss();
         }
+        rewardedAd = null;
+        mInterstitialAd = null;
+        handler = null;
     }
 }

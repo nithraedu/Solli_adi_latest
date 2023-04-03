@@ -417,7 +417,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="@dimen/wh_120"
                                 android:orientation="vertical"
-                                android:visibility="gone"></ImageView>
+                                android:visibility="gone" />
                         </nithra.tamil.word.game.solliadi.RippleView>
 
 
@@ -1570,6 +1570,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
-        android:visibility="gone"></LinearLayout>
+        android:visibility="gone" />
 
 </RelativeLayout>

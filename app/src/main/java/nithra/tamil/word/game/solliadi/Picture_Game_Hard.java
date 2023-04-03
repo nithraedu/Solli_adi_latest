@@ -29,6 +29,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.StatFs;
 import android.os.StrictMode;
 import android.os.SystemClock;
@@ -42,7 +43,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -127,22 +127,26 @@ public class Picture_Game_Hard extends AppCompatActivity {
     public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
     //*********************reward videos process 1***********************
     //private final String AD_UNIT_ID = getString(R.string.rewarded);
-
+    static final SharedPreference sp = new SharedPreference();
+    static final SharedPreference spd = new SharedPreference();
     // The AppState slot we are editing.  For simplicity this sample only manipulates a single
     // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
     // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
     private static final int APP_STATE_KEY = 1;
     // Request code used to invoke sign-in UI.
     private static final int RC_SIGN_IN = 9001;
-    static SharedPreference sp = new SharedPreference();
     static int f;
     static int vs = 0;
-
-
     // Facebook variable starts
     static int mCoinCount = 20;
     static int rvo = 0;
-    static SharedPreference spd = new SharedPreference();
+    final SharedPreference sps = new SharedPreference();
+    final int gameid = 1;
+    final int min = 1;
+    final int max = 3;
+    final Context context = this;
+    final int minmumd = 1;
+    final int maximumd = 4;
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     private final PendingAction pendingAction = PendingAction.NONE;
     private final boolean mIsResolving = false;
@@ -159,10 +163,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
     SQLiteDatabase exdb, dbs, dbn, dbn2;
     TextView score, p_clear, to_no, bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9, bt10, bt11, bt12, bt13, bt14, bt15, bt16;
     ImageView img1, img2, img3, img4;
-    SharedPreference sps = new SharedPreference();
     EditText p_edit;
     String isdown = "";
-    int gameid = 1;
     int wordid;
     TextView ans_show;
     int word_type, image_type;
@@ -191,8 +193,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
     Timer t1, th;
     int t, t2;
     LinearLayout qtw;
-    int min = 1;
-    int max = 3;
     int random;
     TextView next_continue;
     String downok = "", downnodata = "";
@@ -214,7 +214,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
     int s = 0;
     Dialog openDialog_s;
     int share_name = 0;
-    Context context = this;
     RelativeLayout adsicon, adsicon2;
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
@@ -227,12 +226,12 @@ public class Picture_Game_Hard extends AppCompatActivity {
     int ea = 0;
     int setval_vid;
     TextView coin_value;
-    int minmumd = 1;
-    int maximumd = 4;
     int randomnod;
     Dialog openDialog;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
+    Handler handler;
+    Runnable my_runnable;
     private RewardedAd rewardedAd;
     private InterstitialAd mInterstitialAd;
 
@@ -261,7 +260,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
             StrictMode.setThreadPolicy(policy);
         }
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
 
 
@@ -281,58 +280,30 @@ public class Picture_Game_Hard extends AppCompatActivity {
             }
 
         }
+        MobileAds.initialize(this);
         rewarded_adnew();
         if (sps.getInt(context, "purchase_ads") == 0) {
-            // Make sure to set the mediation provider value to "max" to ensure proper functionality
-            MobileAds.initialize(this);
+            Utills.INSTANCE.initializeAdzz(this);
             industrialload();
         }
 
 
-        adds = (LinearLayout) findViewById(R.id.ads_lay);
-        if (sps.getInt(context, "purchase_ads") == 0) {
-            if (Utils.isNetworkAvailable(Picture_Game_Hard.this)) {
-
-            } else {
-                adds.setVisibility(View.GONE);
-            }
-        } else {
-            adds.setVisibility(View.GONE);
-        }
-
-
+        adds = findViewById(R.id.ads_lay);
+        Utills.INSTANCE.load_add_AppLovin(this, adds);
         newhelper = new Newgame_DataBaseHelper(context);
         newhelper2 = new Newgame_DataBaseHelper2(context);
         newhelper3 = new Newgame_DataBaseHelper3(context);
         myDbHelper = new DataBaseHelper(context);
         newhelper4 = new Newgame_DataBaseHelper4(context);
 
-      /*  exdb=myDbHelper.getReadableDatabase();
-        dbs=newhelper.getReadableDatabase();
-        dbn=newhelper2.getReadableDatabase();
-        dbn2=newhelper3.getReadableDatabase();*/
 
-
-        /*String gid = "1";
-        String qid = "";
-        for (int i = 0; i<=199; i++){
-            if (qid.equals("")){
-                qid = "" +i;
-            } else {
-                qid = qid + "," + i;
-            }
-        }
-        System.out.println("---qid : " +qid);
-        System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
-        myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid in (" + qid + ") and gameid='1'");
-*/
         email = sps.getString(Picture_Game_Hard.this, "email");
 
         System.out.println("mail======pic==" + email);
         //uiHelper = new UiLifecycleHelper(this, callback);
 
 
-        ImageView prize_logo = (ImageView) findViewById(R.id.prize_logo);
+        ImageView prize_logo = findViewById(R.id.prize_logo);
 
         if (sp.getInt(Picture_Game_Hard.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
@@ -364,12 +335,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
             }
         });
 
-
-
-      /*  if(Utils.isNetworkAvailable(Picture_Game_Hard.this)){
-
-            New_Main_Activity.load_add(New_Main_Activity.add,Picture_Game_Hard.this);
-        }*/
 
         ///Alter Answer table
 
@@ -404,10 +369,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
         LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = layoutInflater.inflate(R.layout.settings, null);
         popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        toggleButton = (TextView) popupView.findViewById(R.id.toggle);
+        toggleButton = popupView.findViewById(R.id.toggle);
         //Sound ON OFF
         String snd = sps.getString(Picture_Game_Hard.this, "snd");
-        p_setting = (TextView) findViewById(R.id.p_settings);
+        p_setting = findViewById(R.id.p_settings);
         if (snd.equals("off")) {
             p_setting.setBackgroundResource(R.drawable.sound_off);
             // toggleButton.setBackgroundResource(R.drawable.off);
@@ -420,7 +385,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
         }
 
-        p_edit = (EditText) findViewById(R.id.p_ans_editer);
+        p_edit = findViewById(R.id.p_ans_editer);
         p_edit.setOnClickListener(v -> {
             InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(p_edit.getWindowToken(), 0);
@@ -432,10 +397,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
             return true;
         });
 
-        u_verify = (TextView) findViewById(R.id.pic__verifi);
-        pic_clue = (TextView) findViewById(R.id.pic_clue);
-        h_watts_app = (TextView) findViewById(R.id.p_watts_app);
-        helpshare_layout = (RelativeLayout) findViewById(R.id.helpshare_layout);
+        u_verify = findViewById(R.id.pic__verifi);
+        pic_clue = findViewById(R.id.pic_clue);
+        h_watts_app = findViewById(R.id.p_watts_app);
+        helpshare_layout = findViewById(R.id.helpshare_layout);
 
 
         if (sps.getString(Picture_Game_Hard.this, "pn_intro").equals("yes")) {
@@ -511,56 +476,56 @@ public class Picture_Game_Hard extends AppCompatActivity {
     }
 
     public void find() {
-        adsicon2 = (RelativeLayout) findViewById(R.id.adsicon2);
-        bt1 = (TextView) findViewById(R.id.p_button1);
-        bt2 = (TextView) findViewById(R.id.p_button2);
-        bt3 = (TextView) findViewById(R.id.p_button3);
-        bt4 = (TextView) findViewById(R.id.p_button4);
-        bt5 = (TextView) findViewById(R.id.p_button5);
-        bt6 = (TextView) findViewById(R.id.p_button6);
-        bt7 = (TextView) findViewById(R.id.p_button7);
-        bt8 = (TextView) findViewById(R.id.p_button8);
-        bt9 = (TextView) findViewById(R.id.p_button9);
-        bt10 = (TextView) findViewById(R.id.p_button10);
-        bt11 = (TextView) findViewById(R.id.p_button11);
-        bt12 = (TextView) findViewById(R.id.p_button12);
-        bt13 = (TextView) findViewById(R.id.p_button13);
-        bt14 = (TextView) findViewById(R.id.p_button14);
-        bt15 = (TextView) findViewById(R.id.p_button15);
-        bt16 = (TextView) findViewById(R.id.p_button16);
-        img1 = (ImageView) findViewById(R.id.image_1);
-        img2 = (ImageView) findViewById(R.id.image_2);
-        img3 = (ImageView) findViewById(R.id.image_3);
-        img4 = (ImageView) findViewById(R.id.image_4);
-        adds = (LinearLayout) findViewById(R.id.ads_lay);
-        list4 = (LinearLayout) findViewById(R.id.list4);
+        adsicon2 = findViewById(R.id.adsicon2);
+        bt1 = findViewById(R.id.p_button1);
+        bt2 = findViewById(R.id.p_button2);
+        bt3 = findViewById(R.id.p_button3);
+        bt4 = findViewById(R.id.p_button4);
+        bt5 = findViewById(R.id.p_button5);
+        bt6 = findViewById(R.id.p_button6);
+        bt7 = findViewById(R.id.p_button7);
+        bt8 = findViewById(R.id.p_button8);
+        bt9 = findViewById(R.id.p_button9);
+        bt10 = findViewById(R.id.p_button10);
+        bt11 = findViewById(R.id.p_button11);
+        bt12 = findViewById(R.id.p_button12);
+        bt13 = findViewById(R.id.p_button13);
+        bt14 = findViewById(R.id.p_button14);
+        bt15 = findViewById(R.id.p_button15);
+        bt16 = findViewById(R.id.p_button16);
+        img1 = findViewById(R.id.image_1);
+        img2 = findViewById(R.id.image_2);
+        img3 = findViewById(R.id.image_3);
+        img4 = findViewById(R.id.image_4);
+        adds = findViewById(R.id.ads_lay);
+        list4 = findViewById(R.id.list4);
         //Time Score Making
-        to_no = (TextView) findViewById(R.id.p_word_number);
-        score = (TextView) findViewById(R.id.p_score_edit);
-        focus = (Chronometer) findViewById(R.id.p_time_edit);
-        p_edit = (EditText) findViewById(R.id.p_ans_editer);
-        u_verify = (TextView) findViewById(R.id.pic__verifi);
-        ans_show = (TextView) findViewById(R.id.ans_highlite);
-        p_setting = (TextView) findViewById(R.id.p_settings);
+        to_no = findViewById(R.id.p_word_number);
+        score = findViewById(R.id.p_score_edit);
+        focus = findViewById(R.id.p_time_edit);
+        p_edit = findViewById(R.id.p_ans_editer);
+        u_verify = findViewById(R.id.pic__verifi);
+        ans_show = findViewById(R.id.ans_highlite);
+        p_setting = findViewById(R.id.p_settings);
         //
-        p_coin = (TextView) findViewById(R.id.p_coins);
+        p_coin = findViewById(R.id.p_coins);
         //intro=(TextView)findViewById(R.id.introduction);
-        qtw = (LinearLayout) findViewById(R.id.qwt);
+        qtw = findViewById(R.id.qwt);
         //Help Share
-        w_head = (RelativeLayout) findViewById(R.id.pict_head);
-        h_gplues = (TextView) findViewById(R.id.p_gplues);
-        h_watts_app = (TextView) findViewById(R.id.p_watts_app);
-        h_facebook = (TextView) findViewById(R.id.p_facebook);
+        w_head = findViewById(R.id.pict_head);
+        h_gplues = findViewById(R.id.p_gplues);
+        h_watts_app = findViewById(R.id.p_watts_app);
+        h_facebook = findViewById(R.id.p_facebook);
         //
-        earncoin = (TextView) findViewById(R.id.earncoin);
-        edit_buttons_layout = (RelativeLayout) findViewById(R.id.edit_buttons_layout);
+        earncoin = findViewById(R.id.earncoin);
+        edit_buttons_layout = findViewById(R.id.edit_buttons_layout);
 
-        pic_clue = (TextView) findViewById(R.id.pic_clue);
+        pic_clue = findViewById(R.id.pic_clue);
         Animation myFadeInAnimation = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.blink_animation);
         pic_clue.startAnimation(myFadeInAnimation);
-        clue_ans = (TextView) findViewById(R.id.clue_word);
+        clue_ans = findViewById(R.id.clue_word);
 
-        p_clear = (TextView) findViewById(R.id.p_clear);
+        p_clear = findViewById(R.id.p_clear);
 
         //focus.start();
         //score intial
@@ -573,7 +538,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
         //
         openDialog_s = new Dialog(Picture_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
-        adsicon = (RelativeLayout) openDialog_s.findViewById(R.id.adsicon);
+        adsicon = openDialog_s.findViewById(R.id.adsicon);
         /////////
 
         if (sps.getInt(Picture_Game_Hard.this, "purchase_ads") == 1) {
@@ -591,11 +556,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
             //  advancads_content();
         }
 
-        //builder_dialog = new AdLoader.Builder(this, ADMOB_AD_UNIT_ID_Top);
-
-        //install_ads_doalug();
-
-        ////////
     }
 
 
@@ -629,13 +589,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 p_setting.setBackgroundResource(R.drawable.sound_off);
                 sv = 0;
             }
-          /*  if (k == 1) {
-                showpopup();
-                k = 2;
-            } else {
-                popupWindow.dismiss();
-                k = 1;
-            }*/
         });
         w_head.setOnClickListener(view -> {
             if (k == 2) {
@@ -797,7 +750,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
         p_clear.setOnClickListener(v -> {
             //c17.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
-            pressKey(KeyEvent.KEYCODE_DEL);
+            pressKey();
         });
 
         p_clear.setOnLongClickListener(v -> {
@@ -824,11 +777,11 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     if (f == 0) {
                         final Dialog openDialog = new Dialog(Picture_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                         openDialog.setContentView(R.layout.clue_ans_show);
-                        TextView yes = (TextView) openDialog.findViewById(R.id.yes);
-                        TextView no = (TextView) openDialog.findViewById(R.id.no);
-                        TextView txt_ex2 = (TextView) openDialog.findViewById(R.id.txt_ex2);
+                        TextView yes = openDialog.findViewById(R.id.yes);
+                        TextView no = openDialog.findViewById(R.id.no);
+                        TextView txt_ex2 = openDialog.findViewById(R.id.txt_ex2);
 
-                        CheckBox checkbox_ans = (CheckBox) openDialog.findViewById(R.id.checkbox_ans);
+                        CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
                         checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                             if (isChecked) {
@@ -935,23 +888,16 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     pic_clue.setVisibility(View.INVISIBLE);
                     list4.setVisibility(View.INVISIBLE);
 
-                   /* if (Utils.isNetworkAvailable(getApplicationContext())) {
-                        if (getApiClient().isConnected()) {
-                            if (isSignedIn()) {
-                                savedGamesUpdate();
-                            }
-                        }
-                    }*/
                     focus.stop();
                     completegame();
-                    Handler handler = new Handler();
+                    Handler handler = new Handler(Looper.myLooper());
                     handler.postDelayed(() -> adShow(), 4000);
                 } else {
                     final Dialog openDialog = new Dialog(Picture_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                     openDialog.setContentView(R.layout.show_ans);
-                    TextView yes = (TextView) openDialog.findViewById(R.id.yes);
-                    TextView no = (TextView) openDialog.findViewById(R.id.no);
-                    TextView txt_ex2 = (TextView) openDialog.findViewById(R.id.txt_ex2);
+                    TextView yes = openDialog.findViewById(R.id.yes);
+                    TextView no = openDialog.findViewById(R.id.no);
+                    TextView txt_ex2 = openDialog.findViewById(R.id.txt_ex2);
 
                     if (f == 0) {
                         txt_ex2.setText("மொத்த நாணயங்களில் 100 குறைக்கப்படும்");
@@ -959,7 +905,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                         txt_ex2.setText("மொத்த நாணயங்களில் 75 குறைக்கப்படும்");
                     }
 
-                    CheckBox checkbox_ans = (CheckBox) openDialog.findViewById(R.id.checkbox_ans);
+                    CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
                     checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                         if (isChecked) {
@@ -1030,17 +976,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
                         pic_clue.setVisibility(View.INVISIBLE);
                         list4.setVisibility(View.INVISIBLE);
 
-                          /*  if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (getApiClient().isConnected()) {
-                                    if (isSignedIn()) {
-                                        savedGamesUpdate();
-                                    }
-                                }
-                            }*/
                         completegame();
                         focus.stop();
 
-                        Handler handler = new Handler();
+                        Handler handler = new Handler(Looper.myLooper());
                         handler.postDelayed(() -> adShow(), 4000);
                     });
                     no.setOnClickListener(v1 -> {
@@ -1189,10 +1128,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
                 } else {
 
-                    CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout);
+                    CoordinatorLayout coordinatorLayout = findViewById(R.id.myCoordinatorLayout);
                     Snackbar snackbar = Snackbar.make(coordinatorLayout, "இந்த செயலி தங்களிடம் இல்லை", Snackbar.LENGTH_SHORT);
                     final View view = snackbar.getView();
-                    TextView textView = (TextView) view.findViewById(com.google.android.material.R.id.snackbar_text);
+                    TextView textView = view.findViewById(com.google.android.material.R.id.snackbar_text);
                     view.setBackgroundResource(R.drawable.answershow);
                     textView.setTextColor(Color.parseColor("#FFFFFF"));
                     textView.setGravity(Gravity.CENTER | Gravity.BOTTOM);
@@ -1220,7 +1159,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
         clue_ans.setVisibility(View.VISIBLE);
         clue_ans.setText(clue);
         u_verify.setVisibility(View.INVISIBLE);
-        Handler handler8 = new Handler();
+        Handler handler8 = new Handler(Looper.myLooper());
         handler8.postDelayed(() -> {
 
             u_verify.setVisibility(View.VISIBLE);
@@ -1238,23 +1177,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 score.setText(aStringx);
                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
             }
-         /*   pic_clue.setText("");
-            Animation w_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.clueshow_pic);
-            clue_ans.startAnimation(w_game);
-            clue_ans.setVisibility(View.VISIBLE);
-            clue_ans.setText(clue);
-            u_verify.setVisibility(View.INVISIBLE);
-            Handler handler8 = new Handler();
-            handler8.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-
-                    u_verify.setVisibility(View.VISIBLE);
-                    clue_ans.setVisibility(View.INVISIBLE);
-                }
-            }, 5000);
-            pic_clue.clearAnimation();
-            pic_clue.setBackgroundResource(R.drawable.bulb2);*/
         }
 
     }
@@ -1299,16 +1221,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
         bt15.setVisibility(View.GONE);
         bt16.setVisibility(View.GONE);
         //Button Anim
-        LinearLayout bl1 = (LinearLayout) findViewById(R.id.p_buttonlist1_layout);
-        LinearLayout bl2 = (LinearLayout) findViewById(R.id.p_buttonlist2_layout);
-        LinearLayout bl3 = (LinearLayout) findViewById(R.id.p_buttonlist3_layout);
-        LinearLayout bl4 = (LinearLayout) findViewById(R.id.p_buttonlist4_layout);
-       /* Animation h_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.word_button1);
-        Animation h_game2 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.word_button2);
-        bl1.startAnimation(h_game);
-        bl2.startAnimation(h_game2);
-        bl3.startAnimation(h_game);
-        bl4.startAnimation(h_game2);*/
+        LinearLayout bl1 = findViewById(R.id.p_buttonlist1_layout);
+        LinearLayout bl2 = findViewById(R.id.p_buttonlist2_layout);
+        LinearLayout bl3 = findViewById(R.id.p_buttonlist3_layout);
+        LinearLayout bl4 = findViewById(R.id.p_buttonlist4_layout);
         //
         ans_show.setVisibility(View.GONE);
         img1.setVisibility(View.GONE);
@@ -1896,16 +1812,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
         bt16.setText("");
         p_edit.setText("");
         //Animation in buttons
-        LinearLayout bl1 = (LinearLayout) findViewById(R.id.p_buttonlist1_layout);
-        LinearLayout bl2 = (LinearLayout) findViewById(R.id.p_buttonlist2_layout);
-        LinearLayout bl3 = (LinearLayout) findViewById(R.id.p_buttonlist3_layout);
-        LinearLayout bl4 = (LinearLayout) findViewById(R.id.p_buttonlist4_layout);
-       /* Animation h_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.word_button1);
-        Animation h_game2 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.word_button2);
-        bl1.startAnimation(h_game);
-        bl2.startAnimation(h_game2);
-        bl3.startAnimation(h_game);
-        bl4.startAnimation(h_game2);*/
+        LinearLayout bl1 = findViewById(R.id.p_buttonlist1_layout);
+        LinearLayout bl2 = findViewById(R.id.p_buttonlist2_layout);
+        LinearLayout bl3 = findViewById(R.id.p_buttonlist3_layout);
+        LinearLayout bl4 = findViewById(R.id.p_buttonlist4_layout);
 
 
         list4.setVisibility(View.VISIBLE);
@@ -2441,16 +2351,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
         p_coin.setVisibility(View.INVISIBLE);
         list4.setVisibility(View.VISIBLE);
         //Button Anim
-        LinearLayout bl1 = (LinearLayout) findViewById(R.id.p_buttonlist1_layout);
-        LinearLayout bl2 = (LinearLayout) findViewById(R.id.p_buttonlist2_layout);
-        LinearLayout bl3 = (LinearLayout) findViewById(R.id.p_buttonlist3_layout);
-        LinearLayout bl4 = (LinearLayout) findViewById(R.id.p_buttonlist4_layout);
-      /*  Animation h_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.word_button1);
-        Animation h_game2 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.word_button2);
-        bl1.startAnimation(h_game);
-        bl2.startAnimation(h_game2);
-        bl3.startAnimation(h_game);
-        bl4.startAnimation(h_game2);*/
+        LinearLayout bl1 = findViewById(R.id.p_buttonlist1_layout);
+        LinearLayout bl2 = findViewById(R.id.p_buttonlist2_layout);
+        LinearLayout bl3 = findViewById(R.id.p_buttonlist3_layout);
+        LinearLayout bl4 = findViewById(R.id.p_buttonlist4_layout);
         //
         u_verify.setBackgroundResource(R.drawable.yellow_question);
 
@@ -3089,11 +2993,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
             wordid = Integer.parseInt(c.getString(c.getColumnIndexOrThrow("levelid")));
             id = c.getString(c.getColumnIndexOrThrow("id"));
 
-            /*if (sps.getString(Picture_Game_Hard.this, "error_correction_dis_2").equals("")) {
-                myDbHelper.executeSql("UPDATE maintable SET isfinish=1 WHERE  id='" + id + "' and gameid='" + gameid + "'");
-                sps.putString(Picture_Game_Hard.this, "error_correction_dis_2", "yes");
-            }*/
-
             if (sps.getString(Picture_Game_Hard.this, str_date1).equals("")) {
                 daily_bones();
                 System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeee daily_bones()");
@@ -3136,9 +3035,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
             }
 
 
-            //String r = String.valueOf(wordid);
-            //lt_id.setText(r);
-
             Random rn = new Random();
             random = rn.nextInt(max - min + 1) + min;
 
@@ -3175,41 +3071,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 }
 
 
-
-              /*  w_head.setVisibility(View.INVISIBLE);
-                final Dialog openDialog = new Dialog(Picture_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                openDialog.setContentView(R.layout.dailytomaingame);
-                TextView yes = (TextView) openDialog.findViewById(R.id.yes);
-                TextView nos = (TextView) openDialog.findViewById(R.id.no);
-                openDialog.setCancelable(false);
-                yes.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        sps.putString(Picture_Game_Hard.this, "date", "0");
-                        Intent i = new Intent(Picture_Game_Hard.this, Picture_Game_Hard.class);
-                        startActivity(i);
-                        finish();
-                        openDialog.dismiss();
-                    }
-                });
-                nos.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        finish();
-                        openDialog.dismiss();
-                    }
-                });
-                openDialog.show();
-
-                openDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-                    @Override
-                    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                        finish();
-                        openDialog.dismiss();
-                        return keyCode == KeyEvent.KEYCODE_BACK;
-                    }
-                });*/
-
             }
         }
     }
@@ -3220,8 +3081,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
         openDialog.setContentView(R.layout.daily_bones_newd2);
         openDialog.setCancelable(false);
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView tomarrow_coin_earn = (TextView) openDialog.findViewById(R.id.tomarrow_coin_earn);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView tomarrow_coin_earn = openDialog.findViewById(R.id.tomarrow_coin_earn);
 
 
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
@@ -3284,16 +3145,12 @@ public class Picture_Game_Hard extends AppCompatActivity {
             ea = 300;
         }
         prize_data_update(Picture_Game_Hard.this, ea);
-        coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
-      /*  final int vals = reward_play_count * 100;
-        ea = ea + vals;*/
+        coin_value = openDialog.findViewById(R.id.coin_value);
         coin_value.setText("" + ea);
         setval_vid = ea;
         Random rn = new Random();
         randomnod = rn.nextInt(maximumd - minmumd + 1) + minmumd;
 
-        //String r= String.valueOf(w_id);
-        //lt_id.setText(r);
         String ran_score = "";
         if (randomnod == 1) {
             sps.putInt(context, "daily_bonus_count", 1);
@@ -3309,10 +3166,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
             ran_score = "300";
         }
 
-        LinearLayout extra_coin = (LinearLayout) openDialog.findViewById(R.id.extra_coin);
+        LinearLayout extra_coin = openDialog.findViewById(R.id.extra_coin);
         tomarrow_coin_earn.setText("நாளைய தினத்திற்கான ஊக்க நாணயங்கள் : " + ran_score);
 
-        extra_coin = (LinearLayout) openDialog.findViewById(R.id.extra_coin);
+        extra_coin = openDialog.findViewById(R.id.extra_coin);
         extra_coin.setOnClickListener(v -> {
             rvo = 1;
             extra_coin_s = 1;
@@ -3322,7 +3179,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     reward_progressBar.dismiss();
                     show_reward();
                 } else {
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
                         if (fb_reward == 1) {
                             show_reward();
@@ -3353,9 +3210,9 @@ public class Picture_Game_Hard extends AppCompatActivity {
         openDialog.show();
     }
 
-    private void pressKey(int keycode) {
-        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, keycode);
-        p_edit.onKeyDown(keycode, event);
+    private void pressKey() {
+        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL);
+        p_edit.onKeyDown(KeyEvent.KEYCODE_DEL, event);
     }
 
 
@@ -3367,7 +3224,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
 
         final String snd = sps.getString(Picture_Game_Hard.this, "snd");
-        toggleButton = (TextView) popupView.findViewById(R.id.toggle);
+        toggleButton = popupView.findViewById(R.id.toggle);
 
         if (snd.equals("off")) {
             toggleButton.setBackgroundResource(R.drawable.off);
@@ -3408,24 +3265,24 @@ public class Picture_Game_Hard extends AppCompatActivity {
             s = 0;
         }
 
-        next_continue = (TextView) openDialog_s.findViewById(R.id.continues2);
-        ttscores = (TextView) openDialog_s.findViewById(R.id.tts_score2);
-        final TextView wtp = (TextView) openDialog_s.findViewById(R.id.wtp);
-        final TextView fbs = (TextView) openDialog_s.findViewById(R.id.fbp);
-        final TextView kuduthal = (TextView) openDialog_s.findViewById(R.id.tt22);
-        final TextView gplus = (TextView) openDialog_s.findViewById(R.id.gplus2);
-        final TextView word = (TextView) openDialog_s.findViewById(R.id.arputham2);
-        LinearLayout ads_layout = (LinearLayout) openDialog_s.findViewById(R.id.fl_adplaceholder);
-        final LinearLayout vid_earn = (LinearLayout) openDialog_s.findViewById(R.id.vid_earn);
-        final LinearLayout rewardvideo = (LinearLayout) openDialog_s.findViewById(R.id.rewardvideo);
+        next_continue = openDialog_s.findViewById(R.id.continues2);
+        ttscores = openDialog_s.findViewById(R.id.tts_score2);
+        final TextView wtp = openDialog_s.findViewById(R.id.wtp);
+        final TextView fbs = openDialog_s.findViewById(R.id.fbp);
+        final TextView kuduthal = openDialog_s.findViewById(R.id.tt22);
+        final TextView gplus = openDialog_s.findViewById(R.id.gplus2);
+        final TextView word = openDialog_s.findViewById(R.id.arputham2);
+        LinearLayout ads_layout = openDialog_s.findViewById(R.id.fl_adplaceholder);
+        final LinearLayout vid_earn = openDialog_s.findViewById(R.id.vid_earn);
+        final LinearLayout rewardvideo = openDialog_s.findViewById(R.id.rewardvideo);
 
-        TextView video_earn = (TextView) openDialog_s.findViewById(R.id.video_earn);
+        TextView video_earn = openDialog_s.findViewById(R.id.video_earn);
         video_earn.setText("மேலும் " + sps.getInt(Picture_Game_Hard.this, "reward_coin_txt") + "+நாணயங்கள் பெற");
 
         Animation myFadeInAnimation = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.blink_animation);
         vid_earn.startAnimation(myFadeInAnimation);
 
-        ImageView prize_logo = (ImageView) openDialog_s.findViewById(R.id.prize_logo);
+        ImageView prize_logo = openDialog_s.findViewById(R.id.prize_logo);
         if (sp.getInt(Picture_Game_Hard.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
@@ -3464,17 +3321,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
             }
 
             if (isNetworkAvailable()) {
-                //load_addcontent2(context,ads_layout);
-                // load_addinstall(context, ads_layout);
             } else {
-           /*     if (native_adView3 != null) {
-                    native_adView3.removeAllViews();
-                }
-                LayoutInflater inflater;
-                inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-                View view1 = inflater.inflate(R.layout.remote_config, null);
-                ins_app(context, view1, sps.getInt(context, "remoteConfig"));
-                ads_layout.addView(view1);*/
             }
         }
 
@@ -3518,7 +3365,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
         f_sec = sec + sec2 + seconds;
 
-        RelativeLayout adsicon = (RelativeLayout) openDialog_s.findViewById(R.id.adsicon);
+        RelativeLayout adsicon = openDialog_s.findViewById(R.id.adsicon);
         Animation shake;
         shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulam);
         adsicon.startAnimation(shake);
@@ -3533,13 +3380,13 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     show_reward();
                     rewardvideo.setVisibility(View.INVISIBLE);
                 } else {
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
                         if (fb_reward == 1) {
                             show_reward();
                             // mShowVideoButton.setVisibility(View.VISIBLE);
                         } else {
-                            //reward(context);
+
                             rewarded_adnew();
                             Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
@@ -3563,13 +3410,13 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     show_reward();
                     rewardvideo.setVisibility(View.INVISIBLE);
                 } else {
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
                         if (fb_reward == 1) {
                             show_reward();
                             // mShowVideoButton.setVisibility(View.VISIBLE);
                         } else {
-                            //reward(context);
+
                             rewarded_adnew();
                             Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
@@ -3594,29 +3441,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     startActivity(Intent.createChooser(i, "Share via"));
 
                     startActivityForResult(Intent.createChooser(i, "Share via"), 21);
-
-
-                /*    if (sps.getString(Picture_Game_Hard.this, "watts_app_s").equals("")) {
-                        Handler handler8 = new Handler();
-                        handler8.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                //Score Adding
-                                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ", null);
-                                cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                int spx = skx + 20;
-                                String aStringx = Integer.toString(spx);
-                                score.setText(aStringx);
-                                ttscores.setText(aStringx);
-                                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                sps.putString(Picture_Game_Hard.this, "watts_app_s", "yes");
-
-
-                            }
-                        }, 3000);
-                    }*/
 
 
                 } else {
@@ -3725,20 +3549,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
     }
 
-    public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") == Utills.interstitialadCount && mInterstitialAd != null) {
-            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
-            Handler handler = new Handler();
-            handler.postDelayed(() -> {
-                mInterstitialAd.show(this);
-            }, 2500);
-        } else {
-            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
-            setSc();
-        }
-
-    }
 
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getPackageManager();
@@ -3764,22 +3574,22 @@ public class Picture_Game_Hard extends AppCompatActivity {
         openDialog_earncoin.setContentView(R.layout.earncoin);
 
 
-        RelativeLayout wp = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnwa);
-        RelativeLayout fb = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnfb);
-        RelativeLayout gplus = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earngplus);
-        TextView cancel = (TextView) openDialog_earncoin.findViewById(R.id.cancel);
-        TextView ss = (TextView) openDialog_earncoin.findViewById(R.id.ssss);
+        RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
+        RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
+        RelativeLayout gplus = openDialog_earncoin.findViewById(R.id.earngplus);
+        TextView cancel = openDialog_earncoin.findViewById(R.id.cancel);
+        TextView ss = openDialog_earncoin.findViewById(R.id.ssss);
 
         ss.setOnClickListener(v -> openDialog_earncoin.cancel());
         cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
 
-        TextView wpro = (TextView) openDialog_earncoin.findViewById(R.id.wpro);
+        TextView wpro = openDialog_earncoin.findViewById(R.id.wpro);
         if (i == 1) {
             cancel.setVisibility(View.INVISIBLE);
             wpro.setText("இந்த விளையாட்டை தொடர குறைந்தபட்சம் 100  நாணயங்கள் தேவை. எனவே கூடுதல் நாணயங்கள் பெற பகிரவும்.");
         }
 
-        RelativeLayout video = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnvideo);
+        RelativeLayout video = openDialog_earncoin.findViewById(R.id.earnvideo);
         video.setOnClickListener(v -> {
             rvo = 1;
             extra_coin_s = 0;
@@ -3809,9 +3619,9 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     // mShowVideoButton.setVisibility(View.VISIBLE);
                 } else {
                     fb_reward = 0;
-                    //reward(context);
+
                     rewarded_adnew();
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
 
                         Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
@@ -3821,55 +3631,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
             } else {
                 Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
             }
-           /* extra_coin_s = 0;
-            rvo = 1;
-            if (isNetworkAvailable()) {
-                final ProgressDialog reward_progressBar = ProgressDialog.show(Picture_Game_Hard.this, "" + "Reward video", "Loading...");
-
-
-                if (mRewardedVideoAd.isLoaded()) {
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    focus.stop();
-                    String date = sps.getString(Picture_Game_Hard.this, "date");
-                    int pos;
-                    if (date.equals("0")) {
-                        pos = 1;
-                        myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                    } else {
-                        pos = 2;
-                        myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                    }
-                    reward_progressBar.dismiss();
-                    showRewardedVideo();
-                    openDialog_earncoin.cancel();
-
-                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                } else {
-
-                    startGame();
-
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            reward_progressBar.dismiss();
-                            if (mRewardedVideoAd.isLoaded()) {
-                                showRewardedVideo();
-                                openDialog_earncoin.cancel();
-                                // mShowVideoButton.setVisibility(View.VISIBLE);
-                            } else {
-                                startGame();
-                                Toast.makeText(Picture_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }, 2000);
-                }
-            } else {
-                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-            }*/
 
         });
 
@@ -3884,25 +3645,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
                     i12.putExtra(Intent.EXTRA_TEXT, msg);
                     startActivityForResult(Intent.createChooser(i12, "Share via"), 12);
-               /*     if (sps.getString(Picture_Game_Hard.this, "watts_app").equals("")) {
-                        Handler handler8 = new Handler();
-                        handler8.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                //Score Adding
-                                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ", null);
-                                cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                int spx = skx + 20;
-                                String aStringx = Integer.toString(spx);
-                                score.setText(aStringx);
-                                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                sps.putString(Picture_Game_Hard.this, "watts_app", "yes");
-
-                            }
-                        }, 3000);
-                    }*/
 
                     ///shareing reward
                 } else {
@@ -3971,8 +3713,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
             s = 1;
             openDialog_p = new Dialog(Picture_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
             openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-            TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+            TextView yes = openDialog_p.findViewById(R.id.yes);
+            TextView no = openDialog_p.findViewById(R.id.no);
 
             yes.setOnClickListener(v -> {
 
@@ -4071,7 +3813,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
             ////
 
-            Handler handler = new Handler();
+            Handler handler = new Handler(Looper.myLooper());
             handler.postDelayed(() -> {
                 //play1.start();
                 spz4.play(soundId4, sv, sv, 0, 0, sv);
@@ -4109,13 +3851,13 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
             }).start();
 
-            Handler handler30 = new Handler();
+            Handler handler30 = new Handler(Looper.myLooper());
             handler30.postDelayed(() -> {
                 Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
                 score.startAnimation(levels1);
             }, 2200);
 
-            Handler handler21 = new Handler();
+            Handler handler21 = new Handler(Looper.myLooper());
             handler21.postDelayed(() -> {
                 int skx = 0;
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
@@ -4189,7 +3931,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
             }).start();
 
-            Handler handler21 = new Handler();
+            Handler handler21 = new Handler(Looper.myLooper());
             handler21.postDelayed(() -> {
                 int skx = 0;
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
@@ -4215,7 +3957,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 adShow();
             }, 2500);
 
-            Handler handler30 = new Handler();
+            Handler handler30 = new Handler(Looper.myLooper());
             handler30.postDelayed(() -> {
                 Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
                 score.startAnimation(levels1);
@@ -4273,12 +4015,12 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
             }).start();
 
-            Handler handler30 = new Handler();
+            Handler handler30 = new Handler(Looper.myLooper());
             handler30.postDelayed(() -> {
                 Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
                 score.startAnimation(levels1);
             }, 1200);
-            Handler handler21 = new Handler();
+            Handler handler21 = new Handler(Looper.myLooper());
             handler21.postDelayed(() -> {
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
@@ -4308,8 +4050,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
     public void pic_show(int a) {
         openDialogk = new Dialog(Picture_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialogk.setContentView(R.layout.show_pic);
-        pic_show = (TouchImageView) openDialogk.findViewById(R.id.pic_show);
-        Button cancel = (Button) openDialogk.findViewById(R.id.p_cancel);
+        pic_show = openDialogk.findViewById(R.id.pic_show);
+        Button cancel = openDialogk.findViewById(R.id.p_cancel);
 
         if (a == 1) {
             if (isdown.equals("0")) {
@@ -4380,9 +4122,9 @@ public class Picture_Game_Hard extends AppCompatActivity {
             }
         }
 
-        TextView wq1 = (TextView) openDialogk.findViewById(R.id.wq1);
-        TextView wq2 = (TextView) openDialogk.findViewById(R.id.wq2);
-        RelativeLayout rts = (RelativeLayout) openDialogk.findViewById(R.id.rts);
+        TextView wq1 = openDialogk.findViewById(R.id.wq1);
+        TextView wq2 = openDialogk.findViewById(R.id.wq2);
+        RelativeLayout rts = openDialogk.findViewById(R.id.rts);
         wq1.setOnClickListener(view -> openDialogk.dismiss());
         wq2.setOnClickListener(view -> openDialogk.dismiss());
         cancel.setOnClickListener(view -> openDialogk.dismiss());
@@ -4392,14 +4134,12 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume");
+        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV"));
 
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Picture_Game_Hard.this);
         mFirebaseAnalytics.setCurrentScreen(this, "Picture Game", null);
-        //uiHelper.onResume();
-        //AppEventsLogger.activateApp(this);
 
         if (setting_access == 1) {
             setting_access = 0;
@@ -4506,15 +4246,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 alertDialogBuilder.setCancelable(false);
                 alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்").setPositiveButton("அமைப்பு", (dialog, which) -> {
                     // continue with delete
-                                      /*  try {
-                                            startActivityForResult(new Intent(
-                                                    Settings.ACTION_WIRELESS_SETTINGS), 0);
-
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                            startActivityForResult(new Intent(
-                                                    Settings.ACTION_SETTINGS), 0);
-                                        }*/
                     startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
                     sps.putInt(Picture_Game_Hard.this, "goto_sett", 1);
 
@@ -4529,8 +4260,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     } else {
                         backexitnet();
                     }
-                           /* Intent i = new Intent(Picture_Game_Hard.this, New_Main_Activity.class);
-                            startActivity(i);*/
                     dialog.dismiss();
                 }).setIcon(android.R.drawable.ic_dialog_alert).show();
 
@@ -4579,8 +4308,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     } else {
                         backexitnet();
                     }
-                           /* Intent i = new Intent(Picture_Game_Hard.this, New_Main_Activity.class);
-                            startActivity(i);*/
                     dialog.dismiss();
                 }).setIcon(android.R.drawable.ic_dialog_alert).show();
             }
@@ -4634,17 +4361,12 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
         if (requestCode == 16) {
             if (resultCode == -1) {
-              /*  if (sps.getString(Picture_Game_Hard.this, "gplues").equals("yes")) {
-
-                }*/
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
-                //score.setText(aStringx);
-                // ttscores.setText(aStringx);
                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                 sps.putString(Picture_Game_Hard.this, "gplues", "no");
                 share_earn2(10);
@@ -4766,10 +4488,11 @@ public class Picture_Game_Hard extends AppCompatActivity {
         }
     }
 
+
     @Override
     public void onPause() {
         super.onPause();
-
+        if (handler != null) handler.removeCallbacks(my_runnable);
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
         focus.stop();
 
@@ -4800,20 +4523,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        // uiHelper.onDestroy();
-        if (openDialog_p != null && openDialog_p.isShowing()) {
-            openDialog_p.dismiss();
-        }
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        }
-        rewardedAd = null;
-        mInterstitialAd = null;
-    }
-
 
     public void downloadcheck(final String lastid, final String daily) {
 
@@ -4821,10 +4530,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
         Utils.mProgress(Picture_Game_Hard.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", true).show();
         Utils.mProgress.setCancelable(false);
         new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
 
             @Override
             protected Void doInBackground(Void... params) {
@@ -5155,7 +4860,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
         return null;
     }
 
-    public int unpackZip(String ZIP_FILE_NAME) throws IOException {
+    public void unpackZip(String ZIP_FILE_NAME) throws IOException {
 
 
         File destDir = new File(getFilesDir() + "/Nithra/solliadi/");
@@ -5176,7 +4881,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
             entry = zipIn.getNextEntry();
         }
         zipIn.close();
-        return 1;
     }
 
     private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
@@ -5190,10 +4894,11 @@ public class Picture_Game_Hard extends AppCompatActivity {
     }
 
     public void industrialload() {
+        if (mInterstitialAd != null) return;
         Log.i(TAG, "onAdLoadedCalled");
         AdRequest adRequest = new AdRequest.Builder().build();
 
-        InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
+        InterstitialAd.load(this, getResources().getString(R.string.Game1_Stage_Close_VV), adRequest, new InterstitialAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 // The mInterstitialAd reference will be null until
@@ -5208,6 +4913,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 // Handle the error
                 Log.d(TAG, loadAdError.toString());
                 mInterstitialAd = null;
+                handler = null;
                 Log.i(TAG, "onAdLoadedfailed" + loadAdError.getMessage());
             }
         });
@@ -5222,6 +4928,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 // Set the ad reference to null so you don't show the ad a second time.
                 Log.d(TAG, "Ad dismissed fullscreen content.");
                 mInterstitialAd = null;
+                handler = null;
                 Utills.INSTANCE.Loading_Dialog_dismiss();
                 setSc();
                 industrialload();
@@ -5232,27 +4939,57 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 // Called when ad fails to show.
                 Log.e(TAG, "Ad failed to show fullscreen content.");
                 mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                setSc();
             }
 
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //mGoogleApiClient.connect();
+    public void adShow() {
+        if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") == Utills.interstitialadCount && mInterstitialAd != null) {
+            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+            Utills.INSTANCE.Loading_Dialog(this);
+            handler = new Handler(Looper.myLooper());
+            my_runnable = () -> {
+                mInterstitialAd.show(this);
+            };
+            handler.postDelayed(my_runnable, 2500);
+        } else {
+            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
+            if (sps.getInt(this, "Game1_Stage_Close_VV") > Utills.interstitialadCount)
+                sps.putInt(this, "Game1_Stage_Close_VV", 0);
+            setSc();
+        }
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // uiHelper.onDestroy();
+        if (openDialog_p != null && openDialog_p.isShowing()) {
+            openDialog_p.dismiss();
+        }
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+        rewardedAd = null;
+        mInterstitialAd = null;
+        handler = null;
     }
 
     public void nextgamesdialog() {
         final Dialog openDialog = new Dialog(Picture_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.nextgame_find);
-        TextView next_game = (TextView) openDialog.findViewById(R.id.next_game);
-        TextView p_game = (TextView) openDialog.findViewById(R.id.picgame);
-        TextView c_game = (TextView) openDialog.findViewById(R.id.hintgame);
-        TextView s_game = (TextView) openDialog.findViewById(R.id.solgame);
-        TextView w_game = (TextView) openDialog.findViewById(R.id.wordgame);
-        TextView exit = (TextView) openDialog.findViewById(R.id.exit);
+        TextView next_game = openDialog.findViewById(R.id.next_game);
+        TextView p_game = openDialog.findViewById(R.id.picgame);
+        TextView c_game = openDialog.findViewById(R.id.hintgame);
+        TextView s_game = openDialog.findViewById(R.id.solgame);
+        TextView w_game = openDialog.findViewById(R.id.wordgame);
+        TextView exit = openDialog.findViewById(R.id.exit);
         openDialog.setCancelable(false);
 
         String date = sps.getString(Picture_Game_Hard.this, "date");
@@ -5335,8 +5072,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
             exit.setVisibility(View.VISIBLE);
         }
 
-        TextView odd_man_out = (TextView) openDialog.findViewById(R.id.odd_man_out);
-        TextView matchword = (TextView) openDialog.findViewById(R.id.matchword);
+        TextView odd_man_out = openDialog.findViewById(R.id.odd_man_out);
+        TextView matchword = openDialog.findViewById(R.id.matchword);
         matchword.setOnClickListener(view -> {
             finish();
             sps.putString(Picture_Game_Hard.this, "date", "0");
@@ -5368,8 +5105,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
         }
 
 
-        TextView opposite_word = (TextView) openDialog.findViewById(R.id.opposite_word);
-        TextView ote_to_tamil = (TextView) openDialog.findViewById(R.id.ote_to_tamil);
+        TextView opposite_word = openDialog.findViewById(R.id.opposite_word);
+        TextView ote_to_tamil = openDialog.findViewById(R.id.ote_to_tamil);
         opposite_word.setOnClickListener(view -> {
             finish();
             sps.putString(Picture_Game_Hard.this, "date", "0");
@@ -5401,10 +5138,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
             }
         }
 
-        TextView seerpaduthu = (TextView) openDialog.findViewById(R.id.seerpaduthu);
-        TextView puthir = (TextView) openDialog.findViewById(R.id.puthir);
-        TextView tirukural = (TextView) openDialog.findViewById(R.id.tirukural);
-        TextView pilaithiruthu = (TextView) openDialog.findViewById(R.id.pilaithiruthu);
+        TextView seerpaduthu = openDialog.findViewById(R.id.seerpaduthu);
+        TextView puthir = openDialog.findViewById(R.id.puthir);
+        TextView tirukural = openDialog.findViewById(R.id.tirukural);
+        TextView pilaithiruthu = openDialog.findViewById(R.id.pilaithiruthu);
 
 
         if (sps.getString(context, "newgame_notification").equals("start")) {
@@ -5468,8 +5205,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
             startActivity(i);
         });
 
-        TextView fill_in_blanks = (TextView) openDialog.findViewById(R.id.fill_in_blanks);
-        TextView eng_to_tamil = (TextView) openDialog.findViewById(R.id.eng_to_tamil);
+        TextView fill_in_blanks = openDialog.findViewById(R.id.fill_in_blanks);
+        TextView eng_to_tamil = openDialog.findViewById(R.id.eng_to_tamil);
 
         Cursor scds;
         scds = newhelper4.getQry("select * from newgamesdb4 where gameid='13' and isfinish='0' order by id limit 1");
@@ -5498,9 +5235,9 @@ public class Picture_Game_Hard extends AppCompatActivity {
             startActivity(i);
         });
 
-        TextView quiz = (TextView) openDialog.findViewById(R.id.quiz);
-        TextView find_words_from_pictures = (TextView) openDialog.findViewById(R.id.find_words_from_pictures);
-        TextView match_words = (TextView) openDialog.findViewById(R.id.match_words);
+        TextView quiz = openDialog.findViewById(R.id.quiz);
+        TextView find_words_from_pictures = openDialog.findViewById(R.id.find_words_from_pictures);
+        TextView match_words = openDialog.findViewById(R.id.match_words);
         Newgame_DataBaseHelper5 newhelper5 = new Newgame_DataBaseHelper5(context);
         Cursor cn28ws = newhelper5.getQry("select * from newgames5 where gameid='15' and isfinish='0'");
         cn28ws.moveToFirst();
@@ -5539,7 +5276,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
             startActivity(i);
         });
         Newgame_DataBaseHelper6 newhelper6 = new Newgame_DataBaseHelper6(Picture_Game_Hard.this);
-        TextView jamble_words = (TextView) openDialog.findViewById(R.id.jamble_words);
+        TextView jamble_words = openDialog.findViewById(R.id.jamble_words);
         Cursor jmp;
         jmp = newhelper6.getQry("select * from newgames5 where gameid='18' and isfinish='0' order by id limit 1");
         if (jmp != null && jmp.moveToFirst()) {
@@ -5552,7 +5289,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
             Intent i = new Intent(Picture_Game_Hard.this, Jamble_word_game.class);
             startActivity(i);
         });
-        TextView missing_words = (TextView) openDialog.findViewById(R.id.missing_words);
+        TextView missing_words = openDialog.findViewById(R.id.missing_words);
         Cursor jmps;
         jmps = newhelper6.getQry("select * from newgames5 where gameid='19' and isfinish='0' order by id limit 1");
         if (jmps != null && jmps.moveToFirst()) {
@@ -5565,7 +5302,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
             Intent i = new Intent(Picture_Game_Hard.this, Missing_Words.class);
             startActivity(i);
         });
-        TextView six_differences = (TextView) openDialog.findViewById(R.id.six_differences);
+        TextView six_differences = openDialog.findViewById(R.id.six_differences);
         Cursor dif;
         dif = newhelper6.getQry("select * from newgames5 where gameid='20' and isfinish='0' order by id limit 1");
         if (dif != null && dif.moveToFirst()) {
@@ -5593,10 +5330,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
             openDialog.dismiss();
             sps.putString(Picture_Game_Hard.this, "date", "0");
 
-          /*  finish();
-            openDialog.dismiss();
-            Intent i = new Intent(Picture_Game_Hard.this, New_Main_Activity.class);
-            startActivity(i);*/
             return keyCode == KeyEvent.KEYCODE_BACK;
         });
     }
@@ -5673,10 +5406,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
         Utils.mProgress(Picture_Game_Hard.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", true).show();
 
         new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
 
             @Override
             protected Void doInBackground(Void... params) {
@@ -5946,21 +5675,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
         } else {
             retype = "d";
         }
- /*       Calendar calendar3 = Calendar.getInstance();
-        int cur_year1 = calendar3.get(Calendar.YEAR);
-        int cur_month1 = calendar3.get(Calendar.MONTH);
-        int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
-
-        String str_month1 = "" + (cur_month1 + 1);
-        if (str_month1.length() == 1) {
-            str_month1 = "0" + str_month1;
-        }
-
-        String str_day1 = ""+cur_day1;
-        if(str_day1.length()==1){
-            str_day1 = "0"+str_day1;
-        }
-        final String str_date1 = cur_year1+"-"+str_month1+"-"+str_day1;*/
 
 
         if (retype.equals("r")) {
@@ -6080,8 +5794,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
             openDialog.setContentView(R.layout.share_dialog2);
             openDialog.setCancelable(false);
             // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-            TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-            TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+            TextView ok_y = openDialog.findViewById(R.id.ok_y);
+            TextView b_scores = openDialog.findViewById(R.id.b_scores);
             // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
@@ -6109,14 +5823,12 @@ public class Picture_Game_Hard extends AppCompatActivity {
         openDialog.setContentView(R.layout.share_dialog2);
         openDialog.setCancelable(false);
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView b_scores = openDialog.findViewById(R.id.b_scores);
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-     /*   int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
@@ -6137,14 +5849,12 @@ public class Picture_Game_Hard extends AppCompatActivity {
         openDialog.setContentView(R.layout.share_dialog2);
         openDialog.setCancelable(false);
         // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-        TextView ok_y = (TextView) openDialog.findViewById(R.id.ok_y);
-        TextView b_scores = (TextView) openDialog.findViewById(R.id.b_scores);
+        TextView ok_y = openDialog.findViewById(R.id.ok_y);
+        TextView b_scores = openDialog.findViewById(R.id.b_scores);
         // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-     /*   int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
@@ -6190,15 +5900,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
             alertDialogBuilder.setCancelable(false);
             alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்").setPositiveButton("அமைப்பு", (dialog, which) -> {
                 // continue with delete
-                                      /*  try {
-                                            startActivityForResult(new Intent(
-                                                    Settings.ACTION_WIRELESS_SETTINGS), 0);
-
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                            startActivityForResult(new Intent(
-                                                    Settings.ACTION_SETTINGS), 0);
-                                        }*/
                 startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
                 sps.putInt(Picture_Game_Hard.this, "goto_sett", 1);
 
@@ -6213,8 +5914,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 } else {
                     backexitnet();
                 }
-                       /* Intent i = new Intent(Picture_Game_Hard.this, New_Main_Activity.class);
-                        startActivity(i);*/
                 dialog.dismiss();
             }).setIcon(android.R.drawable.ic_dialog_alert).show();
 
@@ -6280,8 +5979,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     } else {
                         backexitnet();
                     }
-                                /*Intent i = new Intent(Picture_Game_Hard.this, New_Main_Activity.class);
-                                startActivity(i);*/
                     dialog1.dismiss();
                 }).setIcon(android.R.drawable.ic_dialog_alert).show();
             }
@@ -6319,7 +6016,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
     //*** In Adapter **
 
     public void showcase_dismiss() {
-        Handler handler30 = new Handler();
+        Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
 
             if (sp.getString(Picture_Game_Hard.this, "showcase_dismiss_p").equals("")) {
@@ -6347,18 +6044,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
         f_sec = sec + sec2 + seconds;
 
 
-
-   /*     Toast.makeText(this, "minutes"+minutes, Toast.LENGTH_SHORT).show();
-        Toast.makeText(this, "seconds"+seconds, Toast.LENGTH_SHORT).show();*/
         System.out.println("########################-------minutes" + minutes);
         System.out.println("########################-------seconds" + seconds);
         System.out.println("########################-------String" + timeElapsed);
 
-       /* String.format("%02d min, %02d sec",
-                TimeUnit.MILLISECONDS.toMinutes(timeElapsed),
-                TimeUnit.MILLISECONDS.toSeconds(timeElapsed) -
-                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeElapsed))
-        );*/
         String date = sps.getString(Picture_Game_Hard.this, "date");
 
         if (date.equals("0")) {
@@ -6401,7 +6090,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
     public void rewarded_adnew() {
         AdRequest adRequest = new AdRequest.Builder().build();
-        RewardedAd.load(this, "ca-app-pub-3940256099942544/5224354917", adRequest, new RewardedAdLoadCallback() {
+        RewardedAd.load(this, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 // Handle the error.
@@ -6437,7 +6126,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
                     }
-                    Handler handler = new Handler();
+                    Handler handler = new Handler(Looper.myLooper());
                     handler.postDelayed(() -> {
                         if (rvo == 2) {
                             share_earn2(mCoinCount);
@@ -6608,11 +6297,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
         protected void onProgressUpdate(String... progress) {
             Log.d("ANDRO_ASYNC", progress[0]);
             mProgressDialog.setProgress(Integer.parseInt(progress[0]));
-            /*if(!isNetworkAvailable()){
-				downloadFileAsync.isCancelled();
-				//downloadFileAsync.cancel(true);
-
-			}*/
         }
     }
 

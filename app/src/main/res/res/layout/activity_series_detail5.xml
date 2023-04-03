@@ -87,11 +87,12 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior">
-		<WebView
-			android:id="@+id/web"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			app:layout_behavior="@string/appbar_scrolling_view_behavior"></WebView>
+
+        <WebView
+            android:id="@+id/web"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 	</android.support.v4.widget.NestedScrollView>
 
 	<android.support.design.widget.FloatingActionButton
@@ -108,13 +109,7 @@
 		fab:fab_colorRipple="@color/ripple"/>
 
 </android.support.design.widget.CoordinatorLayout>
-	<com.facebook.ads.NativeAdLayout
-        android:id="@+id/native_banner_ad_container"
-        android:background="@color/white"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="50dp"
-        android:layout_alignParentBottom="true" />
+
 
 	<LinearLayout
 		android:id="@+id/ads_lay"

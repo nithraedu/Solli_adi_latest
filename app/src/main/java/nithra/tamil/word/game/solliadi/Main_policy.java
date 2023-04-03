@@ -16,7 +16,7 @@ public class Main_policy extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         }
@@ -71,8 +71,6 @@ public class Main_policy extends AppCompatActivity {
         //return super.onKeyDown(keyCode, event);
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             finish();
-          /*  Intent i = new Intent(Main_policy.this, MainActivity.class);
-            startActivity(i);*/
         }
         return super.onKeyDown(keyCode, event);
     }

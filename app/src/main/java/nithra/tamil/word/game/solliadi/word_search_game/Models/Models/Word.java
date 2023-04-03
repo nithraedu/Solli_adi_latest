@@ -92,10 +92,6 @@ public class Word implements Parcelable, Comparable<Word> {
         return mDirection;
     }
 
-    // public int getFirstPosition() {
-    // return (mRow * mColumns) + mCol;
-    // }
-
     @Override
     public String toString() {
         return "Word [mWord=" + mWord + ", mRow=" + mRow + ", mCol=" + mCol + ", mDirection=" + mDirection

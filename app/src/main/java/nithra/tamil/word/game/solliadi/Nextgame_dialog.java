@@ -1,6 +1,6 @@
 package nithra.tamil.word.game.solliadi;
 
-import static nithra.tamil.word.game.solliadi.MainActivity.main_act;
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -15,12 +15,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 public class Nextgame_dialog extends Dialog {
-    SharedPreference sps = new SharedPreference();
-    Newgame_DataBaseHelper newhelper;
-    Newgame_DataBaseHelper2 newhelper2;
-    Newgame_DataBaseHelper3 newhelper3;
-    DataBaseHelper myDbHelper;
-    Newgame_DataBaseHelper4 newhelper4;
+    final SharedPreference sps = new SharedPreference();
+    final Newgame_DataBaseHelper newhelper;
+    final Newgame_DataBaseHelper2 newhelper2;
+    final Newgame_DataBaseHelper3 newhelper3;
+    final DataBaseHelper myDbHelper;
+    final Newgame_DataBaseHelper4 newhelper4;
 
     public Nextgame_dialog(@NonNull final Context context) {
         super(context);
@@ -89,7 +89,7 @@ public class Nextgame_dialog extends Dialog {
             public void onClick(View v) {
                 ((Activity) context).finish();
                 sps.putString(context, "date", "0");
-                Intent i = new Intent(context, MainActivity.class);
+                Intent i = new Intent(context, New_Main_Activity.class);
                 context.startActivity(i);
             }
         });
@@ -308,15 +308,6 @@ public class Nextgame_dialog extends Dialog {
             }
         });
 
-        eng_to_tamil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((Activity) context).finish();
-                sps.putString(context, "date", "0");
-                Intent i = new Intent(context, English_to_tamil.class);
-                context.startActivity(i);
-            }
-        });
 
         openDialog.show();
 
@@ -329,7 +320,7 @@ public class Nextgame_dialog extends Dialog {
 
                     ((Activity) context).finish();
                     //     openDialog_s.dismiss();
-                    Intent i = new Intent(context, MainActivity.class);
+                    Intent i = new Intent(context, New_Main_Activity.class);
                     context.startActivity(i);
                 } else {
 
@@ -338,15 +329,9 @@ public class Nextgame_dialog extends Dialog {
                 }
                 openDialog.dismiss();
                 //sps.putString(Odd_man_out.this, "date", "0");
-              /*  Intent i = new Intent(context, MainActivity.class);
-                startActivity(i);*/
                 return keyCode == KeyEvent.KEYCODE_BACK;
             }
         });
-    }
-
-    public void nextgamesdialog(final Context context) {
-
     }
 
 

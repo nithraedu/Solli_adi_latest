@@ -8,81 +8,72 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Html;
-import android.view.View;
-import android.view.WindowManager;
+import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import nit_app.CodetoTamilUtil;
-import nithra.tamil.word.game.solliadi.adutils.AdUtils;
 
 
 public class ST_Activity extends Activity {
 
 
-    static SharedPreference spa = new SharedPreference();
+    static final SharedPreference spa = new SharedPreference();
     static com.facebook.ads.AdView adView_fb;
     static LinearLayout add_fb;
+    final Context context = this;
+    final String tablenew = "noti_cal";
     SharedPreference sharedPreference;
     String str_title = "";
-    Context context = this;
     SQLiteDatabase myDB;
-    String tablenew = "noti_cal";
     String title, message, msgType, date, time;
     int idd;
     String urls;
-    LinearLayout ads_lay;
+    AdView ads_lay;
     WebView content_view;
     AppCompatImageView noti_cancel;
     FloatingActionButton share_but;
     TextView sticky;
     int show_id, show_ads;
-    LinearLayout native_banner_ad_container;
-    com.facebook.ads.InterstitialAd interstitialAd_notid;
-
-    private MaxInterstitialAd interstitialAd;
-
-    public static void share_txt(Context context, String str) {
-        Intent i = new Intent(Intent.ACTION_SEND);
-        i.setType("text/plain");
-        i.putExtra(Intent.EXTRA_SUBJECT,
-                "சொல்லிஅடி");
-        i.putExtra(
-                Intent.EXTRA_TEXT,
-                str + "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                        "விளையாட இங்கே கிளிக் செய்யவும் \n https://goo.gl/6hFhIy");
-        context.startActivity(Intent.createChooser(i, "Share via"));
-    }
+    Handler handler;
+    Runnable my_runnable;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.st_lay);
         System.out.println("#######St Activity");
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        content_view = (WebView) findViewById(R.id.noti_web);
+
+        content_view = findViewById(R.id.noti_web);
 
 
-        content_view = (WebView) findViewById(R.id.noti_web);
-        share_but = (FloatingActionButton) findViewById(R.id.share_but);
-        sticky = (TextView) findViewById(R.id.sticky);
+        content_view = findViewById(R.id.noti_web);
+        share_but = findViewById(R.id.share_but);
+        sticky = findViewById(R.id.sticky);
         //ImageView backdrop=(ImageView) home_about_dialog.findViewById(R.id.backdrop);
-        noti_cancel = (AppCompatImageView) findViewById(R.id.noti_cancel);
-        ads_lay = (LinearLayout) findViewById(R.id.ads_lay);
+        noti_cancel = findViewById(R.id.noti_cancel);
+        ads_lay = findViewById(R.id.ads_lay);
+       LinearLayout banner_adParent = findViewById(R.id.banner_adParent);
         /*getSupportActionBar().hide();*/
         sharedPreference = new SharedPreference();
         myDB = openOrCreateDatabase("myDB", 0, null);
@@ -93,34 +84,13 @@ public class ST_Activity extends Activity {
 
         myDB.execSQL("CREATE TABLE IF NOT EXISTS share_noti (id integer NOT NULL PRIMARY KEY AUTOINCREMENT,title VARCHAR,sahre_msg VARCHAR,date VARCHAR,time VARCHAR);");
 
-        sharedPreference.putInt(context, "Content_ads_shown_neww", 2);
-        // if (spa.getInt(context, "purchase_ads") == 0) {
-        // Make sure to set the mediation provider value to "max" to ensure proper functionality
-        AppLovinSdk.getInstance(context).setMediationProvider("max");
-        AppLovinSdk.initializeSdk(context, new AppLovinSdk.SdkInitializationListener() {
-            @Override
-            public void onSdkInitialized(final AppLovinSdkConfiguration configuration) {
-                // AppLovin SDK is initialized, start loading ads
-                loads_ads_banner();
-                System.out.println("---Content_ads_shown_neww : " + sharedPreference.getInt(context, "Content_ads_shown_neww"));
-
-                if (sharedPreference.getInt(context, "Content_ads_shown_neww") == 2) {
-                    industrialload();
-                } else {
-                    sharedPreference.putInt(context, "Content_ads_shown_neww",
-                            sharedPreference.getInt(context, "Content_ads_shown_neww") + 1);
-                }
-            }
-        });
-        //  }
-
-        //industrial();
-
-
-        spa.putInt(ST_Activity.this, "addlodedd", 0);
-        spa.putInt(ST_Activity.this, "native_banner_ads", 0);
-
-
+        MobileAds.initialize(this);
+        if (sharedPreference.getInt(this, "purchase_ads") == 0) {
+            Utills.INSTANCE.initializeAdzz(this);
+            if (sharedPreference.getInt(context, "Noti_Content_Close") == Utills.notiInterstitialadCount)
+                industrialload();
+        }
+        Utills.INSTANCE.loads_ads_banner(this, ads_lay,banner_adParent, getResources().getString(R.string.Noti_Content_Bottom));
         Bundle extras;
         extras = getIntent().getExtras();
         idd = extras.getInt("idd");
@@ -143,7 +113,7 @@ public class ST_Activity extends Activity {
 
         myDB.execSQL("update noti_cal set isclose='1' where id='" + idd + "'");
 
-        TextView tit_txt = (TextView) findViewById(R.id.sticky);
+        TextView tit_txt = findViewById(R.id.sticky);
         tit_txt.setText(str_title);
 
         WebSettings ws = content_view.getSettings();
@@ -155,24 +125,18 @@ public class ST_Activity extends Activity {
         String summary = "<!DOCTYPE html> <html><head>" + bodyFont + " </head> <body >"
                 + "" + message + "</body></html>";
         String str = message.substring(0, 4);
-        if (str.equals("http")) {
-            content_view.loadUrl(message);
-        } else {
-            content_view.loadDataWithBaseURL("", summary, "text/html", "utf-8", null);
-        }
+        if (str.equals("http")) content_view.loadUrl(message);
+        else content_view.loadDataWithBaseURL("", summary, "text/html", "utf-8", null);
         // content_view.loadDataWithBaseURL("", summary, "text/html", "utf-8", null);
 
-        FloatingActionButton share_but = (FloatingActionButton) findViewById(R.id.share_but);
+        FloatingActionButton share_but = findViewById(R.id.share_but);
 
-        share_but.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String result = Html.fromHtml(message).toString();
-                result = sharedPreference.getString(ST_Activity.this, "view_web_tit") + "\n" + CodetoTamilUtil.convertToTamil(CodetoTamilUtil.BAMINI, result);
-                Share_content share_content = new Share_content();
-                share_content.Share_content(ST_Activity.this, result);
-                // share_txt(ST_Activity.this, "" + result);
-            }
+        share_but.setOnClickListener(v -> {
+            String result = Html.fromHtml(message).toString();
+            result = sharedPreference.getString(ST_Activity.this, "view_web_tit") + "\n" + CodetoTamilUtil.convertToTamil(CodetoTamilUtil.BAMINI, result);
+            Share_content share_content = new Share_content();
+            share_content.Share_content(ST_Activity.this, result);
+            // share_txt(ST_Activity.this, "" + result);
         });
 
         content_view.setWebViewClient(new WebViewClient() {
@@ -213,200 +177,130 @@ public class ST_Activity extends Activity {
                 super.onPageFinished(view, url);
             }
         });
-        content_view.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                return true;
-            }
-        });
-        noti_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-               /* if (interstitialAd_notid != null) {
-                    if (interstitialAd_notid.isAdLoaded()) {
-                       // interstitialAd_notid.show();
-                        back_press();
-                    } else {
-                        finish();
-                        Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
-                        startActivity(i);
-                    }
-                }else {
-                    finish();
-                    Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
-                    startActivity(i);
-                }*/
-
-                if (spa.getInt(context, "purchase_ads") == 0) {
-                    if (interstitialAd != null && interstitialAd.isReady()) {
-                        //interstitialAd.showAd();
-                        back_press();
-                    } else {
-                        if (show_ads == 1) {
-                            finish();
-                            Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                        }
-                    }
-                } else {
-                    if (show_ads == 1) {
-                        finish();
-                        Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
-                        startActivity(i);
-                    } else {
-                        finish();
-                    }
-
-                }
-             /*   if (interstitialAd.isLoaded()) {
-                    interstitialAd.show();
-                    interstitialAd.setAdListener(new AdListener() {
-                        @Override
-                        public void onAdClosed() {
-                            //Ads closed
-                            finish();
-                            Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
-                            startActivity(i);
-                        }
-                    });
-                } else {
-                    finish();
-                    Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
-                    startActivity(i);
-                }*/
+        content_view.setOnLongClickListener(v -> true);
+        noti_cancel.setOnClickListener(v -> onBackPressed());
 
 
-             /*   interstitialAd.setAdListener(new AdListener() {
-                    @Override
-                    public void onAdLoaded() {
-                        super.onAdLoaded();
-                        //Ads loaded
-                        interstitialAd.show();
-                    }
-
-                    @Override
-                    public void onAdClosed() {
-                        super.onAdClosed();
-                        //Ads closed
-                        finish();
-                        Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
-                        startActivity(i);
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(int errorCode) {
-                        super.onAdFailedToLoad(errorCode);
-                        //Ads couldn't loaded
-
-                            finish();
-                            Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
-                            startActivity(i);
-
-                    }
-                });*/
-
-
-            }
-        });
-
-
-    }
-
-    public void loads_ads_banner() {
-        System.out.println("print_Ad");
-
-        if (sharedPreference.getInt(ST_Activity.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
-            ads_lay.setVisibility(View.GONE);
-        } else {
-            if (Utils.isNetworkAvailable(ST_Activity.this)) {
-                AdUtils.load_add_facebook(this, getResources().getString(R.string.Noti_Banner), ads_lay);
-            } else {
-                ads_lay.setVisibility(View.GONE);
-            }
-        }
     }
 
     public void industrialload() {
+        if (mInterstitialAd != null) return;
+        Log.i("TAG", "onAdLoadedCalled");
+        AdRequest adRequest = new AdRequest.Builder().build();
 
-        interstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Noti_Exit_INS), this);
-        interstitialAd.setListener(new MaxAdListener() {
+        InterstitialAd.load(this, getResources().getString(R.string.Noti_Content_Close), adRequest, new InterstitialAdLoadCallback() {
             @Override
-            public void onAdLoaded(MaxAd ad) {
-
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                interstiallistener();
+                Log.i("TAG", "onAdLoaded");
             }
 
             @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                sharedPreference.putInt(context, "Content_ads_shown_neww", 0);
-                if (show_ads == 1) {
-                    finish();
-                    Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else {
-                    finish();
-                }
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.d("TAG", loadAdError.toString());
+                mInterstitialAd = null;
+                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
             }
         });
-        interstitialAd.loadAd();
 
     }
 
-    @Override
-    public void onBackPressed() {
-
-        if (spa.getInt(context, "purchase_ads") == 0) {
-            if (interstitialAd != null && interstitialAd.isReady()) {
-                back_press();
-            } else {
+    public void interstiallistener() {
+        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override
+            public void onAdDismissedFullScreenContent() {
+                // Called when ad is dismissed.
+                // Set the ad reference to null so you don't show the ad a second time.
+                Log.d("TAG", "Ad dismissed fullscreen content.");
+                mInterstitialAd = null;
                 if (show_ads == 1) {
                     finish();
                     Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
                     startActivity(i);
-                } else {
-                    finish();
-                }
+                } else finish();
             }
+
+            @Override
+            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                // Called when ad fails to show.
+                Log.e("TAG", "Ad failed to show fullscreen content.");
+                mInterstitialAd = null;
+
+
+            }
+
+        });
+    }
+
+    public void adShow() {
+        if (mInterstitialAd != null) {
+            sharedPreference.putInt(getApplicationContext(), "Noti_Content_Close", 0);
+            Utills.INSTANCE.Loading_Dialog(this);
+            handler = new Handler(Looper.myLooper());
+            my_runnable = () -> {
+                mInterstitialAd.show(this);
+            };
+            handler.postDelayed(my_runnable, 2500);
         } else {
+            sharedPreference.putInt(getApplicationContext(), "Noti_Content_Close", (sharedPreference.getInt(getApplicationContext(), "Noti_Content_Close") + 1));
+            if (sharedPreference.getInt(context, "Noti_Content_Close") > Utills.notiInterstitialadCount)
+                sharedPreference.putInt(context, "Noti_Content_Close", 0);
             if (show_ads == 1) {
                 finish();
                 Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
                 startActivity(i);
-            } else {
-                finish();
-            }
-
+            } else finish();
         }
-
 
     }
 
     protected void onResume() {
         super.onResume();
+      //  Toast.makeText(context, "" + sharedPreference.getInt(context, "Noti_Content_Close"), Toast.LENGTH_SHORT).show();
+        if (handler != null) handler.postDelayed(my_runnable, 1000);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Utills.INSTANCE.Loading_Dialog_dismiss();
+        mInterstitialAd = null;
+        handler = null;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (handler != null) handler.removeCallbacks(my_runnable);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
+        if (spa.getInt(context, "purchase_ads") == 0) if (mInterstitialAd != null) back_press();
+        else {
+            sharedPreference.putInt(getApplicationContext(), "Noti_Content_Close", (sharedPreference.getInt(getApplicationContext(), "Noti_Content_Close") + 1));
+            if (sharedPreference.getInt(context, "Noti_Content_Close") > Utills.notiInterstitialadCount)
+                sharedPreference.putInt(context, "Noti_Content_Close", 0);
+            if (show_ads == 1) {
+                finish();
+                startActivity(i);
+            } else finish();
+        }
+        else {
+            sharedPreference.putInt(getApplicationContext(), "Noti_Content_Close", (sharedPreference.getInt(getApplicationContext(), "Noti_Content_Close") + 1));
+            if (sharedPreference.getInt(context, "Noti_Content_Close") > Utills.notiInterstitialadCount)
+                sharedPreference.putInt(context, "Noti_Content_Close", 0);
+            if (show_ads == 1) {
+                finish();
+                startActivity(i);
+            } else finish();
+        }
+
 
     }
 
@@ -414,28 +308,13 @@ public class ST_Activity extends Activity {
         final Dialog openDialog_p = new Dialog(ST_Activity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_p.setContentView(R.layout.back_pess_noti);
         openDialog_p.setCancelable(false);
-        TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
-        TextView noask = (TextView) openDialog_p.findViewById(R.id.no);
-        yes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_p.dismiss();
-                if (spa.getInt(context, "purchase_ads") == 0) {
-                    if (interstitialAd != null && interstitialAd.isReady()) {
-                        interstitialAd.showAd();
-                    } else {
-                        finish();
-                    }
-
-                }
-            }
+        TextView yes = openDialog_p.findViewById(R.id.yes);
+        TextView noask = openDialog_p.findViewById(R.id.no);
+        yes.setOnClickListener(v -> {
+            openDialog_p.dismiss();
+            adShow();
         });
-        noask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_p.dismiss();
-            }
-        });
+        noask.setOnClickListener(v -> openDialog_p.dismiss());
         openDialog_p.show();
     }
 }

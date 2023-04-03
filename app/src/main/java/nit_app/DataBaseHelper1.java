@@ -18,11 +18,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class DataBaseHelper1 extends SQLiteOpenHelper {
-	private static String TAG = "DataBaseHelper"; // Tag just for the LogCat
+	private static final String TAG = "DataBaseHelper"; // Tag just for the LogCat
 													// window
 	// destination path (location) of our database on device
 	///private static String DB_PATH = "";
-	private static String DB_NAME = "app_db.db";// Database name
+	private static final String DB_NAME = "app_db.db";// Database name
 	private SQLiteDatabase mDataBase;
 	private final Context mContext;
 	Cursor c;
@@ -112,8 +112,8 @@ public class DataBaseHelper1 extends SQLiteOpenHelper {
 		sq.update(tableName, values, "ques_id='" + questionId + "'", null);
 	}
 
-/*
-	public void createDataBase() throws IOException {
+
+	public void createDataBase() {
 		// If database not exists copy it from the assets
 
 		boolean mDataBaseExist = checkDataBase();
@@ -133,42 +133,6 @@ public class DataBaseHelper1 extends SQLiteOpenHelper {
 			// Copy the database from assests
 			copyDataBase();
 			Log.e(TAG, "createDatabase database created");
-			// Toast.makeText(mContext,
-			// "aptitudequestiondb database copied",
-			// Toast.LENGTH_LONG).show();
-		} catch (IOException mIOException) {
-			throw new Error("ErrorCopyingDataBase");
-		}
-		// } else {
-		// // Toast.makeText(mContext, "aptitudequestiondb Already exits",
-		// // Toast.LENGTH_LONG).show();
-		// }
-	}*/
-
-
-	public void createDataBase() throws IOException {
-		// If database not exists copy it from the assets
-
-		boolean mDataBaseExist = checkDataBase();
-
-		// mDataBaseExist=false;
-		String DB_PATH = "/data/data/" + mContext.getPackageName() + "/databases/";
-		if (mDataBaseExist) {
-
-			File dbFile = new File(DB_PATH + DB_NAME);
-			dbFile.delete();
-		}
-
-		// if (!mDataBaseExist) {
-		this.getReadableDatabase();
-		this.close();
-		try {
-			// Copy the database from assests
-			copyDataBase();
-			Log.e(TAG, "createDatabase database created");
-			// Toast.makeText(mContext,
-			// "aptitudequestiondb database copied",
-			// Toast.LENGTH_LONG).show();
 		} catch (IOException mIOException) {
 		throw new RuntimeException(mIOException);
 	}/*catch (IOException mIOException) {
@@ -182,7 +146,7 @@ public class DataBaseHelper1 extends SQLiteOpenHelper {
 
 	}
 
-	public void createDataBaseIFexits() throws IOException {
+	public void createDataBaseIFexits() {
 		// If database not exists copy it from the assets
 
 		boolean mDataBaseExist = checkDataBase();
@@ -195,9 +159,6 @@ public class DataBaseHelper1 extends SQLiteOpenHelper {
 			// Copy the database from assests
 			copyDataBase();
 			Log.e(TAG, "createDatabase database created");
-			// Toast.makeText(mContext,
-			// "aptitudequestiondb database copied",
-			// Toast.LENGTH_LONG).show();
 		} catch (IOException mIOException) {
 			throw new Error("ErrorCopyingDataBase");
 		}
@@ -236,8 +197,6 @@ public class DataBaseHelper1 extends SQLiteOpenHelper {
 		// Log.v("mPath", mPath);
 		mDataBase = SQLiteDatabase.openDatabase(mPath, null,
 				SQLiteDatabase.CREATE_IF_NECESSARY);
-		// mDataBase = SQLiteDatabase.openDatabase(mPath, null,
-		// SQLiteDatabase.NO_LOCALIZED_COLLATORS);
 		return mDataBase != null;
 	}
 
@@ -289,14 +248,6 @@ public class DataBaseHelper1 extends SQLiteOpenHelper {
 		sq.update("topics", values, "name='" + id + "' and tablename='" + id1
 				+ "'", null);
 	}
-
-	// public void update_practice_last_ques(String topicName, String
-	// quesposition) {
-	// ContentValues values = new ContentValues();
-	// SQLiteDatabase sq = this.getReadableDatabase();
-	// values.put("quesposition", quesposition);
-	// sq.update("topics", values, "name='" + topicName + "'", null);
-	// }
 
 	public void update_topics() {
 		ContentValues values = new ContentValues();

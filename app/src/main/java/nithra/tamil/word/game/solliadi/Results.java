@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.TextView;
 
@@ -19,7 +18,6 @@ public class Results extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
         getSupportActionBar().setDisplayShowHomeEnabled(false);
@@ -49,28 +47,12 @@ public class Results extends AppCompatActivity {
 
                 loadurl.loadDataWithBaseURL("", summary, "text/html", "utf-8", null);
 
-               /* String data="<html><body><a href=http://https://s3.ap-south-1.amazonaws.com/solliadi-prize/daily.png</a></body></html>";
-                loadurl.loadData(data, "text/html", "UTF-8");
-                loadurl.loadUrl("https://s3.ap-south-1.amazonaws.com/solliadi-prize/daily.png");*/
-               /* System.out.println("r1");
-                Picasso.with(Results.this)
-                        .load("https://s3.ap-south-1.amazonaws.com/solliadi-prize/daily.png")
-                        .error(R.drawable.logo2)
-                        .placeholder(R.drawable.loading)
-                        .into(result);
-*/
-
             } else if (r == 2) {
                 System.out.println("r2");
                 String summary = "<html><body><img src = https://s3.ap-south-1.amazonaws.com/solliadi-prize/weekly.png  height=100% width=100%></body></html>";
 
                 loadurl.loadDataWithBaseURL("", summary, "text/html", "utf-8", null);
                 //  loadurl.loadUrl("https://s3.ap-south-1.amazonaws.com/solliadi-prize/weekly.png");
-               /* Picasso.with(Results.this)
-                        .load("https://s3.ap-south-1.amazonaws.com/solliadi-prize/weekly.png")
-                        .error(R.drawable.logo2)
-                        .placeholder(R.drawable.loading)
-                        .into(result);*/
 
             } else if (r == 3) {
                 System.out.println("r3");
@@ -78,21 +60,11 @@ public class Results extends AppCompatActivity {
 
                 loadurl.loadDataWithBaseURL("", summary, "text/html", "utf-8", null);
                 // loadurl.loadUrl("https://s3.ap-south-1.amazonaws.com/solliadi-prize/monthly.png");
-                /*Picasso.with(Results.this)
-                        .load("https://s3.ap-south-1.amazonaws.com/solliadi-prize/monthly.png")
-                        .error(R.drawable.logo2)
-                        .placeholder(R.drawable.loading)
-                        .into(result);*/
             } else if (r == 4) {
                 System.out.println("r4");
                 String summary = "<html><body><img src = https://s3.ap-south-1.amazonaws.com/solliadi-prize/share.png  height=100% width=100%></body></html>";
                 loadurl.loadDataWithBaseURL("", summary, "text/html", "utf-8", null);
                 // loadurl.loadUrl("https://s3.ap-south-1.amazonaws.com/solliadi-prize/share.png");
-               /* Picasso.with(Results.this)
-                        .load("https://s3.ap-south-1.amazonaws.com/solliadi-prize/share.png")
-                        .error(R.drawable.logo2)
-                        .placeholder(R.drawable.loading)
-                        .into(result);*/
             }
         }
         action_back.setOnClickListener(new View.OnClickListener() {

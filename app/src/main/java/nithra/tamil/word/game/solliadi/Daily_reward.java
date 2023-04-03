@@ -71,8 +71,6 @@ public class Daily_reward extends Fragment {
             // nodata.setVisibility(View.VISIBLE);
             Toast.makeText(getActivity(), "Nodata", Toast.LENGTH_SHORT).show();
         }
-       /* adapt=new customlist_myreport(getActivity(),date,gamecount,score,time);
-        list.setAdapter(adapt);*/
 
 
         return v;

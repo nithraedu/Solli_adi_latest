@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
@@ -30,7 +31,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -48,7 +48,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.facebook.ads.NativeAdLayout;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
@@ -73,13 +72,13 @@ import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 public class Quiz_Game extends AppCompatActivity implements View.OnClickListener, Download_completed {
     //*********************reward videos process 1***********************
 
-    static int vs = 0;
+    static final int vs = 0;
+    static final int mCoinCount = 20;
     static int rvo = 0;
-    static int mCoinCount = 20;
+    final SharedPreference sps = new SharedPreference();
+    final String gameid = "17";
     TextView question_txt, c_ans, c_button1, c_button2, c_button3, c_button4, score, c_word_number;
     Chronometer focus;
-    SharedPreference sps = new SharedPreference();
-    String gameid = "17";
     String question_id = "", question = "", answer = "";
     int u_id = 0;
     String isdown = "0";
@@ -119,6 +118,9 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
     Newgame_DataBaseHelper5 newhelper5;
     TextView word1, word2, word3, word4, word5, word6, ans, dis, close;
     LinearLayout ads_lay;
+
+    Handler handler;
+    Runnable my_runnable;
     private InterstitialAd mInterstitialAd;
     private RewardedAd rewardedAd;
 
@@ -136,7 +138,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz__game);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         newhelper5 = new Newgame_DataBaseHelper5(this);
         myDbHelper = new DataBaseHelper(this);
 
@@ -157,22 +159,6 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         soundId4 = spz4.load(Quiz_Game.this, R.raw.coins, 1);///
 
 
-
-        /*String gid = "17";
-        String qid = "";
-        for (int i = 0; i<=499; i++){
-            if (qid.equals("")){
-                qid = "" +i;
-            } else {
-                qid = qid + "," + i;
-            }
-        }
-        System.out.println("---qid : " +qid);
-        System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='17'");
-        newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='17'");
-*/
-
-
         if (sps.getString(Quiz_Game.this, "new_user_db").equals("")) {
 
         } else {
@@ -189,25 +175,24 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         openDialog_s.setContentView(R.layout.score_screen2);
         adsicon = openDialog_s.findViewById(R.id.adsicon);
         ads_layout = openDialog_s.findViewById(R.id.fl_adplaceholder);
+        ads_lay = findViewById(R.id.ads_lay);
 
 
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
 
 
         //reward(Quiz_Game.this);
+        MobileAds.initialize(this);
         rewarded_adnew();
         if (sps.getInt(Quiz_Game.this, "purchase_ads") == 0) {
-            // Make sure to set the mediation provider value to "max" to ensure proper functionality
-            MobileAds.initialize(this);
+            Utills.INSTANCE.initializeAdzz(this);
             industrialload();
         }
+        Utills.INSTANCE.load_add_AppLovin(this, ads_lay);
 
         find();
         next();
         soundset();
-        // loads_ads_banner();
-        ads_lay = findViewById(R.id.ads_lay);
-
 
         if (sps.getString(Quiz_Game.this, "qz_intro").equals("")) {
             showcase_dismiss();
@@ -297,18 +282,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
 
     private void next() {
         reset();
-        NativeAdLayout native_banner_ad_container = findViewById(R.id.native_banner_ad_container);
-        if (sps.getInt(Quiz_Game.this, "purchase_ads") == 1) {
-            native_banner_ad_container.setVisibility(View.GONE);
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        } else {
-            if (Utils.isNetworkAvailable(Quiz_Game.this)) {
-                native_banner_ad_container.setVisibility(View.VISIBLE);
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
 
-        }
         head.setVisibility(View.VISIBLE);
         String date = sps.getString(Quiz_Game.this, "date");
         // myDbHelper.executeSql("DELETE FROM answertable");
@@ -549,7 +523,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             c_button2.setPadding(20, 20, 20, 20);
             c_button3.setPadding(20, 20, 20, 20);
             c_button4.setPadding(20, 20, 20, 20);
-            Handler handler = new Handler();
+            Handler handler = new Handler(Looper.myLooper());
             handler.postDelayed(() -> adShow(), 2300);
         }
     }
@@ -607,17 +581,9 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                 c_ans.setEnabled(false);
                 coinanim();
 
-                Handler handler = new Handler();
+                Handler handler = new Handler(Looper.myLooper());
                 handler.postDelayed(() -> adShow(), 2300);
             } else {
-
-              /*  Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                int spx = skx - 50;
-                String aStringx = Integer.toString(spx);
-                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                score.setText(aStringx);*/
 
                 String date = sps.getString(Quiz_Game.this, "date");
                 spz2.play(soundId2, sv, sv, 0, 0, sv);
@@ -665,7 +631,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                 c_button4.setEnabled(false);
                 c_ans.setEnabled(false);
                 coinanim_red();
-                Handler handler = new Handler();
+                Handler handler = new Handler(Looper.myLooper());
                 handler.postDelayed(() -> adShow(), 2300);
             }
         } else {
@@ -743,29 +709,6 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             }
 
             //New_Main_Activity.load_addFromMain_multiplayer(Quiz_Game.this, ads_layout);
-            /*  if (loadaddcontent == 1) {
-                if (native_adView3 != null) {
-                    native_adView3.removeAllViews();
-                }
-                LayoutInflater inflater;
-                inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-                View view1 = inflater.inflate(R.layout.remote_config);
-                ins_app(context, view1, sps.getInt(context, "remoteConfig"));
-                ads_layout.addView(view1);
-            }
-
-            if (isNetworkAvailable()) {
-                load_addinstall(context, ads_layout);
-            } else {
-                if (native_adView3 != null) {
-                    native_adView3.removeAllViews();
-                }
-                LayoutInflater inflater;
-                inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-                View view1 = inflater.inflate(R.layout.remote_config);
-                ins_app(context, view1, sps.getInt(context, "remoteConfig"));
-                ads_layout.addView(view1);
-            }*/
         }
 
 
@@ -829,7 +772,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                     show_reward();
                     rewardvideo.setVisibility(View.INVISIBLE);
                 } else {
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
                         if (fb_reward == 1) {
                             show_reward();
@@ -858,7 +801,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                     show_reward();
                     rewardvideo.setVisibility(View.INVISIBLE);
                 } else {
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
                         if (fb_reward == 1) {
                             show_reward();
@@ -993,10 +936,11 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
 
 
     public void industrialload() {
+        if (mInterstitialAd != null) return;
         Log.i("TAG", "onAdLoadedCalled");
         AdRequest adRequest = new AdRequest.Builder().build();
 
-        InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
+        InterstitialAd.load(this, getResources().getString(R.string.Game1_Stage_Close_VV), adRequest, new InterstitialAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 // The mInterstitialAd reference will be null until
@@ -1011,6 +955,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                 // Handle the error
                 Log.d("TAG", loadAdError.toString());
                 mInterstitialAd = null;
+                handler = null;
                 Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
             }
         });
@@ -1025,6 +970,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                 // Set the ad reference to null so you don't show the ad a second time.
                 Log.d("TAG", "Ad dismissed fullscreen content.");
                 mInterstitialAd = null;
+                handler = null;
                 Utills.INSTANCE.Loading_Dialog_dismiss();
                 setSc();
                 industrialload();
@@ -1035,14 +981,12 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                 // Called when ad fails to show.
                 Log.e("TAG", "Ad failed to show fullscreen content.");
                 mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                setSc();
             }
 
-
-            @Override
-            public void onAdShowedFullScreenContent() {
-                // Called when ad is shown.
-                Log.d("TAG", "Ad showed fullscreen content.");
-            }
         });
     }
 
@@ -1050,12 +994,15 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") == Utills.interstitialadCount && mInterstitialAd != null) {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
             Utills.INSTANCE.Loading_Dialog(this);
-            Handler handler = new Handler();
-            handler.postDelayed(() -> {
+            handler = new Handler(Looper.myLooper());
+            my_runnable = () -> {
                 mInterstitialAd.show(this);
-            }, 2500);
+            };
+            handler.postDelayed(my_runnable, 2500);
         } else {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
+            if (sps.getInt(this, "Game1_Stage_Close_VV") > Utills.interstitialadCount)
+                sps.putInt(this, "Game1_Stage_Close_VV", 0);
             setSc();
         }
 
@@ -1073,8 +1020,6 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-     /*   int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
@@ -1126,7 +1071,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
     protected void onPause() {
         super.onPause();
         System.out.println("#################OnStop");
-
+        if (handler != null) handler.removeCallbacks(my_runnable);
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
         focus.stop();
 
@@ -1144,7 +1089,8 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println("#################OnResume");
+        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV"));
         if (sps.getString(Quiz_Game.this, "resume_qz").equals("")) {
             sps.putString(Quiz_Game.this, "resume_qz", "yes");
         } else {
@@ -1168,7 +1114,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
     }
 
     public void showcase_dismiss() {
-        Handler handler30 = new Handler();
+        Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
 
             if (sps.getString(Quiz_Game.this, "showcase_dismiss_qz").equals("")) {
@@ -1255,7 +1201,9 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         if (openDialog_p != null && openDialog_p.isShowing()) {
             openDialog_p.cancel();
         }
+        rewardedAd = null;
         mInterstitialAd = null;
+        handler = null;
     }
 
     private void soundset() {
@@ -1316,19 +1264,6 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                         pos = 2;
                         newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
                     }
-                 /*   String date = sps.getString(Find_words_from_picture.this, "date");
-                    int pos;
-                    if (date.equals("0")) {
-                        pos = 1;
-                        myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                    } else {
-                        pos = 2;
-                        myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                    }*/
 
                     //Uri uri = Uri.fromFile(file);
                     Uri uri = FileProvider.getUriForFile(Quiz_Game.this, Quiz_Game.this.getPackageName(), file);
@@ -1417,7 +1352,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                     fb_reward = 0;
                     // reward(Quiz_Game.this);
                     rewarded_adnew();
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
 
                         Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
@@ -1521,7 +1456,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
 
         ////
 
-        Handler handler = new Handler();
+        Handler handler = new Handler(Looper.myLooper());
         handler.postDelayed(() -> {
             //play1.start();
             spz4.play(soundId4, sv, sv, 0, 0, sv);
@@ -1559,13 +1494,13 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
 
         }).start();
 
-        Handler handler30 = new Handler();
+        Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
             Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
             score.startAnimation(levels1);
         }, 2200);
 
-        Handler handler21 = new Handler();
+        Handler handler21 = new Handler(Looper.myLooper());
         handler21.postDelayed(() -> {
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
@@ -1829,12 +1764,6 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             Intent i = new Intent(Quiz_Game.this, Fill_in_blanks.class);
             startActivity(i);
         });
-        eng_to_tamil.setOnClickListener(v -> {
-            finish();
-            sps.putString(Quiz_Game.this, "date", "0");
-            Intent i = new Intent(Quiz_Game.this, English_to_tamil.class);
-            startActivity(i);
-        });
 
         TextView quiz = openDialog.findViewById(R.id.quiz);
         TextView find_words_from_pictures = openDialog.findViewById(R.id.find_words_from_pictures);
@@ -1936,11 +1865,6 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             sps.putString(Quiz_Game.this, "date", "0");
 
 
-          /*  finish();
-            openDialog.dismiss();
-            //sps.putString(Odd_man_out.this, "date", "0");
-            Intent i = new Intent(Odd_man_out.this, New_Main_Activity.class);
-            startActivity(i);*/
             return keyCode == KeyEvent.KEYCODE_BACK;
         });
     }
@@ -1991,8 +1915,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
     }
 
     public void downloaddata_regular2() {
-        NativeAdLayout native_banner_ad_container = findViewById(R.id.native_banner_ad_container);
-        native_banner_ad_container.setVisibility(View.INVISIBLE);
+
         head.setVisibility(View.INVISIBLE);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Quiz_Game.this);
         // alertDialogBuilder.setTitle("Update available");
@@ -2004,8 +1927,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             if (Utils.isNetworkAvailable(Quiz_Game.this)) {
                 download_datas();
             } else {
-                NativeAdLayout native_banner_ad_container1 = findViewById(R.id.native_banner_ad_container);
-                native_banner_ad_container1.setVisibility(View.INVISIBLE);
+
                 head.setVisibility(View.INVISIBLE);
                 AlertDialog.Builder alertDialogBuilder1 = new AlertDialog.Builder(Quiz_Game.this);                           /* .setTitle("Delete entry")*/
                 alertDialogBuilder1.setCancelable(false);
@@ -2032,8 +1954,6 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
 
         });
         alertDialogBuilder.setPositiveButton("இல்லை ", (dialog, id) -> {
-           /* Intent i = new Intent(Quiz_Game.this, New_Main_Activity.class);
-            startActivity(i);*/
             sps.putString(Quiz_Game.this, "game_area", "on");
             finish();
         });
@@ -2063,8 +1983,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             if (Utils.isNetworkAvailable(Quiz_Game.this)) {
                 download_datas();
             } else {
-                NativeAdLayout native_banner_ad_container = findViewById(R.id.native_banner_ad_container);
-                native_banner_ad_container.setVisibility(View.INVISIBLE);
+
                 head.setVisibility(View.INVISIBLE);
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Quiz_Game.this);
                 alertDialogBuilder.setCancelable(false);
@@ -2109,8 +2028,6 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-     /*   int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
         ok_y.setOnClickListener(v -> {
             score.setText("" + skx);
@@ -2216,7 +2133,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
 
         ////
 
-        Handler handler = new Handler();
+        Handler handler = new Handler(Looper.myLooper());
         handler.postDelayed(() -> {
             //play1.start();
             spz4.play(soundId4, sv, sv, 0, 0, sv);
@@ -2254,13 +2171,13 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
 
         }).start();
 
-        Handler handler30 = new Handler();
+        Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
             Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
             score.startAnimation(levels1);
         }, 2200);
 
-        Handler handler21 = new Handler();
+        Handler handler21 = new Handler(Looper.myLooper());
         handler21.postDelayed(() -> {
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
@@ -2336,7 +2253,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
 
     public void rewarded_adnew() {
         AdRequest adRequest = new AdRequest.Builder().build();
-        RewardedAd.load(this, "ca-app-pub-3940256099942544/5224354917", adRequest, new RewardedAdLoadCallback() {
+        RewardedAd.load(this, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 // Handle the error.
@@ -2372,7 +2289,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
                     }
-                    Handler handler = new Handler();
+                    Handler handler = new Handler(Looper.myLooper());
                     handler.postDelayed(() -> {
                         if (rvo == 2) {
                             share_earn2(mCoinCount);

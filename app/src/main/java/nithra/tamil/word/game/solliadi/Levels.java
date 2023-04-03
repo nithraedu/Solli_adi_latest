@@ -15,7 +15,6 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -27,11 +26,10 @@ import android.widget.ToggleButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.facebook.ads.NativeAdLayout;
-
 
 public class Levels extends AppCompatActivity {
     public static SharedPreferences mPreferences;
+    final SharedPreference spa = new SharedPreference();
     TextView time1, time2, time3, score1, score2, score3, levelid, levelname, l_id_name;
     Typeface typ, tyr;
     DataBaseHelper myDbHelper;
@@ -44,7 +42,6 @@ public class Levels extends AppCompatActivity {
     ToggleButton toggleButton;
     RelativeLayout levels, levels2, levels3;
     ImageView lock1, lock2, lock3;
-    SharedPreference spa = new SharedPreference();
     LinearLayout adds;
 
     TextView l_word1, l_word2, l_word3;
@@ -76,7 +73,7 @@ public class Levels extends AppCompatActivity {
         score3 = (TextView) findViewById(R.id.b_score3);
         levelid = (TextView) findViewById(R.id.l_level_id);
         ttr_intro = (TextView) findViewById(R.id.ttr_intro);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         levels = (RelativeLayout) findViewById(R.id.levels);
         Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button2_animation);
         levels.startAnimation(levels1);
@@ -128,21 +125,12 @@ public class Levels extends AppCompatActivity {
         db = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
 
 
-       /* Cursor c1 = db.rawQuery("select * from maintable where gameid='4'", null);
-        c1.moveToFirst();
-
-        Cursor c2 = db.rawQuery("select * from maintable where gameid='4' and isfinish='1'", null);
-        c2.moveToFirst();
-        int cs2 = c2.getCount() + 1;
-        l_word1.setText(c2.getCount() + "/" + c1.getCount());*/
-
-
         levels.setEnabled(true);
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         getSupportActionBar().setDisplayShowHomeEnabled(false);
         View view = getLayoutInflater().inflate(R.layout.action_sole, null);
         getSupportActionBar().setCustomView(view);
@@ -160,8 +148,6 @@ public class Levels extends AppCompatActivity {
             public void onClick(View view) {
                 spa.putInt(Levels.this, "val", 1);
                 finish();
-               /* Intent i = new Intent(Levels.this, New_Main_Activity.class);
-                startActivity(i);*/
             }
         });
 
@@ -186,65 +172,9 @@ public class Levels extends AppCompatActivity {
 
             spa.putInt(Levels.this, "val", 1);
             finish();
-           /* Intent i = new Intent(Levels.this, New_Main_Activity.class);
-            startActivity(i);*/
 
         }
         return super.onKeyDown(keyCode, event);
     }
 
-    protected void onResume() {
-        super.onResume();
-
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-
-        if (spa.getInt(Levels.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            native_banner_ad_container.setVisibility(View.GONE);
-        } else {
-            if (Utils.isNetworkAvailable(Levels.this)) {
-                native_banner_ad_container.setVisibility(View.GONE);
-                // fb_native(Levels.this,native_banner_ad_container);
-
-                /* if (spa.getInt(Levels.this,"native_banner_ads")==1){
-                    New_Main_Gamelist.inflateAd(Levels.this,native_banner_ad_container);
-                }else {
-                    fb_native(Levels.this,native_banner_ad_container);
-                }*/
-            } else {
-                native_banner_ad_container.setVisibility(View.GONE);
-            }
-         /*   if (spa.getInt(Levels.this, "addlodedd") == 1) {
-                New_Main_Activity.load_addFromMain(Levels.this, adds);
-            }else {
-                if (Utils.isNetworkAvailable(Levels.this)) {
-                    spa.putInt(Levels.this, "addlodedd", 2);
-                    System.out.println("@IMG");
-                    final AdView adView = new AdView(Levels.this);
-                    adView.setAdUnitId(getString(R.string.main_banner_ori));
-
-                    adView.setAdSize(AdSize.SMART_BANNER);
-                    AdRequest request = new AdRequest.Builder().build();
-                    adView.setAdListener(new AdListener() {
-                        public void onAdLoaded() {
-                            System.out.println("@@@loaded");
-                            adds.removeAllViews();
-                            adds.addView(adView);
-                            adds.setVisibility(View.VISIBLE);
-                            super.onAdLoaded();
-                        }
-
-                        @Override
-                        public void onAdFailedToLoad(int i) {
-                            System.out.println("@@@NOt loaded");
-                            super.onAdFailedToLoad(i);
-                        }
-                    });
-                    adView.loadAd(request);
-
-                }
-            }*/
-        }
-
-    }
 }

@@ -3,11 +3,9 @@ package nithra.tamil.word.game.solliadi;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
 
-import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -22,23 +20,23 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -47,20 +45,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.facebook.ads.NativeAdLayout;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.File;
@@ -81,44 +79,20 @@ import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 public class Opposite_word extends AppCompatActivity implements Download_completed {
 
     public static final String TAG = "SavedGames";
-    //RewardedVideoAd rewardedVideoAd;
-    //*********************reward videos process 1***********************
-    // The AppState slot we are editing.  For simplicity this sample only manipulates a single
-    // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
-    // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
-    private static final int APP_STATE_KEY = 1;
-    // Request code used to invoke sign-in UI.
-    private static final int RC_SIGN_IN = 9001;
-    // Request code used to invoke Snapshot selection UI.
-    private static final int RC_SELECT_SNAPSHOT = 9002;
-    /////////native advance////////////
-    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
-    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
-    //reward videos process 1***********************
-    /////////native advance////////////
-    /////////Native_Top_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_Top = "ca-app-pub-4267540560263635/2303543680";
-    /////////Native_Top_Advanced////////////
-    /////////Native_BackPress_Advanced////////////
-    private static final String ADMOB_AD_UNIT_ID_back = "ca-app-pub-4267540560263635/3321111884";
-    public static FrameLayout add, add2, add3;
-    public static LinearLayout add_e;
-    public static LinearLayout add_sc;
-    // Facebook variable starts
-    static int vs = 0;
+    static final int vs = 0;
     static int f;
     static int rvo = 0;
     static int mCoinCount = 20;
-    static SharedPreference spd = new SharedPreference();
+    final String gameid = "7";
+    final SharedPreference sps = new SharedPreference();
+    final int min = 1;
+    final int max = 3;
+    final Context context = this;
+    final int minmumd = 1;
+    final int maximumd = 4;
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     private final PendingAction pendingAction = PendingAction.NONE;
-    // True when the application is attempting to resolve a sign-in error that has a possible
-    // resolution,
-    private final boolean mIsResolving = false;
-    // True immediately after the user clicks the sign-in button/
-    private final boolean mSignInClicked = false;
-    // True if we want to automatically attempt to sign in the user at application start.
-    private final boolean mAutoStartSignIn = true;
+
     int fb_reward = 0;
     int reward_status = 0;
     String btn_str = "";
@@ -128,16 +102,12 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
     TextView bts1, bts2, bts3, bts4;
     Chronometer focus;
     SQLiteDatabase exdb, dbs, dbn, dbn2;
-    String gameid = "7";
     int u_id, questionid;
     String question, answer;
     RelativeLayout sixcat, fourcat, below, bottom;
-    SharedPreference sps = new SharedPreference();
     Animation clickzoom, clickzoom2;
     int ans_position;
     int q_type = 0;
-    int min = 1;
-    int max = 3;
     int random = 0;
     int k = 1;
     long ttstop;
@@ -149,7 +119,6 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
     TextView p_facebook, p_watts_app, p_gplues;
     Dialog openDialog_earncoin;
     String retype = "s";
-    Context context = this;
     TextView next_continue;
     TextView ttscores;
     Typeface typ, tyr;
@@ -183,19 +152,15 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
     int reward_play_count = 0;
     int ea = 0;
     Dialog openDialog;
-    int minmumd = 1;
-    int maximumd = 4;
     int randomnod;
     int setval_vid;
     TextView coin_value;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
-    private MaxRewardedAd rewardedAd;
-    private boolean mGameOver;
-    private boolean mGamePaused;
-    private long mTimeRemaining;
-    /// Client used to interact with Google APIs.
-    private MaxInterstitialAd ins_game, game_exit_ins;
+    Handler handler;
+    Runnable my_runnable;
+    private RewardedAd rewardedAd;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     public void download_completed(String status) {
@@ -221,7 +186,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.opposite_word);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
         dbs = this.openOrCreateDatabase("Newgames2.db", MODE_PRIVATE, null);
         dbn = this.openOrCreateDatabase("Newgames.db", MODE_PRIVATE, null);
@@ -248,24 +213,6 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         newhelper4 = new Newgame_DataBaseHelper4(context);
 
 
-        /*String gid = "7";
-        String qid = "";
-        for (int i = 0; i<=999; i++){
-            if (qid.equals("")){
-                qid = "" +i;
-            } else {
-                qid = qid + "," + i;
-            }
-        }
-        System.out.println("---qid : " +qid);
-        System.out.println("---qid : " + "UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='16'");
-        newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='7'");
-*/
-    /*    exdb = myDbHelper.getReadableDatabase();
-        dbn = newhelper.getReadableDatabase();
-        dbs = newhelper2.getReadableDatabase();
-        dbn2 = newhelper3.getReadableDatabase();*/
-
         //uiHelper = new UiLifecycleHelper(this, callback);
 
 
@@ -279,19 +226,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
         //reward(Opposite_word.this);
-        rewarded_ad();
+        MobileAds.initialize(this);
+        rewarded_adnew();
         if (sps.getInt(context, "purchase_ads") == 0) {
-            // Make sure to set the mediation provider value to "max" to ensure proper functionality
-            AppLovinSdk.getInstance(context).setMediationProvider("max");
-            AppLovinSdk.initializeSdk(context, new AppLovinSdk.SdkInitializationListener() {
-                @Override
-                public void onSdkInitialized(final AppLovinSdkConfiguration configuration) {
-                    // AppLovin SDK is initialized, start loading ads
-                    industrialload_game();
-                    game_exit_ins_ad();
-
-                }
-            });
+            Utills.INSTANCE.initializeAdzz(this);
+            industrialload();
         }
 
         find();
@@ -330,25 +269,20 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(Opposite_word.this, "sequence example opp2");
             sequence.setConfig(config);
             sequence.addSequenceItem(hint, "இந்த பொத்தானை பயன்படுத்தி விடைகளின் எண்ணிக்கையை பாதியாக குறைத்துக்கொள்ளலாம்.", "அடுத்து");
-            // sequence.addSequenceItem(pic_clue, "குறிப்பை பார்க்க பச்சை நிற பொத்தானை அழுத்தவும் .", "அடுத்து");
-            // sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
 
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Opposite_word.this)
                             .setTarget(helpshare_layout)
                             .setDismissText("சரி")
                             .setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.")
                             .build())
-                    .setOnItemDismissedListener(new MaterialShowcaseSequence.OnSequenceItemDismissedListener() {
-                        @Override
-                        public void onDismiss(MaterialShowcaseView itemView, int position) {
+                    .setOnItemDismissedListener((itemView, position) -> {
 
-                            if (position == 1) {
-                                sps.putString(Opposite_word.this, "odd_time_start", "yes");
-                                sps.putString(Opposite_word.this, "showcase_dismiss_opp", "yes");
-                                focus.setBase(SystemClock.elapsedRealtime());
-                                focus.start();
+                        if (position == 1) {
+                            sps.putString(Opposite_word.this, "odd_time_start", "yes");
+                            sps.putString(Opposite_word.this, "showcase_dismiss_opp", "yes");
+                            focus.setBase(SystemClock.elapsedRealtime());
+                            focus.start();
 
-                            }
                         }
                     });
 
@@ -377,48 +311,34 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         if (sps.getInt(Opposite_word.this, "purchase_ads") == 1) {
 
         } else {
-            // advancads();
-            // advancads_content();
         }
 
 
-        ////////
-
-
-        // install_ads_doalug();
-
-
         ImageView prize_logo = (ImageView) findViewById(R.id.prize_logo);
-        /*final Animation pendulam;
-        pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
-        prize_logo.startAnimation(pendulam);*/
         if (sps.getInt(Opposite_word.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
             prize_logo.setVisibility(View.GONE);
         }
-        prize_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isNetworkAvailable()) {
-                    if (sps.getString(Opposite_word.this, "price_registration").equals("com")) {
+        prize_logo.setOnClickListener(v -> {
+            if (isNetworkAvailable()) {
+                if (sps.getString(Opposite_word.this, "price_registration").equals("com")) {
+                    finish();
+                    Intent i = new Intent(Opposite_word.this, Game_Status.class);
+                    startActivity(i);
+                } else {
+                    if (sps.getString(Opposite_word.this, "otp_verify").equals("yes")) {
                         finish();
-                        Intent i = new Intent(Opposite_word.this, Game_Status.class);
+                        Intent i = new Intent(Opposite_word.this, LoginActivity.class);
                         startActivity(i);
                     } else {
-                        if (sps.getString(Opposite_word.this, "otp_verify").equals("yes")) {
-                            finish();
-                            Intent i = new Intent(Opposite_word.this, LoginActivity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            Intent i = new Intent(Opposite_word.this, Price_Login.class);
-                            startActivity(i);
-                        }
+                        finish();
+                        Intent i = new Intent(Opposite_word.this, Price_Login.class);
+                        startActivity(i);
                     }
-                } else {
-                    Toast.makeText(Opposite_word.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(Opposite_word.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
             }
         });
         openDialog_odd_man = new Dialog(Opposite_word.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -449,332 +369,299 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         p_setting = (TextView) findViewById(R.id.s_settings);
         if (snd.equals("off")) {
             p_setting.setBackgroundResource(R.drawable.sound_off);
-            // settings.setBackgroundResource(R.drawable.sound_off);
-            //  toggleButton.setBackgroundResource(R.drawable.off);
             sv = 0;
 
         } else if (snd.equals("on")) {
             p_setting.setBackgroundResource(R.drawable.sound_on);
-            // settings.setBackgroundResource(R.drawable.sound_off);
-            // toggleButton.setBackgroundResource(R.drawable.on);
             sv = 1;
 
         }
 
-     /*   final Animation pendulam;
-        pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
-        adsicon2.startAnimation(pendulam);*/
 
+        bt1.setOnTouchListener((v, event) -> {
+            // TODO Auto-generated method stub
+            if (event.getAction() == MotionEvent.ACTION_UP) {
 
-        bt1.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-
-                } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
-                    cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
-                    if (sk > 50) {
-                        bt1.startAnimation(clickzoom);
-                        String ts = bt1.getText().toString();
-                        verify(ts, "bt1");
-                    } else {
-                        dialog(1);
-                    }
-
-                }
-
-                return true;
-
-            }
-        });
-        bt2.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-
-                } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
-                    cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
-                    if (sk > 50) {
-                        bt2.startAnimation(clickzoom);
-                        String ts = bt2.getText().toString();
-                        verify(ts, "bt2");
-                    } else {
-                        dialog(1);
-                    }
-
-                }
-                return true;
-            }
-        });
-        bt3.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-
-                } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
-                    cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
-                    if (sk > 50) {
-                        bt3.startAnimation(clickzoom);
-                        String ts = bt3.getText().toString();
-                        verify(ts, "bt3");
-                    } else {
-                        dialog(1);
-                    }
-
-                }
-
-                return true;
-
-            }
-        });
-        bt4.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-
-                } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
-                    cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
-                    if (sk > 50) {
-                        bt4.startAnimation(clickzoom);
-                        String ts = bt4.getText().toString();
-                        verify(ts, "bt4");
-                    } else {
-                        dialog(1);
-                    }
-
-                }
-
-                return true;
-
-            }
-        });
-        bt5.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-
-                } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
-                    cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
-                    if (sk > 50) {
-                        bt5.startAnimation(clickzoom);
-                        String ts = bt5.getText().toString();
-                        verify(ts, "bt5");
-                    } else {
-                        dialog(1);
-                    }
-
-                }
-
-                return true;
-
-            }
-        });
-        bt6.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-
-                } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
-                    cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
-                    if (sk > 50) {
-                        bt6.startAnimation(clickzoom);
-                        String ts = bt6.getText().toString();
-                        verify(ts, "bt6");
-                    } else {
-                        dialog(1);
-                    }
-
-                }
-
-                return true;
-
-            }
-        });
-        bts1.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-
-                } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
-                    cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
-                    if (sk > 50) {
-                        bts1.startAnimation(clickzoom);
-                        String ts = bts1.getText().toString();
-                        verify(ts, "bts1");
-                    } else {
-                        dialog(1);
-                    }
-
-                }
-
-                return true;
-
-            }
-        });
-        bts2.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-
-                } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
-                    cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
-                    if (sk > 50) {
-                        bts2.startAnimation(clickzoom);
-                        String ts = bts2.getText().toString();
-                        verify(ts, "bts2");
-                    } else {
-                        dialog(1);
-                    }
-
-                }
-
-                return true;
-
-            }
-        });
-        bts3.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-
-                } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
-                    cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
-                    if (sk > 50) {
-                        bts3.startAnimation(clickzoom);
-                        String ts = bts3.getText().toString();
-                        verify(ts, "bts3");
-                    } else {
-                        dialog(1);
-                    }
-
-                }
-
-                return true;
-
-            }
-        });
-        bts4.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-
-                } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
-                    cfw.moveToFirst();
-                    int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
-                    if (sk > 50) {
-                        bts4.startAnimation(clickzoom);
-                        String ts = bts4.getText().toString();
-                        verify(ts, "bts4");
-                    } else {
-                        dialog(1);
-                    }
-
-                }
-
-                return true;
-
-            }
-        });
-
-        p_setting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                p_setting.setBackgroundResource(R.drawable.sound_off);
-                String snd = sps.getString(Opposite_word.this, "snd");
-                if (snd.equals("off")) {
-                    sps.putString(Opposite_word.this, "snd", "on");
-                    p_setting.setBackgroundResource(R.drawable.sound_on);
-                    sv = 1;
-                } else if (snd.equals("on")) {
-                    sps.putString(Opposite_word.this, "snd", "off");
-                    p_setting.setBackgroundResource(R.drawable.sound_off);
-                    sv = 0;
-                }
-              /*  if (k == 1) {
-                    showpopup();
-                    k = 2;
-                } else {
-                    popupWindow.dismiss();
-                    k = 1;
-                }*/
-            }
-        });
-        below.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (k == 2) {
-                    popupWindow.dismiss();
-                    k = 1;
-                }
-            }
-        });
-
-        bottom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (k == 2) {
-                    popupWindow.dismiss();
-                    k = 1;
-                }
-            }
-        });
-        qwt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog(0);
-            }
-        });
-
-
-        hint.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
+            } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
                 cfw.moveToFirst();
                 int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
                 if (sk > 50) {
-                    if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
+                    bt1.startAnimation(clickzoom);
+                    String ts = bt1.getText().toString();
+                    verify(ts, "bt1");
+                } else {
+                    dialog(1);
+                }
+
+            }
+
+            return true;
+
+        });
+        bt2.setOnTouchListener((v, event) -> {
+            // TODO Auto-generated method stub
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+
+            } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
+                cfw.moveToFirst();
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
+                if (sk > 50) {
+                    bt2.startAnimation(clickzoom);
+                    String ts = bt2.getText().toString();
+                    verify(ts, "bt2");
+                } else {
+                    dialog(1);
+                }
+
+            }
+            return true;
+        });
+        bt3.setOnTouchListener((v, event) -> {
+            // TODO Auto-generated method stub
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+
+            } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
+                cfw.moveToFirst();
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
+                if (sk > 50) {
+                    bt3.startAnimation(clickzoom);
+                    String ts = bt3.getText().toString();
+                    verify(ts, "bt3");
+                } else {
+                    dialog(1);
+                }
+
+            }
+
+            return true;
+
+        });
+        bt4.setOnTouchListener((v, event) -> {
+            // TODO Auto-generated method stub
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+
+            } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
+                cfw.moveToFirst();
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
+                if (sk > 50) {
+                    bt4.startAnimation(clickzoom);
+                    String ts = bt4.getText().toString();
+                    verify(ts, "bt4");
+                } else {
+                    dialog(1);
+                }
+
+            }
+
+            return true;
+
+        });
+        bt5.setOnTouchListener((v, event) -> {
+            // TODO Auto-generated method stub
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+
+            } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
+                cfw.moveToFirst();
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
+                if (sk > 50) {
+                    bt5.startAnimation(clickzoom);
+                    String ts = bt5.getText().toString();
+                    verify(ts, "bt5");
+                } else {
+                    dialog(1);
+                }
+
+            }
+
+            return true;
+
+        });
+        bt6.setOnTouchListener((v, event) -> {
+            // TODO Auto-generated method stub
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+
+            } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
+                cfw.moveToFirst();
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
+                if (sk > 50) {
+                    bt6.startAnimation(clickzoom);
+                    String ts = bt6.getText().toString();
+                    verify(ts, "bt6");
+                } else {
+                    dialog(1);
+                }
+
+            }
+
+            return true;
+
+        });
+        bts1.setOnTouchListener((v, event) -> {
+            // TODO Auto-generated method stub
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+
+            } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
+                cfw.moveToFirst();
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
+                if (sk > 50) {
+                    bts1.startAnimation(clickzoom);
+                    String ts = bts1.getText().toString();
+                    verify(ts, "bts1");
+                } else {
+                    dialog(1);
+                }
+
+            }
+
+            return true;
+
+        });
+        bts2.setOnTouchListener((v, event) -> {
+            // TODO Auto-generated method stub
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+
+            } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
+                cfw.moveToFirst();
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
+                if (sk > 50) {
+                    bts2.startAnimation(clickzoom);
+                    String ts = bts2.getText().toString();
+                    verify(ts, "bts2");
+                } else {
+                    dialog(1);
+                }
+
+            }
+
+            return true;
+
+        });
+        bts3.setOnTouchListener((v, event) -> {
+            // TODO Auto-generated method stub
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+
+            } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
+                cfw.moveToFirst();
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
+                if (sk > 50) {
+                    bts3.startAnimation(clickzoom);
+                    String ts = bts3.getText().toString();
+                    verify(ts, "bts3");
+                } else {
+                    dialog(1);
+                }
+
+            }
+
+            return true;
+
+        });
+        bts4.setOnTouchListener((v, event) -> {
+            // TODO Auto-generated method stub
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+
+            } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
+                cfw.moveToFirst();
+                int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
+                if (sk > 50) {
+                    bts4.startAnimation(clickzoom);
+                    String ts = bts4.getText().toString();
+                    verify(ts, "bts4");
+                } else {
+                    dialog(1);
+                }
+
+            }
+
+            return true;
+
+        });
+
+        p_setting.setOnClickListener(v -> {
+
+            p_setting.setBackgroundResource(R.drawable.sound_off);
+            String snd1 = sps.getString(Opposite_word.this, "snd");
+            if (snd1.equals("off")) {
+                sps.putString(Opposite_word.this, "snd", "on");
+                p_setting.setBackgroundResource(R.drawable.sound_on);
+                sv = 1;
+            } else if (snd1.equals("on")) {
+                sps.putString(Opposite_word.this, "snd", "off");
+                p_setting.setBackgroundResource(R.drawable.sound_off);
+                sv = 0;
+            }
+        });
+        below.setOnClickListener(view -> {
+            if (k == 2) {
+                popupWindow.dismiss();
+                k = 1;
+            }
+        });
+
+        bottom.setOnClickListener(view -> {
+            if (k == 2) {
+                popupWindow.dismiss();
+                k = 1;
+            }
+        });
+        qwt.setOnClickListener(view -> dialog(0));
+
+
+        hint.setOnClickListener(view -> {
+
+            Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
+            cfw.moveToFirst();
+            int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
+            if (sk > 50) {
+                if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
+                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                    cfx.moveToFirst();
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                    int spx = skx - 50;
+                    String aStringx = Integer.toString(spx);
+                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+                    s_score_edit.setText(aStringx);
+
+                    //hint.setEnabled(false);
+                    hint.setVisibility(View.INVISIBLE);
+                    newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                    Random rn = new Random();
+                    random = rn.nextInt(max - min + 1) + min;
+                    hint.clearAnimation();
+
+                    hintshow();
+
+
+                } else {
+                    final Dialog openDialog = new Dialog(Opposite_word.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                    openDialog.setContentView(R.layout.show_ans);
+                    TextView yes = (TextView) openDialog.findViewById(R.id.yes);
+                    TextView no = (TextView) openDialog.findViewById(R.id.no);
+                    TextView txt_ex2 = (TextView) openDialog.findViewById(R.id.txt_ex2);
+                    TextView txt_ex = (TextView) openDialog.findViewById(R.id.txt_ex);
+                    txt_ex.setText("வினாக்களை பாதியாக குறைக்க வேண்டுமா?");
+                    txt_ex2.setText("மொத்த நாணயங்களில் 50 குறைக்கப்படும்");
+                    CheckBox checkbox_ans = (CheckBox) openDialog.findViewById(R.id.checkbox_ans);
+                    checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+                        if (isChecked) {
+                            sps.putString(getApplicationContext(), "checkbox_ans", "yes");
+                        } else {
+                            sps.putString(getApplicationContext(), "checkbox_ans", "");
+                        }
+                    });
+
+                    yes.setOnClickListener(v -> {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
                         int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
@@ -783,7 +670,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                         s_score_edit.setText(aStringx);
 
-                        //hint.setEnabled(false);
+                        //  hint.setEnabled(false);
                         hint.setVisibility(View.INVISIBLE);
                         newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
                         Random rn = new Random();
@@ -792,101 +679,39 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
                         hintshow();
 
+                        openDialog.dismiss();
+                    });
+                    no.setOnClickListener(v -> {
+                        sps.putString(getApplicationContext(), "checkbox_ans", "");
+                        openDialog.dismiss();
+                    });
+                    openDialog.show();
 
-                    } else {
-                        final Dialog openDialog = new Dialog(Opposite_word.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                        openDialog.setContentView(R.layout.show_ans);
-                        TextView yes = (TextView) openDialog.findViewById(R.id.yes);
-                        TextView no = (TextView) openDialog.findViewById(R.id.no);
-                        TextView txt_ex2 = (TextView) openDialog.findViewById(R.id.txt_ex2);
-                        TextView txt_ex = (TextView) openDialog.findViewById(R.id.txt_ex);
-                        txt_ex.setText("வினாக்களை பாதியாக குறைக்க வேண்டுமா?");
-                        txt_ex2.setText("மொத்த நாணயங்களில் 50 குறைக்கப்படும்");
-                        CheckBox checkbox_ans = (CheckBox) openDialog.findViewById(R.id.checkbox_ans);
-                        checkbox_ans.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                            @Override
-                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                                if (isChecked) {
-                                    sps.putString(getApplicationContext(), "checkbox_ans", "yes");
-                                } else {
-                                    sps.putString(getApplicationContext(), "checkbox_ans", "");
-                                }
-                            }
-                        });
-
-                        yes.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                int spx = skx - 50;
-                                String aStringx = Integer.toString(spx);
-                                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                                s_score_edit.setText(aStringx);
-
-                                //  hint.setEnabled(false);
-                                hint.setVisibility(View.INVISIBLE);
-                                newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                                Random rn = new Random();
-                                random = rn.nextInt(max - min + 1) + min;
-                                hint.clearAnimation();
-
-                                hintshow();
-
-                                openDialog.dismiss();
-                            }
-                        });
-                        no.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                sps.putString(getApplicationContext(), "checkbox_ans", "");
-                                openDialog.dismiss();
-                            }
-                        });
-                        openDialog.show();
-
-                    }
-                } else {
-                    dialog(1);
                 }
-
+            } else {
+                dialog(1);
             }
+
         });
 
-        earncoin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog(0);
-            }
+        earncoin.setOnClickListener(v -> dialog(0));
+
+        p_gplues.setOnClickListener(view -> {
+            share_name = 3;
+            String a = "com.google.android.apps.plus";
+            permission(a);
         });
 
-        p_gplues.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                share_name = 3;
-                String a = "com.google.android.apps.plus";
-                permission(a);
-            }
+        p_watts_app.setOnClickListener(view -> {
+            share_name = 2;
+            String a = "com.whatsapp";
+            permission(a);
         });
 
-        p_watts_app.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                share_name = 2;
-                String a = "com.whatsapp";
-                permission(a);
-            }
-        });
-
-        p_facebook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                share_name = 1;
-                final String a = "com.facebook.katana";
-                permission(a);
-            }
+        p_facebook.setOnClickListener(view -> {
+            share_name = 1;
+            final String a = "com.facebook.katana";
+            permission(a);
         });
 
 
@@ -921,26 +746,6 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         bt4.setEnabled(true);
         bt5.setEnabled(true);
         bt6.setEnabled(true);
-
-
-
-/*
-        Calendar calendar2 = Calendar.getInstance();
-        int cur_year = calendar2.get(Calendar.YEAR);
-        int cur_month = calendar2.get(Calendar.MONTH);
-        int cur_day = calendar2.get(Calendar.DAY_OF_MONTH);
-
-        String str_month = "" + (cur_month + 1);
-        if (str_month.length() == 1) {
-            str_month = "0" + str_month;
-        }
-
-        String str_day = "" + cur_day;
-        if (str_day.length() == 1) {
-            str_day = "0" + str_day;
-        }
-        String str_date = cur_year + "-" + str_month + "-" + str_day;
-        sps.putString(context,"date",""+str_date);*/
 
 
         Calendar calendar3 = Calendar.getInstance();
@@ -1014,17 +819,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         }
         c1.moveToFirst();
         if (c1.getCount() != 0) {
-            NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-            if (sps.getInt(Opposite_word.this, "purchase_ads") == 1) {
-                native_banner_ad_container.setVisibility(View.GONE);
-                System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-            } else {
-                if (Utils.isNetworkAvailable(Opposite_word.this)) {
-                    // native_banner_ad_container.setVisibility(View.VISIBLE);
-                } else {
-                    native_banner_ad_container.setVisibility(View.GONE);
-                }
-            }
+
             head.setVisibility(View.VISIBLE);
             u_id = c1.getInt(c1.getColumnIndexOrThrow("id"));
             questionid = c1.getInt(c1.getColumnIndexOrThrow("questionid"));
@@ -1039,22 +834,6 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             int letter_type = first.length;
             // Toast.makeText(Odd_man_out.this, ""+clue, Toast.LENGTH_SHORT).show();
 
-
-
-          /*  long ptime=0;
-            int clue=0;
-            Cursor cs;
-            cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + questionid + "'");
-            cs.moveToFirst();
-            if(cs.getCount()!=0) {
-                clue=cs.getInt(cs.getColumnIndexOrThrow("clue"));
-            }
-            if (clue!=0){
-                random=clue;
-                hintshow();
-                hint.setEnabled(false);
-            }
-*/
 
             if (letter_type == 1) {
                 bt1.setVisibility(View.VISIBLE);
@@ -1255,8 +1034,6 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         cs.moveToFirst();
         if (cs.getCount() != 0) {
             String dis = cs.getString(cs.getColumnIndexOrThrow("sf_words"));
-           /* discription.setVisibility(View.VISIBLE);
-            discription.setText(dis);*/
             coinanim();
             //   Toast.makeText(Odd_man_out.this, "Correct Answer", Toast.LENGTH_SHORT).show();
             spz3.play(soundId3, sv, sv, 0, 0, sv);
@@ -1273,13 +1050,8 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             ttstop = focus.getBase() - SystemClock.elapsedRealtime();
             focus.stop();
             price_update();
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    setSc();
-                }
-            }, 2300);
+            Handler handler = new Handler(Looper.myLooper());
+            handler.postDelayed(() -> adShow(), 2300);
         } else {
             //  Toast.makeText(Odd_man_out.this, "Wrong Answer", Toast.LENGTH_SHORT).show();
             hint.clearAnimation();
@@ -1297,8 +1069,6 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                 String answer = c1.getString(c1.getColumnIndexOrThrow("answer"));
                 show_answer(answer);
                 String dis = c1.getString(c1.getColumnIndexOrThrow("sf_words"));
-              /*  discription.setVisibility(View.VISIBLE);
-                discription.setText(dis);*/
             }
 
             spz2.play(soundId2, sv, sv, 0, 0, sv);
@@ -1310,13 +1080,8 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             } else {
                 newhelper2.executeSql("UPDATE newmaintable2 SET daily='1' WHERE questionid='" + questionid + "'and gameid=" + gameid + "");
             }
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    setSc();
-                }
-            }, 2300);
+            Handler handler = new Handler(Looper.myLooper());
+            handler.postDelayed(() -> adShow(), 2300);
         }
     }
 
@@ -1433,51 +1198,25 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
             TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
-            yes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    focus.stop();
-                    newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                    newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                    if (main_act.equals("")) {
-                        finish();
-                        openDialog_s.dismiss();
+            yes.setOnClickListener(v -> {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                if (main_act.equals("")) {
+                    finish();
+                    openDialog_s.dismiss();
 
-                        Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
-                        startActivity(i);
-                    } else {
-                        finish();
-                        openDialog_s.dismiss();
-                    }
-
-                    //ad
-                    if (sps.getInt(context, "purchase_ads") == 0) {
-                        if (sps.getInt(getApplicationContext(), "game_exit_ins") == 4) {
-                            sps.putInt(getApplicationContext(), "game_exit_ins", 0);
-                            if (Utils.isNetworkAvailable(getApplicationContext())) {
-                                if (game_exit_ins != null && game_exit_ins.isReady()) {
-                                    openDialog_p.dismiss();
-                                    game_exit_ins.showAd();
-                                }
-                            }
-                        } else {
-                            openDialog_p.dismiss();
-                            sps.putInt(getApplicationContext(), "game_exit_ins", (sps.getInt(getApplicationContext(), "game_exit_ins") + 1));
-                        }
-                    } else {
-                        openDialog_p.dismiss();
-                    }
-                    //ad
+                    Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
+                    startActivity(i);
+                } else {
+                    finish();
+                    openDialog_s.dismiss();
                 }
-            });
-            no.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
-                    openDialog_p.dismiss();
-                }
+                openDialog_p.dismiss();
             });
+            no.setOnClickListener(v -> openDialog_p.dismiss());
             openDialog_p.show();
 
 
@@ -1487,6 +1226,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
     @Override
     protected void onPause() {
         super.onPause();
+        if (handler != null) handler.removeCallbacks(my_runnable);
         focus.stop();
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
         String date = sps.getString(Opposite_word.this, "date");
@@ -1507,8 +1247,8 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
     protected void onResume() {
         super.onResume();
-        long ptime = 0;
-        int clue = 0;
+        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS"));
 
         String date = sps.getString(Opposite_word.this, "date");
         int pos;
@@ -1521,7 +1261,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             cs.moveToFirst();
             if (cs.getCount() != 0) {
                 dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-                clue = cs.getInt(cs.getColumnIndexOrThrow("clue"));
+                noofclue = cs.getInt(cs.getColumnIndexOrThrow("clue"));
             }
         } else {
             pos = 2;
@@ -1529,25 +1269,12 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             cs.moveToFirst();
             if (cs.getCount() != 0) {
                 dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-                clue = cs.getInt(cs.getColumnIndexOrThrow("clue"));
+                noofclue = cs.getInt(cs.getColumnIndexOrThrow("clue"));
             }
         }
 
 
-      /*  Cursor cs;
-        cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + questionid + "'");
-        cs.moveToFirst();
-        if (cs.getCount() != 0) {
-            ptime = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-            clue = cs.getInt(cs.getColumnIndexOrThrow("clue"));
-        }*/
-
         // Toast.makeText(Odd_man_out.this, "random"+clue, Toast.LENGTH_SHORT).show();
-       /* if (clue!=0){
-            random=clue;
-            hintshow();
-            hint.setEnabled(false);
-        }*/
         if (sps.getString(Opposite_word.this, "odd_time_start").equals("")) {
 
             System.out.println("######################Timer not");
@@ -1573,13 +1300,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bts4.startAnimation(clickzoom2);
                     bts2.setEnabled(false);
                     bts4.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts2.setVisibility(View.INVISIBLE);
-                            bts4.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bts2.setVisibility(View.INVISIBLE);
+                        bts4.setVisibility(View.INVISIBLE);
                     }, 1000);
 
                 } else if (random == 2) {
@@ -1589,13 +1313,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bts2.startAnimation(clickzoom2);
                     bts3.setEnabled(false);
                     bts2.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts3.setVisibility(View.INVISIBLE);
-                            bts2.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bts3.setVisibility(View.INVISIBLE);
+                        bts2.setVisibility(View.INVISIBLE);
                     }, 1000);
 
                 } else if (random == 3) {
@@ -1605,13 +1326,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bts4.startAnimation(clickzoom2);
                     bts2.setEnabled(false);
                     bts4.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts2.setVisibility(View.INVISIBLE);
-                            bts4.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bts2.setVisibility(View.INVISIBLE);
+                        bts4.setVisibility(View.INVISIBLE);
                     }, 1000);
                 }
             } else if (ans_position == 2) {
@@ -1622,13 +1340,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bts4.startAnimation(clickzoom2);
                     bts1.setEnabled(false);
                     bts4.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts1.setVisibility(View.INVISIBLE);
-                            bts4.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bts1.setVisibility(View.INVISIBLE);
+                        bts4.setVisibility(View.INVISIBLE);
                     }, 1000);
 
                 } else if (random == 2) {
@@ -1638,13 +1353,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bts4.startAnimation(clickzoom2);
                     bts3.setEnabled(false);
                     bts4.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts3.setVisibility(View.INVISIBLE);
-                            bts4.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bts3.setVisibility(View.INVISIBLE);
+                        bts4.setVisibility(View.INVISIBLE);
                     }, 1000);
 
 
@@ -1655,13 +1367,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bts3.startAnimation(clickzoom2);
                     bts1.setEnabled(false);
                     bts3.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts1.setVisibility(View.INVISIBLE);
-                            bts3.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bts1.setVisibility(View.INVISIBLE);
+                        bts3.setVisibility(View.INVISIBLE);
                     }, 1000);
 
                 }
@@ -1674,13 +1383,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bts4.startAnimation(clickzoom2);
                     bts1.setEnabled(false);
                     bts4.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts1.setVisibility(View.INVISIBLE);
-                            bts4.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bts1.setVisibility(View.INVISIBLE);
+                        bts4.setVisibility(View.INVISIBLE);
                     }, 1000);
 
 
@@ -1691,13 +1397,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bts1.startAnimation(clickzoom2);
                     bts1.setEnabled(false);
                     bts2.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts2.setVisibility(View.INVISIBLE);
-                            bts1.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bts2.setVisibility(View.INVISIBLE);
+                        bts1.setVisibility(View.INVISIBLE);
                     }, 1000);
 
 
@@ -1708,13 +1411,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bts2.startAnimation(clickzoom2);
                     bts4.setEnabled(false);
                     bts2.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts4.setVisibility(View.INVISIBLE);
-                            bts2.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bts4.setVisibility(View.INVISIBLE);
+                        bts2.setVisibility(View.INVISIBLE);
                     }, 1000);
 
                 }
@@ -1727,13 +1427,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bts2.startAnimation(clickzoom2);
                     bts1.setEnabled(false);
                     bts2.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts1.setVisibility(View.INVISIBLE);
-                            bts2.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bts1.setVisibility(View.INVISIBLE);
+                        bts2.setVisibility(View.INVISIBLE);
                     }, 1000);
 
 
@@ -1744,13 +1441,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bts3.startAnimation(clickzoom2);
                     bts1.setEnabled(false);
                     bts3.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts1.setVisibility(View.INVISIBLE);
-                            bts3.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bts1.setVisibility(View.INVISIBLE);
+                        bts3.setVisibility(View.INVISIBLE);
                     }, 1000);
 
                 } else if (random == 3) {
@@ -1760,13 +1454,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bts2.startAnimation(clickzoom2);
                     bts3.setEnabled(false);
                     bts2.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts3.setVisibility(View.INVISIBLE);
-                            bts2.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bts3.setVisibility(View.INVISIBLE);
+                        bts2.setVisibility(View.INVISIBLE);
                     }, 1000);
 
 
@@ -1785,14 +1476,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt2.setEnabled(false);
                     bt4.setEnabled(false);
                     bt6.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt2.setVisibility(View.INVISIBLE);
-                            bt4.setVisibility(View.INVISIBLE);
-                            bt6.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt2.setVisibility(View.INVISIBLE);
+                        bt4.setVisibility(View.INVISIBLE);
+                        bt6.setVisibility(View.INVISIBLE);
                     }, 1000);
 
 
@@ -1808,14 +1496,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt3.setEnabled(false);
                     bt2.setEnabled(false);
                     bt5.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt3.setVisibility(View.INVISIBLE);
-                            bt2.setVisibility(View.INVISIBLE);
-                            bt5.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt3.setVisibility(View.INVISIBLE);
+                        bt2.setVisibility(View.INVISIBLE);
+                        bt5.setVisibility(View.INVISIBLE);
                     }, 1000);
 
                 } else if (random == 3) {
@@ -1829,14 +1514,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt3.setEnabled(false);
                     bt4.setEnabled(false);
                     bt6.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt3.setVisibility(View.INVISIBLE);
-                            bt4.setVisibility(View.INVISIBLE);
-                            bt6.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt3.setVisibility(View.INVISIBLE);
+                        bt4.setVisibility(View.INVISIBLE);
+                        bt6.setVisibility(View.INVISIBLE);
                     }, 1000);
                 }
 
@@ -1852,14 +1534,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt1.setEnabled(false);
                     bt3.setEnabled(false);
                     bt6.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt1.setVisibility(View.INVISIBLE);
-                            bt3.setVisibility(View.INVISIBLE);
-                            bt6.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt1.setVisibility(View.INVISIBLE);
+                        bt3.setVisibility(View.INVISIBLE);
+                        bt6.setVisibility(View.INVISIBLE);
                     }, 1000);
                 } else if (random == 2) {
                     bt3.setBackgroundResource(R.color.eliminate);
@@ -1871,14 +1550,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt3.setEnabled(false);
                     bt6.setEnabled(false);
                     bt5.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt3.setVisibility(View.INVISIBLE);
-                            bt6.setVisibility(View.INVISIBLE);
-                            bt5.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt3.setVisibility(View.INVISIBLE);
+                        bt6.setVisibility(View.INVISIBLE);
+                        bt5.setVisibility(View.INVISIBLE);
                     }, 1000);
 
 
@@ -1894,14 +1570,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt5.setEnabled(false);
                     bt4.setEnabled(false);
                     bt3.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt5.setVisibility(View.INVISIBLE);
-                            bt4.setVisibility(View.INVISIBLE);
-                            bt3.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt5.setVisibility(View.INVISIBLE);
+                        bt4.setVisibility(View.INVISIBLE);
+                        bt3.setVisibility(View.INVISIBLE);
                     }, 1000);
                 }
 
@@ -1918,14 +1591,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt1.setEnabled(false);
                     bt2.setEnabled(false);
                     bt6.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt1.setVisibility(View.INVISIBLE);
-                            bt2.setVisibility(View.INVISIBLE);
-                            bt6.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt1.setVisibility(View.INVISIBLE);
+                        bt2.setVisibility(View.INVISIBLE);
+                        bt6.setVisibility(View.INVISIBLE);
                     }, 1000);
 
                 } else if (random == 2) {
@@ -1940,14 +1610,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt2.setEnabled(false);
                     bt1.setEnabled(false);
                     bt5.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt2.setVisibility(View.INVISIBLE);
-                            bt1.setVisibility(View.INVISIBLE);
-                            bt5.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt2.setVisibility(View.INVISIBLE);
+                        bt1.setVisibility(View.INVISIBLE);
+                        bt5.setVisibility(View.INVISIBLE);
                     }, 1000);
                 } else if (random == 3) {
 
@@ -1961,14 +1628,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt4.setEnabled(false);
                     bt2.setEnabled(false);
                     bt6.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt4.setVisibility(View.INVISIBLE);
-                            bt2.setVisibility(View.INVISIBLE);
-                            bt6.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt4.setVisibility(View.INVISIBLE);
+                        bt2.setVisibility(View.INVISIBLE);
+                        bt6.setVisibility(View.INVISIBLE);
                     }, 1000);
                 }
 
@@ -1985,14 +1649,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt1.setEnabled(false);
                     bt2.setEnabled(false);
                     bt6.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt1.setVisibility(View.INVISIBLE);
-                            bt2.setVisibility(View.INVISIBLE);
-                            bt6.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt1.setVisibility(View.INVISIBLE);
+                        bt2.setVisibility(View.INVISIBLE);
+                        bt6.setVisibility(View.INVISIBLE);
                     }, 1000);
                 } else if (random == 2) {
 
@@ -2007,14 +1668,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt1.setEnabled(false);
                     bt3.setEnabled(false);
                     bt5.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt1.setVisibility(View.INVISIBLE);
-                            bt3.setVisibility(View.INVISIBLE);
-                            bt5.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt1.setVisibility(View.INVISIBLE);
+                        bt3.setVisibility(View.INVISIBLE);
+                        bt5.setVisibility(View.INVISIBLE);
                     }, 1000);
 
                 } else if (random == 3) {
@@ -2029,14 +1687,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt2.setEnabled(false);
                     bt5.setEnabled(false);
                     bt6.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt2.setVisibility(View.INVISIBLE);
-                            bt5.setVisibility(View.INVISIBLE);
-                            bt6.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt2.setVisibility(View.INVISIBLE);
+                        bt5.setVisibility(View.INVISIBLE);
+                        bt6.setVisibility(View.INVISIBLE);
                     }, 1000);
                 }
 
@@ -2053,14 +1708,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt1.setEnabled(false);
                     bt2.setEnabled(false);
                     bt6.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt1.setVisibility(View.INVISIBLE);
-                            bt2.setVisibility(View.INVISIBLE);
-                            bt6.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt1.setVisibility(View.INVISIBLE);
+                        bt2.setVisibility(View.INVISIBLE);
+                        bt6.setVisibility(View.INVISIBLE);
                     }, 1000);
                 } else if (random == 2) {
 
@@ -2074,14 +1726,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt1.setEnabled(false);
                     bt3.setEnabled(false);
                     bt4.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt1.setVisibility(View.INVISIBLE);
-                            bt3.setVisibility(View.INVISIBLE);
-                            bt4.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt1.setVisibility(View.INVISIBLE);
+                        bt3.setVisibility(View.INVISIBLE);
+                        bt4.setVisibility(View.INVISIBLE);
                     }, 1000);
 
                 } else if (random == 3) {
@@ -2097,14 +1746,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt2.setEnabled(false);
                     bt4.setEnabled(false);
                     bt6.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt2.setVisibility(View.INVISIBLE);
-                            bt4.setVisibility(View.INVISIBLE);
-                            bt6.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt2.setVisibility(View.INVISIBLE);
+                        bt4.setVisibility(View.INVISIBLE);
+                        bt6.setVisibility(View.INVISIBLE);
                     }, 1000);
                 }
 
@@ -2121,14 +1767,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt1.setEnabled(false);
                     bt2.setEnabled(false);
                     bt5.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt1.setVisibility(View.INVISIBLE);
-                            bt2.setVisibility(View.INVISIBLE);
-                            bt5.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt1.setVisibility(View.INVISIBLE);
+                        bt2.setVisibility(View.INVISIBLE);
+                        bt5.setVisibility(View.INVISIBLE);
                     }, 1000);
                 } else if (random == 2) {
                     bt1.setBackgroundResource(R.color.eliminate);
@@ -2141,14 +1784,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt1.setEnabled(false);
                     bt3.setEnabled(false);
                     bt4.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt1.setVisibility(View.INVISIBLE);
-                            bt3.setVisibility(View.INVISIBLE);
-                            bt4.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt1.setVisibility(View.INVISIBLE);
+                        bt3.setVisibility(View.INVISIBLE);
+                        bt4.setVisibility(View.INVISIBLE);
                     }, 1000);
                 } else if (random == 3) {
                     bt2.setBackgroundResource(R.color.eliminate);
@@ -2161,14 +1801,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bt2.setEnabled(false);
                     bt4.setEnabled(false);
                     bt5.setEnabled(false);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bt2.setVisibility(View.INVISIBLE);
-                            bt4.setVisibility(View.INVISIBLE);
-                            bt5.setVisibility(View.INVISIBLE);
-                        }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        bt2.setVisibility(View.INVISIBLE);
+                        bt4.setVisibility(View.INVISIBLE);
+                        bt5.setVisibility(View.INVISIBLE);
                     }, 1000);
                 }
             }
@@ -2196,20 +1833,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bts4.setBackgroundResource(R.color.eliminate);
                     bts1.startAnimation(clickzoom2);
                     bts4.startAnimation(clickzoom2);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts1.setVisibility(View.INVISIBLE);
-                        }
-                    }, 1000);
-                    Handler handler2 = new Handler();
-                    handler2.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts4.setVisibility(View.INVISIBLE);
-                        }
-                    }, 1000);
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> bts1.setVisibility(View.INVISIBLE), 1000);
+                    Handler handler2 = new Handler(Looper.myLooper());
+                    handler2.postDelayed(() -> bts4.setVisibility(View.INVISIBLE), 1000);
 
 
                 } else if (random == 2) {
@@ -2217,20 +1844,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bts4.setBackgroundResource(R.color.eliminate);
                     bts3.startAnimation(clickzoom2);
                     bts4.startAnimation(clickzoom2);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts3.setVisibility(View.INVISIBLE);
-                        }
-                    }, 1000);
-                    Handler handler2 = new Handler();
-                    handler2.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts4.setVisibility(View.INVISIBLE);
-                        }
-                    }, 1000);
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> bts3.setVisibility(View.INVISIBLE), 1000);
+                    Handler handler2 = new Handler(Looper.myLooper());
+                    handler2.postDelayed(() -> bts4.setVisibility(View.INVISIBLE), 1000);
 
 
                 } else if (random == 3) {
@@ -2238,20 +1855,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     bts3.setBackgroundResource(R.color.eliminate);
                     bts1.startAnimation(clickzoom2);
                     bts3.startAnimation(clickzoom2);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts1.setVisibility(View.INVISIBLE);
-                        }
-                    }, 1000);
-                    Handler handler2 = new Handler();
-                    handler2.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bts3.setVisibility(View.INVISIBLE);
-                        }
-                    }, 1000);
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> bts1.setVisibility(View.INVISIBLE), 1000);
+                    Handler handler2 = new Handler(Looper.myLooper());
+                    handler2.postDelayed(() -> bts3.setVisibility(View.INVISIBLE), 1000);
                 }
 
             } else if (ans_position == 3) {
@@ -2405,110 +2012,79 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
         transAnimation.setDuration(700);
         p_coins.startAnimation(transAnimation);
-        p_coins.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                p_coins.setVisibility(View.INVISIBLE);
-            }
-        }, transAnimation.getDuration());
+        p_coins.postDelayed(() -> p_coins.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
 
         ////
 
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //play1.start();
-                spz4.play(soundId4, sv, sv, 0, 0, sv);
-                p_coins.setVisibility(View.VISIBLE);
-                int[] locationInWindow = new int[2];
-                p_coins.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                p_coins.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                s_score_edit.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                s_score_edit.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
-                transAnimation.setDuration(1000);
-                p_coins.startAnimation(transAnimation);
-                p_coins.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        p_coins.setVisibility(View.INVISIBLE);
-                    }
-                }, transAnimation.getDuration());
-            }
+        Handler handler = new Handler(Looper.myLooper());
+        handler.postDelayed(() -> {
+            //play1.start();
+            spz4.play(soundId4, sv, sv, 0, 0, sv);
+            p_coins.setVisibility(View.VISIBLE);
+            int[] locationInWindow1 = new int[2];
+            p_coins.getLocationInWindow(locationInWindow1);
+            int[] locationOnScreen1 = new int[2];
+            p_coins.getLocationOnScreen(locationOnScreen1);
+            float sourceX1 = locationOnScreen1[0];
+            float sourceY1 = locationOnScreen1[1];
+            int[] locationInWindowSecond1 = new int[2];
+            s_score_edit.getLocationInWindow(locationInWindowSecond1);
+            int[] locationOnScreenSecond1 = new int[2];
+            s_score_edit.getLocationOnScreen(locationOnScreenSecond1);
+            float destinationX1 = locationOnScreenSecond1[0];
+            float destinationY1 = locationOnScreenSecond1[1];
+            TranslateAnimation transAnimation1 = new TranslateAnimation(0f, (destinationX1 - sourceX1), 0f, (destinationY1 - sourceY1));
+            transAnimation1.setDuration(1000);
+            p_coins.startAnimation(transAnimation1);
+            p_coins.postDelayed(() -> p_coins.setVisibility(View.INVISIBLE), transAnimation1.getDuration());
         }, 1000);
 
-        new Thread(new Runnable() {
-
-            public void run() {
-                int es = e2 + 20;
-                while (e2 < es) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    s_score_edit.post(new Runnable() {
-
-                        public void run() {
-
-                            s_score_edit.setText("" + e2);
-
-                        }
-
-                    });
-                    e2++;
+        new Thread(() -> {
+            int es = e2 + 20;
+            while (e2 < es) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
-
+                s_score_edit.post(() -> s_score_edit.setText("" + e2));
+                e2++;
             }
 
         }).start();
 
-        Handler handler30 = new Handler();
-        handler30.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
-                s_score_edit.startAnimation(levels1);
-            }
+        Handler handler30 = new Handler(Looper.myLooper());
+        handler30.postDelayed(() -> {
+            Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
+            s_score_edit.startAnimation(levels1);
         }, 2200);
 
-        Handler handler21 = new Handler();
-        handler21.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                if (cfx.getCount() != 0) {
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + 20;
-                    String aStringx = Integer.toString(spx);
-                    s_score_edit.setText(aStringx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                }
-
-
-                Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
-                ch.moveToFirst();
-                if (ch.getCount() != 0) {
-                    int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
-                    int shh = sh + 50;
-                    myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
-
-                }
-
-
-                // setSc();
+        Handler handler21 = new Handler(Looper.myLooper());
+        handler21.postDelayed(() -> {
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            if (cfx.getCount() != 0) {
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                int spx = skx + 20;
+                String aStringx = Integer.toString(spx);
+                s_score_edit.setText(aStringx);
+                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
             }
+
+
+            Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
+            ch.moveToFirst();
+            if (ch.getCount() != 0) {
+                int sh = ch.getInt(ch.getColumnIndexOrThrow("l_points"));
+                int shh = sh + 50;
+                myDbHelper.executeSql("UPDATE score SET l_points='" + shh + "'");
+
+            }
+
+
+            // setSc();
         }, 1200);
 
     }
@@ -2548,96 +2124,65 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
         transAnimation.setDuration(700);
         p_coins_red.startAnimation(transAnimation);
-        p_coins_red.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                p_coins_red.setVisibility(View.INVISIBLE);
-            }
-        }, transAnimation.getDuration());
+        p_coins_red.postDelayed(() -> p_coins_red.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
 
         ////
 
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //play1.start();
-                spz4.play(soundId4, sv, sv, 0, 0, sv);
-                p_coins_red.setVisibility(View.VISIBLE);
-                int[] locationInWindow = new int[2];
-                p_coins_red.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                p_coins_red.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                p_coins.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                p_coins.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 0f, (destinationY - sourceY));
-                transAnimation.setDuration(1000);
-                p_coins_red.startAnimation(transAnimation);
-                p_coins_red.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        p_coins_red.setVisibility(View.INVISIBLE);
-                    }
-                }, transAnimation.getDuration());
-            }
+        Handler handler = new Handler(Looper.myLooper());
+        handler.postDelayed(() -> {
+            //play1.start();
+            spz4.play(soundId4, sv, sv, 0, 0, sv);
+            p_coins_red.setVisibility(View.VISIBLE);
+            int[] locationInWindow1 = new int[2];
+            p_coins_red.getLocationInWindow(locationInWindow1);
+            int[] locationOnScreen1 = new int[2];
+            p_coins_red.getLocationOnScreen(locationOnScreen1);
+            float sourceX1 = locationOnScreen1[0];
+            float sourceY1 = locationOnScreen1[1];
+            int[] locationInWindowSecond1 = new int[2];
+            p_coins.getLocationInWindow(locationInWindowSecond1);
+            int[] locationOnScreenSecond1 = new int[2];
+            p_coins.getLocationOnScreen(locationOnScreenSecond1);
+            float destinationX1 = locationOnScreenSecond1[0];
+            float destinationY1 = locationOnScreenSecond1[1];
+            TranslateAnimation transAnimation1 = new TranslateAnimation(0f, (destinationX1 - sourceX1), 0f, (destinationY1 - sourceY1));
+            transAnimation1.setDuration(1000);
+            p_coins_red.startAnimation(transAnimation1);
+            p_coins_red.postDelayed(() -> p_coins_red.setVisibility(View.INVISIBLE), transAnimation1.getDuration());
         }, 1000);
 
-        new Thread(new Runnable() {
-
-            public void run() {
-                int es = e2 - 50;
-                while (e2 < es) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    s_score_edit.post(new Runnable() {
-
-                        public void run() {
-
-                            s_score_edit.setText("" + e2);
-
-                        }
-
-                    });
-                    e2++;
+        new Thread(() -> {
+            int es = e2 - 50;
+            while (e2 < es) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
-
+                s_score_edit.post(() -> s_score_edit.setText("" + e2));
+                e2++;
             }
 
         }).start();
 
-        Handler handler30 = new Handler();
-        handler30.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
-                s_score_edit.startAnimation(levels1);
-            }
+        Handler handler30 = new Handler(Looper.myLooper());
+        handler30.postDelayed(() -> {
+            Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
+            s_score_edit.startAnimation(levels1);
         }, 2200);
 
-        Handler handler21 = new Handler();
-        handler21.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                int spx = skx - 50;
-                String aStringx = Integer.toString(spx);
-                s_score_edit.setText(aStringx);
-                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                // setSc();
-            }
+        Handler handler21 = new Handler(Looper.myLooper());
+        handler21.postDelayed(() -> {
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            int spx = skx - 50;
+            String aStringx = Integer.toString(spx);
+            s_score_edit.setText(aStringx);
+            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+            // setSc();
         }, 1300);
 
     }
@@ -2675,22 +2220,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                     newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
 
-/*
-                    String date = sps.getString(Picture_Game_Hard.this, "date");
-                    int pos;
-                    if (date.equals("0")) {
-                        pos = 1;
-                        myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                    } else {
-                        pos = 2;
-                        myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                    }*/
-
-                    //Uri uri = Uri.fromFile(file);
+//Uri uri = Uri.fromFile(file);
                     Uri uri = FileProvider.getUriForFile(Opposite_word.this, Opposite_word.this.getPackageName(), file);
                     Intent share = new Intent();
                     share.setAction(Intent.ACTION_SEND);
@@ -2704,18 +2234,6 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     startActivity(Intent.createChooser(share, "Share Card Using"));
                 } else {
                     Toast.makeText(Opposite_word.this, "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                  /*  CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout);
-                    Snackbar snackbar = Snackbar.make(coordinatorLayout, "இந்த செயலி தங்களிடம் இல்லை", Snackbar.LENGTH_SHORT);
-                    final View view = snackbar.getView();
-                    TextView textView = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
-                    view.setBackgroundResource(R.drawable.answershow);
-                    textView.setTextColor(Color.parseColor("#FFFFFF"));
-                    textView.setGravity(Gravity.CENTER | Gravity.BOTTOM);
-                    textView.setTextSize(17);
-                    CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
-                    params.gravity = Gravity.TOP;
-                    view.setLayoutParams(params);
-                    snackbar.show();*/
                 }
 
 
@@ -2762,245 +2280,151 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             cancel.setVisibility(View.INVISIBLE);
             wpro.setText("இந்த விளையாட்டை தொடர குறைந்தபட்சம் 50  - க்கும் மேற்பட்ட நாணயங்கள் தேவை. எனவே கூடுதல் நாணயங்கள் பெற பகிரவும்.");
         }
-        ss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_earncoin.cancel();
-            }
-        });
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_earncoin.cancel();
-            }
-        });
+        ss.setOnClickListener(v -> openDialog_earncoin.cancel());
+        cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
 
 
         RelativeLayout video = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnvideo);
-        video.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 1;
-                extra_coin_s = 0;
-                if (isNetworkAvailable()) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
+        video.setOnClickListener(v -> {
+            rvo = 1;
+            extra_coin_s = 0;
+            if (isNetworkAvailable()) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
 
-                    if (fb_reward == 1) {
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        String date = sps.getString(Opposite_word.this, "date");
-                        System.out.println("######################Timer ttstop" + ttstop);
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                            newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-                            newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-                        }
-                        reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        openDialog_earncoin.cancel();
-
-                        // mShowVideoButton.setVisibility(View.VISIBLE);
-                    } else {
-                        //reward(context);
-                        rewarded_ad();
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-
-                                Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-
-                            }
-                        }, 2000);
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }
-             /*   rvo = 1;
-                extra_coin_s = 0;
-                if (isNetworkAvailable()) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Opposite_word.this, "" + "Reward video", "Loading...");
-
-
-                   *//* ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                if (fb_reward == 1) {
                     focus.stop();
-                    String date = sps.getString(Odd_man_out.this, "date");
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    String date = sps.getString(Opposite_word.this, "date");
+                    System.out.println("######################Timer ttstop" + ttstop);
                     int pos;
                     if (date.equals("0")) {
                         pos = 1;
-                        myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
+                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                        newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
                     } else {
                         pos = 2;
-                        myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
+                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+                        newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+                    }
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    openDialog_earncoin.cancel();
 
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                    }*//*
-                    if (mRewardedVideoAd.isLoaded()) {
-                        focus.stop();
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        String date = sps.getString(Opposite_word.this, "date");
-                        System.out.println("######################Timer ttstop"+ttstop);
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                            newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-                            newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-                        }
+                    // mShowVideoButton.setVisibility(View.VISIBLE);
+                } else {
+
+                    rewarded_adnew();
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
-                        showRewardedVideo();
-                        openDialog_earncoin.cancel();
 
-                        // mShowVideoButton.setVisibility(View.VISIBLE);
+                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+
+                    }, 2000);
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+            }
+         /*   rvo = 1;
+            extra_coin_s = 0;
+            if (isNetworkAvailable()) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Opposite_word.this, "" + "Reward video", "Loading...");
+
+
+               *//*
+                if (mRewardedVideoAd.isLoaded()) {
+                    focus.stop();
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    String date = sps.getString(Opposite_word.this, "date");
+                    System.out.println("######################Timer ttstop"+ttstop);
+                    int pos;
+                    if (date.equals("0")) {
+                        pos = 1;
+                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                        newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
                     } else {
+                        pos = 2;
+                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+                        newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+                    }
+                    reward_progressBar.dismiss();
+                    showRewardedVideo();
+                    openDialog_earncoin.cancel();
+
+                    // mShowVideoButton.setVisibility(View.VISIBLE);
+                } else {
 
 
-                        startGame();
+                    startGame();
 
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (mRewardedVideoAd.isLoaded()) {
-                                    showRewardedVideo();
-                                    openDialog_earncoin.cancel();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    startGame();
-                                    Toast.makeText(Opposite_word.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
+                    new Handler(Looper.myLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            reward_progressBar.dismiss();
+                            if (mRewardedVideoAd.isLoaded()) {
+                                showRewardedVideo();
+                                openDialog_earncoin.cancel();
+                                // mShowVideoButton.setVisibility(View.VISIBLE);
+                            } else {
+                                startGame();
+                                Toast.makeText(Opposite_word.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                             }
-                        }, 2000);
+                        }
+                    }, 2000);
 
 
-                    }
-                } else {
-
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
-                }*/
-
-            }
-        });
-
-        wp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        openDialog_earncoin.dismiss();
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 12);
-                   /*     if (sps.getString(Picture_Game_Hard.this, "watts_app").equals("")) {
-                            Handler handler8 = new Handler();
-                            handler8.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //Score Adding
-                                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                    cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                    int spx = skx + 20;
-                                    String aStringx = Integer.toString(spx);
-                                    score.setText(aStringx);
-                                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                    sps.putString(Picture_Game_Hard.this, "watts_app", "yes");
-
-                                }
-                            }, 3000);
-                        }*/
-
-                        ///shareing reward
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
                 }
-            }
+            } else {
+
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+
+            }*/
+
         });
-        fb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-              /*  if (isNetworkAvailable()) {
+
+        wp.setOnClickListener(view -> {
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                if (appinstalled) {
                     openDialog_earncoin.dismiss();
+                    Intent i12 = new Intent(Intent.ACTION_SEND);
+                    i12.setType("text/plain");
+                    i12.setPackage("com.whatsapp");
+                    String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
+                            "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                    i12.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i12, "Share via"), 12);
 
-                    btn_str = "invite";
-                    if (isLoggedIn()) {
-                        Bundle params = new Bundle();
-                        params.putString("message", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        showDialogWithoutNotificationBarInvite("apprequests",
-                                params);
-                        // toast("yes");
-                    } else {
-                       // openFacebookSession();
-                        // toast("no");
-                    }
-
+                    ///shareing reward
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }   // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-*/
-            }
-        });
-        gplus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
-                    if (appinstalled) {
-                       /* ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        String date = sps.getString(Picture_Game_Hard.this, "date");
-                        int pos;
-                        if (date.equals("0")) {
-                            pos = 1;
-                            myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                            myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                        } else {
-                            pos = 2;
-                            myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                            myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                        }*/
-                        openDialog_earncoin.dismiss();
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.google.android.apps.plus");
-                        String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 15);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
                 }
 
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+            }
+        });
+        fb.setOnClickListener(view -> {
+        });
+        gplus.setOnClickListener(view -> {
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
+                if (appinstalled) {
+                    openDialog_earncoin.dismiss();
+                    Intent i1 = new Intent(Intent.ACTION_SEND);
+                    i1.setType("text/plain");
+                    i1.setPackage("com.google.android.apps.plus");
+                    String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
+                            "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                    i1.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i1, "Share via"), 15);
+                } else {
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+                }
+
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             }
 
         });
@@ -3018,55 +2442,18 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-     /*   int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ttscores.setText("" + skx);
-                s_score_edit.setText("" + skx);
-                openDialog.dismiss();
-                //mCoinCount = 0;
-            }
+        ok_y.setOnClickListener(v -> {
+            ttscores.setText("" + skx);
+            s_score_edit.setText("" + skx);
+            openDialog.dismiss();
+            //mCoinCount = 0;
         });
 
         openDialog.show();
     }
-/*
-    private void openFacebookSession() {
-        Session.openActiveSession(this, true, Arrays.asList("email",
-                "user_birthday", "user_hometown", "user_location"),
-                new Session.StatusCallback() {
-                    @Override
-                    public void call(Session session, SessionState state,
-                                     Exception exception) {
-
-                        if (session != null && session.isOpened()) {
-                            // toast("open");
-
-                            if (btn_str.equals("share")) {
-
-                                publishFeedDialog();
-                            } else if (btn_str.equals("invite")) {
-
-                                Bundle params = new Bundle();
-                                params.putString("message", "நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" +
-                                        "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
-                                showDialogWithoutNotificationBarInvite(
-                                        "apprequests", params);
-                            }
-                        }
-                    }
-                });
-    }
-
-    public boolean isLoggedIn() {
-        Session session = Session.getActiveSession();
-        return (session != null && session.isOpened());
-    }*/
 
 /*    private void publishFeedDialog() {
         Bundle params = new Bundle();
@@ -3166,91 +2553,6 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         outState.putString(PENDING_ACTION_BUNDLE_KEY, pendingAction.name());
     }
 
-   /* private void showDialogWithoutNotificationBarInvite(String action, Bundle params) {
-        final WebDialog dialog = new WebDialog.Builder(context,
-                Session.getActiveSession(), action, params)
-                .setOnCompleteListener(new WebDialog.OnCompleteListener() {
-                    @Override
-                    public void onComplete(Bundle values,
-                                           FacebookException error) {
-                        if (error != null
-                                && !(error instanceof FacebookOperationCanceledException)) {
-
-                        }
-
-                        try {
-                            System.out.println("Invitation was sent to "
-                                    + values.toString());
-
-                            for (int i = 0; values.containsKey("to[" + i + "]"); i++) {
-                                String curId = values
-                                        .getString("to[" + i + "]");
-
-                            }
-
-                            // lastearn("invaite friends", (values.size() - 1));
-                            if ((values.size() - 1) >= 1) {
-                                //setcoin(values.size() - 1);
-
-                                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                cfx.moveToFirst();
-                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                int spx = (values.size() - 1) * 10;
-                                String aStringx = Integer.toString(spx + skx);
-                                // score.setText(aStringx);
-                                myDbHelper.executeSql("UPDATE score SET coins='" + (spx + skx) + "'");
-
-                                share_earn(spx);
-
-                                // Toast.makeText(Picture_Game_Hard.this, "கூடுதல் நாணயங்கள்  " + spx + "  வழங்கப்பட்டது.தற்போது உங்களது மொத்த நாணயங்கள்" + (spx + skx) + "", Toast.LENGTH_SHORT).show();
-                                // share_earn(10);
-
-                                ///Reward Share
-                                retype = "s";
-                                Calendar calendar3 = Calendar.getInstance();
-                                int cur_year1 = calendar3.get(Calendar.YEAR);
-                                int cur_month1 = calendar3.get(Calendar.MONTH);
-                                int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
-
-                                String str_month1 = "" + (cur_month1 + 1);
-                                if (str_month1.length() == 1) {
-                                    str_month1 = "0" + str_month1;
-                                }
-
-                                String str_day1 = "" + cur_day1;
-                                if (str_day1.length() == 1) {
-                                    str_day1 = "0" + str_day1;
-                                }
-                                final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
-
-                                if (sps.getString(Opposite_word.this, "complite_reg").equals("yes")) {
-                                    Cursor cn = myDbHelper.getQry("SELECT * FROM userdata_r  where type ='" + retype + "'and date='" + str_date1 + "'");
-                                    cn.moveToFirst();
-                                    int gm1 = cn.getInt(cn.getColumnIndexOrThrow("score"));
-                                    int spxx = (values.size() - 1);
-                                    int gm1s = gm1 + spxx;
-                                    myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
-                                }
-                                ///Reward Share
-
-                            }
-
-                        } catch (Exception e) {
-
-                        }
-                    }
-                }).build();
-
-        Window dialog_window = dialog.getWindow();
-        dialog_window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        // dialogAction = action;
-        // dialogParams = params;
-
-        dialog.show();
-    }*/
-
     public void share_earn(int a) {
         final Dialog openDialog = new Dialog(Opposite_word.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.share_dialog2);
@@ -3262,18 +2564,13 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-     /*   int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                s_score_edit.setText("" + skx);
-                openDialog.dismiss();
-                //mCoinCount = 0;
-            }
+        ok_y.setOnClickListener(v -> {
+            s_score_edit.setText("" + skx);
+            openDialog.dismiss();
+            //mCoinCount = 0;
         });
 
         openDialog.show();
@@ -3312,13 +2609,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
 
             b_scores.setText("" + mCoinCount);
-            ok_y.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    s_score_edit.setText("" + skx);
-                    openDialog.dismiss();
-                    //mCoinCount = 0;
-                }
+            ok_y.setOnClickListener(v -> {
+                s_score_edit.setText("" + skx);
+                openDialog.dismiss();
+                //mCoinCount = 0;
             });
             openDialog.show();
         }
@@ -3359,23 +2653,20 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
         TextView tomarrow_coin_earn = (TextView) openDialog.findViewById(R.id.tomarrow_coin_earn);
 
-        ok_y.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                if (cfx.getCount() != 0) {
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + ea;
-                    String aStringx = Integer.toString(spx);
-                    s_score_edit.setText(aStringx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-                    sps.putString(context, "daily_bonus_date", date);
-                }
-
-                openDialog.dismiss();
-
+        ok_y.setOnClickListener(v -> {
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            if (cfx.getCount() != 0) {
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                int spx = skx + ea;
+                String aStringx = Integer.toString(spx);
+                s_score_edit.setText(aStringx);
+                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+                sps.putString(context, "daily_bonus_date", date);
             }
+
+            openDialog.dismiss();
+
         });
         coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
         ea = 100;
@@ -3405,15 +2696,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         }
         prize_data_update(context, ea);
         coin_value = (TextView) openDialog.findViewById(R.id.coin_value);
-      /*  final int vals = reward_play_count * 100;
-        ea = ea + vals;*/
         coin_value.setText("" + ea);
         setval_vid = ea;
         Random rn = new Random();
         randomnod = rn.nextInt(maximumd - minmumd + 1) + minmumd;
 
-        //String r= String.valueOf(w_id);
-        //lt_id.setText(r);
         String ran_score = "";
         if (randomnod == 1) {
             sps.putInt(context, "daily_bonus_count", 1);
@@ -3433,46 +2720,34 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
 
         extra_coin = (LinearLayout) openDialog.findViewById(R.id.extra_coin);
-        extra_coin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                extra_coin_s = 1;
-                if (isNetworkAvailable()) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Opposite_word.this, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
-                        reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward(Opposite_word.this);
-                                    rewarded_ad();
-                                    Toast.makeText(Opposite_word.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-
-
-                    }
+        extra_coin.setOnClickListener(v -> {
+            extra_coin_s = 1;
+            if (isNetworkAvailable()) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Opposite_word.this, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                }
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
+                        reward_progressBar.dismiss();
+                        if (fb_reward == 1) {
+                            show_reward();
+                            // mShowVideoButton.setVisibility(View.VISIBLE);
+                        } else {
+                            //reward(Opposite_word.this);
+                            rewarded_adnew();
+                            Toast.makeText(Opposite_word.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
 
+
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
             }
+
         });
 
-                     /*   b_close.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                openDialog.dismiss();
-                            }
-                        });*/
         openDialog.show();
     }
 
@@ -3484,29 +2759,24 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             if (Utils.isNetworkAvailable(Opposite_word.this)) {
                 download_datas();
             } else {
-                NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-                native_banner_ad_container.setVisibility(View.INVISIBLE);
+
                 head.setVisibility(View.INVISIBLE);
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Opposite_word.this);
                 alertDialogBuilder.setCancelable(false);
                 alertDialogBuilder.setMessage("புதிய வினாக்களை பதிவிறக்கம் செய்ய இணையத்தை ஆன் செய்யவும்")
-                        .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                                sps.putInt(Opposite_word.this, "goto_sett", 1);
-                                dialog.dismiss();
-                            }
+                        .setPositiveButton("அமைப்பு", (dialog, which) -> {
+                            startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                            sps.putInt(Opposite_word.this, "goto_sett", 1);
+                            dialog.dismiss();
                         })
-                        .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                String date = sps.getString(Opposite_word.this, "date");
-                                if (date.equals("0")) {
-                                    backexitnet();
-                                } else {
-                                    backexitnet();
-                                }
-                                dialog.dismiss();
+                        .setNegativeButton("பின்னர்", (dialog, which) -> {
+                            String date = sps.getString(Opposite_word.this, "date");
+                            if (date.equals("0")) {
+                                backexitnet();
+                            } else {
+                                backexitnet();
                             }
+                            dialog.dismiss();
                         })
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
@@ -3516,17 +2786,12 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
         if (requestCode == 16) {
             if (resultCode == -1) {
-              /*  if (sps.getString(Picture_Game_Hard.this, "gplues").equals("yes")) {
-
-                }*/
 
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                 cfx.moveToFirst();
                 int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
                 int spx = skx + 10;
                 String aStringx = Integer.toString(spx);
-                //score.setText(aStringx);
-                // ttscores.setText(aStringx);
                 myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
                 sps.putString(Opposite_word.this, "gplues", "no");
                 share_earn2(10);
@@ -3718,28 +2983,25 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         } else {
             prize_logo.setVisibility(View.GONE);
         }
-        prize_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isNetworkAvailable()) {
-                    if (sps.getString(Opposite_word.this, "price_registration").equals("com")) {
+        prize_logo.setOnClickListener(v -> {
+            if (isNetworkAvailable()) {
+                if (sps.getString(Opposite_word.this, "price_registration").equals("com")) {
+                    finish();
+                    Intent i = new Intent(Opposite_word.this, Game_Status.class);
+                    startActivity(i);
+                } else {
+                    if (sps.getString(Opposite_word.this, "otp_verify").equals("yes")) {
                         finish();
-                        Intent i = new Intent(Opposite_word.this, Game_Status.class);
+                        Intent i = new Intent(Opposite_word.this, LoginActivity.class);
                         startActivity(i);
                     } else {
-                        if (sps.getString(Opposite_word.this, "otp_verify").equals("yes")) {
-                            finish();
-                            Intent i = new Intent(Opposite_word.this, LoginActivity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                            Intent i = new Intent(Opposite_word.this, Price_Login.class);
-                            startActivity(i);
-                        }
+                        finish();
+                        Intent i = new Intent(Opposite_word.this, Price_Login.class);
+                        startActivity(i);
                     }
-                } else {
-                    Toast.makeText(Opposite_word.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(Opposite_word.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -3755,29 +3017,6 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             } else {
                 ads_layout.setVisibility(View.GONE);
             }
-            /*  if (loadaddcontent == 1) {
-                if (native_adView3 != null) {
-                    native_adView3.removeAllViews();
-                }
-                LayoutInflater inflater;
-                inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-                View view1 = inflater.inflate(R.layout.remote_config);
-                ins_app(context, view1, sps.getInt(context, "remoteConfig"));
-                ads_layout.addView(view1);
-            }
-
-            if (isNetworkAvailable()) {
-                load_addinstall(context, ads_layout);
-            } else {
-                if (native_adView3 != null) {
-                    native_adView3.removeAllViews();
-                }
-                LayoutInflater inflater;
-                inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-                View view1 = inflater.inflate(R.layout.remote_config);
-                ins_app(context, view1, sps.getInt(context, "remoteConfig"));
-                ads_layout.addView(view1);
-            }*/
         }
 
 
@@ -3829,170 +3068,110 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         adsicon.startAnimation(shake);
 
         //discription.startAnimation(myFadeInAnimation);
-        discription.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog_dicription();
-            }
-        });
+        discription.setOnClickListener(view -> dialog_dicription());
 
-        vid_earn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 2;
-                if (Utils.isNetworkAvailable(context)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
+        vid_earn.setOnClickListener(v -> {
+            rvo = 2;
+            if (Utils.isNetworkAvailable(context)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    rewardvideo.setVisibility(View.INVISIBLE);
+                } else {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        rewardvideo.setVisibility(View.INVISIBLE);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward(context);
-                                    rewarded_ad();
-                                    Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-                    }
-                } else {
+                        if (fb_reward == 1) {
+                            show_reward();
+                            // mShowVideoButton.setVisibility(View.VISIBLE);
+                        } else {
 
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
+                            rewarded_adnew();
+                            Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
                 }
+            } else {
+
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
             }
+
         });
 
-        rewardvideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvo = 2;
-                if (Utils.isNetworkAvailable(context)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
+        rewardvideo.setOnClickListener(v -> {
+            rvo = 2;
+            if (Utils.isNetworkAvailable(context)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    rewardvideo.setVisibility(View.INVISIBLE);
+                } else {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
-                        rewardedAd.showAd();
-                        rewardvideo.setVisibility(View.INVISIBLE);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                reward_progressBar.dismiss();
-                                if (fb_reward == 1) {
-                                    rewardedAd.showAd();
-                                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    //reward(context);
-                                    rewarded_ad();
-                                    Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, 2000);
-                    }
-                } else {
+                        if (fb_reward == 1) {
+                            show_reward();
+                            // mShowVideoButton.setVisibility(View.VISIBLE);
+                        } else {
 
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
+                            rewarded_adnew();
+                            Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
                 }
-            }
-        });
-        wtp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
+            } else {
 
-                        String msg = ("நான் சொல்லிஅடி செயலியில் படம் பார்த்து கண்டுபிடி நிலை " + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivity(Intent.createChooser(i, "Share via"));
-
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 21);
-
-                       /* if (sps.getString(Picture_Game_Hard.this, "watts_app_s").equals("")) {
-                            Handler handler8 = new Handler();
-                            handler8.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //Score Adding
-                                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                    cfx.moveToFirst();
-                                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                    int spx = skx + 20;
-                                    String aStringx = Integer.toString(spx);
-                                    score.setText(aStringx);
-                                    ttscores.setText(aStringx);
-                                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                    sps.putString(Picture_Game_Hard.this, "watts_app_s", "yes");
-
-
-                                }
-                            }, 3000);
-                        }*/
-
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-                }
-            }
-        });
-        fbs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-          /*      btn_str = "share";
-                if (isLoggedIn()) {
-
-
-                    publishFeedDialog();
-                    // toast("yes");
-                } else {
-                   // openFacebookSession();
-                    // toast("no");
-                }*/
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
             }
         });
-        gplus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isNetworkAvailable()) {
-                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.google.android.apps.plus");
+        wtp.setOnClickListener(view -> {
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.whatsapp");
 
-                        String msg = ("நான் சொல்லிஅடி செயலியில் படம் பார்த்து கண்டுபிடி நிலை " + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 16);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-                    }
+                    String msg = ("நான் சொல்லிஅடி செயலியில் படம் பார்த்து கண்டுபிடி நிலை " + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivity(Intent.createChooser(i, "Share via"));
+
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 21);
+
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-                    // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
                 }
 
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+            }
+        });
+        fbs.setOnClickListener(view -> {
+
+
+        });
+        gplus.setOnClickListener(view -> {
+            if (isNetworkAvailable()) {
+                final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.google.android.apps.plus");
+
+                    String msg = ("நான் சொல்லிஅடி செயலியில் படம் பார்த்து கண்டுபிடி நிலை " + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 16);
+                } else {
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+                }
+
+            } else {
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             }
 
         });
@@ -4014,86 +3193,31 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             r = 0;
         }
 
-        next_continue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        next_continue.setOnClickListener(view -> {
 
-                if (sps.getInt(Opposite_word.this, "purchase_ads") == 1) {
-                    dia_dismiss = 1;
-                    openDialog_s.dismiss();
-                    next();
-                } else {
-                    System.out.println("#############@@@@@@@@@@@@SP" + sps.getInt(getApplicationContext(), "ins_ad_new"));
-                    if (sps.getInt(getApplicationContext(), "ins_ad_new") == 4) {
-                        sps.putInt(getApplicationContext(), "ins_ad_new", 0);
-                        if (Utils.isNetworkAvailable(getApplicationContext())) {
-                            if (ins_game == null || !ins_game.isReady()) {
-                                dia_dismiss = 1;
-                                openDialog_s.dismiss();
-                                next();
-                                industrialload_game();
-                                return;
-                            } else {
-                                ins_game.showAd();
-                            }
+            dia_dismiss = 1;
+            openDialog_s.dismiss();
+            next();
 
-
-
-                     /*   if (interstitialAd_game != null) {
-                            if (interstitialAd_game.isLoaded()) {
-                                interstitialAd_game.show();
-                                interstitialAd_game.setAdListener(new AdListener() {
-                                    @Override
-                                    public void onAdClosed() {
-
-                                        next();
-
-                                        ins_add();
-
-                                    }
-
-                                });
-                            } else {
-                                next();
-                            }
-                        }*/
-                        } else {
-                            dia_dismiss = 1;
-                            openDialog_s.dismiss();
-                            next();
-                        }
-
-                    } else {
-                        dia_dismiss = 1;
-                        openDialog_s.dismiss();
-                        next();
-
-                        sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
-                    }
-                }
-            }
         });
-        openDialog_s.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (dia_dismiss != 1) {
-                    sps.putString(Opposite_word.this, "game_area", "on");
-                    if (main_act.equals("")) {
-                        finish();
-                        openDialog_s.dismiss();
-                        Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
-                        startActivity(i);
-                    } else {
-                        finish();
-                        openDialog_s.dismiss();
-                    }
-
-
+        openDialog_s.setOnDismissListener(dialog -> {
+            if (dia_dismiss != 1) {
+                sps.putString(Opposite_word.this, "game_area", "on");
+                if (main_act.equals("")) {
+                    finish();
+                    openDialog_s.dismiss();
+                    Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
+                    startActivity(i);
                 } else {
-                    dia_dismiss = 0;
+                    finish();
+                    openDialog_s.dismiss();
                 }
 
+
+            } else {
+                dia_dismiss = 0;
             }
+
         });
 
         /*openDialog_s.setOnKeyListener(new DialogInterface.OnKeyListener() {
@@ -4103,49 +3227,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
 
 
-             *//*   final Dialog openDialog1 = new Dialog(Picture_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                openDialog1.setContentView(R.layout.back_pess);
-                TextView yes = (TextView) openDialog1.findViewById(R.id.yes);
-                TextView no = (TextView) openDialog1.findViewById(R.id.no);
-
-                yes.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        c1.reset();
-                        c2.reset();
-                        c3.reset();
-                        c4.reset();
-                        c5.reset();
-                        c6.reset();
-                        c7.reset();
-                        c8.reset();
-                        c9.reset();
-                        c10.reset();
-                        c11.reset();
-                        c12.reset();
-                        c13.reset();
-                        c14.reset();
-                        c15.reset();
-                        c16.reset();
-                        c17.reset();
-                        c18.reset();
-                        c19.reset();
-                        c20.reset();
-                        r1.reset();
-                        w1.reset();
-                        finish();
-                        openDialog1.dismiss();
-                        Intent i = new Intent(Picture_Game_Hard.this, New_Main_Activity.class);
-                        startActivity(i);
-                    }
-                });
-                no.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        openDialog1.dismiss();
-                    }
-                });
-                openDialog1.show();*//*
+             *//*
                 // Prevent dialog close on back press button
                 return keyCode == KeyEvent.KEYCODE_BACK;
             }
@@ -4156,83 +3238,76 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
     }
 
-    public void game_exit_ins_ad() {
+    public void industrialload() {
+        if (mInterstitialAd != null) return;
+        Log.i(TAG, "onAdLoadedCalled");
+        AdRequest adRequest = new AdRequest.Builder().build();
 
-        game_exit_ins = new MaxInterstitialAd(getResources().getString(R.string.Cat_Exit_Ins), this);
-        game_exit_ins.setListener(new MaxAdListener() {
+        InterstitialAd.load(this, getResources().getString(R.string.Game2_Stage_Close_PS), adRequest, new InterstitialAdLoadCallback() {
             @Override
-            public void onAdLoaded(MaxAd ad) {
-
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                interstiallistener();
+                Log.i(TAG, "onAdLoaded");
             }
 
             @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                openDialog_p.dismiss();
-                game_exit_ins_ad();
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                System.out.println("check error" + error);
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                System.out.println("check error2" + error);
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.d(TAG, loadAdError.toString());
+                mInterstitialAd = null;
+                handler = null;
+                Log.i(TAG, "onAdLoadedfailed" + loadAdError.getMessage());
             }
         });
-        game_exit_ins.loadAd();
 
     }
 
-    public void industrialload_game() {
-
-        ins_game = new MaxInterstitialAd(getResources().getString(R.string.Puthayal_Sorkal_Ins_new), this);
-        ins_game.setListener(new MaxAdListener() {
+    public void interstiallistener() {
+        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
             @Override
-            public void onAdLoaded(MaxAd ad) {
-
+            public void onAdDismissedFullScreenContent() {
+                // Called when ad is dismissed.
+                // Set the ad reference to null so you don't show the ad a second time.
+                Log.d(TAG, "Ad dismissed fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                setSc();
+                industrialload();
             }
 
             @Override
-            public void onAdDisplayed(MaxAd ad) {
-
+            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                // Called when ad fails to show.
+                Log.e(TAG, "Ad failed to show fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
+                setSc();
             }
 
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                dia_dismiss = 1;
-                openDialog_s.dismiss();
-                next();
-                industrialload_game();
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-
-            }
         });
-        ins_game.loadAd();
+    }
+
+    public void adShow() {
+        if (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") == Utills.interstitialadCount && mInterstitialAd != null) {
+            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
+            Utills.INSTANCE.Loading_Dialog(this);
+            handler = new Handler(Looper.myLooper());
+            my_runnable = () -> {
+                mInterstitialAd.show(this);
+            };
+            handler.postDelayed(my_runnable, 2500);
+        } else {
+            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") + 1));
+            if (sps.getInt(this, "Game2_Stage_Close_PS") > Utills.interstitialadCount)
+                sps.putInt(this, "Game2_Stage_Close_PS", 0);
+            setSc();
+        }
 
     }
 
@@ -4245,68 +3320,18 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         word5.setVisibility(View.GONE);
         word6.setVisibility(View.GONE);
 
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        close.setOnClickListener(view -> {
 
-                //load_addcontent2(context,ads_layout);
+            //load_addcontent2(context,ads_layout);
 
-              /*  if (isNetworkAvailable()) {
-                    load_addinstall(context, ads_layout);
-                } else {
-                    if (native_adView3 != null) {
-                        native_adView3.removeAllViews();
-                    }
-                    LayoutInflater inflater;
-                    inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-                    View view1 = inflater.inflate(R.layout.remote_config);
-                    ins_app(context, view1, sps.getInt(context, "remoteConfig"));
-                    ads_layout.addView(view1);
-                }
-                if (loadaddcontent == 1) {
-                    if (native_adView3 != null) {
-                        native_adView3.removeAllViews();
-                    }
-                    LayoutInflater inflater;
-                    inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-                    View view1 = inflater.inflate(R.layout.remote_config);
-                    ins_app(context, view1, sps.getInt(context, "remoteConfig"));
-                    ads_layout.addView(view1);
-                }*/
-                openDialog_odd_man.dismiss();
+            openDialog_odd_man.dismiss();
 
-            }
         });
 
-        openDialog_odd_man.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                // dialog dismiss without button press
-                // load_addcontent2(context,ads_layout);
-              /*  if (isNetworkAvailable()) {
-                    load_addinstall(context, ads_layout);
-                } else {
-                    if (native_adView3 != null) {
-                        native_adView3.removeAllViews();
-                    }
-                    LayoutInflater inflater;
-                    inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-                    View view1 = inflater.inflate(R.layout.remote_config);
-                    ins_app(context, view1, sps.getInt(context, "remoteConfig"));
-                    ads_layout.addView(view1);
-                }
-                if (loadaddcontent == 1) {
-                    if (native_adView3 != null) {
-                        native_adView3.removeAllViews();
-                    }
-                    LayoutInflater inflater;
-                    inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-                    View view1 = inflater.inflate(R.layout.remote_config);
-                    ins_app(context, view1, sps.getInt(context, "remoteConfig"));
-                    ads_layout.addView(view1);
-                }*/
+        openDialog_odd_man.setOnCancelListener(dialog -> {
+            // dialog dismiss without button press
+            // load_addcontent2(context,ads_layout);
 
-            }
         });
         Cursor cs;
         cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + questionid + "'");
@@ -4383,56 +3408,41 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             next_game.setText("எதிர்சொல்லை கன்டுபிடி புதிய  பதிவுகள் இல்லை. மேலும் நீங்கள் சிறப்பாக விளையாட  காத்திருக்கும் விளையாட்டுக்கள். ");
         }
 
-        c_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Clue_Game_Hard.class);
-                startActivity(i);
-            }
+        c_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Clue_Game_Hard.class);
+            startActivity(i);
         });
-        s_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Solukul_Sol.class);
-                startActivity(i);
-            }
+        s_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Solukul_Sol.class);
+            startActivity(i);
         });
-        w_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Word_Game_Hard.class);
-                startActivity(i);
-            }
+        w_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Word_Game_Hard.class);
+            startActivity(i);
         });
-        p_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Picture_Game_Hard.class);
-                startActivity(i);
-            }
+        p_game.setOnClickListener(v -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Picture_Game_Hard.class);
+            startActivity(i);
         });
 
-        exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (main_act.equals("")) {
-                    finish();
-                    Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else {
-                    sps.putString(Opposite_word.this, "game_area", "on");
-                    finish();
-                }
-                sps.putString(Opposite_word.this, "date", "0");
+        exit.setOnClickListener(v -> {
+            if (main_act.equals("")) {
+                finish();
+                Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
+                startActivity(i);
+            } else {
+                sps.putString(Opposite_word.this, "game_area", "on");
+                finish();
             }
+            sps.putString(Opposite_word.this, "date", "0");
         });
 
         Cursor ct;
@@ -4472,23 +3482,17 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
         TextView odd_man_out = (TextView) openDialog.findViewById(R.id.odd_man_out);
         TextView matchword = (TextView) openDialog.findViewById(R.id.matchword);
-        matchword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Match_Word.class);
-                startActivity(i);
-            }
+        matchword.setOnClickListener(view -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Match_Word.class);
+            startActivity(i);
         });
-        odd_man_out.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Opposite_word.class);
-                startActivity(i);
-            }
+        odd_man_out.setOnClickListener(view -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Opposite_word.class);
+            startActivity(i);
         });
         Cursor cts;
         cts = newhelper.getQry("select * from newmaintable where isfinish='0' order by id limit 1");
@@ -4511,23 +3515,17 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
         TextView opposite_word = (TextView) openDialog.findViewById(R.id.opposite_word);
         TextView ote_to_tamil = (TextView) openDialog.findViewById(R.id.ote_to_tamil);
-        opposite_word.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Opposite_word.class);
-                startActivity(i);
-            }
+        opposite_word.setOnClickListener(view -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Opposite_word.class);
+            startActivity(i);
         });
-        ote_to_tamil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Ote_to_Tamil.class);
-                startActivity(i);
-            }
+        ote_to_tamil.setOnClickListener(view -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Ote_to_Tamil.class);
+            startActivity(i);
         });
 
         Cursor ctd;
@@ -4586,41 +3584,29 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         }
 
 
-        seerpaduthu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Makeword_Rightorder.class);
-                startActivity(i);
-            }
+        seerpaduthu.setOnClickListener(view -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Makeword_Rightorder.class);
+            startActivity(i);
         });
-        puthir.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Riddle_game.class);
-                startActivity(i);
-            }
+        puthir.setOnClickListener(view -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Riddle_game.class);
+            startActivity(i);
         });
-        tirukural.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Tirukural.class);
-                startActivity(i);
-            }
+        tirukural.setOnClickListener(view -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Tirukural.class);
+            startActivity(i);
         });
-        pilaithiruthu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, WordError_correction.class);
-                startActivity(i);
-            }
+        pilaithiruthu.setOnClickListener(view -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, WordError_correction.class);
+            startActivity(i);
         });
 
         TextView fill_in_blanks = (TextView) openDialog.findViewById(R.id.fill_in_blanks);
@@ -4640,25 +3626,13 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             eng_to_tamil.setVisibility(View.VISIBLE);
         }
 
-        fill_in_blanks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Fill_in_blanks.class);
-                startActivity(i);
-            }
+        fill_in_blanks.setOnClickListener(v -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Fill_in_blanks.class);
+            startActivity(i);
         });
 
-        eng_to_tamil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, English_to_tamil.class);
-                startActivity(i);
-            }
-        });
 
         TextView quiz = (TextView) openDialog.findViewById(R.id.quiz);
         TextView find_words_from_pictures = (TextView) openDialog.findViewById(R.id.find_words_from_pictures);
@@ -4681,33 +3655,24 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             quiz.setVisibility(View.VISIBLE);
         }
 
-        match_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Match_tha_fallows_game.class);
-                startActivity(i);
+        match_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Match_tha_fallows_game.class);
+            startActivity(i);
 
-            }
         });
-        find_words_from_pictures.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Find_words_from_picture.class);
-                startActivity(i);
-            }
+        find_words_from_pictures.setOnClickListener(v -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Find_words_from_picture.class);
+            startActivity(i);
         });
-        quiz.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Quiz_Game.class);
-                startActivity(i);
-            }
+        quiz.setOnClickListener(v -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Quiz_Game.class);
+            startActivity(i);
         });
         Newgame_DataBaseHelper6 newhelper6 = new Newgame_DataBaseHelper6(Opposite_word.this);
         TextView jamble_words = (TextView) openDialog.findViewById(R.id.jamble_words);
@@ -4718,14 +3683,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             jamble_words.setVisibility(View.VISIBLE);
         }
 
-        jamble_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Jamble_word_game.class);
-                startActivity(i);
-            }
+        jamble_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Jamble_word_game.class);
+            startActivity(i);
         });
         TextView missing_words = (TextView) openDialog.findViewById(R.id.missing_words);
         Cursor jmps;
@@ -4734,14 +3696,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         if (jmps.getCount() != 0) {
             missing_words.setVisibility(View.VISIBLE);
         }
-        missing_words.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Missing_Words.class);
-                startActivity(i);
-            }
+        missing_words.setOnClickListener(v -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Missing_Words.class);
+            startActivity(i);
         });
         TextView six_differences = (TextView) openDialog.findViewById(R.id.six_differences);
         Cursor dif;
@@ -4750,42 +3709,31 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         if (dif.getCount() != 0) {
             six_differences.setVisibility(View.VISIBLE);
         }
-        six_differences.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                sps.putString(Opposite_word.this, "date", "0");
-                Intent i = new Intent(Opposite_word.this, Find_difference_between_pictures.class);
-                startActivity(i);
-            }
+        six_differences.setOnClickListener(v -> {
+            finish();
+            sps.putString(Opposite_word.this, "date", "0");
+            Intent i = new Intent(Opposite_word.this, Find_difference_between_pictures.class);
+            startActivity(i);
         });
 
         openDialog.show();
 
-        openDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+        openDialog.setOnKeyListener((dialog, keyCode, event) -> {
 
-                if (main_act.equals("")) {
+            if (main_act.equals("")) {
 
-                    finish();
-                    //     openDialog_s.dismiss();
-                    Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else {
-                    sps.putString(Opposite_word.this, "game_area", "on");
-                    finish();
-                }
-                openDialog.dismiss();
-                sps.putString(Opposite_word.this, "date", "0");
-
-             /*   finish();
-                openDialog.dismiss();
-                //sps.putString(Odd_man_out.this, "date", "0");
+                finish();
+                //     openDialog_s.dismiss();
                 Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
-                startActivity(i);*/
-                return keyCode == KeyEvent.KEYCODE_BACK;
+                startActivity(i);
+            } else {
+                sps.putString(Opposite_word.this, "game_area", "on");
+                finish();
             }
+            openDialog.dismiss();
+            sps.putString(Opposite_word.this, "date", "0");
+
+            return keyCode == KeyEvent.KEYCODE_BACK;
         });
     }
 
@@ -4814,23 +3762,20 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
         }
 
-        toggleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String snd = sps.getString(Opposite_word.this, "snd");
-                System.out.println("*****click");
-                if (snd.equals("off")) {
-                    System.out.println("*****on");
-                    sps.putString(Opposite_word.this, "snd", "on");
-                    toggleButton.setBackgroundResource(R.drawable.on);
-                    sv = 1;
-                }
-                if (snd.equals("on")) {
-                    System.out.println("*****off");
-                    sps.putString(Opposite_word.this, "snd", "off");
-                    toggleButton.setBackgroundResource(R.drawable.off);
-                    sv = 0;
-                }
+        toggleButton.setOnClickListener(v -> {
+            String snd1 = sps.getString(Opposite_word.this, "snd");
+            System.out.println("*****click");
+            if (snd1.equals("off")) {
+                System.out.println("*****on");
+                sps.putString(Opposite_word.this, "snd", "on");
+                toggleButton.setBackgroundResource(R.drawable.on);
+                sv = 1;
+            }
+            if (snd1.equals("on")) {
+                System.out.println("*****off");
+                sps.putString(Opposite_word.this, "snd", "off");
+                toggleButton.setBackgroundResource(R.drawable.off);
+                sv = 0;
             }
         });
         popupWindow.showAsDropDown(p_setting, 50, -10);
@@ -4851,107 +3796,6 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
             newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
         }
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if ((ContextCompat.checkSelfPermission(Opposite_word.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                helpshare(a);
-            }else {
-                if (sps.getString(Opposite_word.this, "permission_grand").equals("")) {
-                    sps.putString(Opposite_word.this, "permission_grand", "yes");
-                    //  First_register("yes");
-                    AlertDialog alertDialog = new AlertDialog.Builder(Opposite_word.this).create();
-                    alertDialog.setMessage("இந்த நிலையை உங்களது நண்பருக்கு பகிர பின்வரும் permission-யை allow செய்யவேண்டும்");
-                    alertDialog.setCancelable(false);
-                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    if ((ContextCompat.checkSelfPermission(Opposite_word.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                        ActivityCompat.requestPermissions(Opposite_word.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                                    } else {
-                                        helpshare(a);
-                                    }
-                                }
-                            });
-
-                    alertDialog.show();
-
-                } else {
-                    if ((ContextCompat.checkSelfPermission(Opposite_word.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                        if (sps.getInt(Opposite_word.this, "permission") == 2) {
-                            AlertDialog alertDialog = new AlertDialog.Builder(Opposite_word.this).create();
-                            alertDialog.setMessage("இந்த நிலையை உங்களது நண்பருக்கு பகிர settingsல் உள்ள permission-யை allow செய்யவேண்டும்");
-                            alertDialog.setCancelable(false);
-                            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                            Intent intent = new Intent();
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                            Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                            intent.setData(uri);
-                                            getApplicationContext().startActivity(intent);
-                                        }
-                                    });
-
-                            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            String date = sps.getString(Opposite_word.this, "date");
-                                            int pos;
-                                            Cursor cs;
-                                            long dscore = 0;
-                                            int noofclue = 0;
-                                            if (date.equals("0")) {
-                                                pos = 1;
-                                                cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + questionid + "'");
-                                                cs.moveToFirst();
-                                                if (cs.getCount() != 0) {
-                                                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-                                                }
-                                            } else {
-                                                pos = 2;
-                                                cs = newhelper2.getQry("select * from newmaintable2 where gameid='" + gameid + "' and questionid='" + questionid + "'");
-                                                cs.moveToFirst();
-                                                if (cs.getCount() != 0) {
-                                                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-                                                }
-                                            }
-                                            if (sps.getString(Opposite_word.this, "odd_time_start").equals("")) {
-
-                                                System.out.println("######################Timer not");
-                                            } else {
-                                                System.out.println("######################Timer start"+dscore);
-                                                focus.setBase(SystemClock.elapsedRealtime() + dscore);
-                                                focus.start();
-                                            }
-                                            dialog.dismiss();
-                                        }
-                                    });
-
-
-                            alertDialog.show();
-                        } else {
-                            if ((ContextCompat.checkSelfPermission(Opposite_word.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                ActivityCompat.requestPermissions(Opposite_word.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                            } else {
-                                helpshare(a);
-                            }
-                        }
-                    } else {
-                        if ((ContextCompat.checkSelfPermission(Opposite_word.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                            ActivityCompat.requestPermissions(Opposite_word.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 151);
-                        } else {
-                            helpshare(a);
-                        }
-                    }
-
-                }
-            }
-
-        } else {
-            helpshare(a);
-        }*/
         helpshare(a);
     }
 
@@ -4970,15 +3814,6 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                 } else if (share_name == 3) {
                     String a = "com.google.android.apps.plus";
                     helpshare(a);
-                }
-            } else {
-                if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                    boolean showRationale = shouldShowRequestPermissionRationale(permissions[0]);
-                    if (!showRationale) {
-                        sps.putInt(Opposite_word.this, "permission", 2);
-                    } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0])) {
-                        sps.putInt(Opposite_word.this, "permission", 0);
-                    }
                 }
             }
         }
@@ -5200,25 +4035,19 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             }
         }
 
-        view1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utils.isNetworkAvailable(context)) {
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(inss.getTag().toString())));
-                } else {
-                    Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
-                }
+        view1.setOnClickListener(view -> {
+            if (Utils.isNetworkAvailable(context)) {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(inss.getTag().toString())));
+            } else {
+                Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
             }
         });
 
-        inss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Utils.isNetworkAvailable(context)) {
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(view.getTag().toString())));
-                } else {
-                    Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
-                }
+        inss.setOnClickListener(view -> {
+            if (Utils.isNetworkAvailable(context)) {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(view.getTag().toString())));
+            } else {
+                Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
             }
         });
     }
@@ -5239,29 +4068,28 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // uiHelper.onDestroy();
         if (openDialog_p != null && openDialog_p.isShowing()) {
             openDialog_p.dismiss();
         }
+        rewardedAd = null;
+        mInterstitialAd = null;
+        handler = null;
     }
 
     public void showcase_dismiss() {
-        Handler handler30 = new Handler();
-        handler30.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        Handler handler30 = new Handler(Looper.myLooper());
+        handler30.postDelayed(() -> {
 
-                if (sps.getString(Opposite_word.this, "showcase_dismiss_opp").equals("")) {
-                    showcase_dismiss();
-                } else {
-                    sps.putString(Opposite_word.this, "odd_time_start", "yes");
-                    sps.putString(Opposite_word.this, "opp_intro", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
-
-                }
+            if (sps.getString(Opposite_word.this, "showcase_dismiss_opp").equals("")) {
+                showcase_dismiss();
+            } else {
+                sps.putString(Opposite_word.this, "odd_time_start", "yes");
+                sps.putString(Opposite_word.this, "opp_intro", "yes");
+                focus.setBase(SystemClock.elapsedRealtime());
+                focus.start();
 
             }
+
         }, 800);
     }
 
@@ -5317,87 +4145,73 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
     }
 
     public void downloaddata_regular() {
-        NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-        native_banner_ad_container.setVisibility(View.INVISIBLE);
+
         head.setVisibility(View.INVISIBLE);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Opposite_word.this);
         // alertDialogBuilder.setTitle("Update available");
         alertDialogBuilder.setMessage("மேலும் விளையாட வினாக்களை பதிவிறக்கம் செய்ய விரும்புகிறீர்களா ?");
         alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setNegativeButton("ஆம்", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //DownLoad Letters and Words
+        alertDialogBuilder.setNegativeButton("ஆம்", (dialog, id) -> {
+            //DownLoad Letters and Words
 
-                if (Utils.isNetworkAvailable(Opposite_word.this)) {
-                    download_datas();
-                } else {
-                    NativeAdLayout native_banner_ad_container = (NativeAdLayout) findViewById(R.id.native_banner_ad_container);
-                    native_banner_ad_container.setVisibility(View.INVISIBLE);
-                    head.setVisibility(View.INVISIBLE);
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Opposite_word.this);                           /* .setTitle("Delete entry")*/
-                    alertDialogBuilder.setCancelable(false);
-                    alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
-                            .setPositiveButton("அமைப்பு", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // continue with delete
+            if (Utils.isNetworkAvailable(Opposite_word.this)) {
+                download_datas();
+            } else {
 
-                                    startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
-                                    sps.putInt(Opposite_word.this, "goto_sett", 1);
+                head.setVisibility(View.INVISIBLE);
+                AlertDialog.Builder alertDialogBuilder1 = new AlertDialog.Builder(Opposite_word.this);                           /* .setTitle("Delete entry")*/
+                alertDialogBuilder1.setCancelable(false);
+                alertDialogBuilder1.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய இணையதள சேவையை சரிபார்க்கவும்")
+                        .setPositiveButton("அமைப்பு", (dialog12, which) -> {
+                            // continue with delete
+
+                            startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                            sps.putInt(Opposite_word.this, "goto_sett", 1);
 
 
-                                    dialog.dismiss();
+                            dialog12.dismiss();
+                        })
+                        .setNegativeButton("பின்னர்", (dialog1, which) -> {
+                            // do nothing
+                            sps.putString(Opposite_word.this, "game_area", "on");
+                            String date = sps.getString(Opposite_word.this, "date");
+                            if (date.equals("0")) {
+                                if (main_act.equals("")) {
+                                    finish();
+                                    Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
+                                    startActivity(i);
+                                } else {
+                                    finish();
                                 }
-                            })
-                            .setNegativeButton("பின்னர்", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // do nothing
-                                    sps.putString(Opposite_word.this, "game_area", "on");
-                                    String date = sps.getString(Opposite_word.this, "date");
-                                    if (date.equals("0")) {
-                                        if (main_act.equals("")) {
-                                            finish();
-                                            Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
-                                            startActivity(i);
-                                        } else {
-                                            finish();
-                                        }
-                                    } else {
-                                        if (date.equals("0")) {
-                                            backexitnet();
-                                        } else {
-                                            backexitnet();
-                                        }
-                                    }
-                                   /* Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
-                                    startActivity(i);*/
-                                    dialog.dismiss();
+                            } else {
+                                if (date.equals("0")) {
+                                    backexitnet();
+                                } else {
+                                    backexitnet();
                                 }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
-                }
-
+                            }
+                            dialog1.dismiss();
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
             }
+
         });
-        alertDialogBuilder.setPositiveButton("இல்லை ", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-               /* Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
-                startActivity(i);*/
-                sps.putString(Opposite_word.this, "game_area", "on");
-                String date = sps.getString(Opposite_word.this, "date");
-                if (date.equals("0")) {
-                    if (main_act.equals("")) {
-                        finish();
-                        Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
-                        startActivity(i);
-                    } else {
-                        finish();
-                    }
-                } else {
+        alertDialogBuilder.setPositiveButton("இல்லை ", (dialog, id) -> {
+            sps.putString(Opposite_word.this, "game_area", "on");
+            String date = sps.getString(Opposite_word.this, "date");
+            if (date.equals("0")) {
+                if (main_act.equals("")) {
                     finish();
                     Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
                     startActivity(i);
+                } else {
+                    finish();
                 }
+            } else {
+                finish();
+                Intent i = new Intent(Opposite_word.this, New_Main_Activity.class);
+                startActivity(i);
             }
         });
         AlertDialog alertDialog = alertDialogBuilder.create();
@@ -5418,37 +4232,34 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         download_data_server.execute();
     }
 
-    public void rewarded_ad() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
+    public void rewarded_adnew() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedAd.load(this, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
             @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error.
+                Log.d(TAG, loadAdError.toString());
+                rewardedAd = null;
             }
 
             @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
+            public void onAdLoaded(@NonNull RewardedAd ad) {
+                rewardedAd = ad;
                 fb_reward = 1;
+                adslisner();
+                Log.d(TAG, "Ad was loaded.");
             }
+        });
+
+
+    }
+
+    public void adslisner() {
+        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
 
             @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_ad();
+            public void onAdDismissedFullScreenContent() {
+                rewarded_adnew();
                 if (reward_status == 1) {
                     if (extra_coin_s == 0) {
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
@@ -5459,15 +4270,12 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
                     }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(() -> {
+                        if (rvo == 2) {
+                            share_earn2(mCoinCount);
+                        } else {
+                            vidcoinearn();
                         }
                     }, 500);
                 } else {
@@ -5475,28 +4283,25 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                 }
 
                 fb_reward = 0;
-                rewardedAd.loadAd();
-
 
             }
 
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
         });
-        rewardedAd.loadAd();
     }
 
+    public void show_reward() {
+        if (rewardedAd != null) {
+            rewardedAd.show(this, rewardItem -> {
+                // Handle the reward.
+                Log.d(TAG, "The user earned the reward.");
+                int rewardAmount = rewardItem.getAmount();
+                String rewardType = rewardItem.getType();
+                reward_status = 1;
+            });
+        } else {
+            Log.d(TAG, "The rewarded ad wasn't ready yet.");
+        }
+    }
 
     private enum PendingAction {
         NONE, POST_PHOTO, POST_STATUS_UPDATE

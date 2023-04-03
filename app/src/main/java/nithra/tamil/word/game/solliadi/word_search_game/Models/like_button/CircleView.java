@@ -43,11 +43,11 @@ public class CircleView extends View {
                     object.setOuterCircleRadiusProgress(value);
                 }
             };
-    private int START_COLOR = 0xFFFF5722;
-    private int END_COLOR = 0xFFFFC107;
     private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
     private final Paint circlePaint = new Paint();
     private final Paint maskPaint = new Paint();
+    private int START_COLOR = 0xFFFF5722;
+    private int END_COLOR = 0xFFFFC107;
     private Bitmap tempBitmap;
     private Canvas tempCanvas;
     private float outerCircleRadiusProgress = 0f;

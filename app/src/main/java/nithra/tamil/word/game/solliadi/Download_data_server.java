@@ -41,20 +41,20 @@ import java.util.zip.ZipInputStream;
 
 public class Download_data_server extends AsyncTask<String, Void, String> {
     public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
-    DataBaseHelper myDbHelper;
-    Newgame_DataBaseHelper newhelper;
-    Newgame_DataBaseHelper2 newhelper2;
-    Newgame_DataBaseHelper3 newhelper3;
-    Newgame_DataBaseHelper4 newhelper4;
-    Newgame_DataBaseHelper5 newhelper5;
-    Newgame_DataBaseHelper6 newhelper6;
+    final DataBaseHelper myDbHelper;
+    final Newgame_DataBaseHelper newhelper;
+    final Newgame_DataBaseHelper2 newhelper2;
+    final Newgame_DataBaseHelper3 newhelper3;
+    final Newgame_DataBaseHelper4 newhelper4;
+    final Newgame_DataBaseHelper5 newhelper5;
+    final Newgame_DataBaseHelper6 newhelper6;
+    final Context context_d;
+    final Download_completed download_completed;
+    final SharedPreference sps = new SharedPreference();
     ProgressDialog progressDialog;
-    Context context_d;
-    Download_completed download_completed;
     String serverResponse = "set data";
     String data = "";
-    String gameids = "", questionids = "", actions = "";
-    SharedPreference sps = new SharedPreference();
+    String gameids, questionids, actions = "";
     DownloadFileAsync downloadFileAsync;
     ProgressDialog nProgressDialog;
 
@@ -106,7 +106,7 @@ public class Download_data_server extends AsyncTask<String, Void, String> {
                     @Override
                     public void onResponse(String ServerResponse) {
                         JSONArray jArray;
-                        JSONObject json_data = null;
+                        JSONObject json_data;
                         try {
                             jArray = new JSONArray(ServerResponse);
                             if (jArray.length() > 0) {
@@ -289,7 +289,7 @@ public class Download_data_server extends AsyncTask<String, Void, String> {
         return null;
     }
 
-    public int unpackZip(String ZIP_FILE_NAME) {
+    public void unpackZip(String ZIP_FILE_NAME) {
         InputStream is;
         ZipInputStream zis;
         try {
@@ -328,18 +328,10 @@ public class Download_data_server extends AsyncTask<String, Void, String> {
 
         } catch (IOException e) {
             e.printStackTrace();
-            return 0;
         }
-        return 1;
     }
 
     class DownloadFileAsync extends AsyncTask<String, String, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // showDialog(DIALOG_DOWNLOAD_PROGRESS);
-        }
 
         @Override
         protected String doInBackground(String... aurl) {

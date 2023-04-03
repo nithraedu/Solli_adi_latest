@@ -17,10 +17,10 @@ import java.io.OutputStream;
 
 public class Newgame_DataBaseHelper4 extends SQLiteOpenHelper {
     private static final String TAG = "DBHelper"; // Tag just for the LogCat
+    private static final String DB_NAME = "Newgames4.db";// Database name
     // window
     // destination path (location) of our database on device
     private static String DB_PATH = "";
-    private static final String DB_NAME = "Newgames4.db";// Database name
     private final Context mContext;
     Cursor c;
     SharedPreferences mPreferences;
@@ -32,10 +32,6 @@ public class Newgame_DataBaseHelper4 extends SQLiteOpenHelper {
         this.mContext = context;
     }
 
-    /*@Override
-    public void onConfigure(SQLiteDatabase db){
-        db.execSQL("PRAGMA key = 'secretkey'");
-    }*/
     @Override
     public void onCreate(SQLiteDatabase arg0) {
         // TODO Auto-generated method stub
@@ -81,7 +77,7 @@ public class Newgame_DataBaseHelper4 extends SQLiteOpenHelper {
 
     }
 
-    public void createDataBase() throws IOException {
+    public void createDataBase() {
         // If database not exists copy it from the assets
 
         boolean mDataBaseExist = checkDataBase();
@@ -105,7 +101,7 @@ public class Newgame_DataBaseHelper4 extends SQLiteOpenHelper {
         }
     }
 
-    public void createDataBaseIFexits() throws IOException {
+    public void createDataBaseIFexits() {
         // If database not exists copy it from the assets
 
         boolean mDataBaseExist = checkDataBase();
@@ -149,14 +145,11 @@ public class Newgame_DataBaseHelper4 extends SQLiteOpenHelper {
     }
 
     // Open the database, so we can query it
-    public boolean openDataBase() throws SQLException {
+    public void openDataBase() throws SQLException {
         String mPath = DB_PATH + DB_NAME;
         // Log.v("mPath", mPath);
         mDataBase = SQLiteDatabase.openDatabase(mPath, null,
                 SQLiteDatabase.CREATE_IF_NECESSARY);
-        // mDataBase = SQLiteDatabase.openDatabase(mPath, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS);
-        return mDataBase != null;
     }
 
     @Override

@@ -12,8 +12,8 @@ android {
         applicationId "nithra.tamil.word.game.solliadi"
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 61
-        versionName "6.9"
+        versionCode 62
+        versionName "6.10"
         multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
@@ -67,13 +67,23 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'// compulsory
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.android.installreferrer:installreferrer:2.2'
-    implementation 'com.google.android.gms:play-services-ads:21.5.0'
+    implementation 'com.google.android.gms:play-services-ads:22.0.0'
     implementation 'com.airbnb.android:lottie:6.0.0'
+    runtimeOnly group: 'androidx.legacy', name: 'legacy-support-v4', version: '1.0.0'
 
 
     //applovin
     implementation 'com.applovin:applovin-sdk:11.8.2'
     implementation 'com.applovin.mediation:facebook-adapter:6.13.7.0'
+
+    implementation 'com.facebook.android:audience-network-sdk:6.13.7'
+
+    implementation 'com.applovin.mediation:google-adapter:21.5.0.3'
+
+
+    implementation 'com.google.ads.mediation:applovin:11.8.2.0'
+    implementation 'com.google.ads.mediation:facebook:6.13.7.0'
+
 
 }
 

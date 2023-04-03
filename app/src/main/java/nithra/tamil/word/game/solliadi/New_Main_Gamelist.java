@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -20,16 +19,13 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.StatFs;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -37,21 +33,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.facebook.ads.Ad;
-import com.facebook.ads.AdError;
-import com.facebook.ads.AdOptionsView;
 import com.facebook.ads.AudienceNetworkAds;
-import com.facebook.ads.MediaView;
-import com.facebook.ads.NativeAdLayout;
-import com.facebook.ads.NativeAdListener;
 import com.facebook.ads.NativeBannerAd;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
@@ -85,7 +71,6 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -96,13 +81,14 @@ import nithra.tamil.word.game.solliadi.word_search_game.Models.game_class.Word_s
 public class New_Main_Gamelist extends AppCompatActivity implements View.OnClickListener, Download_completed {
     public static final String TAG = "SavedGames";
     public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
+    static final SharedPreference sps = new SharedPreference();
     private static final String LOADING_PHRASE_CONFIG_KEY = "app_sort_order";
     private static final String LOADING_PHRASE_CONFIG_KEY2 = "SolliadiPrize";
-    static SharedPreference sps = new SharedPreference();
     static int mul_tival = 0;
-    static LinearLayout nativeAdLayout;
     static NativeBannerAd nativeBannerAd;
-    static NativeBannerAd nativeBannerAd_senthamil;
+    final int scrooly = 0;
+    final int oldscrollY = 0;
+    final SharedPreference sp = new SharedPreference();
     RippleView g1_solvilyatu, g2_solukulsol, g3_innaisorkalikandupidi, g4_padamparthukandupidi, g5_padathirkulkandupidi, g6_kuripumulamkandupidi, g7_piramolisorkalikandupidi, g8_seerpaduthu, g9_puthirukupathil, g10_pillaithruthu, g11_varupadukali_kandupidi, g12_aathirsolli_kandupidi, g13_poruthuga, g14_tirukural, g15_vinadivina, g16_koditaidaingaliniraipavm, g17_varthaithadal;
     RippleView g18_thadammariyavarthaigal, g19_missingwords, g20_6differences;
     TextView move_back;
@@ -114,8 +100,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
     ScrollView scroll_view;
     int i = 0;
     int sc_x = 0, sc_y = 0;
-    GoogleApiClient mGoogleApiClient;
-    int mutiplayer_siginin = 0;
+
     DataBaseHelper myDbHelper;
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
@@ -126,8 +111,6 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
     ImageView colour_change;
     RelativeLayout back_main, type1, type2, type3, type4, type5, type7, prize_lay, et_2;
     TextView heading_txt1, heading_txt2, heading_txt3, heading_txt4;
-    int scrooly = 0;
-    int oldscrollY = 0;
     TextView arrow_click, arrow_click_t3, ex_name, nitification;
     ImageView refresh, how_to_play;
     String downok = "", downnodata = "";
@@ -136,7 +119,6 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
     ProgressDialog mProgressDialog;
     ProgressDialog nProgressDialog;
     SQLiteDatabase myDB = null;
-    SharedPreference sp = new SharedPreference();
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
 
     public static boolean determineConnectivity(Context context) {
@@ -159,437 +141,11 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
         }
     }
 
-    public static void fb_native(final Context context, final NativeAdLayout nativeAdLayout) {
-
-        System.out.println("=====--check fb_native() : ");
-
-        if (sps.getInt(context, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        } else {
-            nativeBannerAd = new NativeBannerAd(context, context.getString(R.string.fb_native_banner));
-
-            NativeAdListener nativeAdListener = new NativeAdListener() {
-
-                @Override
-                public void onMediaDownloaded(Ad ad) {
-                    // Native ad finished downloading all assets
-                    Log.e(TAG, "Native ad finished downloading all assets.");
-                }
-
-                @Override
-                public void onError(Ad ad, AdError adError) {
-                    // Native ad failed to load
-                    Log.e(TAG, "Native ad failed to load: " + adError.getErrorCode());
-                }
-
-                @Override
-                public void onAdLoaded(Ad ad) {
-                    // Native ad is loaded and ready to be displayed
-                    System.out.println("=====--check fb_native() onAdLoaded : ");
-                    System.out.println("-----------------ads loded");
-                    // Race condition, load() called again before last ad was displayed
-                    sps.putInt(context, "native_banner_ads", 1);
-                    if (nativeBannerAd == null || nativeBannerAd != ad) {
-                        return;
-                    }
-                    // Inflate Native Banner Ad into Container
-                    inflateAd(context, nativeAdLayout);
-                }
-
-                @Override
-                public void onAdClicked(Ad ad) {
-                    // Native ad clicked
-                    Log.d(TAG, "Native ad clicked!");
-                }
-
-                @Override
-                public void onLoggingImpression(Ad ad) {
-                    // Native ad impression
-                    Log.d(TAG, "Native ad impression logged!");
-                }
-            };
-            // load the ad
-            nativeBannerAd.loadAd(nativeBannerAd.buildLoadAdConfig().withAdListener(nativeAdListener).build());
-
-
-
-
-            /*
-            nativeBannerAd.setAdListener(new NativeAdListener() {
-                @Override
-                public void onMediaDownloaded(Ad ad) {
-
-                }
-
-                @Override
-                public void onError(Ad ad, AdError adError) {
-                    System.out.println("=====--check fb_native() adError : " + adError.getErrorMessage());
-                    System.out.println("-----------------ads error" + adError.getErrorCode());
-                }
-
-                @Override
-                public void onAdLoaded(Ad ad) {
-                    System.out.println("=====--check fb_native() onAdLoaded : ");
-                    System.out.println("-----------------ads loded");
-                    // Race condition, load() called again before last ad was displayed
-                    sps.putInt(context, "native_banner_ads", 1);
-                    if (nativeBannerAd == null || nativeBannerAd != ad) {
-                        return;
-                    }
-                    // Inflate Native Banner Ad into Container
-                    inflateAd(context, nativeAdLayout);
-                }
-
-                @Override
-                public void onAdClicked(Ad ad) {
-
-                }
-
-                @Override
-                public void onLoggingImpression(Ad ad) {
-
-                }
-            });
-*/
-            // load the ad
-            //  nativeBannerAd.loadAd();
-        }
-
-    }
-
-    public static void inflateAd(Context context, NativeAdLayout nativeAdLayout) {
-        // Unregister last ad
-        System.out.println("##############################################inflateAd");
-        LinearLayout fb_native_adView;
-
-        nativeBannerAd.unregisterView();
-
-        // Add the Ad view into the ad container.
-        LayoutInflater inflater = LayoutInflater.from(context);
-        // Inflate the Ad view.  The layout referenced is the one you created in the last step.
-        fb_native_adView = (LinearLayout) inflater.inflate(R.layout.native_banner_ad_layout, nativeAdLayout, false);
-        nativeAdLayout.addView(fb_native_adView);
-
-        // Add the AdChoices icon
-        RelativeLayout adChoicesContainer = fb_native_adView.findViewById(R.id.ad_choices_container);
-        AdOptionsView adOptionsView = new AdOptionsView(context, nativeBannerAd, nativeAdLayout);
-        adChoicesContainer.removeAllViews();
-        adChoicesContainer.addView(adOptionsView, 0);
-
-        // Create native UI using the ad metadata.
-        TextView nativeAdTitle = fb_native_adView.findViewById(R.id.native_ad_title);
-        TextView nativeAdSocialContext = fb_native_adView.findViewById(R.id.native_ad_social_context);
-        TextView sponsoredLabel = fb_native_adView.findViewById(R.id.native_ad_sponsored_label);
-        MediaView nativeAdIconView = fb_native_adView.findViewById(R.id.native_icon_view);
-        Button nativeAdCallToAction = fb_native_adView.findViewById(R.id.native_ad_call_to_action);
-
-        // Set the Text.
-        nativeAdCallToAction.setText(nativeBannerAd.getAdCallToAction());
-        nativeAdCallToAction.setVisibility(nativeBannerAd.hasCallToAction() ? View.VISIBLE : View.INVISIBLE);
-        nativeAdTitle.setText(nativeBannerAd.getAdvertiserName());
-        nativeAdSocialContext.setText(nativeBannerAd.getAdSocialContext());
-        sponsoredLabel.setText(nativeBannerAd.getSponsoredTranslation());
-
-        // Register the Title and CTA button to listen for clicks.
-        List<View> clickableViews = new ArrayList<>();
-        clickableViews.add(nativeAdTitle);
-        clickableViews.add(nativeAdCallToAction);
-        nativeBannerAd.registerViewForInteraction(fb_native_adView, nativeAdIconView, clickableViews);
-
-
-    }
-
-    public static void fb_native_Puthayal_Sorkal_Native_Banner(final Context context, final NativeAdLayout nativeAdLayout) {
-
-        System.out.println("=====--check fb_native() : ");
-
-        if (sps.getInt(context, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        } else {
-            final NativeBannerAd nativeBannerAd = new NativeBannerAd(context, context.getString(R.string.Puthayal_Sorkal_Native_Banner));
-            NativeAdListener nativeAdListener = new NativeAdListener() {
-
-                @Override
-                public void onMediaDownloaded(Ad ad) {
-                    // Native ad finished downloading all assets
-                    Log.e(TAG, "Native ad finished downloading all assets.");
-                }
-
-                @Override
-                public void onError(Ad ad, AdError adError) {
-                    // Native ad failed to load
-                    Log.e(TAG, "Native ad failed to load: " + adError.getErrorMessage());
-                }
-
-                @Override
-                public void onAdLoaded(Ad ad) {
-                    // Native ad is loaded and ready to be displayed
-                    Log.d(TAG, "Native ad is loaded and ready to be displayed!");
-                    sps.putInt(context, "native_banner_ads", 1);
-                    if (nativeBannerAd == null || nativeBannerAd != ad) {
-                        return;
-                    }
-                    // Inflate Native Banner Ad into Container
-                    inflateAd_Puthayal_Sorkal_Native_Banner(context, nativeAdLayout, nativeBannerAd);
-                }
-
-                @Override
-                public void onAdClicked(Ad ad) {
-                    // Native ad clicked
-                    Log.d(TAG, "Native ad clicked!");
-                }
-
-                @Override
-                public void onLoggingImpression(Ad ad) {
-                    // Native ad impression
-                    Log.d(TAG, "Native ad impression logged!");
-                }
-            };
-            // load the ad
-            nativeBannerAd.loadAd(nativeBannerAd.buildLoadAdConfig().withAdListener(nativeAdListener).build());
-        }
-
-    }
-
-    public static void inflateAd_Puthayal_Sorkal_Native_Banner(Context context, NativeAdLayout nativeAdLayout, NativeBannerAd nativeBannerAd) {
-        // Unregister last ad
-        System.out.println("##############################################inflateAd_Puthayal_Sorkal_Native_Banner");
-        LinearLayout fb_native_adView;
-
-        nativeBannerAd.unregisterView();
-
-        // Add the Ad view into the ad container.
-        LayoutInflater inflater = LayoutInflater.from(context);
-        // Inflate the Ad view.  The layout referenced is the one you created in the last step.
-        fb_native_adView = (LinearLayout) inflater.inflate(R.layout.native_banner_ad_layout, nativeAdLayout, false);
-        nativeAdLayout.addView(fb_native_adView);
-
-        // Add the AdChoices icon
-        RelativeLayout adChoicesContainer = fb_native_adView.findViewById(R.id.ad_choices_container);
-        AdOptionsView adOptionsView = new AdOptionsView(context, nativeBannerAd, nativeAdLayout);
-        adChoicesContainer.removeAllViews();
-        adChoicesContainer.addView(adOptionsView, 0);
-
-        // Create native UI using the ad metadata.
-        TextView nativeAdTitle = fb_native_adView.findViewById(R.id.native_ad_title);
-        TextView nativeAdSocialContext = fb_native_adView.findViewById(R.id.native_ad_social_context);
-        TextView sponsoredLabel = fb_native_adView.findViewById(R.id.native_ad_sponsored_label);
-        //AdIconView nativeAdIconView = fb_native_adView.findViewById(R.id.native_icon_view);
-        //   AdIconView nativeAdIconView = fb_native_adView.findViewById(R.id.native_icon_view);
-        MediaView nativeAdIconView = fb_native_adView.findViewById(R.id.native_icon_view);
-
-        Button nativeAdCallToAction = fb_native_adView.findViewById(R.id.native_ad_call_to_action);
-
-        // Set the Text.
-        nativeAdCallToAction.setText(nativeBannerAd.getAdCallToAction());
-        nativeAdCallToAction.setVisibility(nativeBannerAd.hasCallToAction() ? View.VISIBLE : View.INVISIBLE);
-        nativeAdTitle.setText(nativeBannerAd.getAdvertiserName());
-        nativeAdSocialContext.setText(nativeBannerAd.getAdSocialContext());
-        sponsoredLabel.setText(nativeBannerAd.getSponsoredTranslation());
-
-        // Register the Title and CTA button to listen for clicks.
-        List<View> clickableViews = new ArrayList<>();
-        clickableViews.add(nativeAdTitle);
-        clickableViews.add(nativeAdCallToAction);
-        nativeBannerAd.registerViewForInteraction(fb_native_adView, nativeAdIconView, clickableViews);
-
-
-    }
-
-    public static void fb_native_Senthamil_Thedal_Native_Banner(final Context context, final NativeAdLayout nativeAdLayout) {
-
-        System.out.println("=====--check fb_native() : ");
-
-        if (sps.getInt(context, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        } else {
-            final NativeBannerAd nativeBannerAd = new NativeBannerAd(context, context.getString(R.string.Senthamil_Thedal_Native_Banner));
-            NativeAdListener nativeAdListener = new NativeAdListener() {
-                @Override
-                public void onMediaDownloaded(Ad ad) {
-                    // Native ad finished downloading all assets
-                    Log.e(TAG, "Native ad finished downloading all assets.");
-                }
-
-                @Override
-                public void onError(Ad ad, AdError adError) {
-                    // Native ad failed to load
-                    Log.e(TAG, "Native ad failed to load: " + adError.getErrorMessage());
-                }
-
-                @Override
-                public void onAdLoaded(Ad ad) {
-                    // Native ad is loaded and ready to be displayed
-                    Log.d(TAG, "Native ad is loaded and ready to be displayed!");
-                    sps.putInt(context, "native_banner_ads", 1);
-                    if (nativeBannerAd == null || nativeBannerAd != ad) {
-                        return;
-                    }
-                    // Inflate Native Banner Ad into Container
-                    inflateAd_Senthamil_Thedal_Native_Banner(context, nativeAdLayout, nativeBannerAd);
-                }
-
-                @Override
-                public void onAdClicked(Ad ad) {
-                    // Native ad clicked
-                    Log.d(TAG, "Native ad clicked!");
-                }
-
-                @Override
-                public void onLoggingImpression(Ad ad) {
-                    // Native ad impression
-                    Log.d(TAG, "Native ad impression logged!");
-                }
-            };
-            // load the ad
-            nativeBannerAd.loadAd(nativeBannerAd.buildLoadAdConfig().withAdListener(nativeAdListener).build());
-        }
-
-    }
-
-    public static void inflateAd_Senthamil_Thedal_Native_Banner(Context context, NativeAdLayout nativeAdLayout, NativeBannerAd nativeBannerAd) {
-        // Unregister last ad
-
-        LinearLayout fb_native_adView;
-
-        nativeBannerAd.unregisterView();
-        System.out.println("################################inflateAd_Senthamil_Thedal_Native_Banner");
-        // Add the Ad view into the ad container.
-        LayoutInflater inflater = LayoutInflater.from(context);
-        // Inflate the Ad view.  The layout referenced is the one you created in the last step.
-        fb_native_adView = (LinearLayout) inflater.inflate(R.layout.native_banner_ad_layout, nativeAdLayout, false);
-        nativeAdLayout.addView(fb_native_adView);
-
-        // Add the AdChoices icon
-        RelativeLayout adChoicesContainer = fb_native_adView.findViewById(R.id.ad_choices_container);
-        AdOptionsView adOptionsView = new AdOptionsView(context, nativeBannerAd, nativeAdLayout);
-        adChoicesContainer.removeAllViews();
-        adChoicesContainer.addView(adOptionsView, 0);
-
-        // Create native UI using the ad metadata.
-        TextView nativeAdTitle = fb_native_adView.findViewById(R.id.native_ad_title);
-        TextView nativeAdSocialContext = fb_native_adView.findViewById(R.id.native_ad_social_context);
-        TextView sponsoredLabel = fb_native_adView.findViewById(R.id.native_ad_sponsored_label);
-        //AdIconView nativeAdIconView = fb_native_adView.findViewById(R.id.native_icon_view);
-        MediaView nativeAdIconView = fb_native_adView.findViewById(R.id.native_icon_view);
-        Button nativeAdCallToAction = fb_native_adView.findViewById(R.id.native_ad_call_to_action);
-
-        // Set the Text.
-        nativeAdCallToAction.setText(nativeBannerAd.getAdCallToAction());
-        nativeAdCallToAction.setVisibility(nativeBannerAd.hasCallToAction() ? View.VISIBLE : View.INVISIBLE);
-        nativeAdTitle.setText(nativeBannerAd.getAdvertiserName());
-        nativeAdSocialContext.setText(nativeBannerAd.getAdSocialContext());
-        sponsoredLabel.setText(nativeBannerAd.getSponsoredTranslation());
-
-        // Register the Title and CTA button to listen for clicks.
-        List<View> clickableViews = new ArrayList<>();
-        clickableViews.add(nativeAdTitle);
-        clickableViews.add(nativeAdCallToAction);
-        nativeBannerAd.registerViewForInteraction(fb_native_adView, nativeAdIconView, clickableViews);
-
-
-    }
-
-    public static void fb_native_Ragasiya_sorgal_Native_Banner(final Context context, final NativeAdLayout nativeAdLayout) {
-
-        System.out.println("=====--check fb_native() : ");
-
-        if (sps.getInt(context, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        } else {
-            final NativeBannerAd nativeBannerAd = new NativeBannerAd(context, context.getString(R.string.Ragasiya_sorgal_Native_Banner));
-            NativeAdListener nativeAdListener = new NativeAdListener() {
-
-                @Override
-                public void onMediaDownloaded(Ad ad) {
-                    // Native ad finished downloading all assets
-                    Log.e(TAG, "Native ad finished downloading all assets.");
-                }
-
-                @Override
-                public void onError(Ad ad, AdError adError) {
-                    // Native ad failed to load
-                    Log.e(TAG, "Native ad failed to load: " + adError.getErrorMessage());
-                }
-
-                @Override
-                public void onAdLoaded(Ad ad) {
-                    // Native ad is loaded and ready to be displayed
-                    Log.d(TAG, "Native ad is loaded and ready to be displayed!");
-                    sps.putInt(context, "native_banner_ads", 1);
-                    if (nativeBannerAd == null || nativeBannerAd != ad) {
-                        return;
-                    }
-                    // Inflate Native Banner Ad into Container
-                    inflateAd_Ragasiya_sorgal_Native_Banner(context, nativeAdLayout, nativeBannerAd);
-                }
-
-                @Override
-                public void onAdClicked(Ad ad) {
-                    // Native ad clicked
-                    Log.d(TAG, "Native ad clicked!");
-                }
-
-                @Override
-                public void onLoggingImpression(Ad ad) {
-                    // Native ad impression
-                    Log.d(TAG, "Native ad impression logged!");
-                }
-            };
-            // load the ad
-            nativeBannerAd.loadAd(nativeBannerAd.buildLoadAdConfig().withAdListener(nativeAdListener).build());
-        }
-
-    }
-
-    public static void inflateAd_Ragasiya_sorgal_Native_Banner(Context context, NativeAdLayout nativeAdLayout, NativeBannerAd nativeBannerAd) {
-        // Unregister last ad
-        System.out.println("##############################################inflateAd_Ragasiya_sorgal_Native_Banner");
-        LinearLayout fb_native_adView;
-
-        nativeBannerAd.unregisterView();
-
-        // Add the Ad view into the ad container.
-        LayoutInflater inflater = LayoutInflater.from(context);
-        // Inflate the Ad view.  The layout referenced is the one you created in the last step.
-        fb_native_adView = (LinearLayout) inflater.inflate(R.layout.native_banner_ad_layout, nativeAdLayout, false);
-        nativeAdLayout.addView(fb_native_adView);
-
-        // Add the AdChoices icon
-        RelativeLayout adChoicesContainer = fb_native_adView.findViewById(R.id.ad_choices_container);
-        AdOptionsView adOptionsView = new AdOptionsView(context, nativeBannerAd, nativeAdLayout);
-        adChoicesContainer.removeAllViews();
-        adChoicesContainer.addView(adOptionsView, 0);
-
-        // Create native UI using the ad metadata.
-        TextView nativeAdTitle = fb_native_adView.findViewById(R.id.native_ad_title);
-        TextView nativeAdSocialContext = fb_native_adView.findViewById(R.id.native_ad_social_context);
-        TextView sponsoredLabel = fb_native_adView.findViewById(R.id.native_ad_sponsored_label);
-        // AdIconView nativeAdIconView = fb_native_adView.findViewById(R.id.native_icon_view);
-        MediaView nativeAdIconView = fb_native_adView.findViewById(R.id.native_icon_view);
-        Button nativeAdCallToAction = fb_native_adView.findViewById(R.id.native_ad_call_to_action);
-
-        // Set the Text.
-        nativeAdCallToAction.setText(nativeBannerAd.getAdCallToAction());
-        nativeAdCallToAction.setVisibility(nativeBannerAd.hasCallToAction() ? View.VISIBLE : View.INVISIBLE);
-        nativeAdTitle.setText(nativeBannerAd.getAdvertiserName());
-        nativeAdSocialContext.setText(nativeBannerAd.getAdSocialContext());
-        sponsoredLabel.setText(nativeBannerAd.getSponsoredTranslation());
-
-        // Register the Title and CTA button to listen for clicks.
-        List<View> clickableViews = new ArrayList<>();
-        clickableViews.add(nativeAdTitle);
-        clickableViews.add(nativeAdCallToAction);
-        nativeBannerAd.registerViewForInteraction(fb_native_adView, nativeAdIconView, clickableViews);
-
-
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new__main_);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
 
         //Sound Pool Sounds
         click = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
@@ -610,6 +166,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
         }
         AudienceNetworkAds.initialize(this);
 
+        Utills.INSTANCE.GameComplete(this);
 
         mul_tival = 1;
         scroll_view = (ScrollView) findViewById(R.id.scroll_view);
@@ -731,103 +288,12 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
             Intent i = new Intent(New_Main_Gamelist.this, Noti_Fragment.class);
             startActivity(i);
         });
-    /*    refresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });*/
         how_to_play.setOnClickListener(v -> {
             intro();
-            //gamecount_list(New_Main_Gamelist.this);
-        });
-        prize_lay.setOnClickListener(v -> {
-            //prize_game_start();
-        });
-        et_2.setOnClickListener(v -> {
-            //multiplayer_games_start();
         });
 
 
         refresh.setOnClickListener(v -> {
-
-            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (sps.getString(New_Main_Gamelist.this, "permission_grand").equals("")) {
-                    sps.putString(New_Main_Gamelist.this, "permission_grand", "yes");
-                    //  First_register("yes");
-                    AlertDialog alertDialog = new AlertDialog.Builder(New_Main_Gamelist.this).create();
-                    alertDialog.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய பின்வரும் permission-யை allow செய்யவேண்டும்");
-                    alertDialog.setCancelable(false);
-                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    if ((ContextCompat.checkSelfPermission(New_Main_Gamelist.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                        ActivityCompat.requestPermissions(New_Main_Gamelist.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 151);
-                                    } else {
-                                        if (determineConnectivity(New_Main_Gamelist.this))
-                                            downloaddata();
-                                        else
-                                            Toast.makeText(New_Main_Gamelist.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-
-                    alertDialog.show();
-
-                } else {
-                    if ((ContextCompat.checkSelfPermission(New_Main_Gamelist.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                        if (sps.getInt(New_Main_Gamelist.this, "permission") == 2) {
-                            AlertDialog alertDialog = new AlertDialog.Builder(New_Main_Gamelist.this).create();
-                            alertDialog.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய  settings-யில்  உள்ள permission-யை allow செய்யவேண்டும்");
-                            alertDialog.setCancelable(false);
-                            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                            Intent intent = new Intent();
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                            Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                            intent.setData(uri);
-                                            getApplicationContext().startActivity(intent);
-                                        }
-                                    });
-
-                            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-
-
-                            alertDialog.show();
-                        } else {
-                            if ((ContextCompat.checkSelfPermission(New_Main_Gamelist.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                ActivityCompat.requestPermissions(New_Main_Gamelist.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 151);
-                            } else {
-                                if (determineConnectivity(New_Main_Gamelist.this))
-                                    downloaddata();
-                                else
-                                    Toast.makeText(New_Main_Gamelist.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    } else {
-                        if ((ContextCompat.checkSelfPermission(New_Main_Gamelist.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                            ActivityCompat.requestPermissions(New_Main_Gamelist.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 151);
-                        } else {
-                            if (determineConnectivity(New_Main_Gamelist.this))
-                                downloaddata();
-                            else
-                                Toast.makeText(New_Main_Gamelist.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                }
-            } else {
-                downloaddata();
-            }*/
 
             if (determineConnectivity(New_Main_Gamelist.this)) downloaddata();
             else
@@ -852,72 +318,74 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.g1_solvilyatu:
-                g1_solvilyatu_start();
-                break;
-            case R.id.g2_solukulsol:
-                g2_solukulsol_start();
-                break;
-            case R.id.g3_innaisorkalikandupidi:
-                g3_innaisorkalikandupidi_start();
-                break;
             case R.id.g4_padamparthukandupidi:
                 g4_padamparthukandupidi_start();
                 break;
             case R.id.g5_padathirkulkandupidi:
                 g5_padathirkulkandupidi_start();
                 break;
-            case R.id.g6_kuripumulamkandupidi:
-                g6_kuripumulamkandupidi_start();
-                break;
-            case R.id.g7_piramolisorkalikandupidi:
-                g7_piramolisorkalikandupidi_start();
-                break;
-            case R.id.g8_seerpaduthu:
-                g8_seerpaduthu_start();
-                break;
-            case R.id.g9_puthirukupathil:
-                g9_puthirukupathil_start();
-                break;
-            case R.id.g10_pillaithruthu:
-                g10_pillaithruthu_start();
-                break;
-            case R.id.g11_varupadukali_kandupidi:
-                g11_varupadukali_kandupidi_start();
-                break;
-            case R.id.g12_aathirsolli_kandupidi:
-                g12_aathirsolli_kandupidi_start();
-                break;
-            case R.id.g13_poruthuga:
-                g13_poruthuga_start();
+            case R.id.g15_vinadivina:
+                g15_vinadivina_start();
                 break;
             case R.id.g14_tirukural:
                 g14_tirukural_start();
                 break;
-            case R.id.g15_vinadivina:
-                g15_vinadivina_start();
+            case R.id.g20_6differences:
+                g20_6differences_start();
                 break;
-            case R.id.g16_koditaidaingaliniraipavm:
-                g16_koditaidaingaliniraipavm_start();
+
+
+            case R.id.g6_kuripumulamkandupidi:
+                குறிப்புமூலம்();
+                break;
+            case R.id.g9_puthirukupathil:
+                g9_puthirukupathil_start();
+                break;
+            case R.id.g3_innaisorkalikandupidi:
+                g3_innaisorkalikandupidi_start();
+                break;
+            case R.id.g12_aathirsolli_kandupidi:
+                g12_aathirsolli_kandupidi_start();
+                break;
+            case R.id.g11_varupadukali_kandupidi:
+                g11_varupadukali_kandupidi_start();
+                break;
+
+
+            case R.id.g2_solukulsol:
+                g2_solukulsol_start();
                 break;
             case R.id.g17_varthaithadal:
                 g17_varthaithadal_start();
                 break;
-            case R.id.g18_jumblewords:
-                g18_varthaithadal_start();
+            case R.id.g16_koditaidaingaliniraipavm:
+                g16_koditaidaingaliniraipavm_start();
                 break;
             case R.id.g19_missingwords:
                 g19_missingwors_start();
                 break;
-            case R.id.g20_6differences:
-                g20_6differences_start();
+            case R.id.g18_jumblewords:
+                g18_thadamariya_varthaithadal_start();
                 break;
-            case R.id.prize_game:
-                //prize_game_start();
+
+
+            case R.id.g1_solvilyatu:
+                g1_solvilyatu_start();
                 break;
-            case R.id.multiplayer_games:
-                //multiplayer_games_start();
+            case R.id.g13_poruthuga:
+                g13_poruthuga_start();
                 break;
+            case R.id.g10_pillaithruthu:
+                g10_pillaithruthu_start();
+                break;
+            case R.id.g8_seerpaduthu:
+                g8_seerpaduthu_start();
+                break;
+            case R.id.g7_piramolisorkalikandupidi:
+                g7_piramolisorkalikandupidi_start();
+                break;
+
+
             case R.id.down_arrow:
                 //scroll_view.scrollTo(0, scroll_view.getBottom());
                 if (scrooly <= oldscrollY) {
@@ -930,7 +398,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
                 sc_y = sc_y + 610;
                 // scroll_view.smoothScrollTo(sc_x, sc_y);
 
-                final Handler handler = new Handler();
+                final Handler handler = new Handler(Looper.myLooper());
                 new Thread(() -> {
                     try {
                         Thread.sleep(100);
@@ -947,7 +415,6 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
                 break;
         }
     }
-
 
 
     private void g19_missingwors_start() {
@@ -980,7 +447,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
         }
     }
 
-    private void g18_varthaithadal_start() {
+    private void g18_thadamariya_varthaithadal_start() {
         if (sps.getString(New_Main_Gamelist.this, "jamble_word").equals("")) {
             sps.putString(New_Main_Gamelist.this, "date", "0");
             click.play(soundId1, sv, sv, 0, 0, sv);
@@ -1207,7 +674,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
         }
     }
 
-    private void g6_kuripumulamkandupidi_start() {
+    private void குறிப்புமூலம்() {
         if (sps.getString(New_Main_Gamelist.this, "hintintro_one").equals("")) {
             click.play(soundId1, sv, sv, 0, 0, sv);
             sps.putString(New_Main_Gamelist.this, "date", "0");
@@ -1278,51 +745,6 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
     protected void onResume() {
         super.onResume();
 
-        if (sps.getInt(New_Main_Gamelist.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        } else {
-
-            nativeAdLayout = (LinearLayout) findViewById(R.id.native_banner_ad_container);
-            if (Utils.isNetworkAvailable(New_Main_Gamelist.this)) {
-
-                //fb_native(New_Main_Gamelist.this,nativeAdLayout);
-                //naive_banner(nativeAdLayout);
-            } else {
-                nativeAdLayout.setVisibility(View.GONE);
-            }
-
-          /*  if (sps.getInt(New_Main_Gamelist.this, "addlodedd") == 1) {
-                New_Main_Activity.load_addFromMain(New_Main_Gamelist.this, adds);
-            } else {
-                if (Utils.isNetworkAvailable(New_Main_Gamelist.this)) {
-                    sps.putInt(New_Main_Gamelist.this, "addlodedd", 2);
-                    System.out.println("@IMG");
-                    final AdView adView = new AdView(New_Main_Gamelist.this);
-                    adView.setAdUnitId(getString(R.string.main_banner_ori));
-
-                    adView.setAdSize(AdSize.SMART_BANNER);
-                    AdRequest request = new AdRequest.Builder().build();
-                    adView.setAdListener(new AdListener() {
-                        public void onAdLoaded() {
-                            System.out.println("@@@loaded");
-                            adds.removeAllViews();
-                            adds.addView(adView);
-                            adds.setVisibility(View.VISIBLE);
-                            super.onAdLoaded();
-                        }
-
-                        @Override
-                        public void onAdFailedToLoad(int i) {
-                            System.out.println("@@@NOt loaded");
-                            super.onAdFailedToLoad(i);
-                        }
-                    });
-                    adView.loadAd(request);
-
-                }
-
-            }*/
-        }
         myDB = this.openOrCreateDatabase("myDB", MODE_PRIVATE, null);
         Cursor cv = myDB.rawQuery("select * from noti_cal where isclose='0'", null);
         System.out.println("============cv.getcount" + cv.getCount());
@@ -1362,10 +784,6 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
         Utils.mProgress(New_Main_Gamelist.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", false).show();
         Utils.mProgress.setCancelable(false);
         new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
 
             @Override
             protected Void doInBackground(Void... params) {
@@ -1659,7 +1077,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
 
     }
 
-    public int unpackZip(String ZIP_FILE_NAME) {
+    public void unpackZip(String ZIP_FILE_NAME) {
         InputStream is;
         ZipInputStream zis;
         try {
@@ -1696,17 +1114,11 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
 
         } catch (IOException e) {
             e.printStackTrace();
-            return 0;
         }
-        return 1;
     }
 
     public void downloadcheck1(final String lastid, final String daily) {
         new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
 
             @Override
             protected Void doInBackground(Void... params) {
@@ -1808,92 +1220,12 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
 
-            /*    Cursor c2s = myDbHelper.getQry("select * from maintable where gameid='1' and isfinish='0'");
-                c2s.moveToFirst();
-                int cs2s = c2s.getCount();
-                p_id.setText("(" + cs2s + ")");
-
-                Cursor c2c = myDbHelper.getQry("select * from maintable where gameid='2' and isfinish='0'");
-                c2c.moveToFirst();
-                int cs2c = c2c.getCount();
-                c_id.setText("(" + cs2c + ")");
-
-                Cursor c2ss = myDbHelper.getQry("select * from maintable where gameid='3' and isfinish='0'");
-                c2ss.moveToFirst();
-                int cs2ss = c2ss.getCount();
-                ss_id.setText("(" + cs2ss + ")");
-
-                Cursor c2s1 = myDbHelper.getQry("select * from maintable where gameid='4' and isfinish='0'");
-                c2s1.moveToFirst();
-                int cs2s1 = c2s1.getCount();
-                s_id.setText("(" + cs2s1 + ")");
-
-                Cursor cn1 = newhelper.getQry("select * from newmaintable where gameid='5' and isfinish='0'");
-                cn1.moveToFirst();
-                int cns1 = cn1.getCount();
-                oddmanout_ss_id.setText("(" + cns1 + ")");
-
-                Cursor cn2 = newhelper.getQry("select * from newmaintable where gameid='6' and isfinish='0'");
-                cn2.moveToFirst();
-                int cns2 = cn2.getCount();
-                matchwords_no.setText("(" + cns2 + ")");
-
-                Cursor cnss1 = newhelper2.getQry("select * from newmaintable2 where gameid='7' and isfinish='0'");
-                cnss1.moveToFirst();
-                int cnsss1 = cnss1.getCount();
-                opposite_word_id.setText("(" + cnsss1 + ")");
-
-                Cursor cn22 = newhelper2.getQry("select * from newmaintable2 where gameid='8' and isfinish='0'");
-                cn22.moveToFirst();
-                int cns22 = cn22.getCount();
-                english_to_tamil_id.setText("(" + cns22 + ")");
-
-                Cursor cn23 = newhelper3.getQry("select * from right_order where gameid='9' and isfinish='0'");
-                cn23.moveToFirst();
-                int cns23 = cn23.getCount();
-                right_order_id.setText("(" + cns23 + ")");
-
-                Cursor cn24 = newhelper3.getQry("select * from right_order where gameid='10' and isfinish='0'");
-                cn24.moveToFirst();
-                int cns24 = cn24.getCount();
-                riddle_id.setText("(" + cns24 + ")");
-
-                Cursor cn25 = newhelper3.getQry("select * from right_order where gameid='12' and isfinish='0'");
-                cn25.moveToFirst();
-                int cns25 = cn25.getCount();
-                tirukuralid.setText("(" + cns25 + ")");
-
-                Cursor cn26 = newhelper3.getQry("select * from right_order where gameid='11' and isfinish='0'");
-                cn26.moveToFirst();
-                int cns26 = cn26.getCount();
-                error_correction_id.setText("(" + cns26 + ")");
-
-                Cursor cn26s = newhelper4.getQry("select * from newgamesdb4 where gameid='13' and isfinish='0'");
-                cn26s.moveToFirst();
-                int cns26s = cn26s.getCount();
-                fill_in_blanks_id.setText("(" + cns26s + ")");
-
-                Cursor cn26ws = newhelper5.getQry("select * from newgames5 where gameid='17' and isfinish='0'");
-                cn26ws.moveToFirst();
-                int cns26ws = cn26ws.getCount();
-                eng_to_tamil_no.setText("(" + cns26ws + ")");
-
-                Cursor cn27ws = newhelper5.getQry("select * from newgames5 where gameid='16' and isfinish='0'");
-                cn27ws.moveToFirst();
-                int cns27ws = cn27ws.getCount();
-                pic_to_words_no.setText("(" + cns27ws + ")");
-
-                Cursor cn28ws = newhelper5.getQry("select * from newgames5 where gameid='15' and isfinish='0'");
-                cn28ws.moveToFirst();
-                int cns28ws = cn28ws.getCount();
-                match_words_no.setText("(" + cns28ws + ")");*/
-
                 Utils.mProgress.dismiss();
                 if (downcheck == 2) {
                     new AlertDialog.Builder(New_Main_Gamelist.this)
                             /*.setTitle("Delete entry")*/.setMessage("பதிவுகள் ஏதும் இல்லை .பிறகு முயற்சிக்கவும் ").setPositiveButton("சரி", (dialog, which) -> {
 
-                            }).setIcon(android.R.drawable.ic_dialog_alert).show();
+                    }).setIcon(android.R.drawable.ic_dialog_alert).show();
 
                     downcheck = 0;
 
@@ -1902,7 +1234,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
                     new AlertDialog.Builder(New_Main_Gamelist.this)
                             /*.setTitle("Delete entry")*/.setMessage("புதிய பதிவுகள் ஏற்றப்பட்டது. விளையாடி மகிழவும்.   ").setPositiveButton("சரி", (dialog, which) -> {
 
-                            }).setIcon(android.R.drawable.ic_dialog_alert).show();
+                    }).setIcon(android.R.drawable.ic_dialog_alert).show();
                     downcheck = 0;
                     downok = "";
                     downnodata = "";
@@ -1953,11 +1285,6 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
 
     public void prize_enable() {
         mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-      /*  FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                .setDeveloperModeEnabled(BuildConfig.DEBUG)
-                .build();
-        mFirebaseRemoteConfig.setConfigSettings(configSettings);
-        mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);*/
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder().setMinimumFetchIntervalInSeconds(3600).build();
         mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings);
         mFirebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults);
@@ -1967,12 +1294,6 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
         } catch (Exception e) {
             adVal = "1";
         }
-   /*     long cacheExpiration = 3600; // 1 hour in seconds.
-        // If your app is using developer mode, cacheExpiration is set to 0, so each fetch will
-        // retrieve values from the service.
-        if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
-            cacheExpiration = 0;
-        }*/
         final String finalAdVal = adVal;
         mFirebaseRemoteConfig.fetchAndActivate().addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
@@ -1992,29 +1313,6 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
 
         });
 
-    /*    mFirebaseRemoteConfig.fetch(cacheExpiration)
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            //Toast.makeText(New_Main_Activity.this, "Succeeded " + finalAdVal, Toast.LENGTH_SHORT).show();
-                            sps.putInt(getApplicationContext(), "remoteConfig_prize", Integer.parseInt(finalAdVal));
-                            mFirebaseRemoteConfig.activateFetched();
-                            if (sp.getInt(New_Main_Gamelist.this, "remoteConfig_prize") == 1) {
-                                // prices.setVisibility(View.VISIBLE);
-                                prize_lay.setVisibility(View.VISIBLE);
-                            } else {
-                                //  prices.setVisibility(View.GONE);
-                                prize_lay.setVisibility(View.GONE);
-                            }
-                        } else {
-
-                            // sps.putInt(getApplicationContext(), "remoteConfig_prize", 1);
-                            // Toast.makeText(New_Main_Activity.this, "Failed", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                });*/
     }
 
 /*
@@ -2036,12 +1334,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
             public void onAdLoaded(Ad ad) {
                 System.out.println("###########################ADS LODED");
               */
-/*  NativeAdViewAttributes viewAttributes = new NativeAdViewAttributes()
-                        .setBackgroundColor(Color.BLACK)
-                        .setTitleTextColor(Color.WHITE)
-                        .setDescriptionTextColor(Color.LTGRAY)
-                        .setButtonColor(Color.WHITE)
-                        .setButtonTextColor(Color.BLACK);*//*
+/*
 
 
                 // Render the Native Banner Ad Template
@@ -2065,12 +1358,6 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
 */
 
     class DownloadFileAsync extends AsyncTask<String, String, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // showDialog(DIALOG_DOWNLOAD_PROGRESS);
-        }
 
         @Override
         protected String doInBackground(String... aurl) {

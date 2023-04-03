@@ -24,13 +24,13 @@ import nithra.tamil.word.game.solliadi.word_search_game.Models.helpclass.my_dial
 public class challenge extends AppCompatActivity {
 
 
+    static final SharedPreference sp = new SharedPreference();
     public static FrameLayout add3;
-    static SharedPreference sp = new SharedPreference();
+    final my_dialog myDialog_class = new my_dialog();
     // Facebook variable starts
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     SQLiteDatabase mydb;
     challenge_WS_GridFragment challenge_ws_gridFragment;
-    my_dialog myDialog_class = new my_dialog();
     boolean start_time = false;
     FrameLayout fl_adplaceholder;
 
@@ -39,9 +39,6 @@ public class challenge extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // no_tool();
-       /* if (!sp.getString(getApplicationContext(), "saval_showcase").equals("")) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }*/
         setContentView(R.layout.activity_challenge);
 
         setContentView(R.layout.activity_general_play);
@@ -65,19 +62,11 @@ public class challenge extends AppCompatActivity {
             if (my_dialog.isNetworkAvailable(challenge.this)) {
                 //fb_addload_score_screen(challenge.this);
 
-                /*AdRequest notadRequest = new AdRequest.Builder().build();
-                interstitialAd.loadAd(notadRequest);*/
-
             }
         }
 
         fl_adplaceholder = (FrameLayout) findViewById(R.id.fl_adplaceholder);
 
-
-        if (sp.getInt(challenge.this, "purchase_ads") == 1) {
-        } else {
-            // advancads();
-        }
 
         //uiHelper = new UiLifecycleHelper(challenge.this, callback);
     }

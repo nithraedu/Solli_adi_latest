@@ -22,14 +22,14 @@ import java.util.Random;
 
 public class notify_adapter extends ArrayAdapter<String> {
 
+    final String[] url;
+    final int[] idd;
+    final Notify_del notifyDel;
     private final Activity context;
     private final String[] title;
     private final String[] msgDate;
     private final String[] msgTime;
     private final int[] read;
-    String[] url;
-    int[] idd;
-    Notify_del notifyDel;
 
 
     public notify_adapter(Activity context, int[] read, String[] title, String[] urls, int[] id, String[] msgDate, String[] msgTime) {
@@ -112,13 +112,6 @@ public class notify_adapter extends ArrayAdapter<String> {
         });
 
 
-		/*Random ran = new Random();
-		int color = Color.argb(255, ran.nextInt(256), ran.nextInt(256), ran.nextInt(256));
-// 	GradientDrawable drawable1 = (GradientDrawable)noti_id.getBackground().getCurrent();
-		GradientDrawable drawable1 = (GradientDrawable)noti_id.getBackground().getCurrent();
-		drawable1.setColor(color);*/
-
-
         int a = position + 1;
         noti_id.setText("" + a);
 
@@ -144,12 +137,6 @@ public class notify_adapter extends ArrayAdapter<String> {
         }
         time.setText("" + output);
 
-	/*	Glide.with(context)
-				.load(url[position])
-				.centerCrop()
-				.placeholder(R.drawable.logo2)
-				.crossFade()
-				.into(noti_img);*/
         if (read[position] == 1) {
             rowView.setBackgroundColor(Color.parseColor("#ffffff"));
         }

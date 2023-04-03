@@ -4,15 +4,20 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/primary_text</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@color/primary_text</item>
+
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 
@@ -33,315 +38,363 @@
     <dimen name="TitleSize">30sp</dimen>
 
 
+    -
 
+    <style name="GameScreen">
 
-    -<style name="GameScreen">
+        <item name="android:layout_width">match_parent</item>
 
-    <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
 
-    <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
 
-    <item name="android:gravity">center</item>
+        <item name="android:visibility">gone</item>
 
-    <item name="android:visibility">gone</item>
+    </style>
 
-</style>
 
+    -
 
-    -<style name="LLScreen" parent="@style/GameScreen">
+    <style name="LLScreen" parent="@style/GameScreen">
 
-    <item name="android:orientation">vertical</item>
+        <item name="android:orientation">vertical</item>
 
-    <item name="android:gravity">center</item>
+        <item name="android:gravity">center</item>
 
-    <item name="android:padding">30dp</item>
+        <item name="android:padding">30dp</item>
 
-</style>
+    </style>
 
 
-    -<style name="GameplayScreen" parent="@style/LLScreen">
+    -
 
-    <item name="android:gravity">center</item>
+    <style name="GameplayScreen" parent="@style/LLScreen">
 
-</style>
+        <item name="android:gravity">center</item>
 
+    </style>
 
-    -<style name="InvPopup" parent="@style/LLScreen">
 
-    <item name="android:background">@color/PopupColor</item>
+    -
 
-    <item name="android:padding">10dp</item>
+    <style name="InvPopup" parent="@style/LLScreen">
 
-    <item name="android:layout_gravity">top|right</item>
+        <item name="android:background">@color/PopupColor</item>
 
-    <item name="android:layout_width">match_parent</item>
+        <item name="android:padding">10dp</item>
 
-    <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">top|right</item>
 
-    <item name="android:gravity">center</item>
+        <item name="android:layout_width">match_parent</item>
 
-    <item name="android:orientation">horizontal</item>
+        <item name="android:layout_height">wrap_content</item>
 
-</style>
+        <item name="android:gravity">center</item>
 
+        <item name="android:orientation">horizontal</item>
 
-    -<style name="GameTitle">
+    </style>
 
-    <item name="android:layout_width">wrap_content</item>
 
-    <item name="android:layout_height">wrap_content</item>
+    -
 
-    <item name="android:text">@string/game_title</item>
+    <style name="GameTitle">
 
-    <item name="android:textColor">@color/AccentColor</item>
+        <item name="android:layout_width">wrap_content</item>
 
-    <item name="android:textSize">@dimen/TitleSize</item>
+        <item name="android:layout_height">wrap_content</item>
 
-    <item name="android:layout_marginBottom">40dp</item>
+        <item name="android:text">@string/game_title</item>
 
-</style>
+        <item name="android:textColor">@color/AccentColor</item>
 
+        <item name="android:textSize">@dimen/TitleSize</item>
 
-    -<style name="Blurb">
+        <item name="android:layout_marginBottom">40dp</item>
 
-    <item name="android:layout_width">wrap_content</item>
+    </style>
 
-    <item name="android:layout_height">wrap_content</item>
 
-    <item name="android:textColor">@color/BlurbColor</item>
+    -
 
-</style>
+    <style name="Blurb">
 
+        <item name="android:layout_width">wrap_content</item>
 
-    -<style name="GameBlurb" parent="@style/Blurb">
+        <item name="android:layout_height">wrap_content</item>
 
-    <item name="android:text">@string/game_blurb</item>
+        <item name="android:textColor">@color/BlurbColor</item>
 
-    <item name="android:layout_marginBottom">40dp</item>
+    </style>
 
-</style>
 
+    -
 
-    -<style name="SignInButton">
+    <style name="GameBlurb" parent="@style/Blurb">
 
-    <item name="android:layout_width">wrap_content</item>
+        <item name="android:text">@string/game_blurb</item>
 
-    <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">40dp</item>
 
-    <item name="android:layout_marginTop">40dp</item>
+    </style>
 
-</style>
 
+    -
 
-    -<style name="GameButton">
+    <style name="SignInButton">
 
-    <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
 
-    <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
 
-    <item name="android:background">@color/AccentColor</item>
+        <item name="android:layout_marginTop">40dp</item>
 
-    <item name="android:textColor">@color/ButtonTextColor</item>
+    </style>
 
-    <item name="android:paddingLeft">10dp</item>
 
-    <item name="android:paddingRight">10dp</item>
+    -
 
-</style>
+    <style name="GameButton">
 
+        <item name="android:layout_width">wrap_content</item>
 
-    -<style name="MainScreenButton" parent="@style/GameButton">
+        <item name="android:layout_height">wrap_content</item>
 
-    <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:background">@color/AccentColor</item>
 
-</style>
+        <item name="android:textColor">@color/ButtonTextColor</item>
 
+        <item name="android:paddingLeft">10dp</item>
 
-    -<style name="MainScreenButtonBlurb" parent="@style/GameBlurb">
+        <item name="android:paddingRight">10dp</item>
 
-    <item name="android:layout_marginBottom">20dp</item>
+    </style>
 
-</style>
 
+    -
 
-    -<style name="InvPopupText">
+    <style name="MainScreenButton" parent="@style/GameButton">
 
-    <item name="android:layout_width">0dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
 
-    <item name="android:layout_height">match_parent</item>
+    </style>
 
-    <item name="android:layout_weight">1</item>
 
-    <item name="android:textColor">@color/PopupTextColor</item>
+    -
 
-    <item name="android:text">@string/inv_popup_text</item>
+    <style name="MainScreenButtonBlurb" parent="@style/GameBlurb">
 
-    <item name="android:gravity">center</item>
+        <item name="android:layout_marginBottom">20dp</item>
 
-</style>
+    </style>
 
 
-    -<style name="InvPopupButton" parent="@style/GameButton">
+    -
 
-    <item name="android:background">@color/ButtonTextColor</item>
+    <style name="InvPopupText">
 
-    <item name="android:textColor">@color/AccentColor</item>
+        <item name="android:layout_width">0dp</item>
 
-</style>
+        <item name="android:layout_height">match_parent</item>
 
+        <item name="android:layout_weight">1</item>
 
-    -<style name="SignOutButton" parent="@style/GameButton">
+        <item name="android:textColor">@color/PopupTextColor</item>
 
-    <item name="android:background">@color/SignOutButtonBackground</item>
+        <item name="android:text">@string/inv_popup_text</item>
 
-    <item name="android:textColor">@color/SignOutButtonTextColor</item>
+        <item name="android:gravity">center</item>
 
-</style>
+    </style>
 
 
-    -<style name="FigureView">
+    -
 
-    <item name="android:layout_width">150dp</item>
+    <style name="InvPopupButton" parent="@style/GameButton">
 
-    <item name="android:layout_height">150dp</item>
+        <item name="android:background">@color/ButtonTextColor</item>
 
-    <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/AccentColor</item>
 
-    <item name="android:layout_marginBottom">20dp</item>
+    </style>
 
-</style>
 
+    -
 
-    -<style name="FigureLabel">
+    <style name="SignOutButton" parent="@style/GameButton">
 
-    <item name="android:layout_width">wrap_content</item>
+        <item name="android:background">@color/SignOutButtonBackground</item>
 
-    <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/SignOutButtonTextColor</item>
 
-    <item name="android:textSize">20sp</item>
+    </style>
 
-</style>
 
+    -
 
-    -<style name="ScoreToast">
+    <style name="FigureView">
 
-    <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">150dp</item>
 
-    <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">150dp</item>
 
-    <item name="android:textSize">20sp</item>
+        <item name="android:gravity">center</item>
 
-    <item name="android:layout_marginBottom">20dp</item>
+        <item name="android:layout_marginBottom">20dp</item>
 
-</style>
+    </style>
 
 
-    -<style name="ScoresBox">
+    -
 
-    <item name="android:layout_width">match_parent</item>
+    <style name="FigureLabel">
 
-    <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
 
-    <item name="android:background">#f0f0f0</item>
+        <item name="android:layout_height">wrap_content</item>
 
-    <item name="android:orientation">vertical</item>
+        <item name="android:textSize">20sp</item>
 
-    <item name="android:layout_marginTop">30dp</item>
+    </style>
 
-    <item name="android:padding">20dp</item>
 
-</style>
+    -
 
+    <style name="ScoreToast">
 
-    -<style name="ButtonsBox">
+        <item name="android:layout_width">wrap_content</item>
 
-    <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
 
-    <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">20sp</item>
 
-    <item name="android:orientation">horizontal</item>
+        <item name="android:layout_marginBottom">20dp</item>
 
-    <item name="android:layout_marginTop">20dp</item>
+    </style>
 
-    <item name="android:padding">20dp</item>
 
-    <item name="android:gravity">center</item>
+    -
 
-</style>
+    <style name="ScoresBox">
 
+        <item name="android:layout_width">match_parent</item>
 
-    -<style name="ScoreText">
+        <item name="android:layout_height">wrap_content</item>
 
-    <item name="android:layout_width">wrap_content</item>
+        <item name="android:background">#f0f0f0</item>
 
-    <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
 
-    <item name="android:textSize">18sp</item>
+        <item name="android:layout_marginTop">30dp</item>
 
-    <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:padding">20dp</item>
 
-    <item name="android:gravity">left</item>
+    </style>
 
-</style>
 
+    -
 
-    -<style name="Instructions" parent="@style/Blurb">
+    <style name="ButtonsBox">
 
-    <item name="android:layout_marginBottom">20dp</item>
+        <item name="android:layout_width">match_parent</item>
 
-</style>
+        <item name="android:layout_height">wrap_content</item>
 
+        <item name="android:orientation">horizontal</item>
 
-    -<style name="ScoreLabel">
+        <item name="android:layout_marginTop">20dp</item>
 
-    <item name="android:layout_width">wrap_content</item>
+        <item name="android:padding">20dp</item>
 
-    <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
 
-</style>
+    </style>
 
 
-    -<style name="ScoreDisplay">
+    -
 
-    <item name="android:layout_width">wrap_content</item>
+    <style name="ScoreText">
 
-    <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
 
-    <item name="android:textSize">30sp</item>
+        <item name="android:layout_height">wrap_content</item>
 
-    <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
 
-    <item name="android:textColor">@color/AccentColor</item>
+        <item name="android:layout_marginBottom">10dp</item>
 
-    <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:gravity">left</item>
 
-</style>
+    </style>
 
 
-    -<style name="PlacementDisplay">
+    -
 
-    <item name="android:layout_width">wrap_content</item>
+    <style name="Instructions" parent="@style/Blurb">
 
-    <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">20dp</item>
 
-    <item name="android:textColor">@color/BlurbColor</item>
+    </style>
 
-</style>
 
+    -
 
-    -<style name="SectionLabel">
+    <style name="ScoreLabel">
 
-    <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
 
-    <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
 
-    <item name="android:textColor">@color/AccentColor</item>
+    </style>
 
-    <item name="android:textSize">20sp</item>
 
-    <item name="android:layout_marginBottom">20dp</item>
+    -
 
-</style>
+    <style name="ScoreDisplay">
+
+        <item name="android:layout_width">wrap_content</item>
+
+        <item name="android:layout_height">wrap_content</item>
+
+        <item name="android:textSize">30sp</item>
+
+        <item name="android:textStyle">bold</item>
+
+        <item name="android:textColor">@color/AccentColor</item>
+
+        <item name="android:layout_marginBottom">10dp</item>
+
+    </style>
+
+
+    -
+
+    <style name="PlacementDisplay">
+
+        <item name="android:layout_width">wrap_content</item>
+
+        <item name="android:layout_height">wrap_content</item>
+
+        <item name="android:textColor">@color/BlurbColor</item>
+
+    </style>
+
+
+    -
+
+    <style name="SectionLabel">
+
+        <item name="android:layout_width">wrap_content</item>
+
+        <item name="android:layout_height">wrap_content</item>
+
+        <item name="android:textColor">@color/AccentColor</item>
+
+        <item name="android:textSize">20sp</item>
+
+        <item name="android:layout_marginBottom">20dp</item>
+
+    </style>
 
 
     <style name="Theme.AppCompat.Translucent" parent="Theme.AppCompat.Light.NoActionBar">
@@ -351,7 +404,6 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
     </style>
-
 
 
     <style name="normalText" parent="@android:style/TextAppearance">
@@ -365,4 +417,4 @@
         <item name="android:textColor">#FF0000</item>
     </style>
 
-    </resources>
+</resources>

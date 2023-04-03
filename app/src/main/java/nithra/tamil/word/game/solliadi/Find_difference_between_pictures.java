@@ -27,6 +27,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
@@ -35,7 +36,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -56,7 +56,6 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.facebook.ads.NativeAdLayout;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
@@ -108,9 +107,13 @@ import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
 public class Find_difference_between_pictures extends AppCompatActivity implements Download_completed {
     public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
+    static final int mCoinCount = 20;
     public static int chr = 0;
     static int rvo = 0;
-    static int mCoinCount = 20;
+    final SharedPreference sps = new SharedPreference();
+    final String gameid = "20";
+    final int minmumd = 1;
+    final int maximumd = 4;
     int fb_reward = 0;
     //reward videos process 1***********************
     // Facebook variable starts
@@ -122,8 +125,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
     TextView score, ans1, ans2, ans3, ans4, ans5, ans6, ans7, clear, questionid, p_facebook, p_watts_app;
     ImageView image_1, image_2, value_ans1, value_ans2, value_ans3, value_ans4, value_ans5, value_ans6, value_ans7;
     AppCompatEditText ans_editer;
-    SharedPreference sps = new SharedPreference();
-    String gameid = "20";
     String question_id = "", question = "", answer = "";
     int u_id = 0;
     int rdvalu;
@@ -150,8 +151,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
     int setval_vid;
     Dialog openDialog;
     TextView coin_value;
-    int minmumd = 1;
-    int maximumd = 4;
     int randomnod;
     int case2 = 0, tot2 = 30, tt_case2, tt_tot2;
     int y;
@@ -175,7 +174,8 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
     TextView p_coins;
     int e2;
     int setting_access = 0;
-
+    Handler handler;
+    Runnable my_runnable;
     private InterstitialAd mInterstitialAd;
     private RewardedAd rewardedAd;
 
@@ -200,7 +200,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         if (status.equals("nodata")) {
             nextgamesdialog();
         } else {
-            Handler handler = new Handler();
+            Handler handler = new Handler(Looper.myLooper());
             handler.postDelayed(() -> {
                 next();
                 System.out.println("jas1");
@@ -223,7 +223,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_difference_between_pictures);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.xml.hexkbd);
         mCustomKeyboard.registerEditText(R.id.ans_editer);
         newhelper5 = new Newgame_DataBaseHelper5(this);
@@ -238,19 +238,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         newhelper4 = new Newgame_DataBaseHelper4(Find_difference_between_pictures.this);
 
 
-
-
-        /*String gid = "20";
-        String qid = "";
-        for (int i = 1; i<=29; i++){
-            if (qid.equals("")){
-                qid = "" +i;
-            } else {
-                qid = qid + "," + i;
-            }
-        }
-        newhelper6.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid in (" + qid + ") and gameid='20'");
-*/
         if (sps.getString(Find_difference_between_pictures.this, "new_user_db").equals("")) {
 
         } else {
@@ -288,9 +275,10 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         click();
         next();
         System.out.println("jas2");
+        MobileAds.initialize(this);
         rewarded_adnew();
         if (sps.getInt(Find_difference_between_pictures.this, "purchase_ads") == 0) {
-            MobileAds.initialize(this);
+            Utills.INSTANCE.initializeAdzz(this);
             industrialload();
         }
 
@@ -307,10 +295,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
             sequence.addSequenceItem(verify, "சரிபார்க்க பொத்தானை அழுத்தி விடையை சரிபார்த்துக்கொள்ளவும்.", "அடுத்து");
 
-            // sequence.addSequenceItem(ex_bones, "தொடர்ந்து சரியான  10 விடைகளை கண்டுபிடித்தால், கூடுதல் விடைகளை நாணயங்கள் குறையாமல் அறிந்து கொள்ளலாம்.", "அடுத்து");
-
-            // sequence.addSequenceItem(feedback, "கருத்துக்கள்  பொத்தானை அழுத்தி மேலும் உங்களுக்கு தெரிந்த விடைகளை எங்களுக்கு அனுப்பவும் .", "அடுத்து");
-            //   sequence.addSequenceItem(helpshare_layout, "சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.", "சரி");
             sequence.addSequenceItem(new MaterialShowcaseView.Builder(Find_difference_between_pictures.this).setTarget(p_facebook).setDismissText("சரி").setContentText("சமூக வலைத்தளங்களை பயன்படுத்தி இந்த வினாவை  உங்களது நண்பர்களுக்கு பகிர்ந்து விடையை தெரிந்து கொள்ளலாம்.").build()).setOnItemDismissedListener((itemView, position) -> {
 
                 if (position == 2) {
@@ -329,7 +313,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
     }
 
     public void showcase_dismiss() {
-        Handler handler30 = new Handler();
+        Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
 
             if (sps.getString(Find_difference_between_pictures.this, "showcase_dismiss_6f_intro").equals("")) {
@@ -367,13 +351,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         }
         score.setText("" + skx);
         reset();
-        NativeAdLayout native_banner_ad_container = findViewById(R.id.native_banner_ad_container);
-        if (sps.getInt(Find_difference_between_pictures.this, "purchase_ads") == 1) {
-            native_banner_ad_container.setVisibility(View.GONE);
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        } else {
-            native_banner_ad_container.setVisibility(View.VISIBLE);
-        }
+
         head.setVisibility(View.VISIBLE);
         ans_editer.requestFocus();
         String date = sps.getString(Find_difference_between_pictures.this, "date");
@@ -446,42 +424,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             } else if (optlen >= 7) {
                 view_ans(7);
             }
-
-
-
-
-
-
-           /* if (isdown.equals("0")) {
-                int im1 = getResources().getIdentifier(word1.replace(".webp", ""), "drawable", getPackageName());
-                image_1.setVisibility(View.VISIBLE);
-                image_1.setImageResource(im1);
-
-                int im2 = getResources().getIdentifier(word2.replace(".webp", ""), "drawable", getPackageName());
-                image_2.setVisibility(View.VISIBLE);
-                image_2.setImageResource(im2);
-
-                System.out.println("@@@@@@@@@@@@@@@@@oi" + word1);
-            } else {
-                String fullPath = getFilesDir()
-                        + "/Nithra/solliadi/";
-                File file1 = new File(fullPath + word1 + "");
-                File file2 = new File(fullPath + word2 + "");
-
-                if (file1.exists() && file2.exists()) {
-                    Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + word1 + "");
-                    Resources res = getResources();
-                    BitmapDrawable bd = new BitmapDrawable(res, bitimg1);
-                    image_1.setImageDrawable(bd);
-
-                    Bitmap bitimg2 = BitmapFactory.decodeFile(fullPath + word2 + "");
-                    BitmapDrawable bd2 = new BitmapDrawable(res, bitimg2);
-                    image_2.setImageDrawable(bd2);
-                } else {
-                    missingimage();
-                    System.out.println("missimg1");
-                }
-            }*/
 
 
             if (isdown.equals("0")) {
@@ -657,8 +599,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
         } else {
             data_download_game();
-            //downloaddata_regular();
-            //nextgamesdialog();
         }
     }
 
@@ -791,34 +731,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
     }
 
-/*
-    public void setans(View v) {
-        switch (v.getId()) {
-            case R.id.value_ans1:
-                set_val(1);
-                break;
-            case R.id.value_ans2:
-                set_val(2);
-                break;
-            case R.id.value_ans3:
-                set_val(3);
-                break;
-            case R.id.value_ans4:
-                set_val(4);
-                break;
-            case R.id.value_ans5:
-                set_val(5);
-                break;
-            case R.id.value_ans6:
-                set_val(6);
-                break;
-            case R.id.value_ans7:
-                set_val(7);
-                break;
-        }
-    }
-*/
-
     public void set_val(int val) {
         // Toast.makeText(this, "set_val"+val, Toast.LENGTH_SHORT).show();
         Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
@@ -920,7 +832,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                         }
                         update_price();
                         // completegame();
-                        Handler handler = new Handler();
+                        Handler handler = new Handler(Looper.myLooper());
                         handler.postDelayed(() -> adShow(), 2000);
                     }
                 }
@@ -1043,7 +955,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                     }
                     // completegame();
                     update_price();
-                    Handler handler = new Handler();
+                    Handler handler = new Handler(Looper.myLooper());
                     handler.postDelayed(() -> adShow(), 2000);
                 }
             }
@@ -1060,7 +972,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             chr = 1;
             mCustomKeyboard.letter_del_change("1");
             mCustomKeyboard.letter_del_change("1");
-            pressKey(KeyEvent.KEYCODE_DEL);
+            pressKey();
         });
         clear.setOnLongClickListener(v -> {
             chr = 1;
@@ -1158,13 +1070,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
                         b_score = b_score + 10;
 
-                   /*     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + 10;
-                        String aStringx = Integer.toString(spx);
-                        score.setText(aStringx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");*/
                         coinanim();
                         Cursor ch = myDbHelper.getQry("SELECT * FROM score ");
                         ch.moveToFirst();
@@ -1185,7 +1090,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                                 myDbHelper.executeSql("UPDATE dailytest SET isfinish='1' WHERE levelid='" + question_id + "'and gameid='" + gameid + "'");
                             }
                             update_price();
-                            Handler handler = new Handler();
+                            Handler handler = new Handler(Looper.myLooper());
                             handler.postDelayed(() -> adShow(), 2000);
                         }
 
@@ -1340,9 +1245,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         score.setText("" + skx);
 
         ImageView prize_logo = findViewById(R.id.prize_logo);
-        /*final Animation pendulam;
-        pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
-        prize_logo.startAnimation(pendulam);*/
         if (sps.getInt(Find_difference_between_pictures.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
@@ -1371,9 +1273,9 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         });
     }
 
-    private void pressKey(int keycode) {
-        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, keycode);
-        ans_editer.onKeyDown(keycode, event);
+    private void pressKey() {
+        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL);
+        ans_editer.onKeyDown(KeyEvent.KEYCODE_DEL, event);
     }
 
     public void dialog(int i) {
@@ -1425,7 +1327,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                     fb_reward = 0;
                     //reward(Find_difference_between_pictures.this);
                     rewarded_adnew();
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
 
                         Toast.makeText(Find_difference_between_pictures.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
@@ -1499,7 +1401,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getPackageManager();
-        boolean app_installed = false;
+        boolean app_installed;
         try {
             pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
             app_installed = true;
@@ -1511,11 +1413,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
     public void setSc() {
 
-       /* if (s == 1) {
-            openDialog_p.dismiss();
-            s = 0;
-        }
-*/
         long timeElapsed = SystemClock.elapsedRealtime() - focus.getBase();
         int hours = (int) (timeElapsed / 3600000);
         int minutes = (int) (timeElapsed - hours * 3600000) / 60000;
@@ -1623,7 +1520,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                     show_reward();
                     rewardvideo.setVisibility(View.INVISIBLE);
                 } else {
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
                         if (fb_reward == 1) {
                             show_reward();
@@ -1652,7 +1549,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                     show_reward();
                     rewardvideo.setVisibility(View.INVISIBLE);
                 } else {
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
                         if (fb_reward == 1) {
                             show_reward();
@@ -1725,8 +1622,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             uans = cd.getCount();
         }
 
-        // Toast.makeText(Find_words_from_picture.this, "u_ans"+uans, Toast.LENGTH_SHORT).show();
-        // Toast.makeText(Find_words_from_picture.this, "answerlength"+answerlength, Toast.LENGTH_SHORT).show();
         int tt_time = 122;
 
 
@@ -1748,19 +1643,19 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             if (!date.equals("0")) {
                 next_continue.setText("சரி");
             }
-            Handler handler1 = new Handler();
+            Handler handler1 = new Handler(Looper.myLooper());
             handler1.postDelayed(() -> {
                 coin.play(soundId4, sv, sv, 0, 0, sv);
                 //play1.start();
                 cns3.setVisibility(View.VISIBLE);
             }, 500);
-            Handler handler2 = new Handler();
+            Handler handler2 = new Handler(Looper.myLooper());
             handler2.postDelayed(() -> {
                 // play2.start();
                 coin.play(soundId4, sv, sv, 0, 0, sv);
                 cns1.setVisibility(View.VISIBLE);
             }, 1000);
-            Handler handler3 = new Handler();
+            Handler handler3 = new Handler(Looper.myLooper());
             handler3.postDelayed(() -> {
                 //  play3.start();
                 coin.play(soundId4, sv, sv, 0, 0, sv);
@@ -1768,7 +1663,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             }, 1500);
 
 
-            Handler handler6 = new Handler();
+            Handler handler6 = new Handler(Looper.myLooper());
             handler6.postDelayed(() -> {
                 int[] locationInWindow = new int[2];
                 cns3.getLocationInWindow(locationInWindow);
@@ -1788,7 +1683,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                 cns3.postDelayed(() -> cns3.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
             }, 1500);
-            Handler handler7 = new Handler();
+            Handler handler7 = new Handler(Looper.myLooper());
             handler7.postDelayed(() -> {
                 int[] locationInWindow = new int[2];
                 cns1.getLocationInWindow(locationInWindow);
@@ -1808,7 +1703,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                 cns1.postDelayed(() -> cns1.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
             }, 1900);
-            Handler handler8 = new Handler();
+            Handler handler8 = new Handler(Looper.myLooper());
             handler8.postDelayed(() -> {
                 int[] locationInWindow = new int[2];
                 cns2.getLocationInWindow(locationInWindow);
@@ -1857,7 +1752,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             }
 
 
-            Handler handler11 = new Handler();
+            Handler handler11 = new Handler(Looper.myLooper());
             handler11.postDelayed(() -> new Thread(() -> {
 
                 while (tt_case2 < tt_tot2) {
@@ -1873,7 +1768,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
             }).start(), 1500);
 
-            Handler hand = new Handler();
+            Handler hand = new Handler(Looper.myLooper());
             hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 2500);
 
             next_continue.setOnClickListener(view -> {
@@ -2016,8 +1911,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         cfx.moveToFirst();
         if (cfx.getCount() != 0) {
             skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-/*        int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
             b_scores.setText("" + a);
 
 
@@ -2080,8 +1973,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         openDialog.setCancelable(false);
         //  TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
         TextView ok_y = openDialog.findViewById(R.id.ok_y);
-        //   TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
-        // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
 
         Calendar calendar3 = Calendar.getInstance();
         int cur_year1 = calendar3.get(Calendar.YEAR);
@@ -2104,10 +1995,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         final String date = sdf.format(date1);
 
         TextView tomarrow_coin_earn = openDialog.findViewById(R.id.tomarrow_coin_earn);
-
-        //TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
-
-        //TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
 
 
         ok_y.setOnClickListener(v -> {
@@ -2152,15 +2039,11 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         }
         prize_data_update(Find_difference_between_pictures.this, ea);
         coin_value = openDialog.findViewById(R.id.coin_value);
-      /*  final int vals = reward_play_count * 100;
-        ea = ea + vals;*/
         coin_value.setText("" + ea);
         setval_vid = ea;
         Random rn = new Random();
         randomnod = rn.nextInt(maximumd - minmumd + 1) + minmumd;
 
-        //String r= String.valueOf(w_id);
-        //lt_id.setText(r);
         String ran_score = "";
         if (randomnod == 1) {
             sps.putInt(Find_difference_between_pictures.this, "daily_bonus_count", 1);
@@ -2189,7 +2072,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                     reward_progressBar.dismiss();
                     show_reward();
                 } else {
-                    new Handler().postDelayed(() -> {
+                    new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
                         if (fb_reward == 1) {
                             show_reward();
@@ -2207,21 +2090,16 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                 Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
             }
         });
-                       /* b_close.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                openDialog.dismiss();
-                            }
-                        });*/
         openDialog.show();
     }
 
 
     public void industrialload() {
+        if (mInterstitialAd != null) return;
         Log.i("TAG", "onAdLoadedCalled");
         AdRequest adRequest = new AdRequest.Builder().build();
 
-        InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", adRequest, new InterstitialAdLoadCallback() {
+        InterstitialAd.load(this, getResources().getString(R.string.Game1_Stage_Close_VV), adRequest, new InterstitialAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 // The mInterstitialAd reference will be null until
@@ -2236,6 +2114,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                 // Handle the error
                 Log.d("TAG", loadAdError.toString());
                 mInterstitialAd = null;
+                handler = null;
                 Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
             }
         });
@@ -2250,6 +2129,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                 // Set the ad reference to null so you don't show the ad a second time.
                 Log.d("TAG", "Ad dismissed fullscreen content.");
                 mInterstitialAd = null;
+                handler = null;
                 Utills.INSTANCE.Loading_Dialog_dismiss();
                 setSc();
                 industrialload();
@@ -2260,13 +2140,10 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                 // Called when ad fails to show.
                 Log.e("TAG", "Ad failed to show fullscreen content.");
                 mInterstitialAd = null;
-            }
-
-
-            @Override
-            public void onAdShowedFullScreenContent() {
-                // Called when ad is shown.
-                Log.d("TAG", "Ad showed fullscreen content.");
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                setSc();
             }
         });
     }
@@ -2275,12 +2152,15 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") == Utills.interstitialadCount && mInterstitialAd != null) {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
             Utills.INSTANCE.Loading_Dialog(this);
-            Handler handler = new Handler();
-            handler.postDelayed(() -> {
+            handler = new Handler(Looper.myLooper());
+            my_runnable = () -> {
                 mInterstitialAd.show(this);
-            }, 2500);
+            };
+            handler.postDelayed(my_runnable, 2500);
         } else {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
+            if (sps.getInt(this, "Game1_Stage_Close_VV") > Utills.interstitialadCount)
+                sps.putInt(this, "Game1_Stage_Close_VV", 0);
             setSc();
         }
 
@@ -2289,7 +2169,15 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (openDialog_p != null && openDialog_p.isShowing()) {
+            openDialog_p.dismiss();
+        }
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+        rewardedAd = null;
         mInterstitialAd = null;
+        handler = null;
     }
 
 
@@ -2344,6 +2232,8 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
     @Override
     protected void onResume() {
         super.onResume();
+        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV"));
 
 
         if (sps.getString(Find_difference_between_pictures.this, "resume_fp").equals("")) {
@@ -2419,6 +2309,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
     @Override
     protected void onPause() {
         super.onPause();
+        if (handler != null) handler.removeCallbacks(my_runnable);
         focus.stop();
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
@@ -2469,20 +2360,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                 if (appinstalled) {
                     focus.stop();
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-
-                 /*   String date = sps.getString(Find_words_from_picture.this, "date");
-                    int pos;
-                    if (date.equals("0")) {
-                        pos = 1;
-                        myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                    } else {
-                        pos = 2;
-                        myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-                        myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-                    }*/
 
                     //Uri uri = Uri.fromFile(file);
                     Uri uri = FileProvider.getUriForFile(Find_difference_between_pictures.this, Find_difference_between_pictures.this.getPackageName(), file);
@@ -2537,94 +2414,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
         myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
 
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if ((ContextCompat.checkSelfPermission(Find_difference_between_pictures.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                helpshare(a);
-            } else {
-                if (sps.getString(Find_difference_between_pictures.this, "permission_grand").equals("")) {
-                    sps.putString(Find_difference_between_pictures.this, "permission_grand", "yes");
-                    //  First_register("yes");
-                    AlertDialog alertDialog = new AlertDialog.Builder(Find_difference_between_pictures.this).create();
-                    alertDialog.setMessage("இந்த நிலையை உங்களது நண்பருக்கு பகிர  பின்வரும் permission-யை  allow செய்யவேண்டும்");
-                    alertDialog.setCancelable(false);
-                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK ",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    if ((ContextCompat.checkSelfPermission(Find_difference_between_pictures.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                        ActivityCompat.requestPermissions(Find_difference_between_pictures.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                                    } else {
-                                        helpshare(a);
-                                    }
-                                }
-                            });
-
-                    alertDialog.show();
-
-                } else {
-                    if ((ContextCompat.checkSelfPermission(Find_difference_between_pictures.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                        if (sps.getInt(Find_difference_between_pictures.this, "permission") == 2) {
-                            AlertDialog alertDialog = new AlertDialog.Builder(Find_difference_between_pictures.this).create();
-                            alertDialog.setMessage("இந்த நிலையை உங்களது நண்பருக்கு பகிர settingsல் உள்ள permission-யை allow செய்யவேண்டும்");
-                            alertDialog.setCancelable(false);
-                            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Settings ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                            Intent intent = new Intent();
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                            Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
-                                            intent.setData(uri);
-                                            getApplicationContext().startActivity(intent);
-                                        }
-                                    });
-
-                            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Exit ",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            String date = sps.getString(Find_difference_between_pictures.this, "date");
-                                            int pos;
-                                            if (date.equals("0")) {
-                                                pos = 1;
-                                            } else {
-                                                pos = 2;
-                                            }
-                                            Cursor cs = myDbHelper.getQry("select * from answertable where gameid='" + gameid + "' and levelid='" + question_id + "' and rd='" + pos + "'");
-                                            cs.moveToFirst();
-                                            long dscore = 0;
-                                            if (cs.getCount() != 0) {
-                                                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
-                                            }
-                                            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-                                            focus.start();
-                                            dialog.dismiss();
-                                            // finish();
-                                        }
-                                    });
-
-
-                            alertDialog.show();
-                        } else {
-                            if ((ContextCompat.checkSelfPermission(Find_difference_between_pictures.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                                ActivityCompat.requestPermissions(Find_difference_between_pictures.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 152);
-                            } else {
-                                helpshare(a);
-                            }
-                        }
-                    } else {
-                        if ((ContextCompat.checkSelfPermission(Find_difference_between_pictures.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                            ActivityCompat.requestPermissions(Find_difference_between_pictures.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 151);
-                        } else {
-                            helpshare(a);
-                        }
-                    }
-                }
-            }
-
-        } else {
-            helpshare(a);
-        }*/
         helpshare(a);
     }
 
@@ -2928,12 +2717,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             Intent i = new Intent(Find_difference_between_pictures.this, Fill_in_blanks.class);
             startActivity(i);
         });
-        eng_to_tamil.setOnClickListener(v -> {
-            finish();
-            sps.putString(Find_difference_between_pictures.this, "date", "0");
-            Intent i = new Intent(Find_difference_between_pictures.this, English_to_tamil.class);
-            startActivity(i);
-        });
+
 
         TextView quiz = openDialog.findViewById(R.id.quiz);
         TextView find_words_from_pictures = openDialog.findViewById(R.id.find_words_from_pictures);
@@ -3035,11 +2819,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             sps.putString(Find_difference_between_pictures.this, "date", "0");
 
 
-          /*  finish();
-            openDialog.dismiss();
-            //sps.putString(Odd_man_out.this, "date", "0");
-            Intent i = new Intent(Odd_man_out.this, New_Main_Activity.class);
-            startActivity(i);*/
             return keyCode == KeyEvent.KEYCODE_BACK;
         });
     }
@@ -3112,8 +2891,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
     }
 
     public void downloaddata_regular() {
-        NativeAdLayout native_banner_ad_container = findViewById(R.id.native_banner_ad_container);
-        native_banner_ad_container.setVisibility(View.INVISIBLE);
+
         head.setVisibility(View.INVISIBLE);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Find_difference_between_pictures.this);
         // alertDialogBuilder.setTitle("Update available");
@@ -3125,8 +2903,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             if (Utils.isNetworkAvailable(Find_difference_between_pictures.this)) {
                 download_datas();
             } else {
-                NativeAdLayout native_banner_ad_container1 = findViewById(R.id.native_banner_ad_container);
-                native_banner_ad_container1.setVisibility(View.INVISIBLE);
+
                 head.setVisibility(View.INVISIBLE);
                 AlertDialog.Builder alertDialogBuilder1 = new AlertDialog.Builder(Find_difference_between_pictures.this);                           /* .setTitle("Delete entry")*/
                 alertDialogBuilder1.setCancelable(false);
@@ -3147,16 +2924,12 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                     } else {
                         backexitnet();
                     }
-                               /* Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
-                                startActivity(i);*/
                     dialog1.dismiss();
                 }).setIcon(android.R.drawable.ic_dialog_alert).show();
             }
 
         });
         alertDialogBuilder.setPositiveButton("இல்லை ", (dialog, id) -> {
-            /*Intent i = new Intent(Find_words_from_picture.this, New_Main_Activity.class);
-            startActivity(i);*/
             sps.putString(Find_difference_between_pictures.this, "game_area", "on");
             finish();
         });
@@ -3188,12 +2961,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                     int count1 = c2.getCount();
                     String lastid = String.valueOf(count1);
 
-                           /* Cursor cursor1 = newhelper6.getQry("select * from newgames5 where gameid='" + gameid + "' and isfinish='1'");
-                            cursor1.moveToFirst();
-                            String lastid = null;
-                            if (cursor1.getCount() != 0) {
-                                lastid = String.valueOf(cursor1.getInt(cursor1.getColumnIndexOrThrow("questionid")));
-                            }*/
                     System.out.println("--last q id : " + lastid);
                     downpic(question_id, lastid);
                 }
@@ -3290,25 +3057,20 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
     }
 
     public void downpic(final String first, final String last) {
-        NativeAdLayout native_banner_ad_container = findViewById(R.id.native_banner_ad_container);
-        native_banner_ad_container.setVisibility(View.INVISIBLE);
+
         head.setVisibility(View.INVISIBLE);
         Utils.mProgress(Find_difference_between_pictures.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", true).show();
 
         new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
 
             @Override
             protected Void doInBackground(Void... params) {
 
 
-                String result = null;
+                String result;
 
                 InputStream is = null;
-                StringBuilder sb = null;
+                StringBuilder sb;
 
                 ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
 
@@ -3334,7 +3096,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                     BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
                     sb = new StringBuilder();
                     sb.append(reader.readLine() + "\n");
-                    String line = "0";
+                    String line;
                     while ((line = reader.readLine()) != null) {
                         sb.append(line + "\n");
                     }
@@ -3388,7 +3150,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         return null;
     }
 
-    public int unpackZip(String ZIP_FILE_NAME) {
+    public void unpackZip(String ZIP_FILE_NAME) {
 
         InputStream is;
         ZipInputStream zis;
@@ -3426,9 +3188,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
         } catch (IOException e) {
             e.printStackTrace();
-            return 0;
         }
-        return 1;
     }
 
     @Override
@@ -3439,8 +3199,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             if (Utils.isNetworkAvailable(Find_difference_between_pictures.this)) {
                 download_datas();
             } else {
-                NativeAdLayout native_banner_ad_container = findViewById(R.id.native_banner_ad_container);
-                native_banner_ad_container.setVisibility(View.INVISIBLE);
+
                 head.setVisibility(View.INVISIBLE);
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Find_difference_between_pictures.this);
                 alertDialogBuilder.setCancelable(false);
@@ -3490,8 +3249,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-     /*   int spx = skx + a;
-        final String aStringx = Integer.toString(spx);*/
         b_scores.setText("" + a);
 
 
@@ -3554,13 +3311,13 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
         }).start();
 
-        Handler handler30 = new Handler();
+        Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
             Animation levels1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadeout_animation);
             score.startAnimation(levels1);
         }, 2200);
 
-        Handler handler21 = new Handler();
+        Handler handler21 = new Handler(Looper.myLooper());
         handler21.postDelayed(() -> {
             Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
             cfx.moveToFirst();
@@ -3578,7 +3335,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
     public void rewarded_adnew() {
         AdRequest adRequest = new AdRequest.Builder().build();
-        RewardedAd.load(this, "ca-app-pub-3940256099942544/5224354917", adRequest, new RewardedAdLoadCallback() {
+        RewardedAd.load(this, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 // Handle the error.
@@ -3614,7 +3371,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
                     }
-                    Handler handler = new Handler();
+                    Handler handler = new Handler(Looper.myLooper());
                     handler.postDelayed(() -> {
                         if (rvo == 2) {
                             share_earn2(mCoinCount);
@@ -3738,11 +3495,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         protected void onProgressUpdate(String... progress) {
             Log.d("ANDRO_ASYNC", progress[0]);
             mProgressDialog.setProgress(Integer.parseInt(progress[0]));
-            /*if(!isNetworkAvailable()){
-				downloadFileAsync.isCancelled();
-				//downloadFileAsync.cancel(true);
-
-			}*/
         }
     }
 

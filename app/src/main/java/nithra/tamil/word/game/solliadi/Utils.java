@@ -86,11 +86,6 @@ public class Utils {
         String Product = Build.PRODUCT;
         return Manufacturer + "-" + Model + "-" + Brand + "-" + Product;
     }
-/*    public static boolean isNetworkAvailable(Context context) {
-        ConnectivityManager connec = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }*/
 
     public static boolean isNetworkAvailable(Context context) {
         boolean result = false;
@@ -181,7 +176,7 @@ public class Utils {
     }
 
     public static Boolean gcm_update(Context context) {
-        Boolean aBoolean = false;
+        boolean aBoolean = false;
         SharedPreference sharedPreference = new SharedPreference();
         Calendar calendar = Calendar.getInstance();
         long next_hour = calendar.getTimeInMillis();

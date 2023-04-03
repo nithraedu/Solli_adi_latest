@@ -1,39 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/back_next2"
-    tools:context="sample.mobi.nithra.tamil_odu_vilayadu.Solukul_Sol">
+    android:orientation="vertical">
 
     <RelativeLayout
 
         android:id="@+id/s_head"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         android:background="@drawable/back_next2">
+
         <LinearLayout
-            android:visibility="gone"
             android:id="@+id/heading"
-            android:background="#404e16"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="#404e16"
+            android:visibility="gone">
+
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
                 android:padding="@dimen/lrtbp_5"
                 android:text="சொல்லுக்குள் சொல்"
                 android:textColor="#fff"
                 android:textSize="15dp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_below="@+id/heading"
             android:id="@+id/time_score_board"
             android:layout_width="match_parent"
             android:layout_height="@dimen/wh_40"
+            android:layout_below="@+id/heading"
             android:background="@drawable/actionbar_back"
             android:orientation="horizontal">
 
@@ -74,15 +76,16 @@
                     android:layout_height="wrap_content"
                     android:layout_toLeftOf="@+id/s_word_number1"
                     android:layout_toRightOf="@+id/asd">
-                    <ImageView
-                        android:layout_centerInParent="true"
-                        android:id="@+id/prize_logo"
-                        android:visibility="invisible"
 
+                    <ImageView
+                        android:id="@+id/prize_logo"
                         android:layout_width="@dimen/croll_insbut_height"
-                        android:gravity="center"
                         android:layout_height="@dimen/croll_insbut_height"
-                        android:src="@drawable/gift" />
+
+                        android:layout_centerInParent="true"
+                        android:gravity="center"
+                        android:src="@drawable/gift"
+                        android:visibility="invisible" />
 
                     <RelativeLayout
                         android:id="@+id/adsicon2"
@@ -265,7 +268,6 @@
                     android:id="@+id/sh_gplues"
                     android:layout_width="@dimen/wh_35"
                     android:layout_height="@dimen/wh_35"
-                    android:layout_below="@+id/sh_watts_app"
                     android:layout_alignParentRight="true"
                     android:layout_marginTop="@dimen/lrtbp_5"
                     android:layout_marginRight="@dimen/lrtbp_5"
@@ -683,24 +685,15 @@
 
     </RelativeLayout>
 
-    <com.facebook.ads.NativeAdLayout
-        android:id="@+id/native_banner_ad_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-
-        android:visibility="gone"/>
 
     <LinearLayout
 
         android:id="@+id/ads_lay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
         android:background="@color/white"
-        android:minHeight="50dp"
-        >
+        android:minHeight="@dimen/wh_50"
+        android:orientation="horizontal">
 
     </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

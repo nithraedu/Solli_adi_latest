@@ -6,10 +6,10 @@ import android.os.CountDownTimer;
 
 public class GcmKeepAlive {
 
+    protected final Context mContext;
+    protected final Intent gTalkHeartBeatIntent;
+    protected final Intent mcsHeartBeatIntent;
     protected CountDownTimer timer;
-    protected Context mContext;
-    protected Intent gTalkHeartBeatIntent;
-    protected Intent mcsHeartBeatIntent;
 
     public GcmKeepAlive(Context context) {
         mContext = context;

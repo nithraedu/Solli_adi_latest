@@ -26,8 +26,8 @@ import java.util.StringTokenizer;
 
 class NotificationHelper_offline extends ContextWrapper {
     public static final String PRIMARY_CHANNEL = "default";
+    final Context context;
     NotificationChannel chan1 = null;
-    Context context;
     private NotificationManager manager;
 
     public NotificationHelper_offline(Context base) {
@@ -80,10 +80,6 @@ class NotificationHelper_offline extends ContextWrapper {
         } else {
             builder = new NotificationCompat.Builder(context);
         }
-      /*  Notification.Builder builder = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder = new Notification.Builder(context, PRIMARY_CHANNEL);
-        }*/
         Intent i = new Intent(context, Clue_Game_Hard.class);
         sps.putString(context, "Exp_list", "off");
         sps.putInt(context, "addlodedd", 2);
@@ -118,10 +114,6 @@ class NotificationHelper_offline extends ContextWrapper {
         builder.setSmallIcon(R.drawable.noti_backicon);
         builder.setAutoCancel(true);
 
-       /* Notification notification = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            notification = builder.build();
-        }*/
         Notification notification = builder.build();
         RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.daily_normal_clue);
 
@@ -554,11 +546,6 @@ class NotificationHelper_offline extends ContextWrapper {
         builder.setAutoCancel(true);
 
 
-      /*  Notification notification = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            notification = builder.build();
-        }*/
-
         Notification notification = builder.build();
         RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.daily_normal_pic);
 
@@ -776,11 +763,6 @@ class NotificationHelper_offline extends ContextWrapper {
         builder.setTicker(context.getResources().getString(R.string.app_name));
         builder.setSmallIcon(R.drawable.noti_backicon);
         builder.setAutoCancel(true);
-
-     /*   Notification notification = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            notification = builder.build();
-        }*/
 
         Notification notification = builder.build();
 
@@ -1183,16 +1165,6 @@ class NotificationHelper_offline extends ContextWrapper {
             // Inflate and set the layout for the expanded notification view
             RemoteViews expandedView = new RemoteViews(context.getPackageName(), R.layout.daily_expand_diff);
 
-           /* Random rn = new Random();
-            random = rn.nextInt(max - min + 1) + min;
-            if (random == 1) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
-            } else if (random == 2) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை கண்டுபிடியுங்கள் !");
-            } else if (random == 3) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை சொல்லுங்கள் !");
-            }*/
-
             expandedView.setTextViewText(R.id.word_gametxt, "எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
 
 
@@ -1291,16 +1263,6 @@ class NotificationHelper_offline extends ContextWrapper {
             // Inflate and set the layout for the expanded notification view
             RemoteViews expandedView = new RemoteViews(context.getPackageName(), R.layout.daily_expand_innai);
 
-           /* Random rn = new Random();
-            random = rn.nextInt(max - min + 1) + min;
-            if (random == 1) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
-            } else if (random == 2) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை கண்டுபிடியுங்கள் !");
-            } else if (random == 3) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை சொல்லுங்கள் !");
-            }*/
-
             expandedView.setTextViewText(R.id.word_gametxt, "எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
 
 
@@ -1398,16 +1360,6 @@ class NotificationHelper_offline extends ContextWrapper {
         if (Build.VERSION.SDK_INT >= 16) {
             // Inflate and set the layout for the expanded notification view
             RemoteViews expandedView = new RemoteViews(context.getPackageName(), R.layout.daily_expand_opps);
-
-           /* Random rn = new Random();
-            random = rn.nextInt(max - min + 1) + min;
-            if (random == 1) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
-            } else if (random == 2) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை கண்டுபிடியுங்கள் !");
-            } else if (random == 3) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை சொல்லுங்கள் !");
-            }*/
 
             expandedView.setTextViewText(R.id.word_gametxt, "எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
 
@@ -1508,16 +1460,6 @@ class NotificationHelper_offline extends ContextWrapper {
             // Inflate and set the layout for the expanded notification view
             RemoteViews expandedView = new RemoteViews(context.getPackageName(), R.layout.daily_expand_otlang);
 
-           /* Random rn = new Random();
-            random = rn.nextInt(max - min + 1) + min;
-            if (random == 1) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
-            } else if (random == 2) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை கண்டுபிடியுங்கள் !");
-            } else if (random == 3) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை சொல்லுங்கள் !");
-            }*/
-
             expandedView.setTextViewText(R.id.word_gametxt, "எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
 
 
@@ -1616,16 +1558,6 @@ class NotificationHelper_offline extends ContextWrapper {
         if (Build.VERSION.SDK_INT >= 16) {
             // Inflate and set the layout for the expanded notification view
             RemoteViews expandedView = new RemoteViews(context.getPackageName(), R.layout.daily_expand_order);
-
-           /* Random rn = new Random();
-            random = rn.nextInt(max - min + 1) + min;
-            if (random == 1) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
-            } else if (random == 2) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை கண்டுபிடியுங்கள் !");
-            } else if (random == 3) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை சொல்லுங்கள் !");
-            }*/
 
             expandedView.setTextViewText(R.id.word_gametxt, "எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
 
@@ -1726,16 +1658,6 @@ class NotificationHelper_offline extends ContextWrapper {
             // Inflate and set the layout for the expanded notification view
             RemoteViews expandedView = new RemoteViews(context.getPackageName(), R.layout.daily_expand_riddle);
 
-           /* Random rn = new Random();
-            random = rn.nextInt(max - min + 1) + min;
-            if (random == 1) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
-            } else if (random == 2) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை கண்டுபிடியுங்கள் !");
-            } else if (random == 3) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை சொல்லுங்கள் !");
-            }*/
-
             expandedView.setTextViewText(R.id.word_gametxt, "எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
 
 
@@ -1835,16 +1757,6 @@ class NotificationHelper_offline extends ContextWrapper {
             // Inflate and set the layout for the expanded notification view
             RemoteViews expandedView = new RemoteViews(context.getPackageName(), R.layout.daily_expand_tiru);
 
-           /* Random rn = new Random();
-            random = rn.nextInt(max - min + 1) + min;
-            if (random == 1) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
-            } else if (random == 2) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை கண்டுபிடியுங்கள் !");
-            } else if (random == 3) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை சொல்லுங்கள் !");
-            }*/
-
             expandedView.setTextViewText(R.id.word_gametxt, "எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
 
 
@@ -1943,16 +1855,6 @@ class NotificationHelper_offline extends ContextWrapper {
         if (Build.VERSION.SDK_INT >= 16) {
             // Inflate and set the layout for the expanded notification view
             RemoteViews expandedView = new RemoteViews(context.getPackageName(), R.layout.daily_expand_error);
-
-           /* Random rn = new Random();
-            random = rn.nextInt(max - min + 1) + min;
-            if (random == 1) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
-            } else if (random == 2) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை கண்டுபிடியுங்கள் !");
-            } else if (random == 3) {
-                expandedView.setTextViewText(R.id.word_gametxt,"எழுத்துக்களில் மறைந்திருக்கும் சொற்களை சொல்லுங்கள் !");
-            }*/
 
             expandedView.setTextViewText(R.id.word_gametxt, "எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!");
 

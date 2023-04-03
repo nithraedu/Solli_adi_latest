@@ -1,13 +1,10 @@
 package nithra.tamil.word.game.solliadi.word_search_game.Models.general;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,28 +19,19 @@ import nithra.tamil.word.game.solliadi.word_search_game.Models.helpclass.my_dial
 
 public class general_play extends AppCompatActivity {
 
-    /////////native advance////////////
-    private static final String ADMOB_AD_UNIT_ID = "ca-app-pub-4267540560263635/9323490091";
-    private static final String ADMOB_APP_ID = "ca-app-pub-4267540560263635~3166935503";
-    /////////native advance////////////
-    public static FrameLayout add3;
-    static SharedPreference sp = new SharedPreference();
+    static final SharedPreference sp = new SharedPreference();
+    final my_dialog myDialog_class = new my_dialog();
     // Facebook variable starts
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     WordsearchGridFragment wordsearchGridFragment;
     SQLiteDatabase mydb;
     String level_category = "", level_id = "";
-    my_dialog myDialog_class = new my_dialog();
     boolean start_time = false;
     SharedPreference sps = new SharedPreference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-     /*   if (!sp.getString(getApplicationContext(), "genral_showcase").equals("")) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }*/
 
         setContentView(R.layout.activity_general_play);
 
@@ -62,18 +50,6 @@ public class general_play extends AppCompatActivity {
         fragmentTransaction.commit();
 
 
-        if (sp.getInt(general_play.this, "purchase_ads") == 1) {
-            System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
-        } else {
-            if (my_dialog.isNetworkAvailable(general_play.this)) {
-                //fb_addload_score_screen(general_play.this);
-
-                /**/
-
-            }
-        }
-
-
         sp.putInt(general_play.this, "animation_id", 0);
 
         if (sp.getInt(general_play.this, "purchase_ads") == 1) {
@@ -83,27 +59,6 @@ public class general_play extends AppCompatActivity {
 
         // uiHelper = new UiLifecycleHelper(general_play.this, callback);
     }
-  /*  private UiLifecycleHelper uiHelper;
-    private Session.StatusCallback callback = new Session.StatusCallback() {
-        @Override
-        public void call(Session session, SessionState state,
-                         Exception exception) {
-            // onSessionStateChange(session, state, exception);
-        }
-    };
-    private FacebookDialog.Callback dialogCallback = new FacebookDialog.Callback() {
-        @Override
-        public void onError(FacebookDialog.PendingCall pendingCall,
-                            Exception error, Bundle data) {
-            Log.d("HelloFacebook", String.format("Error: %s", error.toString()));
-        }
-
-        @Override
-        public void onComplete(FacebookDialog.PendingCall pendingCall,
-                               Bundle data) {
-            Log.d("HelloFacebook", "Success!");
-        }
-    };*/
     // facebook variable ends
 
     @Override
@@ -129,37 +84,28 @@ public class general_play extends AppCompatActivity {
         TextView cancel_exit = (TextView) dialog.findViewById(R.id.cancel_exit);
         TextView done_exit = (TextView) dialog.findViewById(R.id.done_exit);
         dialog.show();
-        cancel_exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                start_time = true;
-                dialog.dismiss();
+        cancel_exit.setOnClickListener(v -> {
+            start_time = true;
+            dialog.dismiss();
+            WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime() + WordsearchGridFragment.timeWhenStopped);
+            WordsearchGridFragment.chronometer.start();
+        });
+        done_exit.setOnClickListener(v -> {
+            start_time = true;
+
+            dialog.dismiss();
+            Intent intent = new Intent(general_play.this, game_sub_level_page.class);
+            finish();
+            startActivity(intent);
+        });
+
+        dialog.setOnDismissListener(dialog1 -> {
+            if (!start_time) {
+                WordsearchGridFragment.timeWhenStopped = Long.parseLong(sp.getString(general_play.this, "" + level_category + "_" + level_id));
                 WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime() + WordsearchGridFragment.timeWhenStopped);
                 WordsearchGridFragment.chronometer.start();
             }
-        });
-        done_exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                start_time = true;
 
-                dialog.dismiss();
-                Intent intent = new Intent(general_play.this, game_sub_level_page.class);
-                finish();
-                startActivity(intent);
-            }
-        });
-
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (!start_time) {
-                    WordsearchGridFragment.timeWhenStopped = Long.parseLong(sp.getString(general_play.this, "" + level_category + "_" + level_id));
-                    WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime() + WordsearchGridFragment.timeWhenStopped);
-                    WordsearchGridFragment.chronometer.start();
-                }
-
-            }
         });
 
     }
@@ -182,40 +128,31 @@ public class general_play extends AppCompatActivity {
         TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
 
-        yes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                start_time = true;
+        yes.setOnClickListener(v -> {
+            start_time = true;
 
 
-                openDialog_p.dismiss();
-                Intent intent = new Intent(general_play.this, game_sub_level_page.class);
-                finish();
-                startActivity(intent);
+            openDialog_p.dismiss();
+            Intent intent = new Intent(general_play.this, game_sub_level_page.class);
+            finish();
+            startActivity(intent);
 
-            }
         });
-        no.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        no.setOnClickListener(v -> {
 
-                start_time = true;
+            start_time = true;
+            WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime() + WordsearchGridFragment.timeWhenStopped);
+            WordsearchGridFragment.chronometer.start();
+
+            openDialog_p.dismiss();
+        });
+        openDialog_p.setOnDismissListener(dialog -> {
+            if (!start_time) {
+                WordsearchGridFragment.timeWhenStopped = Long.parseLong(sp.getString(general_play.this, "" + level_category + "_" + level_id));
                 WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime() + WordsearchGridFragment.timeWhenStopped);
                 WordsearchGridFragment.chronometer.start();
-
-                openDialog_p.dismiss();
             }
-        });
-        openDialog_p.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (!start_time) {
-                    WordsearchGridFragment.timeWhenStopped = Long.parseLong(sp.getString(general_play.this, "" + level_category + "_" + level_id));
-                    WordsearchGridFragment.chronometer.setBase(SystemClock.elapsedRealtime() + WordsearchGridFragment.timeWhenStopped);
-                    WordsearchGridFragment.chronometer.start();
-                }
 
-            }
         });
 
         openDialog_p.show();

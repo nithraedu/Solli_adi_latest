@@ -13,6 +13,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -45,8 +46,9 @@ import nithra.tamil.word.game.solliadi.showcase.target.ViewTarget;
  */
 public class MaterialShowcaseView extends FrameLayout implements View.OnTouchListener, View.OnClickListener {
 
+    final SharedPreference sps = new SharedPreference();
+    private final boolean mShouldAnimate = true;
     List<IShowcaseListener> mListeners; // external listeners who want to observe when we show and dismiss
-    SharedPreference sps = new SharedPreference();
     private int mOldHeight;
     private int mOldWidth;
     private Bitmap mBitmap;// = new WeakReference<>(null);
@@ -70,7 +72,6 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
     private boolean mShouldRender = false; // flag to decide when we should actually render
     private int mMaskColour;
     private AnimationFactory mAnimationFactory;
-    private final boolean mShouldAnimate = true;
     private long mFadeDurationInMillis = ShowcaseConfig.DEFAULT_FADE_TIME;
     private Handler mHandler;
     private long mDelayInMillis = ShowcaseConfig.DEFAULT_DELAY;
@@ -508,8 +509,8 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
         mDismissOnTouch = dismissOnTouch;
     }
 
-    private void setShouldRender(boolean shouldRender) {
-        mShouldRender = shouldRender;
+    private void setShouldRender() {
+        mShouldRender = true;
     }
 
     private void setMaskColour(int maskColour) {
@@ -611,16 +612,15 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
      * Reveal the showcaseview. Returns a boolean telling us whether we actually did show anything
      *
      * @param activity
-     * @return
      */
-    public boolean show(final Activity activity, boolean last_id1) {
+    public void show(final Activity activity, boolean last_id1) {
 
         /**
          * if we're in single use mode and have already shot our bolt then do nothing
          */
         if (mSingleUse) {
             if (mPrefsManager.hasFired()) {
-                return false;
+                return;
             } else {
                 mPrefsManager.setFired();
             }
@@ -628,9 +628,9 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
         last_id = last_id1;
         ((ViewGroup) activity.getWindow().getDecorView()).addView(this);
 
-        setShouldRender(true);
+        setShouldRender();
 
-        mHandler = new Handler();
+        mHandler = new Handler(Looper.myLooper());
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -647,7 +647,6 @@ public class MaterialShowcaseView extends FrameLayout implements View.OnTouchLis
         updateDismissButton();
 
 
-        return true;
     }
 
     public void hide() {

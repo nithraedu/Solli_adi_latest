@@ -17,14 +17,13 @@ import java.util.ArrayList;
  */
 public class customlist_myreport extends BaseAdapter {
 
-    ArrayList<Integer> nos = new ArrayList<Integer>();
-    ArrayList<String> names = new ArrayList<String>();
-    ArrayList<String> gamecounts = new ArrayList<String>();
-    ArrayList<Integer> scores = new ArrayList<Integer>();
-    ArrayList<String> citys = new ArrayList<String>();
-
     // String dates[],gamecounts[],scores[],times[];
-    Context context;
+    final Context context;
+    ArrayList<Integer> nos;
+    ArrayList<String> names;
+    ArrayList<String> gamecounts = new ArrayList<String>();
+    ArrayList<Integer> scores;
+    ArrayList<String> citys;
     Typeface typ;
     TextView txtpro;
     TextView no, name, score, city;

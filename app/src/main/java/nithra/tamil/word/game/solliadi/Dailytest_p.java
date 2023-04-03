@@ -33,12 +33,12 @@ import java.util.StringTokenizer;
 
 public class Dailytest_p extends BroadcastReceiver {
     final public static String ONE_TIME = "onetime";
-    SharedPreference sps = new SharedPreference();
+    final SharedPreference sps = new SharedPreference();
+    final int min = 1;
+    final int max = 3;
     SQLiteDatabase exdb;
     String imid;
     int image_type;
-    int min = 1;
-    int max = 3;
     int random;
     NotificationHelper_offline noti;
 
@@ -49,7 +49,7 @@ public class Dailytest_p extends BroadcastReceiver {
         Time time = new Time();
         time.setToNow();
 
-        String armTodayOrTomo1 = "";
+        String armTodayOrTomo1;
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         Date time1 = sdf.parse(time.hour + ":" + time.minute);
         Date time2 = sdf.parse(selectedHour + ":" + selectedMinute);
@@ -70,7 +70,7 @@ public class Dailytest_p extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         noti = new NotificationHelper_offline(context);
         exdb = context.openOrCreateDatabase("Solli_Adi", Context.MODE_PRIVATE, null);
-        Boolean isBooted = false;
+        boolean isBooted;
 
         final String BOOT_ACTION = "android.intent.action.BOOT_COMPLETED";
 
@@ -79,13 +79,7 @@ public class Dailytest_p extends BroadcastReceiver {
 
         if (!isBooted) {
             try {
-                //	createNotification2(context);
 
-                //sps.putInt(context,"daily_test_order",sps.getInt(context,"daily_test_order")+1);
-
-
-                //noti.createNotification_double_clue(context);
-                //noti.createNotification_double_find_diffward(context);
 
                 if (sps.getString(context, "newgame_notification").equals("start")) {
                     if (sps.getInt(context, "notification_order") == 0) {
@@ -194,50 +188,6 @@ public class Dailytest_p extends BroadcastReceiver {
 
 
     }
-/*
-	public void createNotification2(Context context) {
-
-		Calendar calendar2 = Calendar.getInstance();
-		int cur_year = calendar2.get(Calendar.YEAR);
-		int cur_month = calendar2.get(Calendar.MONTH);
-		int cur_day = calendar2.get(Calendar.DAY_OF_MONTH);
-
-
-
-		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		Notification notification = new Notification(R.drawable.noti_backicon,"Solli_Adi!", System.currentTimeMillis());
-		// Hide the notification after its selected
-		notification.flags |= Notification.FLAG_AUTO_CANCEL;
-		notification.defaults |= Notification.DEFAULT_SOUND;
-		notification.flags |= Notification.FLAG_SHOW_LIGHTS;
-
-		Intent intent = new Intent(context, Picture_Game_Hard.class);
-		String str_month = "" + (cur_month + 1);
-		if (str_month.length() == 1) {
-			str_month = "0" + str_month;
-		}
-
-		String str_day = ""+cur_day;
-		if(str_day.length()==1){
-			str_day = "0"+str_day;
-		}
-		String str_date = cur_year+"-"+str_month+"-"+str_day;
-
-		intent.putExtra("datee",str_date);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-		PendingIntent pendingIntent = PendingIntent.getActivity(context, 3,intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		notification.setLatestEventInfo(context,"இன்றைய படம் பார்த்து கண்டுபிடி", "தொட்டு தொடரவும்", pendingIntent);
-
-		String snd = sps.getString(context, "Daily_notifications");
-
-		if (snd.equals("yes"))
-		{
-			notificationManager.notify(3, notification);
-		}
-		//notificationManager.notify(3, notification);
-
-
-	}*/
 
     public void createNotification_double(final Context context) {
 
@@ -431,11 +381,6 @@ public class Dailytest_p extends BroadcastReceiver {
         Bitmap myBitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_4444);
         Canvas myCanvas = new Canvas(myBitmap);
         Paint paint = new Paint();
-        //Typeface clock = Typeface.createFromAsset(context.getAssets(), "fonts/bubblegum.otf");
-        //paint.setAntiAlias(true);
-        //paint.setSubpixelText(true);
-        //paint.setTypeface(clock);
-        //paint.setStyle(Paint.Style.FILL);
         paint.setTextSize(20);
 
         paint.setColor(Color.WHITE);

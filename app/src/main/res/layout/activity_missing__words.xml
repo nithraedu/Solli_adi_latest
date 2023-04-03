@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".Missing_Words">
 
     <RelativeLayout
-        android:layout_above="@+id/ads_lay"
         android:id="@+id/head"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/ads_lay"
+        android:layout_weight="1"
         android:background="@drawable/back_next2">
 
         <LinearLayout
@@ -178,35 +179,33 @@
             android:layout_below="@+id/time_score_board">
 
             <RelativeLayout
-                android:background="@drawable/back_answer_list"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true">
+                android:layout_centerInParent="true"
+                android:background="@drawable/back_answer_list">
 
                 <LinearLayout
                     android:id="@+id/list1"
-                    android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/lrtbp_5"
-                    >
+                    android:orientation="horizontal"
+                    android:padding="@dimen/lrtbp_5">
 
                     <TextView
                         android:id="@+id/ed1"
-                        android:visibility="invisible"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginLeft="@dimen/wh_2"
-                        android:padding="@dimen/lrtbp_5"
                         android:enabled="false"
                         android:gravity="center"
+                        android:padding="@dimen/lrtbp_5"
                         android:textColor="@color/dark_green"
-                        android:textSize="@dimen/txt_18" />
+                        android:textSize="@dimen/txt_18"
+                        android:visibility="invisible" />
 
                     <TextView
                         android:id="@+id/ed2"
-                        android:visibility="invisible"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/wh_45"
                         android:layout_gravity="center"
@@ -215,11 +214,11 @@
                         android:gravity="center"
                         android:paddingBottom="@dimen/lrtbp_5"
                         android:textColor="@color/dark_green"
-                        android:textSize="@dimen/txt_12" />
+                        android:textSize="@dimen/txt_12"
+                        android:visibility="invisible" />
 
                     <TextView
                         android:id="@+id/ed3"
-                        android:visibility="invisible"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/wh_45"
                         android:layout_gravity="center"
@@ -228,21 +227,20 @@
                         android:gravity="center"
                         android:paddingBottom="@dimen/lrtbp_5"
                         android:textColor="@color/dark_green"
-                        android:textSize="@dimen/txt_12" />
+                        android:textSize="@dimen/txt_12"
+                        android:visibility="invisible" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:visibility="gone"
                     android:id="@+id/list2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/list1"
                     android:orientation="horizontal"
                     android:padding="@dimen/lrtbp_5"
-                    >
+                    android:visibility="gone">
 
                     <TextView
-                        android:visibility="invisible"
                         android:id="@+id/ed4"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/wh_45"
@@ -251,10 +249,10 @@
                         android:enabled="false"
                         android:gravity="center"
                         android:textColor="@color/dark_green"
-                        android:textSize="@dimen/txt_12" />
+                        android:textSize="@dimen/txt_12"
+                        android:visibility="invisible" />
 
                     <TextView
-                        android:visibility="invisible"
                         android:id="@+id/ed5"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/wh_45"
@@ -264,10 +262,10 @@
                         android:gravity="center"
                         android:paddingBottom="@dimen/lrtbp_5"
                         android:textColor="@color/dark_green"
-                        android:textSize="@dimen/txt_12" />
+                        android:textSize="@dimen/txt_12"
+                        android:visibility="invisible" />
 
                     <TextView
-                        android:visibility="invisible"
                         android:id="@+id/ed6"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/wh_45"
@@ -277,21 +275,20 @@
                         android:gravity="center"
                         android:paddingBottom="@dimen/lrtbp_5"
                         android:textColor="@color/dark_green"
-                        android:textSize="@dimen/txt_12" />
+                        android:textSize="@dimen/txt_12"
+                        android:visibility="invisible" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:visibility="gone"
                     android:id="@+id/list3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/list2"
-                    android:padding="@dimen/lrtbp_5"
                     android:orientation="horizontal"
-                   >
+                    android:padding="@dimen/lrtbp_5"
+                    android:visibility="gone">
 
                     <TextView
-                        android:visibility="invisible"
                         android:id="@+id/ed7"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/wh_45"
@@ -300,10 +297,10 @@
                         android:enabled="false"
                         android:gravity="center"
                         android:textColor="@color/dark_green"
-                        android:textSize="@dimen/txt_12" />
+                        android:textSize="@dimen/txt_12"
+                        android:visibility="invisible" />
 
                     <TextView
-                        android:visibility="invisible"
                         android:id="@+id/ed8"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/wh_45"
@@ -313,10 +310,10 @@
                         android:gravity="center"
                         android:paddingBottom="@dimen/lrtbp_5"
                         android:textColor="@color/dark_green"
-                        android:textSize="@dimen/txt_12" />
+                        android:textSize="@dimen/txt_12"
+                        android:visibility="invisible" />
 
                     <TextView
-                        android:visibility="invisible"
                         android:id="@+id/ed9"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/wh_45"
@@ -326,7 +323,8 @@
                         android:gravity="center"
                         android:paddingBottom="@dimen/lrtbp_5"
                         android:textColor="@color/dark_green"
-                        android:textSize="@dimen/txt_12" />
+                        android:textSize="@dimen/txt_12"
+                        android:visibility="invisible" />
                 </LinearLayout>
 
             </RelativeLayout>
@@ -377,13 +375,14 @@
                 android:paddingBottom="@dimen/lrtbp_5"
                 android:visibility="gone" />
         </RelativeLayout>
+
         <ScrollView
-            android:layout_marginTop="@dimen/lrtbp_20"
             android:id="@+id/c_sc_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/share_layout"
-            android:layout_centerInParent="true">
+            android:layout_centerInParent="true"
+            android:layout_marginTop="@dimen/lrtbp_20">
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -409,9 +408,9 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/lrtbp_5"
                             android:layout_marginRight="@dimen/lrtbp_5"
-                            android:padding="@dimen/lrtbp_10"
                             android:background="@drawable/back_answer_list"
                             android:gravity="center"
+                            android:padding="@dimen/lrtbp_10"
                             android:text="ans1"
                             android:textColor="@color/dark_green"
                             android:textSize="@dimen/txt_16" />
@@ -420,12 +419,12 @@
                             android:id="@+id/c_button2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/lrtbp_5"
                             android:layout_marginLeft="@dimen/lrtbp_5"
+                            android:layout_marginTop="@dimen/lrtbp_5"
                             android:layout_marginRight="@dimen/lrtbp_5"
-                            android:padding="@dimen/lrtbp_10"
                             android:background="@drawable/back_answer_list"
                             android:gravity="center"
+                            android:padding="@dimen/lrtbp_10"
                             android:textColor="@color/dark_green"
                             android:textSize="@dimen/txt_16" />
 
@@ -443,13 +442,13 @@
                             android:id="@+id/c_button3"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/lrtbp_5"
-
                             android:layout_marginLeft="@dimen/lrtbp_5"
+
+                            android:layout_marginTop="@dimen/lrtbp_5"
                             android:layout_marginRight="@dimen/lrtbp_5"
-                            android:padding="@dimen/lrtbp_10"
                             android:background="@drawable/back_answer_list"
                             android:gravity="center"
+                            android:padding="@dimen/lrtbp_10"
                             android:textColor="@color/dark_green"
                             android:textSize="@dimen/txt_16" />
 
@@ -457,13 +456,13 @@
                             android:id="@+id/c_button4"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/lrtbp_5"
-
                             android:layout_marginLeft="@dimen/lrtbp_5"
+
+                            android:layout_marginTop="@dimen/lrtbp_5"
                             android:layout_marginRight="@dimen/lrtbp_5"
-                            android:padding="@dimen/lrtbp_10"
                             android:background="@drawable/back_answer_list"
                             android:gravity="center"
+                            android:padding="@dimen/lrtbp_10"
                             android:textColor="@color/dark_green"
                             android:textSize="@dimen/txt_16" />
 
@@ -475,12 +474,13 @@
 
             </RelativeLayout>
         </ScrollView>
+
         <TextView
             android:id="@+id/c_ans"
-            android:layout_centerInParent="true"
             android:layout_width="@dimen/wh_35"
             android:layout_height="@dimen/wh_35"
             android:layout_below="@+id/clue_R_layout"
+            android:layout_centerInParent="true"
             android:layout_centerHorizontal="true"
             android:background="@drawable/yellow_question" />
 
@@ -502,6 +502,7 @@
             android:layout_marginRight="@dimen/lrtbp_15"
             android:background="@drawable/coin"
             android:visibility="invisible" />
+
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:id="@+id/myCoordinatorLayout"
             android:layout_width="match_parent"
@@ -515,26 +516,16 @@
 
     </RelativeLayout>
 
-    <com.facebook.ads.NativeAdLayout
-        android:id="@+id/native_banner_ad_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/white"
-        android:minHeight="50dp"
-        android:visibility="gone"/>
 
     <LinearLayout
 
         android:id="@+id/ads_lay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
         android:background="@color/white"
-        android:minHeight="50dp"
-        >
+        android:minHeight="@dimen/wh_50"
+        android:orientation="horizontal">
 
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

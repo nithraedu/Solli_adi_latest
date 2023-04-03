@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -52,13 +53,14 @@ import nithra.tamil.word.game.solliadi.word_search_game.Models.general.general_p
 public class MyTableView extends LinearLayout {
 
     public static float[] touchPoint;
-    private final float mScale = getResources().getDisplayMetrics().density;
-    private final float mMinDistance = (int) (50.0 * mScale + 0.5);
-    SharedPreference sp = new SharedPreference();
-    String[] colors = {"#E53935", "#D81B60", "#8E24AA", "#5E35B1", "#3949AB", "#1E88E5",
+    final SharedPreference sp = new SharedPreference();
+    final String[] colors = {"#E53935", "#D81B60", "#8E24AA", "#5E35B1", "#3949AB", "#1E88E5",
             "#039BE5", "#00897B", "#AA00FF", "#CDDC39", "#FF1744", "#F57F17",
             "#FB8C00", "#FFD600", "#FFAB00", "#F4511E", "#9E9E9E", "#8D6E63",
             "#546E7A", "#C51162"};
+    private final float mScale = getResources().getDisplayMetrics().density;
+    private final float mMinDistance = (int) (50.0 * mScale + 0.5);
+    private final Matrix matrix = new Matrix();
     String[] clrs = {"#D50000", "#880E4F", "#4A148C", "#311B92", "#1A237E", "#0D47A1",
             "#01579B", "#006064", "#004D40", "#DD2C00"};
     int i = 0, k = 0;
@@ -81,11 +83,6 @@ public class MyTableView extends LinearLayout {
     private Integer mSelectionSteps;
     private Direction mSelectionDirection;
     private Paint mPaint, mFoundPaint, mHintPaint, mMtPaint;
-
-    /*String[] colors = {"#ef5350", "#ec407a", "#ba68c8", "#9575cd", "#7986cb", "#64b5f6",
-            "#4fc3f7", "#4dd0e1", "#4db6ac", "#81c784", "#aed581", "#dce775",
-            "#ffee58", "#ffa726", "#ff7043", "#bdbdbd", "#90a4ae", "#ff5252",
-            "#eeff41", "#7c4dff"};*/
     private List<View> mPreviousSelection;
     private Bitmap mFoundCache;
     /**
@@ -98,7 +95,6 @@ public class MyTableView extends LinearLayout {
     private OnWordSelectedListener mOnWordSelectedListener;
     private boolean mFocusSelected;
     private String mLastWordFound;
-    private final Matrix matrix = new Matrix();
 
 
     public MyTableView(Context context) {
@@ -280,7 +276,7 @@ public class MyTableView extends LinearLayout {
         mSelectionSteps = null;
     }
 
-    public boolean selectionChanged(float xPos, float yPos) {
+    public void selectionChanged(float xPos, float yPos) {
         if (mSelStartPosition == null) {
             int position = pointToPosition((int) xPos, (int) yPos);
             if (position >= 0) {
@@ -295,7 +291,7 @@ public class MyTableView extends LinearLayout {
             double distance = Math.hypot(xDelta, yDelta);
             Log.d("Angle", "DIST: " + (int) distance + ", MIN: " + mMinDistance);
             if (isInTouchMode() && distance < mMinDistance) {
-                return false;
+                return;
             }
 
             Direction previousDirection = mSelectionDirection;
@@ -312,7 +308,7 @@ public class MyTableView extends LinearLayout {
             if (mSelectionDirection != previousDirection || mSelectionSteps != previousSteps) {
                 List<View> selectedViews = getSelectionViews();
                 if (selectedViews == null) {
-                    return false;
+                    return;
                 }
 
                 // Selection no longer includes these characters so
@@ -333,10 +329,6 @@ public class MyTableView extends LinearLayout {
                     for (View view : selectedViews) {
                         ((TextView) view.findViewById(R.id.lbl_char)).setTextColor(Color.BLACK);
 
-                        //Toast.makeText(getContext(), ""+((TextView) view.findViewById(R.id.lbl_char)).getText(), Toast.LENGTH_SHORT).show();
-
-                        //Animation wobble = AnimationUtils.loadAnimation(getContext(), R.anim.wobble);
-                        //((TextView) view.findViewById(R.id.lbl_char)).startAnimation(wobble);
                     }
 
                     View endView = selectedViews.get(selectedViews.size() - 1);
@@ -345,7 +337,6 @@ public class MyTableView extends LinearLayout {
                 postInvalidate();
             }
         }
-        return true;
     }
 
     public void setBoard(char[][] board) {
@@ -404,7 +395,7 @@ public class MyTableView extends LinearLayout {
 
         view = v;
 
-        new Handler().postDelayed(new Runnable() {
+        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
 
@@ -485,8 +476,6 @@ public class MyTableView extends LinearLayout {
                 anims = new TranslateAnimation(700, 700, 1000, 150);
             }
 
-            //TranslateAnimation anims = new TranslateAnimation(touchPoint[0], 150, touchPoint[1], 150);
-            //TranslateAnimation anims = new TranslateAnimation(550, 450, 850, 100);
             anims.setDuration(1500);
             anims.setFillAfter(true);
             //tv.startAnimation(anims);
@@ -496,7 +485,7 @@ public class MyTableView extends LinearLayout {
             animation.addAnimation(fadeOut);
             tv.setAnimation(animation);
 
-            new Handler().postDelayed(new Runnable() {
+            new Handler(Looper.myLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
 
@@ -576,8 +565,6 @@ public class MyTableView extends LinearLayout {
             setMeasuredDimension(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
             mColumnWidth = (int) ((float) getMeasuredWidth() / (float) mColumns);
         } else {
-            // Display display = ((WindowManager)
-            // getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
             if (getResources().getDisplayMetrics().widthPixels > getResources().getDisplayMetrics().heightPixels) {
                 super.onMeasure(heightMeasureSpec, heightMeasureSpec);
                 setMeasuredDimension(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));

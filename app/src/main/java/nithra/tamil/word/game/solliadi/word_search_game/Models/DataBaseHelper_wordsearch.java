@@ -66,42 +66,7 @@ public class DataBaseHelper_wordsearch extends SQLiteOpenHelper {
     }
 
 
-/*
-
-	public void createDataBase() throws IOException {
-		// If database not exists copy it from the assets
-
-		boolean mDataBaseExist = checkDataBase();
-
-		// mDataBaseExist=false;
-		String DB_PATH = "/data/data/" + mContext.getPackageName() + "/databases/";
-		if (mDataBaseExist) {
-
-			File dbFile = new File(DB_PATH + DB_NAME);
-			dbFile.delete();
-		}
-
-		// if (!mDataBaseExist) {
-		this.getReadableDatabase();
-		this.close();
-		try {
-			// Copy the database from assests
-			copyDataBase();
-			Log.e(TAG, "createDatabase database created");
-			// Toast.makeText(mContext,
-			// "aptitudequestiondb database copied",
-			// Toast.LENGTH_LONG).show();
-		} catch (IOException mIOException) {
-			throw new Error("ErrorCopyingDataBase");
-		}
-		// } else {
-		// // Toast.makeText(mContext, "aptitudequestiondb Already exits",
-		// // Toast.LENGTH_LONG).show();
-		// }
-	}
-*/
-
-    public void createDataBase() throws IOException {
+    public void createDataBase() {
         // If database not exists copy it from the assets
 
         boolean mDataBaseExist = checkDataBase();
@@ -120,9 +85,6 @@ public class DataBaseHelper_wordsearch extends SQLiteOpenHelper {
             // Copy the database from assests
             copyDataBase();
             Log.e(TAG, "createDatabase database created");
-            // Toast.makeText(mContext,
-            // "aptitudequestiondb database copied",
-            // Toast.LENGTH_LONG).show();
         } catch (IOException mIOException) {
             throw new Error("ErrorCopyingDataBase");
         }
@@ -132,7 +94,7 @@ public class DataBaseHelper_wordsearch extends SQLiteOpenHelper {
         // }
     }
 
-    public void createDataBaseIFexits() throws IOException {
+    public void createDataBaseIFexits() {
         // If database not exists copy it from the assets
 
         boolean mDataBaseExist = checkDataBase();
@@ -145,9 +107,6 @@ public class DataBaseHelper_wordsearch extends SQLiteOpenHelper {
             // Copy the database from assests
             copyDataBase();
             Log.e(TAG, "createDatabase database created");
-            // Toast.makeText(mContext,
-            // "aptitudequestiondb database copied",
-            // Toast.LENGTH_LONG).show();
         } catch (IOException mIOException) {
             throw new Error("ErrorCopyingDataBase");
         }
@@ -163,33 +122,7 @@ public class DataBaseHelper_wordsearch extends SQLiteOpenHelper {
         return dbFile.exists();
     }
 
-	/*// Check that the database exists here: /data/data/your package/databases/Da
-	// Name
-	public  boolean checkDataBase() {
-		String DB_PATH = "/data/data/" + mContext.getPackageName() + "/databases/";
-		File dbFile = new File(DB_PATH + DB_NAME);
-		// Log.v("dbFile", dbFile + "   "+ dbFile.exists());
-		return dbFile.exists();
-	}*/
-
-    /*
-        // Copy the database from assets
-        public void copyDataBase() throws IOException {
-            String DB_PATH = "/data/data/" + mContext.getPackageName() + "/databases/";
-            InputStream mInput = mContext.getAssets().open(DB_NAME);
-            String outFileName = DB_PATH + DB_NAME;
-            OutputStream mOutput = new FileOutputStream(outFileName);
-            byte[] mBuffer = new byte[1024];
-            //	int mLength;
-            while ((mInput.read(mBuffer)) > 0) {
-                mOutput.write(mBuffer);
-            }
-            mOutput.flush();
-            mOutput.close();
-            mInput.close();
-        }
-    */
-// Copy the database from assets
+    // Copy the database from assets
     public void copyDataBase() throws IOException {
         InputStream mInput = mContext.getAssets().open(DB_NAME);
         String outFileName = DB_PATH;
@@ -204,26 +137,12 @@ public class DataBaseHelper_wordsearch extends SQLiteOpenHelper {
         mInput.close();
     }
 
-    /*  // Open the database, so we can query it
-      public boolean openDataBase() throws SQLException {
-          String DB_PATH = "/data/data/" + mContext.getPackageName() + "/databases/";
-          String mPath = DB_PATH + DB_NAME;
-          // Log.v("mPath", mPath);
-          mDataBase = SQLiteDatabase.openDatabase(mPath, null,
-                  SQLiteDatabase.CREATE_IF_NECESSARY);
-          // mDataBase = SQLiteDatabase.openDatabase(mPath, null,
-          // SQLiteDatabase.NO_LOCALIZED_COLLATORS);
-          return mDataBase != null;
-      }*/
     // Open the database, so we can query it
-    public boolean openDataBase() throws SQLException {
+    public void openDataBase() throws SQLException {
         String mPath = DB_PATH + DB_NAME;
         // Log.v("mPath", mPath);
         mDataBase = SQLiteDatabase.openDatabase(mPath, null,
                 SQLiteDatabase.CREATE_IF_NECESSARY);
-        // mDataBase = SQLiteDatabase.openDatabase(mPath, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS);
-        return mDataBase != null;
     }
 
 
