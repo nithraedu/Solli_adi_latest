@@ -39,21 +39,21 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -86,7 +86,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
     Newgame_DataBaseHelper4 newhelper4;
     Newgame_DataBaseHelper5 newhelper5;
     Newgame_DataBaseHelper6 newhelper6;
-    RelativeLayout adsicon, adsicon2;
+    RelativeLayout adsicon;
     LinearLayout ads_layout;
     String question_id = "", question = "", answer = "";
     int u_id = 0;
@@ -101,7 +101,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
     int s = 0;
     TextView next_continue;
     TextView ttscores;
-    Typeface typ, tyr;
+    Typeface tyr;
     int f_sec;
     int r = 0;
     int dia_dismiss = 0;
@@ -124,8 +124,8 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
     String answers = "";
     Handler handler;
     Runnable my_runnable;
-    private RewardedAd rewardedAd;
-    private InterstitialAd mInterstitialAd;
+    private MaxRewardedAd rewardedAd;
+    private MaxInterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,15 +190,15 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         //New_Main_Activity.fb_addload(Missing_Words.this);
 
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
-        MobileAds.initialize(this);
+
+        Utills.INSTANCE.initializeAdzz(this);
         rewarded_adnew();
         if (sps.getInt(Missing_Words.this, "purchase_ads") == 0) {
-            Utills.INSTANCE.initializeAdzz(this);
             industrialload();
         }
         soundset();
         ads_lay = findViewById(R.id.ads_lay);
-        Utills.INSTANCE.load_add_AppLovin(this, ads_lay);
+        Utills.INSTANCE.load_add_AppLovin(this, ads_lay, getResources().getString(R.string.Bottom_Banner));
 
         ImageView prize_logo = findViewById(R.id.prize_logo);
         if (sps.getInt(Missing_Words.this, "remoteConfig_prize") == 1) {
@@ -1017,7 +1017,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
             //mCoinCount = 0;
         });
 
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
     }
 
     public void vidcoinearn() {
@@ -1049,7 +1049,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                 openDialog.dismiss();
                 //mCoinCount = 0;
             });
-            openDialog.show();
+            if (!isFinishing())openDialog.show();
         }
 
     }
@@ -1482,7 +1482,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
             Intent i = new Intent(Missing_Words.this, Find_difference_between_pictures.class);
             startActivity(i);
         });
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
 
         openDialog.setOnKeyListener((dialog, keyCode, event) -> {
 
@@ -1859,7 +1859,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
                     openDialog.dismiss();
                 });
-                openDialog.show();
+                if (!isFinishing())openDialog.show();
             }
 
 
@@ -2418,7 +2418,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
             //mCoinCount = 0;
         });
 
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
     }
 
     public void settingpermission() {
@@ -2548,32 +2548,34 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
     }
 
     public void rewarded_adnew() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        RewardedAd.load(this, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
+        rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                // Handle the error.
-                Log.d("TAG", loadAdError.toString());
-                rewardedAd = null;
+            public void onRewardedVideoStarted(MaxAd ad) {
+
             }
 
             @Override
-            public void onAdLoaded(@NonNull RewardedAd ad) {
-                rewardedAd = ad;
+            public void onRewardedVideoCompleted(MaxAd ad) {
+                reward_status = 1;
+            }
+
+            @Override
+            public void onUserRewarded(MaxAd ad, MaxReward reward) {
+
+            }
+
+            @Override
+            public void onAdLoaded(MaxAd ad) {
                 fb_reward = 1;
-                adslisner();
-                Log.d("TAG", "Ad was loaded.");
             }
-        });
-
-
-    }
-
-    public void adslisner() {
-        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
 
             @Override
-            public void onAdDismissedFullScreenContent() {
+            public void onAdDisplayed(MaxAd ad) {
+            }
+
+            @Override
+            public void onAdHidden(MaxAd ad) {
                 rewarded_adnew();
                 if (reward_status == 1) {
                     if (extra_coin_s == 0) {
@@ -2585,12 +2587,15 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
                     }
-                    Handler handler = new Handler(Looper.myLooper());
-                    handler.postDelayed(() -> {
-                        if (rvo == 2) {
-                            share_earn2(mCoinCount);
-                        } else {
-                            vidcoinearn();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (rvo == 2) {
+                                share_earn2(mCoinCount);
+                            } else {
+                                vidcoinearn();
+                            }
                         }
                     }, 500);
                 } else {
@@ -2598,79 +2603,99 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                 }
 
                 fb_reward = 0;
+                rewardedAd.loadAd();
+
 
             }
 
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+                rewardedAd = null;
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                rewardedAd.loadAd();
+            }
         });
+        rewardedAd.loadAd();
     }
 
     public void show_reward() {
-        if (rewardedAd != null) {
-            rewardedAd.show(this, rewardItem -> {
-                // Handle the reward.
-                Log.d("TAG", "The user earned the reward.");
-                int rewardAmount = rewardItem.getAmount();
-                String rewardType = rewardItem.getType();
-                reward_status = 1;
-            });
+        if (rewardedAd != null && rewardedAd.isReady()) {
+            rewardedAd.showAd();
+            reward_status = 1;
         } else {
             Log.d("TAG", "The rewarded ad wasn't ready yet.");
         }
     }
 
-    public void industrialload() {
-        if (mInterstitialAd != null) return;
-        Log.i("TAG", "onAdLoadedCalled");
-        AdRequest adRequest = new AdRequest.Builder().build();
-
-        InterstitialAd.load(this, getResources().getString(R.string.Game3_Stage_Close_ST), adRequest, new InterstitialAdLoadCallback() {
+    private void industrialload() {
+        //AppLovinSdk.getInstance( this ).showMediationDebugger();
+        AppLovinSdk.getInstance(this).setMediationProvider("max");
+        AppLovinSdk.initializeSdk(this, new AppLovinSdk.SdkInitializationListener() {
             @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                // The mInterstitialAd reference will be null until
-                // an ad is loaded.
-                mInterstitialAd = interstitialAd;
-                interstiallistener();
-                Log.i("TAG", "onAdLoaded");
-            }
+            public void onSdkInitialized(AppLovinSdkConfiguration config) {
+                // AppLovin SDK is initialized, start loading ads
+                if (mInterstitialAd != null) return;
+                System.out.println("ad shown  showAdWithDelay initialize done ");
+                mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Senthamil_Thedal_Ins), Missing_Words.this);
+                mInterstitialAd.setListener(new MaxAdListener() {
+                    @Override
+                    public void onAdLoaded(MaxAd ad) {
+                        System.out.println("ad shown loaded : " + ad.getWaterfall());
+                    }
 
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                // Handle the error
-                Log.d("TAG", loadAdError.toString());
-                mInterstitialAd = null;
-                handler = null;
-                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
+                    @Override
+                    public void onAdDisplayed(MaxAd ad) {
+                        handler = null;
+                    }
+
+                    @Override
+                    public void onAdHidden(MaxAd ad) {
+                        Log.d("TAG", "Ad dismissed fullscreen content.");
+                        mInterstitialAd = null;
+                        handler = null;
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        setSc();
+                        industrialload();
+                    }
+
+                    @Override
+                    public void onAdClicked(MaxAd ad) {
+
+                    }
+
+                    @Override
+                    public void onAdLoadFailed(String adUnitId, MaxError error) {
+                        Log.d("TAG", error.toString());
+                        mInterstitialAd = null;
+                        handler = null;
+                        Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
+                    }
+
+                    @Override
+                    public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                        Log.e("TAG", "Ad failed to show fullscreen content.");
+                        mInterstitialAd = null;
+                        handler = null;
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
+                        setSc();
+                    }
+                });
+
+                // Load the first ad
+                mInterstitialAd.loadAd();
+
             }
         });
 
-    }
-
-    public void interstiallistener() {
-        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-            @Override
-            public void onAdDismissedFullScreenContent() {
-                // Called when ad is dismissed.
-                // Set the ad reference to null so you don't show the ad a second time.
-                Log.d("TAG", "Ad dismissed fullscreen content.");
-                mInterstitialAd = null;
-                handler = null;
-                Utills.INSTANCE.Loading_Dialog_dismiss();
-                setSc();
-                industrialload();
-            }
-
-            @Override
-            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                // Called when ad fails to show.
-                Log.e("TAG", "Ad failed to show fullscreen content.");
-                mInterstitialAd = null;
-                handler = null;
-                Utills.INSTANCE.Loading_Dialog_dismiss();
-                sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
-                setSc();
-            }
-
-        });
     }
 
     public void adShow() {
@@ -2679,7 +2704,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.show(this);
+                mInterstitialAd.showAd("Senthamil Thedal Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {

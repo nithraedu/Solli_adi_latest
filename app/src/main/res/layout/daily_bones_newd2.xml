@@ -10,41 +10,43 @@
         android:layout_width="50dp"
         android:layout_height="30dp"
         android:layout_alignParentRight="true"
-        android:layout_margin="@dimen/txt_12"/>
+        android:layout_margin="@dimen/txt_12" />
+
     <TextView
         android:id="@+id/score_coin1"
         android:layout_width="50dp"
         android:layout_height="30dp"
         android:layout_alignParentRight="true"
         android:layout_marginTop="@dimen/txt_12"
-        android:layout_marginRight="@dimen/wh_65"/>
+        android:layout_marginRight="@dimen/wh_65" />
+
     <LinearLayout
-        android:elevation="@dimen/lrtbp_5"
-        android:layout_marginBottom="@dimen/lrtbp_15"
-        android:layout_marginTop="@dimen/lrtbp_5"
         android:id="@+id/tomarrow_coin"
-        android:background="@drawable/daily_screen_nextday"
-        android:layout_marginLeft="@dimen/txt_25"
-        android:layout_marginRight="@dimen/txt_25"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/bonus_lay"
         android:layout_centerHorizontal="true"
+        android:layout_marginLeft="@dimen/txt_25"
+        android:layout_marginTop="@dimen/lrtbp_5"
+        android:layout_marginRight="@dimen/txt_25"
+        android:layout_marginBottom="@dimen/lrtbp_15"
+        android:background="@drawable/daily_screen_nextday"
+        android:elevation="@dimen/lrtbp_5"
         android:orientation="horizontal">
 
         <ImageView
-            android:visibility="gone"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/coin" />
+            android:background="@drawable/coin"
+            android:visibility="gone" />
 
         <TextView
-            android:gravity="center"
             android:id="@+id/tomarrow_coin_earn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="3dp"
+            android:gravity="center"
             android:text="நாளைய தினத்திற்கான ஊக்க நாணயங்கள் : 100"
             android:textColor="#ffffff"
             android:textSize="16dp" />
@@ -58,18 +60,19 @@
         android:layout_marginLeft="@dimen/txt_25"
         android:layout_marginRight="@dimen/txt_25"
         android:orientation="vertical">
+
         <TextView
-            android:elevation="@dimen/lrtbp_10"
             android:id="@+id/coin_txt_content"
             android:layout_width="match_parent"
-            android:layout_above="@+id/bonus_lay"
             android:layout_height="70dp"
+            android:layout_above="@+id/bonus_lay"
+            android:background="@drawable/daily_screen_head"
 
+            android:elevation="@dimen/lrtbp_10"
             android:gravity="center"
             android:padding="@dimen/lrtbp_10"
             android:text="உங்களுக்கான இன்றைய ஊக்க நாணயங்கள்"
             android:textColor="#fff"
-            android:background="@drawable/daily_screen_head"
             android:textSize="@dimen/txt_16"
             android:textStyle="bold"
 
@@ -84,33 +87,32 @@
                 android:id="@+id/coin_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/txt_10"
+                android:gravity="center_horizontal"
                 android:text="Daily "
                 android:textColor="#fff"
-                android:visibility="gone"
                 android:textSize="@dimen/txt_20"
-                android:gravity="center_horizontal"
-                android:layout_margin="@dimen/txt_10"
-                />
+                android:visibility="gone" />
 
 
             <ImageView
                 android:id="@+id/dismiss"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
+                android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
                 android:layout_margin="@dimen/txt_10"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
 
             <LinearLayout
-                android:layout_marginTop="@dimen/lrtbp_15"
                 android:id="@+id/today_coin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/coin_txt_content"
                 android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/lrtbp_15"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -127,57 +129,58 @@
                     android:text="100"
                     android:textColor="#000000"
                     android:textSize="40dp"
-                   android:textStyle="bold" />
+                    android:textStyle="bold" />
             </LinearLayout>
+
             <LinearLayout
-                android:layout_marginBottom="@dimen/lrtbp_15"
-                android:layout_marginTop="@dimen/lrtbp_15"
-                android:layout_marginLeft="@dimen/lrtbp_20"
-                android:layout_marginRight="@dimen/lrtbp_20"
                 android:id="@+id/extra_coin"
-                android:background="@drawable/daily_screen_double"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_below="@+id/today_coin"
                 android:layout_centerHorizontal="true"
+                android:layout_marginLeft="@dimen/lrtbp_20"
+                android:layout_marginTop="@dimen/lrtbp_15"
+                android:layout_marginRight="@dimen/lrtbp_20"
+                android:layout_marginBottom="@dimen/lrtbp_15"
+                android:background="@drawable/daily_screen_double"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:visibility="gone"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:background="@drawable/coin" />
+                    android:background="@drawable/coin"
+                    android:visibility="gone" />
 
                 <TextView
-                    android:gravity="center"
-                    android:layout_marginRight="@dimen/lrtbp_25"
                     android:id="@+id/extra_coin_earn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="3dp"
+                    android:layout_marginRight="@dimen/lrtbp_25"
+                    android:gravity="center"
                     android:text="இருமடங்கு நாணயங்கள் பெற"
                     android:textColor="#ffffff"
-                    android:textSize="15dp"
-                  />
+                    android:textSize="15dp" />
 
 
             </LinearLayout>
+
             <TextView
                 android:id="@+id/ok_y"
-                android:layout_below="@+id/extra_coin"
                 android:layout_width="@dimen/croll_app_height"
                 android:layout_height="@dimen/wh_40"
-                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/extra_coin"
                 android:layout_centerInParent="true"
-                android:layout_marginBottom="@dimen/lrtbp_15"
+                android:layout_centerHorizontal="true"
                 android:layout_marginLeft="@dimen/lrtbp_10"
                 android:layout_marginTop="@dimen/lrtbp_10"
+                android:layout_marginBottom="@dimen/lrtbp_15"
 
                 android:background="@drawable/nandri"
                 android:gravity="center"
-                android:paddingBottom="@dimen/lrtbp_10"
                 android:paddingTop="@dimen/lrtbp_10"
+                android:paddingBottom="@dimen/lrtbp_10"
                 android:textColor="#fff"
                 android:textSize="@dimen/txt_16"
                 android:textStyle="bold" />
@@ -202,10 +205,9 @@
         android:visibility="visible">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
             android:id="@+id/img_bonus_coin"
-            />
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
 
         <TextView
             android:id="@+id/bonus_txt"
@@ -215,7 +217,6 @@
             android:layout_marginLeft="3dp"
             android:textColor="#f2d40f"
             android:textSize="@dimen/txt_20"
-            android:textStyle="bold|italic"
-          />
+            android:textStyle="bold|italic" />
     </LinearLayout>
 </RelativeLayout>

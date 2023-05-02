@@ -134,14 +134,14 @@ object Utills {
         }
     }
 
-    fun load_add_AppLovin(activity: Activity, ads_lay: LinearLayout) {
+    fun load_add_AppLovin(activity: Activity, ads_lay: LinearLayout, adId: String) {
         if (SharedPreference().getInt(activity, "purchase_ads") == 1) {
             ads_lay.visibility = View.GONE
         } else if (Utils.isNetworkAvailable(activity)) {
             AppLovinSdk.initializeSdk(activity)
             AppLovinSdk.getInstance(activity).mediationProvider = "max"
 
-            val adView = MaxAdView(activity.resources.getString(R.string.Bottom_Banner), activity)
+            val adView = MaxAdView(adId, activity)
             val width = ViewGroup.LayoutParams.MATCH_PARENT
             val heightPx = activity.resources.getDimensionPixelSize(R.dimen.banner_height)
             adView.layoutParams = FrameLayout.LayoutParams(width, heightPx)
@@ -153,9 +153,8 @@ object Utills {
     }
 
     fun initializeAdzz(activity: Activity) {
-
-        AudienceNetworkAds.initialize(activity)
         AppLovinSdk.initializeSdk(activity)
+        AudienceNetworkAds.initialize(activity)
         AppLovinSdk.getInstance(activity).mediationProvider = "max"
     }
 

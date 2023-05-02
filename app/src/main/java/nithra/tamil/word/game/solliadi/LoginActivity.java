@@ -342,7 +342,7 @@ public class LoginActivity extends AppCompatActivity {
                             openDialog.dismiss();
                         }
                     });
-                    openDialog.show();
+                    if (!isFinishing())openDialog.show();
                 } else {
                     Toast.makeText(LoginActivity.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 

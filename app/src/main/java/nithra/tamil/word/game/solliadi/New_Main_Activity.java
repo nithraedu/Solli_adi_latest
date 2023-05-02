@@ -75,7 +75,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -92,15 +91,15 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
 import com.applovin.sdk.AppLovinSdk;
 import com.facebook.ads.AudienceNetworkAds;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.RequestConfiguration;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
@@ -368,11 +367,12 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     private long mTimeRemaining;
     private int c_counter = 0;
     private byte[] mSaveGameData;
-    private RewardedAd rewardedAd;
+    private MaxRewardedAd rewardedAd;
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private BillingManager mBillingManager;
+    private MaxInterstitialAd interstitialAd;
 
     public static void sharedPrefAdd(String one, String two, final SharedPreferences mPreferences) {
         // TODO Auto-generated method stub
@@ -641,12 +641,10 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         /*RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(List.of("ABCDEF012345")).build();
             MobileAds.setRequestConfiguration(configuration);*/
 
-        MobileAds.initialize(this);
+        AppLovinSdk.initializeSdk(this);
+        AppLovinSdk.getInstance(this).setMediationProvider("max");
         if (spa.getInt(context, "purchase_ads") == 0) {
-            AppLovinSdk.initializeSdk(this);
-            AppLovinSdk.getInstance(this).setMediationProvider("max");
-            RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("65963a1553b841c3")).build();
-            MobileAds.setRequestConfiguration(configuration);
+            industrialload();
             //AppLovinSdk.getInstance( this ).showMediationDebugger();
         }
 
@@ -2202,7 +2200,20 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             if (sps.getString(New_Main_Activity.this, "ratefun_shown").equals("")) {
                 ratefun();
                 sps.putString(New_Main_Activity.this, "ratefun_shown", "yes");
-            } else finish();
+            } else {
+                //ins ad exit
+                if (spa.getInt(context, "purchase_ads") == 0) {
+                    if (interstitialAd != null && interstitialAd.isReady()) {
+                        interstitialAd.showAd();
+                    } else {
+                        finish();
+                    }
+                } else {
+                    finish();
+                }
+
+
+            }
             openDialog_p.dismiss();
         });
         no.setOnClickListener(view -> openDialog_p.dismiss());
@@ -2216,6 +2227,47 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     }
 
+    public void industrialload() {
+
+        interstitialAd = new MaxInterstitialAd(getResources().getString(R.string.App_Exit_Ins), this);
+        interstitialAd.setListener(new MaxAdListener() {
+            @Override
+            public void onAdLoaded(MaxAd ad) {
+                //Toast.makeText(New_Main_Activity.this, "Loaddeeddd", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onAdDisplayed(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdHidden(MaxAd ad) {
+                exit_dia();
+
+            }
+
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+                rewardedAd = null;
+                Log.e("============++++++++" + error.getCode(), error.getMessage());
+                //Toast.makeText(New_Main_Activity.this, "err"+error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+
+            }
+        });
+        interstitialAd.loadAd();
+
+    }
 
     @Override
     public void onInstallReferrerSetupFinished(int responseCode) {
@@ -2396,7 +2448,13 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 System.out.println();
             }
             yesratedialog.dismiss();
-            if (spa.getInt(context, "purchase_ads") == 0) finish();
+            if (spa.getInt(context, "purchase_ads") == 0) {
+                if (interstitialAd != null && interstitialAd.isReady()) {
+                    interstitialAd.showAd();
+                } else {
+                    finish();
+                }
+            }
         });
 
         nobut1.setOnClickListener(v -> {
@@ -2432,24 +2490,61 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         });
         yesratedialog.setOnDismissListener(dialog -> {
             // TODO Auto-generated method stub
-            //ins ad exit
-            if (feedcheck == 0) if (spa.getInt(context, "purchase_ads") == 0) finish();
+            if (feedcheck == 0) {
+                //ins ad exit
+
+                if (spa.getInt(context, "purchase_ads") == 0) {
+                    if (interstitialAd != null && interstitialAd.isReady()) {
+                        interstitialAd.showAd();
+                    } else {
+                        finish();
+                    }
+                }
+            }
         });
 
         ratedia.setOnDismissListener(dialog -> {
             // TODO Auto-generated method stub
-            //ins ad exit
-            if (feedcheck == 0) if (spa.getInt(context, "purchase_ads") == 0) finish();
+            if (feedcheck == 0) {
+                //ins ad exit
+                if (spa.getInt(context, "purchase_ads") == 0) {
+                    if (interstitialAd != null && interstitialAd.isReady()) {
+                        interstitialAd.showAd();
+                    } else {
+                        finish();
+                    }
+                }
+            }
         });
         feedratedialog.setOnDismissListener(dialog -> {
             // TODO Auto-generated method stub
-            //ins ad exit
-            if (feedcheck == 1) finish();
+            if (feedcheck == 1) {
+                //ins ad exit
+                if (spa.getInt(context, "purchase_ads") == 0) {
+                    if (interstitialAd != null && interstitialAd.isReady()) {
+                        interstitialAd.showAd();
+                    } else {
+                        finish();
+                    }
+                } else {
+                    finish();
+                }
+            }
         });
 
-        //ins ad exit
-        if (sps.getInt(getApplicationContext(), "ratecheckval") == 0) ratedia.show();
-        else if (spa.getInt(context, "purchase_ads") == 0) finish();
+        if (sps.getInt(getApplicationContext(), "ratecheckval") == 0) {
+            ratedia.show();
+        } else {
+            //ins ad exit
+            if (spa.getInt(context, "purchase_ads") == 0) {
+                if (interstitialAd != null && interstitialAd.isReady()) {
+                    interstitialAd.showAd();
+                } else {
+                    finish();
+                }
+            }
+
+        }
     }
 
     public void exit_dia() {
@@ -2642,7 +2737,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         });
 
         cancel.setOnClickListener(v -> openDialog.dismiss());
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
 
     }
 
@@ -3281,7 +3376,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
         });
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
     }
 
     private boolean isNetworkAvailable() {
@@ -3583,7 +3678,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 openDialog.dismiss();
                 //mCoinCount = 0;
             });
-            openDialog.show();
+            if (!isFinishing())openDialog.show();
         }
     }
 
@@ -3610,7 +3705,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             //mCoinCount = 0;
         });
 
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
     }
 
     public void newupdate() {
@@ -4718,7 +4813,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         });
 
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
 
 
     }
@@ -4951,9 +5046,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
         });
-        if (openDialog.isShowing()) {
-
-        } else openDialog.show();
+        if (!isFinishing()) openDialog.show();
 
     }
 
@@ -5066,33 +5159,37 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         }
     }
 
+
     public void rewarded_adnew() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        RewardedAd.load(this, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
+        rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                // Handle the error.
-                Log.d(TAG, loadAdError.toString());
-                rewardedAd = null;
+            public void onRewardedVideoStarted(MaxAd ad) {
+
             }
 
             @Override
-            public void onAdLoaded(@NonNull RewardedAd ad) {
-                rewardedAd = ad;
+            public void onRewardedVideoCompleted(MaxAd ad) {
+                reward_status = 1;
+            }
+
+            @Override
+            public void onUserRewarded(MaxAd ad, MaxReward reward) {
+
+            }
+
+            @Override
+            public void onAdLoaded(MaxAd ad) {
                 fb_reward = 1;
-                adslisner();
-                Log.d(TAG, "Ad was loaded.");
             }
-        });
-
-
-    }
-
-    public void adslisner() {
-        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
 
             @Override
-            public void onAdDismissedFullScreenContent() {
+            public void onAdDisplayed(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdHidden(MaxAd ad) {
                 rewarded_adnew();
                 if (reward_status == 1) {
                     if (extra_coin_s == 0) {
@@ -5106,25 +5203,42 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     }
                     Handler handler = new Handler(Looper.myLooper());
                     handler.postDelayed(() -> vidcoinearn(), 500);
-                } else
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(New_Main_Activity.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                }
 
                 fb_reward = 0;
+                rewardedAd.loadAd();
+
 
             }
 
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+                rewardedAd = null;
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                rewardedAd.loadAd();
+            }
         });
+        rewardedAd.loadAd();
     }
 
     public void show_reward() {
-        if (rewardedAd != null) rewardedAd.show(this, rewardItem -> {
-            // Handle the reward.
-            Log.d(TAG, "The user earned the reward.");
-            int rewardAmount = rewardItem.getAmount();
-            String rewardType = rewardItem.getType();
+        if (rewardedAd != null && rewardedAd.isReady()) {
+            rewardedAd.showAd();
             reward_status = 1;
-        });
-        else Log.d(TAG, "The rewarded ad wasn't ready yet.");
+        } else {
+            Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+            Log.d("TAG", "The rewarded ad wasn't ready yet.");
+        }
     }
 
     private void app_update_manager() {

@@ -1257,7 +1257,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
         done_exit.setOnClickListener(v -> openDialog.dismiss());
         intros.setOnLongClickListener(v -> true);
         intros.loadUrl("file:///android_asset/web.html");
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
     }
 
     @Override

@@ -48,13 +48,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.google.android.gms.ads.AdError;
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
@@ -121,8 +127,8 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
 
     Handler handler;
     Runnable my_runnable;
-    private InterstitialAd mInterstitialAd;
-    private RewardedAd rewardedAd;
+    private MaxInterstitialAd mInterstitialAd;
+    private MaxRewardedAd rewardedAd;
 
     private void backexitnet() {
         if (main_act.equals("")) {
@@ -182,13 +188,13 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
 
 
         //reward(Quiz_Game.this);
-        MobileAds.initialize(this);
+
+        Utills.INSTANCE.initializeAdzz(this);
         rewarded_adnew();
         if (sps.getInt(Quiz_Game.this, "purchase_ads") == 0) {
-            Utills.INSTANCE.initializeAdzz(this);
             industrialload();
         }
-        Utills.INSTANCE.load_add_AppLovin(this, ads_lay);
+        Utills.INSTANCE.load_add_AppLovin(this, ads_lay, getResources().getString(R.string.Bottom_Banner));
 
         find();
         next();
@@ -460,7 +466,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
                     openDialog.dismiss();
                 });
-                openDialog.show();
+                if (!isFinishing())openDialog.show();
             }
 
 
@@ -935,59 +941,67 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
     }
 
 
-    public void industrialload() {
-        if (mInterstitialAd != null) return;
-        Log.i("TAG", "onAdLoadedCalled");
-        AdRequest adRequest = new AdRequest.Builder().build();
-
-        InterstitialAd.load(this, getResources().getString(R.string.Game1_Stage_Close_VV), adRequest, new InterstitialAdLoadCallback() {
+    private void industrialload() {
+        //AppLovinSdk.getInstance( this ).showMediationDebugger();
+        AppLovinSdk.getInstance(this).setMediationProvider("max");
+        AppLovinSdk.initializeSdk(this, new AppLovinSdk.SdkInitializationListener() {
             @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                // The mInterstitialAd reference will be null until
-                // an ad is loaded.
-                mInterstitialAd = interstitialAd;
-                interstiallistener();
-                Log.i("TAG", "onAdLoaded");
-            }
+            public void onSdkInitialized(AppLovinSdkConfiguration config) {
+                // AppLovin SDK is initialized, start loading ads
+                if (mInterstitialAd != null) return;
+                System.out.println("ad shown  showAdWithDelay initialize done ");
+                mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Viliyodu_Vilaiyadu_Ins), Quiz_Game.this);
+                mInterstitialAd.setListener(new MaxAdListener() {
+                    @Override
+                    public void onAdLoaded(MaxAd ad) {
+                        System.out.println("ad shown loaded : " + ad.getWaterfall());
+                    }
 
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                // Handle the error
-                Log.d("TAG", loadAdError.toString());
-                mInterstitialAd = null;
-                handler = null;
-                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
+                    @Override
+                    public void onAdDisplayed(MaxAd ad) {
+                        handler = null;
+                    }
+
+                    @Override
+                    public void onAdHidden(MaxAd ad) {
+                        Log.d("TAG", "Ad dismissed fullscreen content.");
+                        mInterstitialAd = null;
+                        handler = null;
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        setSc();
+                        industrialload();
+                    }
+
+                    @Override
+                    public void onAdClicked(MaxAd ad) {
+
+                    }
+
+                    @Override
+                    public void onAdLoadFailed(String adUnitId, MaxError error) {
+                        Log.d("TAG", error.toString());
+                        mInterstitialAd = null;
+                        handler = null;
+                        Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
+                    }
+
+                    @Override
+                    public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                        Log.e("TAG", "Ad failed to show fullscreen content.");
+                        mInterstitialAd = null;
+                        handler = null;
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                        setSc();
+                    }
+                });
+
+                // Load the first ad
+                mInterstitialAd.loadAd();
+
             }
         });
 
-    }
-
-    public void interstiallistener() {
-        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-            @Override
-            public void onAdDismissedFullScreenContent() {
-                // Called when ad is dismissed.
-                // Set the ad reference to null so you don't show the ad a second time.
-                Log.d("TAG", "Ad dismissed fullscreen content.");
-                mInterstitialAd = null;
-                handler = null;
-                Utills.INSTANCE.Loading_Dialog_dismiss();
-                setSc();
-                industrialload();
-            }
-
-            @Override
-            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                // Called when ad fails to show.
-                Log.e("TAG", "Ad failed to show fullscreen content.");
-                mInterstitialAd = null;
-                handler = null;
-                Utills.INSTANCE.Loading_Dialog_dismiss();
-                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
-                setSc();
-            }
-
-        });
     }
 
     public void adShow() {
@@ -995,9 +1009,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
-            my_runnable = () -> {
-                mInterstitialAd.show(this);
-            };
+            my_runnable = () -> mInterstitialAd.showAd("Viliyodu Vilaiyadu Ins");
             handler.postDelayed(my_runnable, 2500);
         } else {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
@@ -1031,7 +1043,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             //mCoinCount = 0;
         });
 
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
     }
 
     public void vidcoinearn() {
@@ -1063,7 +1075,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                 openDialog.dismiss();
                 //mCoinCount = 0;
             });
-            openDialog.show();
+            if (!isFinishing())openDialog.show();
         }
 
     }
@@ -1848,7 +1860,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             Intent i = new Intent(Quiz_Game.this, Find_difference_between_pictures.class);
             startActivity(i);
         });
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
 
         openDialog.setOnKeyListener((dialog, keyCode, event) -> {
 
@@ -2035,7 +2047,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             openDialog.dismiss();
             //mCoinCount = 0;
         });
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
     }
 
     private void dialog_dicription() {
@@ -2253,32 +2265,34 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
 
 
     public void rewarded_adnew() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        RewardedAd.load(this, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
+        rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                // Handle the error.
-                Log.d("TAG", loadAdError.toString());
-                rewardedAd = null;
+            public void onRewardedVideoStarted(MaxAd ad) {
+
             }
 
             @Override
-            public void onAdLoaded(@NonNull RewardedAd ad) {
-                rewardedAd = ad;
+            public void onRewardedVideoCompleted(MaxAd ad) {
+                reward_status = 1;
+            }
+
+            @Override
+            public void onUserRewarded(MaxAd ad, MaxReward reward) {
+
+            }
+
+            @Override
+            public void onAdLoaded(MaxAd ad) {
                 fb_reward = 1;
-                adslisner();
-                Log.d("TAG", "Ad was loaded.");
             }
-        });
-
-
-    }
-
-    public void adslisner() {
-        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
 
             @Override
-            public void onAdDismissedFullScreenContent() {
+            public void onAdDisplayed(MaxAd ad) {
+            }
+
+            @Override
+            public void onAdHidden(MaxAd ad) {
                 rewarded_adnew();
                 if (reward_status == 1) {
                     if (extra_coin_s == 0) {
@@ -2290,12 +2304,15 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
                     }
-                    Handler handler = new Handler(Looper.myLooper());
-                    handler.postDelayed(() -> {
-                        if (rvo == 2) {
-                            share_earn2(mCoinCount);
-                        } else {
-                            vidcoinearn();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (rvo == 2) {
+                                share_earn2(mCoinCount);
+                            } else {
+                                vidcoinearn();
+                            }
                         }
                     }, 500);
                 } else {
@@ -2303,25 +2320,36 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                 }
 
                 fb_reward = 0;
+                rewardedAd.loadAd();
+
 
             }
 
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+                rewardedAd = null;
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                rewardedAd.loadAd();
+            }
         });
+        rewardedAd.loadAd();
     }
 
     public void show_reward() {
-        if (rewardedAd != null) {
-            rewardedAd.show(this, rewardItem -> {
-                // Handle the reward.
-                Log.d("TAG", "The user earned the reward.");
-                int rewardAmount = rewardItem.getAmount();
-                String rewardType = rewardItem.getType();
-                reward_status = 1;
-            });
+        if (rewardedAd != null && rewardedAd.isReady()) {
+            rewardedAd.showAd();
+            reward_status = 1;
         } else {
             Log.d("TAG", "The rewarded ad wasn't ready yet.");
         }
     }
-
 
 }

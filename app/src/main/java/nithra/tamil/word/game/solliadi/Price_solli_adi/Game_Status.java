@@ -520,7 +520,7 @@ public class Game_Status extends AppCompatActivity {
         intros.loadUrl(urls);
 
 
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
     }
 
     public void popupdialog() {
@@ -557,7 +557,7 @@ public class Game_Status extends AppCompatActivity {
                 openDialog.dismiss();
             }
         });
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
     }
 
     public void rule_regulation(String urls) {
@@ -585,7 +585,7 @@ public class Game_Status extends AppCompatActivity {
             }
         });
         intros.loadUrl(urls);
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
     }
 
     public void user_inactive_dia(String inactive) {
@@ -618,7 +618,7 @@ public class Game_Status extends AppCompatActivity {
                 openDialog.dismiss();
             }
         });
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
     }
 
 }

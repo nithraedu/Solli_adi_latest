@@ -171,7 +171,7 @@ public class Price_Login extends AppCompatActivity {
                         }
                     });
                     intros.loadUrl("https://s3.ap-south-1.amazonaws.com/nithra-solliadi/Prize/Rules_Regulations.html");
-                    openDialog.show();
+                    if (!isFinishing())openDialog.show();
                 } else {
                     Toast.makeText(Price_Login.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
                 }
@@ -697,7 +697,7 @@ public class Price_Login extends AppCompatActivity {
                 openDialog.dismiss();
             }
         });
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
     }
 
     public void user_inactive_dia2(String inactive) {
@@ -730,7 +730,7 @@ public class Price_Login extends AppCompatActivity {
                 openDialog.dismiss();
             }
         });
-        openDialog.show();
+        if (!isFinishing())openDialog.show();
     }
 
     public class MyCountDownTimer extends CountDownTimer {

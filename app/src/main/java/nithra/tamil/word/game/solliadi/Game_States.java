@@ -120,7 +120,7 @@ public class Game_States extends AppCompatActivity {
                         openDialog.dismiss();
                     }
                 });
-                openDialog.show();
+                if (!isFinishing())openDialog.show();
             }
         });
         myreport.setOnClickListener(new View.OnClickListener() {
@@ -171,7 +171,7 @@ public class Game_States extends AppCompatActivity {
                         openDialog.dismiss();
                     }
                 });
-                openDialog.show();
+                if (!isFinishing())openDialog.show();
             }
         });
     }

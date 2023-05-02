@@ -71,7 +71,7 @@ public class Word_search_main extends AppCompatActivity {
             done_exit.setOnClickListener(v12 -> openDialog.dismiss());
             intros.loadUrl("file:///android_asset/ws_intro.html");
             intros.setOnLongClickListener(v1 -> true);
-            openDialog.show();
+            if (!isFinishing())openDialog.show();
         });
         general_play.setOnClickListener(v -> {
             myDialog_class.media_player(Word_search_main.this, R.raw.click, "normal");

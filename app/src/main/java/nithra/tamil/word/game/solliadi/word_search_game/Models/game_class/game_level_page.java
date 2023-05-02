@@ -31,15 +31,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxRewardedAd;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -101,7 +100,7 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
     DataBaseHelper myDbHelper;
     //reward videos process 1***********************
     SQLiteDatabase dbs, dbn, dbn2;
-    private RewardedAd rewardedAd;
+    private MaxRewardedAd rewardedAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -562,32 +561,35 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
     }
 
     public void rewarded_adnew() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        RewardedAd.load(this, getResources().getString(R.string.Reward), adRequest, new RewardedAdLoadCallback() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
+        rewardedAd.setListener(new MaxRewardedAdListener() {
             @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                // Handle the error.
-                Log.d("TAG", loadAdError.toString());
-                rewardedAd = null;
+            public void onRewardedVideoStarted(MaxAd ad) {
+
             }
 
             @Override
-            public void onAdLoaded(@NonNull RewardedAd ad) {
-                rewardedAd = ad;
+            public void onRewardedVideoCompleted(MaxAd ad) {
+                reward_status = 1;
+            }
+
+            @Override
+            public void onUserRewarded(MaxAd ad, MaxReward reward) {
+
+            }
+
+            @Override
+            public void onAdLoaded(MaxAd ad) {
                 fb_reward = 1;
-                adslisner();
-                Log.d("TAG", "Ad was loaded.");
             }
-        });
-
-
-    }
-
-    public void adslisner() {
-        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
 
             @Override
-            public void onAdDismissedFullScreenContent() {
+            public void onAdDisplayed(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdHidden(MaxAd ad) {
                 rewarded_adnew();
                 if (reward_status == 1) {
                     if (extra_coin_s == 0) {
@@ -599,36 +601,50 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
                     }
-                    Handler handler = new Handler(Looper.myLooper());
-                    handler.postDelayed(() -> {
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
 
-                        vidcoinearn();
-
+                            vidcoinearn();
+                        }
                     }, 500);
                 } else {
                     Toast.makeText(game_level_page.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                 }
 
                 fb_reward = 0;
+                rewardedAd.loadAd();
+
+
             }
 
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+                rewardedAd = null;
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                rewardedAd.loadAd();
+            }
         });
+        rewardedAd.loadAd();
     }
 
     public void show_reward() {
-        if (rewardedAd != null) {
-            rewardedAd.show(this, rewardItem -> {
-                // Handle the reward.
-                Log.d("TAG", "The user earned the reward.");
-                int rewardAmount = rewardItem.getAmount();
-                String rewardType = rewardItem.getType();
-                reward_status = 1;
-            });
+        if (rewardedAd != null && rewardedAd.isReady()) {
+            rewardedAd.showAd();
+            reward_status = 1;
         } else {
             Log.d("TAG", "The rewarded ad wasn't ready yet.");
         }
     }
-
 
     public void vidcoinearn() {
         onresume_start = 0;
