@@ -53,7 +53,6 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del {
     LinearLayout add_fb;
 
 
-    com.facebook.ads.InterstitialAd interstitialAd_notid;
     int counter = 10;
     CountDownTimer countDownTimer;
     Dialog home_about_dialog;
@@ -74,7 +73,6 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del {
                 + " (id integer NOT NULL PRIMARY KEY AUTOINCREMENT,title VARCHAR,message VARCHAR,date VARCHAR,time VARCHAR,isclose INT(4),isshow INT(4) default 0,type VARCHAR," +
                 "bm VARCHAR,ntype VARCHAR,url VARCHAR);");
 
-        LinearLayout ads_lay = findViewById(R.id.ads_lay);
         // New_Main_Activity.load_addFromMain(Noti_Fragment.this, ads_lay);
         txtNoNotification = findViewById(R.id.txtNoNotification);
         del_txt = findViewById(R.id.del_txt);

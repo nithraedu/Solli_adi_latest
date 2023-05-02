@@ -40,21 +40,21 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -137,8 +137,8 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
     String answer_shows = "";
     Handler handler;
     Runnable my_runnable;
-    private MaxRewardedAd rewardedAd;
-    private MaxInterstitialAd mInterstitialAd;
+    private RewardedInterstitialAd rewardedAd;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -355,7 +355,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                         sps.putString(getApplicationContext(), "checkbox_ans", "");
                         openDialog.dismiss();
                     });
-                    if (!isFinishing())openDialog.show();
+                    if (!isFinishing()) openDialog.show();
 
                 }
             } else {
@@ -366,7 +366,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
     }
 
     private void next() {
-        c_score_edit.setText("" + Jamble_word_game_functions.score(Jamble_word_game.this, 0));
+        c_score_edit.setText(String.valueOf(Jamble_word_game_functions.score(Jamble_word_game.this, 0)));
         String date = sps.getString(Jamble_word_game.this, "date");
 
         Cursor c;
@@ -388,7 +388,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
             String tfoption = answer;
             first = tfoption.split(",");
             System.out.println("###################fl" + first.length);
-            c_word_number.setText("" + questionid);
+            c_word_number.setText(questionid);
             if (playtime == 0) {
                 if (sps.getString(Jamble_word_game.this, "time_start_jam").equals("")) {
                     sps.putString(Jamble_word_game.this, "time_start_jam", "yes");
@@ -470,7 +470,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 wd_txt2.setText(first[0]);
                 wd_txt3.setText(first[1]);
             }
-            answer_shows = "" + first[0] + " " + first[1] + " " + first[2];
+            answer_shows = first[0] + " " + first[1] + " " + first[2];
         } else if (val == 4) {
             if (randomno == 1) {
                 wd_txt1.setText(first[2]);
@@ -488,7 +488,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 wd_txt3.setText(first[2]);
                 wd_txt4.setText(first[0]);
             }
-            answer_shows = "" + first[0] + " " + first[1] + " " + first[2] + " " + first[3];
+            answer_shows = first[0] + " " + first[1] + " " + first[2] + " " + first[3];
         } else if (val == 5) {
             if (randomno == 1) {
                 wd_txt1.setText(first[2]);
@@ -509,7 +509,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 wd_txt4.setText(first[4]);
                 wd_txt5.setText(first[0]);
             }
-            answer_shows = "" + first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4];
+            answer_shows = first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4];
         } else if (val == 6) {
             if (randomno == 1) {
                 wd_txt1.setText(first[2]);
@@ -533,7 +533,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 wd_txt5.setText(first[5]);
                 wd_txt6.setText(first[0]);
             }
-            answer_shows = "" + first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4] + " " + first[5];
+            answer_shows = first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4] + " " + first[5];
         } else if (val == 7) {
             if (randomno == 1) {
                 wd_txt1.setText(first[2]);
@@ -560,7 +560,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 wd_txt6.setText(first[6]);
                 wd_txt7.setText(first[0]);
             }
-            answer_shows = "" + first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4] + " " + first[5] + " " + first[6];
+            answer_shows = first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4] + " " + first[5] + " " + first[6];
         } else if (val == 8) {
             if (randomno == 1) {
                 wd_txt1.setText(first[2]);
@@ -590,7 +590,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 wd_txt7.setText(first[1]);
                 wd_txt8.setText(first[0]);
             }
-            answer_shows = "" + first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4] + " " + first[5] + " " + first[6] + " " + first[7];
+            answer_shows = first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4] + " " + first[5] + " " + first[6] + " " + first[7];
         } else if (val == 9) {
             if (randomno == 1) {
                 wd_txt1.setText(first[2]);
@@ -623,7 +623,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 wd_txt8.setText(first[8]);
                 wd_txt9.setText(first[0]);
             }
-            answer_shows = "" + first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4] + " " + first[5] + " " + first[6] + " " + first[7] + " " + first[8];
+            answer_shows = first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4] + " " + first[5] + " " + first[6] + " " + first[7] + " " + first[8];
         } else if (val == 10) {
             if (randomno == 1) {
                 wd_txt1.setText(first[2]);
@@ -659,7 +659,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 wd_txt9.setText(first[0]);
                 wd_txt10.setText(first[1]);
             }
-            answer_shows = "" + first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4] + " " + first[5] + " " + first[6] + " " + first[7] + " " + first[8] + " " + first[9];
+            answer_shows = first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4] + " " + first[5] + " " + first[6] + " " + first[7] + " " + first[8] + " " + first[9];
 
         }
     }
@@ -935,7 +935,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         LinearLayout ads_layout = openDialog_s.findViewById(R.id.fl_adplaceholder);
         final TextView discription = openDialog_s.findViewById(R.id.discription);
         discription.setVisibility(View.VISIBLE);
-        discription.setText("" + answer_shows);
+        discription.setText(answer_shows);
         discription.setTextSize(15);
         ImageView prize_logo = openDialog_s.findViewById(R.id.prize_logo);
         if (sps.getInt(Jamble_word_game.this, "remoteConfig_prize") == 1) {
@@ -1021,7 +1021,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         rewardvideo.setOnClickListener(v -> {
             rvo = 2;
             if (Utils.isNetworkAvailable(Jamble_word_game.this)) {
-                final ProgressDialog reward_progressBar = ProgressDialog.show(Jamble_word_game.this, "" + "Reward video", "Loading...");
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Jamble_word_game.this, "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
                     show_reward();
@@ -1052,7 +1052,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
             if (Utils.isNetworkAvailable(Jamble_word_game.this)) {
                 rvo = 2;
                 if (Utils.isNetworkAvailable(Jamble_word_game.this)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Jamble_word_game.this, "" + "Reward video", "Loading...");
+                    final ProgressDialog reward_progressBar = ProgressDialog.show(Jamble_word_game.this, "Reward video", "Loading...");
                     if (fb_reward == 1) {
                         reward_progressBar.dismiss();
                         show_reward();
@@ -1223,14 +1223,14 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-        b_scores.setText("" + a);
+        b_scores.setText(String.valueOf(a));
         ok_y.setOnClickListener(v -> {
-            ttscores.setText("" + skx);
-            c_score_edit.setText("" + skx);
+            ttscores.setText(String.valueOf(skx));
+            c_score_edit.setText(String.valueOf(skx));
             openDialog.dismiss();
             //mCoinCount = 0;
         });
-        if (!isFinishing())openDialog.show();
+        if (!isFinishing()) openDialog.show();
     }
 
     public void vidcoinearn() {
@@ -1239,7 +1239,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
             reward_play_count = reward_play_count + 1;
             //daily_bones();
             ea = ea + setval_vid;
-            coin_value.setText("" + ea);
+            coin_value.setText(String.valueOf(ea));
             //mCoinCount = 0;
         } else {
             final Dialog openDialog = new Dialog(Jamble_word_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -1258,77 +1258,68 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
 
             b_scores.setText("" + mCoinCount);
             ok_y.setOnClickListener(v -> {
-                c_score_edit.setText("" + skx);
+                c_score_edit.setText(String.valueOf(skx));
                 openDialog.dismiss();
                 //mCoinCount = 0;
             });
 
-            if (!isFinishing())openDialog.show();
+            if (!isFinishing()) openDialog.show();
         }
 
     }
 
     private void industrialload() {
-        //AppLovinSdk.getInstance( this ).showMediationDebugger();
-        AppLovinSdk.getInstance(this).setMediationProvider("max");
-        AppLovinSdk.initializeSdk(this, new AppLovinSdk.SdkInitializationListener() {
+
+        Utills.INSTANCE.initializeAdzz(this);
+        if (mInterstitialAd != null) return;
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(this, getResources().getString(R.string.Senthamil_Thedal_Ins), adRequest, new InterstitialAdLoadCallback() {
             @Override
-            public void onSdkInitialized(AppLovinSdkConfiguration config) {
-                // AppLovin SDK is initialized, start loading ads
-                if (mInterstitialAd != null) return;
-                System.out.println("ad shown  showAdWithDelay initialize done ");
-                mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Senthamil_Thedal_Ins), Jamble_word_game.this);
-                mInterstitialAd.setListener(new MaxAdListener() {
-                    @Override
-                    public void onAdLoaded(MaxAd ad) {
-                        System.out.println("ad shown loaded : " + ad.getWaterfall());
-                    }
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                interstiallistener();
+                Log.i("TAG", "onAdLoaded");
+            }
 
-                    @Override
-                    public void onAdDisplayed(MaxAd ad) {
-                        handler = null;
-                    }
-
-                    @Override
-                    public void onAdHidden(MaxAd ad) {
-                        Log.d("TAG", "Ad dismissed fullscreen content.");
-                        mInterstitialAd = null;
-                        handler = null;
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        setSc();
-                        industrialload();
-                    }
-
-                    @Override
-                    public void onAdClicked(MaxAd ad) {
-
-                    }
-
-                    @Override
-                    public void onAdLoadFailed(String adUnitId, MaxError error) {
-                        Log.d("TAG", error.toString());
-                        mInterstitialAd = null;
-                        handler = null;
-                        Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
-                    }
-
-                    @Override
-                    public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                        Log.e("TAG", "Ad failed to show fullscreen content.");
-                        mInterstitialAd = null;
-                        handler = null;
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
-                        setSc();
-                    }
-                });
-
-                // Load the first ad
-                mInterstitialAd.loadAd();
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.d("TAG", loadAdError.toString());
+                mInterstitialAd = null;
+                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
+                handler = null;
 
             }
         });
+    }
 
+    public void interstiallistener() {
+        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override
+            public void onAdDismissedFullScreenContent() {
+                Log.d("TAG", "Ad dismissed fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                setSc();
+                industrialload();
+            }
+
+            @Override
+            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                // Called when ad fails to show.
+                Log.e("TAG", "Ad failed to show fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
+                setSc();
+            }
+
+        });
     }
 
     public void adShow() {
@@ -1337,7 +1328,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Senthamil Thedal Ins");
+                mInterstitialAd.show(this);
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -1417,7 +1408,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                c_score_edit.post(() -> c_score_edit.setText("" + e2));
+                c_score_edit.post(() -> c_score_edit.setText(String.valueOf(e2)));
                 e2++;
             }
 
@@ -1651,7 +1642,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                c_score_edit.post(() -> c_score_edit.setText("" + e2));
+                c_score_edit.post(() -> c_score_edit.setText(String.valueOf(e2)));
                 e2++;
             }
 
@@ -1962,7 +1953,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
             Intent i = new Intent(Jamble_word_game.this, Find_difference_between_pictures.class);
             startActivity(i);
         });
-        if (!isFinishing())openDialog.show();
+        if (!isFinishing()) openDialog.show();
         openDialog.setOnKeyListener((dialog, keyCode, event) -> {
 
             if (main_act.equals("")) {
@@ -2154,12 +2145,12 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 int cur_month1 = calendar3.get(Calendar.MONTH);
                 int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
 
-                String str_month1 = "" + (cur_month1 + 1);
+                String str_month1 = String.valueOf(cur_month1 + 1);
                 if (str_month1.length() == 1) {
                     str_month1 = "0" + str_month1;
                 }
 
-                String str_day1 = "" + cur_day1;
+                String str_day1 = String.valueOf(cur_day1);
                 if (str_day1.length() == 1) {
                     str_day1 = "0" + str_day1;
                 }
@@ -2198,12 +2189,12 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                     int cur_month1 = calendar3.get(Calendar.MONTH);
                     int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
 
-                    String str_month1 = "" + (cur_month1 + 1);
+                    String str_month1 = String.valueOf(cur_month1 + 1);
                     if (str_month1.length() == 1) {
                         str_month1 = "0" + str_month1;
                     }
 
-                    String str_day1 = "" + cur_day1;
+                    String str_day1 = String.valueOf(cur_day1);
                     if (str_day1.length() == 1) {
                         str_day1 = "0" + str_day1;
                     }
@@ -2242,12 +2233,12 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                     int cur_month1 = calendar3.get(Calendar.MONTH);
                     int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
 
-                    String str_month1 = "" + (cur_month1 + 1);
+                    String str_month1 = String.valueOf(cur_month1 + 1);
                     if (str_month1.length() == 1) {
                         str_month1 = "0" + str_month1;
                     }
 
-                    String str_day1 = "" + cur_day1;
+                    String str_day1 = String.valueOf(cur_day1);
                     if (str_day1.length() == 1) {
                         str_day1 = "0" + str_day1;
                     }
@@ -2279,12 +2270,12 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 int cur_month1 = calendar3.get(Calendar.MONTH);
                 int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
 
-                String str_month1 = "" + (cur_month1 + 1);
+                String str_month1 = String.valueOf(cur_month1 + 1);
                 if (str_month1.length() == 1) {
                     str_month1 = "0" + str_month1;
                 }
 
-                String str_day1 = "" + cur_day1;
+                String str_day1 = String.valueOf(cur_day1);
                 if (str_day1.length() == 1) {
                     str_day1 = "0" + str_day1;
                 }
@@ -2316,16 +2307,16 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         final int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-        b_scores.setText("" + a);
+        b_scores.setText(String.valueOf(a));
 
 
         ok_y.setOnClickListener(v -> {
-            c_score_edit.setText("" + skx);
+            c_score_edit.setText(String.valueOf(skx));
             openDialog.dismiss();
             //mCoinCount = 0;
         });
 
-        if (!isFinishing())openDialog.show();
+        if (!isFinishing()) openDialog.show();
     }
 
     public void dialog(int i) {
@@ -2355,7 +2346,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
             rvo = 1;
             extra_coin_s = 0;
             if (Utils.isNetworkAvailable(Jamble_word_game.this)) {
-                final ProgressDialog reward_progressBar = ProgressDialog.show(Jamble_word_game.this, "" + "Reward video", "Loading...");
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Jamble_word_game.this, "Reward video", "Loading...");
 
                 if (fb_reward == 1) {
 
@@ -2456,7 +2447,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
             questionid_d = String.valueOf(cz.getInt(cz.getColumnIndexOrThrow("questionid")));
         }
         System.out.println("----------------------Download_server");
-        Download_data_server download_data_server = new Download_data_server(Jamble_word_game.this, questionid_d, "" + gameid);
+        Download_data_server download_data_server = new Download_data_server(Jamble_word_game.this, questionid_d, gameid);
         download_data_server.execute();
     }
 
@@ -2689,89 +2680,91 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
     }
 
     public void rewarded_adnew() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
 
-            }
+        RewardedInterstitialAd.load(this, getResources().getString(R.string.Reward_Ins),
+                new AdRequest.Builder().build(), new RewardedInterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(RewardedInterstitialAd ad) {
+                        rewardedAd = ad;
+                        fb_reward = 1;
 
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_adnew();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
+                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                            @Override
+                            public void onAdClicked() {
+                                // Called when a click is recorded for an ad.
+                                Log.d("FindWFP", "Ad was clicked.");
                             }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(Jamble_word_game.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
 
-                fb_reward = 0;
-                rewardedAd.loadAd();
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                // Called when ad is dismissed.
+                                // Set the ad reference to null so you don't show the ad a second time.
+                                Log.d("FindWFP", "Ad dismissed fullscreen content.");
+                                rewardedAd = null;
+                            }
 
+                            @Override
+                            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                // Called when ad fails to show.
+                                Log.e("FindWFP", "Ad failed to show fullscreen content.");
+                                rewardedAd = null;
+                                rewarded_adnew();
+                            }
 
-            }
+                            @Override
+                            public void onAdImpression() {
+                                // Called when an impression is recorded for an ad.
+                                Log.d("FindWFP", "Ad recorded an impression.");
+                            }
 
-            @Override
-            public void onAdClicked(MaxAd ad) {
+                            @Override
+                            public void onAdShowedFullScreenContent() {
+                                // Called when ad is shown.
+                                Log.d("FindWFP", "Ad showed fullscreen content.");
+                            }
+                        });
+                    }
 
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
+                    @Override
+                    public void onAdFailedToLoad(LoadAdError loadAdError) {
+                        Log.d("FindWFP", loadAdError.toString());
+                        rewardedAd = null;
+                    }
+                });
     }
 
     public void show_reward() {
-        if (rewardedAd != null && rewardedAd.isReady()) {
-            rewardedAd.showAd();
+        OnUserEarnedRewardListener success = rewardItem -> {
+            rewarded_adnew();
+            if (reward_status == 1) {
+                if (extra_coin_s == 0) {
+                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                    cfx.moveToFirst();
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                    int spx = skx + mCoinCount;
+                    String aStringx = Integer.toString(spx);
+                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                }
+                Handler handler = new Handler();
+                handler.postDelayed(() -> {
+                    if (rvo == 2) {
+                        share_earn2(mCoinCount);
+                    } else {
+                        vidcoinearn();
+                    }
+                }, 500);
+            } else {
+                Toast.makeText(Jamble_word_game.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+            }
+            fb_reward = 0;
+
+        };
+        if (rewardedAd != null) {
+            rewardedAd.show(this, success);
             reward_status = 1;
         } else {
+            Toast.makeText(this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
             Log.d("TAG", "The rewarded ad wasn't ready yet.");
         }
     }

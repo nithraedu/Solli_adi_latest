@@ -2,17 +2,13 @@ package nithra.tamil.word.game.solliadi
 
 import android.app.Activity
 import android.app.Dialog
+import android.database.sqlite.SQLiteDatabase
 import android.os.Environment
 import android.view.View
-import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.applovin.mediation.ads.MaxAdView
-import com.applovin.sdk.AppLovinSdk
-import com.facebook.ads.AudienceNetworkAds
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
@@ -135,27 +131,13 @@ object Utills {
     }
 
     fun load_add_AppLovin(activity: Activity, ads_lay: LinearLayout, adId: String) {
-        if (SharedPreference().getInt(activity, "purchase_ads") == 1) {
-            ads_lay.visibility = View.GONE
-        } else if (Utils.isNetworkAvailable(activity)) {
-            AppLovinSdk.initializeSdk(activity)
-            AppLovinSdk.getInstance(activity).mediationProvider = "max"
 
-            val adView = MaxAdView(adId, activity)
-            val width = ViewGroup.LayoutParams.MATCH_PARENT
-            val heightPx = activity.resources.getDimensionPixelSize(R.dimen.banner_height)
-            adView.layoutParams = FrameLayout.LayoutParams(width, heightPx)
-            ads_lay.addView(adView)
-            adView.loadAd()
-        } else {
-            ads_lay.visibility = View.GONE
-        }
+        ads_lay.visibility = View.GONE
+
     }
 
     fun initializeAdzz(activity: Activity) {
-        AppLovinSdk.initializeSdk(activity)
-        AudienceNetworkAds.initialize(activity)
-        AppLovinSdk.getInstance(activity).mediationProvider = "max"
+        MobileAds.initialize(activity)
     }
 
     fun GameComplete(activity: Activity) {
@@ -416,6 +398,18 @@ object Utills {
 
 
     }
-
+    fun isColumnExists(activity: Activity,tableName: String, columnName: String): Boolean {
+        val db: SQLiteDatabase = DataBaseHelper(activity).readableDatabase
+        val cursor = db.rawQuery("PRAGMA table_info($tableName)", null)
+        while (cursor.moveToNext()) {
+            val currentColumnName = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+            if (currentColumnName == columnName) {
+                cursor.close()
+                return true
+            }
+        }
+        cursor.close()
+        return false
+    }
 
 }

@@ -9,6 +9,8 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -91,15 +93,13 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.facebook.ads.AudienceNetworkAds;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
@@ -192,9 +192,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     public static LinearLayout add_rect;
     public static LinearLayout add_rect_mul;
     public static LinearLayout add_rect_backpress;
-    public static com.facebook.ads.AdView advieww;
-    public static com.facebook.ads.AdView advieww_scoresc;
-    public static com.facebook.ads.AdView advieww_multi;
+
     public static boolean ad_load;
     public static FrameLayout add2, add3;
     public static FrameLayout add_p;
@@ -367,12 +365,11 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     private long mTimeRemaining;
     private int c_counter = 0;
     private byte[] mSaveGameData;
-    private MaxRewardedAd rewardedAd;
+    private RewardedInterstitialAd rewardedAd;
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private BillingManager mBillingManager;
-    private MaxInterstitialAd interstitialAd;
 
     public static void sharedPrefAdd(String one, String two, final SharedPreferences mPreferences) {
         // TODO Auto-generated method stub
@@ -641,10 +638,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         /*RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(List.of("ABCDEF012345")).build();
             MobileAds.setRequestConfiguration(configuration);*/
 
-        AppLovinSdk.initializeSdk(this);
-        AppLovinSdk.getInstance(this).setMediationProvider("max");
         if (spa.getInt(context, "purchase_ads") == 0) {
-            industrialload();
+            Utills.INSTANCE.initializeAdzz(this);
             //AppLovinSdk.getInstance( this ).showMediationDebugger();
         }
 
@@ -695,7 +690,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         adsicon2.startAnimation(pendulam);
 
 //FB ADS//
-        AudienceNetworkAds.initialize(this);
 
 
         if (sps.getInt(New_Main_Activity.this, "reward_coin_txt") == 0)
@@ -1203,28 +1197,42 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 }
 
                 ///Alter Answer table
-                if (sps.getString(New_Main_Activity.this, "alter_answer_table").equals(""))
+                try {
+
                     Utils.mProgress.dismiss();
-                if (sps.getString(New_Main_Activity.this, "alter_answer_table").equals("")) {
+                } catch (Exception e) {
+                }
 
 
+                if (!Utills.INSTANCE.isColumnExists(New_Main_Activity.this, "answertable", "rd"))
                     myDbHelper.executeSql("alter table answertable add column rd integer DEFAULT 0");
+
+                if (!Utills.INSTANCE.isColumnExists(New_Main_Activity.this, "answertable", "playtime"))
                     myDbHelper.executeSql("alter table answertable add column playtime integer");
+
+                if (!Utills.INSTANCE.isColumnExists(New_Main_Activity.this, "answertable", "levelscore"))
                     myDbHelper.executeSql("alter table answertable add column levelscore integer  DEFAULT 0");
+
+                if (!Utills.INSTANCE.isColumnExists(New_Main_Activity.this, "answertable", "useranswer"))
                     myDbHelper.executeSql("alter table answertable add column useranswer integer");
 
+                if (!Utills.INSTANCE.isColumnExists(New_Main_Activity.this, "maintable", "playtime"))
                     myDbHelper.executeSql("alter table maintable add column playtime integer DEFAULT 0");
-                    myDbHelper.executeSql("alter table maintable add column noclue integer DEFAULT 0");
-                    myDbHelper.executeSql("alter table dailytest add column playtime integer DEFAULT 0");
-                    myDbHelper.executeSql("alter table dailytest add column noclue integer DEFAULT 0");
-                    sps.putString(New_Main_Activity.this, "alter_answer_table", "yes");
-                }
-                if (sps.getString(New_Main_Activity.this, "alter_answer_table_2").equals("")) {
-                    myDbHelper.executeSql("alter table answertable add column afinish integer DEFAULT 0");
-                    myDbHelper.executeSql("alter table maintable add column rtm integer DEFAULT 0");
 
-                    sps.putString(New_Main_Activity.this, "alter_answer_table_2", "yes");
-                }
+                if (!Utills.INSTANCE.isColumnExists(New_Main_Activity.this, "maintable", "noclue"))
+                    myDbHelper.executeSql("alter table maintable add column noclue integer DEFAULT 0");
+
+                if (!Utills.INSTANCE.isColumnExists(New_Main_Activity.this, "dailytest", "playtime"))
+                    myDbHelper.executeSql("alter table dailytest add column playtime integer DEFAULT 0");
+
+                if (!Utills.INSTANCE.isColumnExists(New_Main_Activity.this, "dailytest", "noclue"))
+                    myDbHelper.executeSql("alter table dailytest add column noclue integer DEFAULT 0");
+
+                if (!Utills.INSTANCE.isColumnExists(New_Main_Activity.this, "answertable", "afinish"))
+                    myDbHelper.executeSql("alter table answertable add column afinish integer DEFAULT 0");
+
+                if (!Utills.INSTANCE.isColumnExists(New_Main_Activity.this, "maintable", "rtm"))
+                    myDbHelper.executeSql("alter table maintable add column rtm integer DEFAULT 0");
 
                 dbs = openOrCreateDatabase("Newgames.db", MODE_PRIVATE, null);
                 dbn = openOrCreateDatabase("Newgames2.db", MODE_PRIVATE, null);
@@ -2201,16 +2209,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 ratefun();
                 sps.putString(New_Main_Activity.this, "ratefun_shown", "yes");
             } else {
-                //ins ad exit
-                if (spa.getInt(context, "purchase_ads") == 0) {
-                    if (interstitialAd != null && interstitialAd.isReady()) {
-                        interstitialAd.showAd();
-                    } else {
-                        finish();
-                    }
-                } else {
-                    finish();
-                }
+                finish();
 
 
             }
@@ -2227,47 +2226,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     }
 
-    public void industrialload() {
-
-        interstitialAd = new MaxInterstitialAd(getResources().getString(R.string.App_Exit_Ins), this);
-        interstitialAd.setListener(new MaxAdListener() {
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                //Toast.makeText(New_Main_Activity.this, "Loaddeeddd", Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                exit_dia();
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-                Log.e("============++++++++" + error.getCode(), error.getMessage());
-                //Toast.makeText(New_Main_Activity.this, "err"+error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-
-            }
-        });
-        interstitialAd.loadAd();
-
-    }
 
     @Override
     public void onInstallReferrerSetupFinished(int responseCode) {
@@ -2449,11 +2407,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             }
             yesratedialog.dismiss();
             if (spa.getInt(context, "purchase_ads") == 0) {
-                if (interstitialAd != null && interstitialAd.isReady()) {
-                    interstitialAd.showAd();
-                } else {
-                    finish();
-                }
+
+                finish();
+
             }
         });
 
@@ -2494,11 +2450,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 //ins ad exit
 
                 if (spa.getInt(context, "purchase_ads") == 0) {
-                    if (interstitialAd != null && interstitialAd.isReady()) {
-                        interstitialAd.showAd();
-                    } else {
-                        finish();
-                    }
+                    finish();
                 }
             }
         });
@@ -2508,11 +2460,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             if (feedcheck == 0) {
                 //ins ad exit
                 if (spa.getInt(context, "purchase_ads") == 0) {
-                    if (interstitialAd != null && interstitialAd.isReady()) {
-                        interstitialAd.showAd();
-                    } else {
-                        finish();
-                    }
+                    finish();
                 }
             }
         });
@@ -2520,15 +2468,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             // TODO Auto-generated method stub
             if (feedcheck == 1) {
                 //ins ad exit
-                if (spa.getInt(context, "purchase_ads") == 0) {
-                    if (interstitialAd != null && interstitialAd.isReady()) {
-                        interstitialAd.showAd();
-                    } else {
-                        finish();
-                    }
-                } else {
-                    finish();
-                }
+
+                finish();
             }
         });
 
@@ -2537,11 +2478,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         } else {
             //ins ad exit
             if (spa.getInt(context, "purchase_ads") == 0) {
-                if (interstitialAd != null && interstitialAd.isReady()) {
-                    interstitialAd.showAd();
-                } else {
-                    finish();
-                }
+
+                finish();
             }
 
         }
@@ -2737,7 +2675,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         });
 
         cancel.setOnClickListener(v -> openDialog.dismiss());
-        if (!isFinishing())openDialog.show();
+        if (!isFinishing()) openDialog.show();
 
     }
 
@@ -3376,7 +3314,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
         });
-        if (!isFinishing())openDialog.show();
+        if (!isFinishing()) openDialog.show();
     }
 
     private boolean isNetworkAvailable() {
@@ -3397,7 +3335,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             openDialogterm = null;
         }
         if (rewardedAd != null) rewardedAd = null;
-        if (advieww != null) advieww.destroy();
 
     }
 
@@ -3678,7 +3615,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 openDialog.dismiss();
                 //mCoinCount = 0;
             });
-            if (!isFinishing())openDialog.show();
+            if (!isFinishing()) openDialog.show();
         }
     }
 
@@ -3705,7 +3642,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             //mCoinCount = 0;
         });
 
-        if (!isFinishing())openDialog.show();
+        if (!isFinishing()) openDialog.show();
     }
 
     public void newupdate() {
@@ -4813,7 +4750,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         });
 
-        if (!isFinishing())openDialog.show();
+        if (!isFinishing()) openDialog.show();
 
 
     }
@@ -5127,7 +5064,10 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             startActivity(i);
         });
         user_img_lay.setOnClickListener(v -> {
-
+            String textToCopy = Utils.android_id(context);
+            ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clipData = ClipData.newPlainText("text", textToCopy);
+            clipboardManager.setPrimaryClip(clipData);
         });
         new_earncoin.setOnClickListener(v -> dialog());
 
@@ -5161,79 +5101,84 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
 
     public void rewarded_adnew() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
 
-            }
+        RewardedInterstitialAd.load(this, getResources().getString(R.string.Reward_Ins),
+                new AdRequest.Builder().build(), new RewardedInterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(RewardedInterstitialAd ad) {
+                        rewardedAd = ad;
+                        fb_reward = 1;
 
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
+                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                            @Override
+                            public void onAdClicked() {
+                                // Called when a click is recorded for an ad.
+                                Log.d(TAG, "Ad was clicked.");
+                            }
 
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                // Called when ad is dismissed.
+                                // Set the ad reference to null so you don't show the ad a second time.
+                                Log.d(TAG, "Ad dismissed fullscreen content.");
+                                rewardedAd = null;
+                            }
 
-            }
+                            @Override
+                            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                // Called when ad fails to show.
+                                Log.e(TAG, "Ad failed to show fullscreen content.");
+                                rewardedAd = null;
+                                rewarded_adnew();
+                            }
 
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward = 1;
-            }
+                            @Override
+                            public void onAdImpression() {
+                                // Called when an impression is recorded for an ad.
+                                Log.d(TAG, "Ad recorded an impression.");
+                            }
 
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_adnew();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
+                            @Override
+                            public void onAdShowedFullScreenContent() {
+                                // Called when ad is shown.
+                                Log.d(TAG, "Ad showed fullscreen content.");
+                            }
+                        });
                     }
-                    Handler handler = new Handler(Looper.myLooper());
-                    handler.postDelayed(() -> vidcoinearn(), 500);
-                } else {
-                    Toast.makeText(New_Main_Activity.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
 
-                fb_reward = 0;
-                rewardedAd.loadAd();
+                    @Override
+                    public void onAdFailedToLoad(LoadAdError loadAdError) {
+                        Log.d(TAG, loadAdError.toString());
+                        rewardedAd = null;
+                    }
+                });
 
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
     }
 
     public void show_reward() {
-        if (rewardedAd != null && rewardedAd.isReady()) {
-            rewardedAd.showAd();
+        OnUserEarnedRewardListener success = rewardItem -> {
+            rewarded_adnew();
+            if (reward_status == 1) {
+                if (extra_coin_s == 0) {
+                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                    cfx.moveToFirst();
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                    int spx = skx + mCoinCount;
+                    String aStringx = Integer.toString(spx);
+                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                }
+                Handler handler = new Handler(Looper.myLooper());
+                handler.postDelayed(() -> vidcoinearn(), 500);
+            } else {
+                Toast.makeText(New_Main_Activity.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+            }
+
+            fb_reward = 0;
+
+        };
+        if (rewardedAd != null) {
+            rewardedAd.show(this, success);
             reward_status = 1;
         } else {
             Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();

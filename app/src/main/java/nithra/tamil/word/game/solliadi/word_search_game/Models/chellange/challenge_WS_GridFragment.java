@@ -41,20 +41,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.File;
@@ -67,7 +67,6 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import nithra.tamil.word.game.solliadi.DataBaseHelper;
-import nithra.tamil.word.game.solliadi.Find_words_from_picture;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper2;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper3;
@@ -153,8 +152,8 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     private String[][] mBoard;
     private long totalTimeCountInMilliseconds, timeBlinkInMilliseconds; // total count down time in
     private boolean blink, timer_stop = false;
-    private MaxRewardedAd rewardedAd;
-    private MaxInterstitialAd mInterstitialAd;
+    private RewardedInterstitialAd rewardedAd;
+    private InterstitialAd mInterstitialAd;
 
     public void showcase_dismiss() {
         Handler handler30 = new Handler(Looper.myLooper());
@@ -918,7 +917,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
     public void winning_report(final Context context, String get_value) {
         //  myDialog_class.media_player(getActivity(), R.raw.winning, "normal");
-        Winning_dialog = new Dialog(getActivity(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        Winning_dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         Winning_dialog.setContentView(R.layout.dia_winning_report);
         //    Winning_dialog.getWindow().getAttributes().windowAnimations = R.style.win_anim;
         Winning_dialog.setCancelable(false);
@@ -928,11 +927,11 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         my_my_dialog = Winning_dialog;
 
         TextView video_earn = Winning_dialog.findViewById(R.id.video_earn);
-        video_earn.setText("காணொளியை பார்த்து " + sp.getInt(getActivity(), "reward_coin_txt") + "+ நாணயங்கள் பெற");
+        video_earn.setText("காணொளியை பார்த்து " + sp.getInt(challenge_WS_GridFragment.this.context, "reward_coin_txt") + "+ நாணயங்கள் பெற");
 
         LinearLayout vid_earn = Winning_dialog.findViewById(R.id.vid_earn);
 
-        Animation myFadeInAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.blink_animation);
+        Animation myFadeInAnimation = AnimationUtils.loadAnimation(challenge_WS_GridFragment.this.context, R.anim.blink_animation);
         vid_earn.startAnimation(myFadeInAnimation);
 
         vid_earn.setOnClickListener(v -> {
@@ -969,7 +968,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         });
 
         LinearLayout fl_adplaceholder = Winning_dialog.findViewById(R.id.fl_adplaceholder);
-        if (sp.getInt(getActivity(), "purchase_ads") == 1) {
+        if (sp.getInt(challenge_WS_GridFragment.this.context, "purchase_ads") == 1) {
             fl_adplaceholder.setVisibility(View.GONE);
         } else {
             if (Utils.isNetworkAvailable(context)) {
@@ -984,8 +983,8 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         goback = 0;
         my_my_dialog.setOnDismissListener(dialog -> {
             if (goback == 0) {
-                Intent intent = new Intent(getActivity(), Word_search_main.class);
-                getActivity().finish();
+                Intent intent = new Intent(challenge_WS_GridFragment.this.context, Word_search_main.class);
+                challenge_WS_GridFragment.this.getActivity().finish();
                 startActivity(intent);
             }
         });
@@ -1023,17 +1022,17 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
 
         retry_game.setOnClickListener(v -> {
-            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+            myDialog_class.media_player(challenge_WS_GridFragment.this.context, R.raw.click, "normal");
             goback = 1;
 
-            Intent intent = new Intent(getActivity(), Word_search_main.class);
-            getActivity().finish();
+            Intent intent = new Intent(challenge_WS_GridFragment.this.context, Word_search_main.class);
+            challenge_WS_GridFragment.this.getActivity().finish();
             startActivity(intent);
 
         });
 
         next_game.setOnClickListener(v -> {
-            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+            myDialog_class.media_player(challenge_WS_GridFragment.this.context, R.raw.click, "normal");
             goback = 1;
 
             try {
@@ -1069,15 +1068,15 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
         }
 
-        if (sp.getInt(getActivity(), "bestscore" + game_type) <= (best_score_value + bonus_value)) {
-            sp.putInt(getActivity(), "bestscore" + game_type, (best_score_value + bonus_value));
+        if (sp.getInt(challenge_WS_GridFragment.this.context, "bestscore" + game_type) <= (best_score_value + bonus_value)) {
+            sp.putInt(challenge_WS_GridFragment.this.context, "bestscore" + game_type, (best_score_value + bonus_value));
         }
         time_txt.setTextSize(12);
         time_txt.setText("வார்த்தைகள் ");
         best_chronometer.setText("" + total_finded + "/" + total_word);
         retry_txt.setText("வெளியேற");
 
-        best_score.setText("" + (sp.getInt(getActivity(), "bestscore" + game_type)));
+        best_score.setText("" + (sp.getInt(challenge_WS_GridFragment.this.context, "bestscore" + game_type)));
         win_coin.setText("" + (best_score_value));
         current_score.setText("" + (best_score_value + bonus_value));
 
@@ -1143,7 +1142,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         question_txt.setText(question_list.get(mFoundWords.size()).replace(".", ""));
         select_me = "";
 
-        if (!sp.getString(getActivity(), "option_show").equals("")) {
+        if (!sp.getString(context, "option_show").equals("")) {
             option_view.setVisibility(View.VISIBLE);
             option1_txt.setBackgroundColor(Color.parseColor("#ffe900"));
             option2_txt.setBackgroundColor(Color.parseColor("#ffe900"));
@@ -1511,7 +1510,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
     public void get_time(int get_time) {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        final TextView tv1 = new TextView(getActivity());
+        final TextView tv1 = new TextView(context);
         tv1.setLayoutParams(params);
         tv1.setPadding(10, 10, 10, 10);
         tv1.setText("+" + get_time);
@@ -1542,12 +1541,12 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
         coin_point1 = Integer.parseInt(coin_txt.getText().toString());
 
-        if (sp.getString(getActivity(), "time_checkbox_" + game_type).equals("")) {
+        if (sp.getString(context, "time_checkbox_" + game_type).equals("")) {
             dialog.show();
         } else {
             if (coin_point1 >= 100) {
                 if (time_checkbox.isChecked()) {
-                    sp.putString(getActivity(), "time_checkbox_" + game_type, "done");
+                    sp.putString(context, "time_checkbox_" + game_type, "done");
                 }
                 coin_point -= 100;
                 myDbHelper.executeSql("UPDATE score SET coins='" + coin_point + "'");
@@ -1571,21 +1570,21 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         }
 
         cancel_time.setOnClickListener(v -> {
-            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+            myDialog_class.media_player(context, R.raw.click, "normal");
 
             dialog.dismiss();
             startTimer();
         });
 
         done_time.setOnClickListener(v -> {
-            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+            myDialog_class.media_player(context, R.raw.click, "normal");
 
             dialog.dismiss();
 
             if (coin_point1 >= 100) {
 
                 if (time_checkbox.isChecked()) {
-                    sp.putString(getActivity(), "time_checkbox_" + game_type, "done");
+                    sp.putString(context, "time_checkbox_" + game_type, "done");
                 }
                 coin_point -= 100;
                 myDbHelper.executeSql("UPDATE score SET coins='" + coin_point + "'");
@@ -1639,21 +1638,21 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         coin_point1 = Integer.parseInt(coin_txt.getText().toString());
 
         ans_hint_lay.setOnClickListener(v -> {
-            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+            myDialog_class.media_player(context, R.raw.click, "normal");
 
             option_A_tick.setVisibility(View.VISIBLE);
             option_B_tick.setVisibility(View.INVISIBLE);
             select_me = "ans";
         });
         option_hint_lay.setOnClickListener(v -> {
-            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+            myDialog_class.media_player(context, R.raw.click, "normal");
 
             option_A_tick.setVisibility(View.INVISIBLE);
             option_B_tick.setVisibility(View.VISIBLE);
             select_me = "opt";
         });
         cancel_hint_option.setOnClickListener(v -> {
-            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+            myDialog_class.media_player(context, R.raw.click, "normal");
 
 
             if (option_show.equals("all")) {
@@ -1663,7 +1662,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             startTimer();
         });
         done_hint_option.setOnClickListener(v -> {
-            myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+            myDialog_class.media_player(context, R.raw.click, "normal");
 
             if (select_me.equals("ans")) {
                 coin_point -= 10;
@@ -1723,7 +1722,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                 dialog.dismiss();
                 startTimer();
             } else {
-                Toast.makeText(getActivity(), "மேலேயுள்ள விருப்பத்தை தேர்வு செய்யவும்..", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "மேலேயுள்ள விருப்பத்தை தேர்வு செய்யவும்..", Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -2039,66 +2038,56 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     }
 
     private void industrialload() {
-        //AppLovinSdk.getInstance( this ).showMediationDebugger();
-        AppLovinSdk.getInstance(context).setMediationProvider("max");
-        AppLovinSdk.initializeSdk(context, new AppLovinSdk.SdkInitializationListener() {
+
+        Utills.INSTANCE.initializeAdzz(getActivity());
+        if (mInterstitialAd != null) return;
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(getActivity(), getResources().getString(R.string.Senthamil_Thedal_Ins), adRequest, new InterstitialAdLoadCallback() {
             @Override
-            public void onSdkInitialized(AppLovinSdkConfiguration config) {
-                // AppLovin SDK is initialized, start loading ads
-                if (mInterstitialAd != null) return;
-                System.out.println("ad shown  showAdWithDelay initialize done ");
-                mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Senthamil_Thedal_Ins), getActivity());
-                mInterstitialAd.setListener(new MaxAdListener() {
-                    @Override
-                    public void onAdLoaded(MaxAd ad) {
-                        System.out.println("ad shown loaded : " + ad.getWaterfall());
-                    }
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                interstiallistener();
+                Log.i("TAG", "onAdLoaded");
+            }
 
-                    @Override
-                    public void onAdDisplayed(MaxAd ad) {
-                        handler = null;
-                    }
-
-                    @Override
-                    public void onAdHidden(MaxAd ad) {
-                        Log.d("TAG", "Ad dismissed fullscreen content.");
-                        mInterstitialAd = null;
-                        handler = null;
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        winning_report(context, "time_up");
-                        industrialload();
-                    }
-
-                    @Override
-                    public void onAdClicked(MaxAd ad) {
-
-                    }
-
-                    @Override
-                    public void onAdLoadFailed(String adUnitId, MaxError error) {
-                        Log.d("TAG", error.toString());
-                        mInterstitialAd = null;
-                        handler = null;
-                        Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
-                    }
-
-                    @Override
-                    public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                        Log.e("TAG", "Ad failed to show fullscreen content.");
-                        mInterstitialAd = null;
-                        handler = null;
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        sp.putInt(context, "Game3_Stage_Close_ST", 0);
-                        winning_report(context, "time_up");
-                    }
-                });
-
-                // Load the first ad
-                mInterstitialAd.loadAd();
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.d("TAG", loadAdError.toString());
+                mInterstitialAd = null;
+                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
+                handler = null;
 
             }
         });
+    }
 
+    public void interstiallistener() {
+        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override
+            public void onAdDismissedFullScreenContent() {
+                Log.d("TAG", "Ad dismissed fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                winning_report(context, "time_up");
+                industrialload();
+            }
+
+            @Override
+            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                Log.e("TAG", "Ad failed to show fullscreen content.");
+                mInterstitialAd = null;
+                handler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sp.putInt(context, "Game3_Stage_Close_ST", 0);
+                winning_report(context, "time_up");
+            }
+
+        });
     }
 
     public void adShow() {
@@ -2107,7 +2096,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             Utills.INSTANCE.Loading_Dialog(requireActivity());
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Senthamil Thedal Ins");
+                mInterstitialAd.show(getActivity());
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -2115,94 +2104,100 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             if (sp.getInt(context, "Game3_Stage_Close_ST") > Utills.interstitialadCount)
                 sp.putInt(context, "Game3_Stage_Close_ST", 0);
             winning_report(context, "time_up");
-             //Toast.makeText(context, "" + sp.getInt(context, "Game3_Stage_Close_ST"), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "" + sp.getInt(context, "Game3_Stage_Close_ST"), Toast.LENGTH_SHORT).show();
 
         }
 
     }
 
     public void rewarded_adnew() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), requireActivity());
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
 
-            }
+        RewardedInterstitialAd.load(getActivity(), getResources().getString(R.string.Reward_Ins),
+                new AdRequest.Builder().build(), new RewardedInterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(RewardedInterstitialAd ad) {
+                        rewardedAd = ad;
+                        fb_reward = 1;
 
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_adnew();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
+                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                            @Override
+                            public void onAdClicked() {
+                                // Called when a click is recorded for an ad.
+                                Log.d("FindWFP", "Ad was clicked.");
                             }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
 
-                fb_reward = 0;
-                rewardedAd.loadAd();
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                // Called when ad is dismissed.
+                                // Set the ad reference to null so you don't show the ad a second time.
+                                Log.d("FindWFP", "Ad dismissed fullscreen content.");
+                                rewardedAd = null;
+                            }
 
+                            @Override
+                            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                // Called when ad fails to show.
+                                Log.e("FindWFP", "Ad failed to show fullscreen content.");
+                                rewardedAd = null;
+                                rewarded_adnew();
+                            }
 
-            }
+                            @Override
+                            public void onAdImpression() {
+                                // Called when an impression is recorded for an ad.
+                                Log.d("FindWFP", "Ad recorded an impression.");
+                            }
 
-            @Override
-            public void onAdClicked(MaxAd ad) {
+                            @Override
+                            public void onAdShowedFullScreenContent() {
+                                // Called when ad is shown.
+                                Log.d("FindWFP", "Ad showed fullscreen content.");
+                            }
+                        });
+                    }
 
-            }
+                    @Override
+                    public void onAdFailedToLoad(LoadAdError loadAdError) {
+                        Log.d("FindWFP", loadAdError.toString());
+                        rewardedAd = null;
+                    }
+                });
 
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
     }
 
     public void show_reward() {
-        if (rewardedAd != null && rewardedAd.isReady()) {
-            rewardedAd.showAd();
+        OnUserEarnedRewardListener success = rewardItem -> {
+            rewarded_adnew();
+            if (reward_status == 1) {
+                if (extra_coin_s == 0) {
+                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                    cfx.moveToFirst();
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                    int spx = skx + mCoinCount;
+                    String aStringx = Integer.toString(spx);
+                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                }
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (rvo == 2) {
+                            share_earn2(mCoinCount);
+                        } else {
+                            vidcoinearn();
+                        }
+                    }
+                }, 500);
+            } else {
+                Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+            }
+            fb_reward = 0;
+
+        };
+
+        if (rewardedAd != null) {
+            rewardedAd.show(getActivity(), success);
             reward_status = 1;
         } else {
             Log.d("TAG", "The rewarded ad wasn't ready yet.");
@@ -2226,7 +2221,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             openDialog.dismiss();
             //  //mCoinCount = 0;
         });
-        if (!requireActivity().isFinishing())openDialog.show();
+        if (!requireActivity().isFinishing()) openDialog.show();
     }
 
     public void vidcoinearn() {
@@ -2257,7 +2252,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                 // //mCoinCount = 0;
             });
 
-            if (!requireActivity().isFinishing())openDialog.show();
+            if (!requireActivity().isFinishing()) openDialog.show();
         }
 
     }

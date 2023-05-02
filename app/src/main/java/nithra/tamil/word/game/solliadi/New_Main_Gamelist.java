@@ -36,8 +36,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.facebook.ads.AudienceNetworkAds;
-import com.facebook.ads.NativeBannerAd;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
@@ -85,7 +83,6 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
     private static final String LOADING_PHRASE_CONFIG_KEY = "app_sort_order";
     private static final String LOADING_PHRASE_CONFIG_KEY2 = "SolliadiPrize";
     static int mul_tival = 0;
-    static NativeBannerAd nativeBannerAd;
     final int scrooly = 0;
     final int oldscrollY = 0;
     final SharedPreference sp = new SharedPreference();
@@ -164,7 +161,6 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
         } else if (snd.equals("on")) {
             sv = 1;
         }
-        AudienceNetworkAds.initialize(this);
 
         //Utills.INSTANCE.GameComplete(this);
 

@@ -25,7 +25,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.facebook.ads.RewardedVideoAd;
+
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -59,7 +60,6 @@ public class States_Activity extends AppCompatActivity {
     final ArrayList<String> names = new ArrayList<String>();
     final ArrayList<Integer> scores = new ArrayList<Integer>();
     final ArrayList<String> citys = new ArrayList<String>();
-    RewardedVideoAd rewardedVideoAd;
     int reward_status = 0;
     customlist_myreport adapt;
     TextView refresh;
@@ -336,7 +336,7 @@ public class States_Activity extends AppCompatActivity {
                     final ProgressDialog reward_progressBar = ProgressDialog.show(States_Activity.this, "" + "Reward video", "Loading...");
                     if (fb_reward == 1) {
                         reward_progressBar.dismiss();
-                        rewardedVideoAd.show();
+
                         rewardvideo.setVisibility(View.INVISIBLE);
                     } else {
                         new Handler(Looper.myLooper()).postDelayed(new Runnable() {
@@ -344,7 +344,7 @@ public class States_Activity extends AppCompatActivity {
                             public void run() {
                                 reward_progressBar.dismiss();
                                 if (fb_reward == 1) {
-                                    rewardedVideoAd.show();
+
                                     // mShowVideoButton.setVisibility(View.VISIBLE);
                                 } else {
                                 }

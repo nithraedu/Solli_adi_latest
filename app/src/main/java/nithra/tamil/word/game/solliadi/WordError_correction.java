@@ -56,14 +56,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.MaxRewardedAdListener;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinSdk;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.material.snackbar.Snackbar;
@@ -156,8 +157,8 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
     Handler handler;
     Runnable my_runnable;
-    private MaxRewardedAd rewardedAd;
-    private MaxInterstitialAd mInterstitialAd;
+    private RewardedInterstitialAd rewardedAd;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     public void download_completed(String status) {
@@ -609,7 +610,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                         sps.putString(getApplicationContext(), "checkbox_ans", "");
                         openDialog.dismiss();
                     });
-                    if (!isFinishing())openDialog.show();
+                    if (!isFinishing()) openDialog.show();
                 }
 
 
@@ -928,7 +929,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                 Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
         });
-        if (!isFinishing())openDialog.show();
+        if (!isFinishing()) openDialog.show();
     }
 
     public void nextgamesdialog() {
@@ -1214,7 +1215,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             Intent i = new Intent(WordError_correction.this, Find_difference_between_pictures.class);
             startActivity(i);
         });
-        if (!isFinishing())openDialog.show();
+        if (!isFinishing()) openDialog.show();
         openDialog.setOnKeyListener((dialog, keyCode, event) -> {
             if (main_act.equals("")) {
 
@@ -4077,87 +4078,95 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
 
     public void rewarded_adnew() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
 
-            }
+        RewardedInterstitialAd.load(this, getResources().getString(R.string.Reward_Ins),
+                new AdRequest.Builder().build(), new RewardedInterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(RewardedInterstitialAd ad) {
+                        rewardedAd = ad;
+                        fb_reward = 1;
 
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_adnew();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
+                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                            @Override
+                            public void onAdClicked() {
+                                // Called when a click is recorded for an ad.
+                                Log.d("FindWFP", "Ad was clicked.");
                             }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
 
-                fb_reward = 0;
-                rewardedAd.loadAd();
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                // Called when ad is dismissed.
+                                // Set the ad reference to null so you don't show the ad a second time.
+                                Log.d("FindWFP", "Ad dismissed fullscreen content.");
+                                rewardedAd = null;
+                            }
 
+                            @Override
+                            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                // Called when ad fails to show.
+                                Log.e("FindWFP", "Ad failed to show fullscreen content.");
+                                rewardedAd = null;
+                                rewarded_adnew();
+                            }
 
-            }
+                            @Override
+                            public void onAdImpression() {
+                                // Called when an impression is recorded for an ad.
+                                Log.d("FindWFP", "Ad recorded an impression.");
+                            }
 
-            @Override
-            public void onAdClicked(MaxAd ad) {
+                            @Override
+                            public void onAdShowedFullScreenContent() {
+                                // Called when ad is shown.
+                                Log.d("FindWFP", "Ad showed fullscreen content.");
+                            }
+                        });
+                    }
 
-            }
+                    @Override
+                    public void onAdFailedToLoad(LoadAdError loadAdError) {
+                        Log.d("FindWFP", loadAdError.toString());
+                        rewardedAd = null;
+                    }
+                });
 
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
     }
 
     public void show_reward() {
-        if (rewardedAd != null && rewardedAd.isReady()) {
-            rewardedAd.showAd();
+
+        OnUserEarnedRewardListener success = rewardItem -> {
+            rewarded_adnew();
+            if (reward_status == 1) {
+                if (extra_coin_s == 0) {
+                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                    cfx.moveToFirst();
+                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                    int spx = skx + mCoinCount;
+                    String aStringx = Integer.toString(spx);
+                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                }
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (rvo == 2) {
+                            share_earn2(mCoinCount);
+                        } else {
+                            vidcoinearn();
+                        }
+                    }
+                }, 500);
+            } else {
+                Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+            }
+            fb_reward = 0;
+
+        };
+
+
+        if (rewardedAd != null) {
+            rewardedAd.show(this, success);
             reward_status = 1;
         } else {
             Log.d("TAG", "The rewarded ad wasn't ready yet.");
@@ -4165,64 +4174,61 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
     }
 
     private void industrialload() {
-        //AppLovinSdk.getInstance( this ).showMediationDebugger();
-        AppLovinSdk.getInstance(this).setMediationProvider("max");
-        AppLovinSdk.initializeSdk(this, config -> {
-            // AppLovin SDK is initialized, start loading ads
-            if (mInterstitialAd != null) return;
-            System.out.println("ad shown  showAdWithDelay initialize done ");
-            mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Ragasiya_sorgal_ins), WordError_correction.this);
-            mInterstitialAd.setListener(new MaxAdListener() {
-                @Override
-                public void onAdLoaded(MaxAd ad) {
-                    System.out.println("ad shown loaded : " + ad.getWaterfall());
-                }
 
-                @Override
-                public void onAdDisplayed(MaxAd ad) {
-                    handler = null;
-                }
+        Utills.INSTANCE.initializeAdzz(this);
+        if (mInterstitialAd != null) return;
 
-                @Override
-                public void onAdHidden(MaxAd ad) {
-                    Log.d("TAG", "Ad dismissed fullscreen content.");
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(this, getResources().getString(R.string.Ragasiya_sorgal_ins), adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                interstiallistener();
+                Log.i("TAG", "onAdLoaded");
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.d("TAG", loadAdError.toString());
+                mInterstitialAd = null;
+                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
+                handler = null;
+
+            }
+        });
+
+
+
+    }
+
+    public void interstiallistener() {
+        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override
+            public void onAdDismissedFullScreenContent() {
+                Log.d("TAG", "Ad dismissed fullscreen content.");
                     mInterstitialAd = null;
                     handler = null;
                     Utills.INSTANCE.Loading_Dialog_dismiss();
                     setSc();
                     industrialload();
-                }
+            }
 
-                @Override
-                public void onAdClicked(MaxAd ad) {
-
-                }
-
-                @Override
-                public void onAdLoadFailed(String adUnitId, MaxError error) {
-                    Log.d("TAG", error.toString());
-                    mInterstitialAd = null;
-                    handler = null;
-                    Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
-                }
-
-                @Override
-                public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                    Log.e("TAG", "Ad failed to show fullscreen content.");
+            @Override
+            public void onAdFailedToShowFullScreenContent(AdError adError) {
+               Log.e("TAG", "Ad failed to show fullscreen content.");
                     mInterstitialAd = null;
                     handler = null;
                     Utills.INSTANCE.Loading_Dialog_dismiss();
                     sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
                     setSc();
-                }
-            });
-
-            // Load the first ad
-            mInterstitialAd.loadAd();
+            }
 
         });
-
     }
+
 
     public void adShow() {
         if (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") == Utills.interstitialadCount && mInterstitialAd != null) {
@@ -4230,7 +4236,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Ragasiya sorgal ins");
+                mInterstitialAd.show(this);
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -4239,7 +4245,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                 sps.putInt(context, "Game4_Stage_Close_RS", 0);
 
             setSc();
-             //Toast.makeText(this, ""+sps.getInt(this, "Game4_Stage_Close_RS"), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, ""+sps.getInt(this, "Game4_Stage_Close_RS"), Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -4274,7 +4280,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                 //mCoinCount = 0;
             });
 
-            if (!isFinishing())openDialog.show();
+            if (!isFinishing()) openDialog.show();
         }
 
     }
@@ -4813,7 +4819,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             //mCoinCount = 0;
         });
 
-        if (!isFinishing())openDialog.show();
+        if (!isFinishing()) openDialog.show();
     }
 
     public void share_earn2(int a) {
@@ -4837,7 +4843,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             //mCoinCount = 0;
         });
 
-        if (!isFinishing())openDialog.show();
+        if (!isFinishing()) openDialog.show();
     }
 
     @Override

@@ -18,14 +18,16 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 
-import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxError;
-import com.applovin.mediation.ads.MaxInterstitialAd;
-import com.applovin.sdk.AppLovinSdk;
-import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import nit_app.CodetoTamilUtil;
@@ -35,7 +37,6 @@ public class ST_Activity extends Activity {
 
 
     static final SharedPreference spa = new SharedPreference();
-    static com.facebook.ads.AdView adView_fb;
     static LinearLayout add_fb;
     final Context context = this;
     final String tablenew = "noti_cal";
@@ -45,15 +46,17 @@ public class ST_Activity extends Activity {
     String title, message, msgType, date, time;
     int idd;
     String urls;
-    LinearLayout ads_lay;
+    AdView ads_lay;
     WebView content_view;
     AppCompatImageView noti_cancel;
     FloatingActionButton share_but;
     TextView sticky;
     int show_id, show_ads;
     Handler handler;
+    LinearLayout banner_adParent;
     Runnable my_runnable;
-    private MaxInterstitialAd mInterstitialAd;
+
+    private InterstitialAd mInterstitialAd;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +65,7 @@ public class ST_Activity extends Activity {
         System.out.println("#######St Activity");
 
         content_view = findViewById(R.id.noti_web);
+        banner_adParent = findViewById(R.id.banner_adParent);
 
 
         content_view = findViewById(R.id.noti_web);
@@ -80,13 +84,14 @@ public class ST_Activity extends Activity {
 
         myDB.execSQL("CREATE TABLE IF NOT EXISTS share_noti (id integer NOT NULL PRIMARY KEY AUTOINCREMENT,title VARCHAR,sahre_msg VARCHAR,date VARCHAR,time VARCHAR);");
 
-        
+
         if (sharedPreference.getInt(this, "purchase_ads") == 0) {
             Utills.INSTANCE.initializeAdzz(this);
             if (sharedPreference.getInt(context, "Noti_Content_Close") == 0 || sharedPreference.getInt(context, "Noti_Content_Close") == Utills.notiInterstitialadCount)
                 industrialload();
         }
-        Utills.INSTANCE.load_add_AppLovin(this, ads_lay, getResources().getString(R.string.Noti_Banner));
+        //Utills.INSTANCE.load_add_AppLovin(this, ads_lay, getResources().getString(R.string.Noti_Banner));
+        Utills.INSTANCE.loads_ads_banner(this, ads_lay, banner_adParent, getResources().getString(R.string.Noti_Banner));
         Bundle extras;
         extras = getIntent().getExtras();
         idd = extras.getInt("idd");
@@ -180,62 +185,55 @@ public class ST_Activity extends Activity {
     }
 
     private void industrialload() {
-        //AppLovinSdk.getInstance( this ).showMediationDebugger();
-        AppLovinSdk.getInstance(this).setMediationProvider("max");
-        AppLovinSdk.initializeSdk(this, config -> {
-            // AppLovin SDK is initialized, start loading ads
-            if (mInterstitialAd != null) return;
-            System.out.println("ad shown  showAdWithDelay initialize done ");
-            mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Noti_Exit_INS), ST_Activity.this);
-            mInterstitialAd.setListener(new MaxAdListener() {
-                @Override
-                public void onAdLoaded(MaxAd ad) {
-                    System.out.println("ad shown loaded : " + ad.getWaterfall());
-                }
+        if (mInterstitialAd != null) return;
+        Log.i("TAG", "onAdLoadedCalled");
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(this, getResources().getString(R.string.Noti_Exit_INS), adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                interstiallistener();
+                Log.i("TAG", "onAdLoaded");
+            }
 
-                @Override
-                public void onAdDisplayed(MaxAd ad) {
-                    handler = null;
-                }
-
-                @Override
-                public void onAdHidden(MaxAd ad) {
-                    Log.d("TAG", "Ad dismissed fullscreen content.");
-                    mInterstitialAd = null;
-                    if (show_ads == 1) {
-                        finish();
-                        Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
-                        startActivity(i);
-                    } else finish();
-                }
-
-                @Override
-                public void onAdClicked(MaxAd ad) {
-
-                }
-
-                @Override
-                public void onAdLoadFailed(String adUnitId, MaxError error) {
-                    Log.d("TAG", error.toString());
-                    mInterstitialAd = null;
-                    handler = null;
-                    Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
-                }
-
-                @Override
-                public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                    Log.e("TAG", "Ad failed to show fullscreen content.");
-                    mInterstitialAd = null;
-                    handler = null;
-                    Utills.INSTANCE.Loading_Dialog_dismiss();
-                }
-            });
-
-            // Load the first ad
-            mInterstitialAd.loadAd();
-
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.d("TAG", loadAdError.toString());
+                mInterstitialAd = null;
+                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
+            }
         });
 
+    }
+
+    public void interstiallistener() {
+        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override
+            public void onAdDismissedFullScreenContent() {
+                // Called when ad is dismissed.
+                // Set the ad reference to null so you don't show the ad a second time.
+                Log.d("TAG", "Ad dismissed fullscreen content.");
+                mInterstitialAd = null;
+                if (show_ads == 1) {
+                    finish();
+                    Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
+                    startActivity(i);
+                } else finish();
+            }
+
+            @Override
+            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                // Called when ad fails to show.
+                Log.e("TAG", "Ad failed to show fullscreen content.");
+                mInterstitialAd = null;
+
+
+            }
+
+        });
     }
 
     public void adShow() {
@@ -247,7 +245,7 @@ public class ST_Activity extends Activity {
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Noti Exit INS");
+                mInterstitialAd.show(this);
             };
             handler.postDelayed(my_runnable, 2500);
         } else {

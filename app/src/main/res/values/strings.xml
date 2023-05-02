@@ -102,25 +102,21 @@
     <string name="base64_key">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwvB2PRbiaHt07CB1JWpQgitJoe+wCEw65Qb+sPyhVBVALCjgC4jSg8CITqrV+w/73cEAD/BR2PfhjvnHKDmfS0vsdvez0jJ8xihSaSGapnuIvgYvTP5J4OdoG/ZSGXw3qi5Mc5LtA803vMqaHPsZLoJX35lEb6ApGkD0qOZwQOms/FfikuD8b08AYBNAsDaCLiI14N2mcyatWyKupPJvyroflApCaCH7c0uBCj9mHP5inFyWgTEdWILxV8OUJjfIs2NmzVImNGTeqSmYc4BkA+gpKiz8vcrP4GSJSs557drJot1Kkq8iU8jy2SOsZJBCA2zUld5zEkHdukQ1CFtMHwIDAQAB</string>
 
 
-    <string name="Viliyodu_Vilaiyadu_Ins">5e11d3d404441478</string>
+    <string name="Viliyodu_Vilaiyadu_Ins">ca-app-pub-7801902919918187/5595527981</string>
 
-    <string name="Puthayal_Sorkal_Ins">489542293b12c52d</string>
+    <string name="Puthayal_Sorkal_Ins">ca-app-pub-7801902919918187/8465233906</string>
 
-    <string name="Senthamil_Thedal_Ins">3115a52bb21a9f6d</string>
+    <string name="Senthamil_Thedal_Ins">ca-app-pub-7801902919918187/3026609937</string>
 
-    <string name="Ragasiya_sorgal_ins">cc5177a5d9d8697c</string>
+    <string name="Ragasiya_sorgal_ins">ca-app-pub-7801902919918187/8196559029</string>
 
-    <string name="Bottom_Banner">cad3a4886f7b9db5</string>
+    <string name="Bottom_Banner">ca-app-pub-7801902919918187/7482243150</string>
 
-    <string name="Noti_Banner">2d8dc94d4a113f25</string>
+    <string name="Noti_Banner">ca-app-pub-7801902919918187/7482243150</string>
 
-    <string name="Noti_Exit_INS">e5187e79f6180517</string>
+    <string name="Noti_Exit_INS">ca-app-pub-7801902919918187/6885963894</string>
 
 
-
-    <string name="Reward_Ins">4035191e86eb48ed</string>
-
-    <string name="App_Exit_Ins">3131a2b2c46d46b0</string>
-
+    <string name="Reward_Ins">ca-app-pub-7801902919918187/6889833326</string>
 
 </resources>

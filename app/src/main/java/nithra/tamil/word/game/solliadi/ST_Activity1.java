@@ -70,7 +70,6 @@ public class ST_Activity1 extends Activity {
         sticky = (TextView) findViewById(R.id.sticky);
         //ImageView backdrop=(ImageView) home_about_dialog.findViewById(R.id.backdrop);
         noti_cancel = (AppCompatImageView) findViewById(R.id.noti_cancel);
-        ads_lay = (LinearLayout) findViewById(R.id.ads_lay);
 
         Bundle extras;
         extras = getIntent().getExtras();

@@ -114,7 +114,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-5984266422386694~5414964234" />
+            android:value="ca-app-pub-7801902919918187~4975978240" />
 
         <!-- <activity
              android:name="com.google.android.gms.ads.AdActivity"
