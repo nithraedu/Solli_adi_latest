@@ -21,7 +21,7 @@
         android:typeface="serif" />
 
 
-    <com.nithra.tamilsms.Nested_WebView.NestedWebView
+    <nithra.tamil.word.game.solliadi.NestedWebView
         android:id="@+id/common_web"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

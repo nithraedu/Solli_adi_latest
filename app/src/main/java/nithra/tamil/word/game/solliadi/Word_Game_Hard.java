@@ -2,6 +2,7 @@ package nithra.tamil.word.game.solliadi;
 
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.Utils.isNetworkAvailable;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -57,21 +58,21 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinSdk;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -246,8 +247,8 @@ public class Word_Game_Hard extends AppCompatActivity {
     int dia_dismiss = 0;
     Handler handler;
     Runnable my_runnable;
-    private RewardedInterstitialAd rewardedAd;
-    private InterstitialAd mInterstitialAd;
+    private MaxRewardedAd rewardedAd;
+    private MaxInterstitialAd mInterstitialAd;
 
     public static boolean exists(String URLName) {
         try {
@@ -267,7 +268,8 @@ public class Word_Game_Hard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_word__game);
-
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
 
         //uiHelper = new UiLifecycleHelper(this, callback);
@@ -359,7 +361,7 @@ public class Word_Game_Hard extends AppCompatActivity {
             prize_logo.setVisibility(View.VISIBLE);
         else prize_logo.setVisibility(View.GONE);
         prize_logo.setOnClickListener(v -> {
-            if (isNetworkAvailable())
+            if (isNetworkAvailable(this))
                 if (sps.getString(Word_Game_Hard.this, "price_registration").equals("com")) {
                     finish();
                     Intent i = new Intent(Word_Game_Hard.this, Game_Status.class);
@@ -3146,7 +3148,7 @@ public class Word_Game_Hard extends AppCompatActivity {
                     Utils.toast_normal(Word_Game_Hard.this, "இந்த வார்த்தை எங்களது  தொகுப்பில் உள்ளது.வேறு வார்த்தையை பதிவிடவும்.");
                 } else if (usertxt.getText().toString().length() == 0)
                     Utils.toast_normal(Word_Game_Hard.this, "புதிய வார்த்தைகளை பதிவு செய்து அனுப்பவும். ");
-                else if (Utils.isNetworkAvailable(Word_Game_Hard.this)) {
+                else if (isNetworkAvailable(Word_Game_Hard.this)) {
 
                     final Handler handler = new Handler(Looper.myLooper()) {
                         public void handleMessage(Message msg) {
@@ -4039,7 +4041,7 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         extra_coin.setOnClickListener(v -> {
             extra_coin_s = 1;
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(Word_Game_Hard.this, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
@@ -4143,7 +4145,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         video.setOnClickListener(v -> {
             rvo = 1;
             extra_coin_s = 0;
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
 
                 if (fb_reward == 1) {
@@ -4178,7 +4180,7 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         wp.setOnClickListener(view -> {
             // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.whatsapp");
                 if (appinstalled) {
                     openDialog_earncoin.cancel();
@@ -4199,7 +4201,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         });
         gplus.setOnClickListener(view -> {
             // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
 
                 final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
                 if (appinstalled) {
@@ -4241,11 +4243,6 @@ public class Word_Game_Hard extends AppCompatActivity {
         return app_installed;
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connec = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
 
 
     public void setSc() {
@@ -4295,7 +4292,7 @@ public class Word_Game_Hard extends AppCompatActivity {
             prize_logo.setVisibility(View.VISIBLE);
         else prize_logo.setVisibility(View.GONE);
         prize_logo.setOnClickListener(v -> {
-            if (isNetworkAvailable())
+            if (isNetworkAvailable(this))
                 if (sps.getString(Word_Game_Hard.this, "price_registration").equals("com")) {
                     finish();
                     Intent i = new Intent(Word_Game_Hard.this, Game_Status.class);
@@ -4325,7 +4322,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         //  New_Main_Activity.load_addFromMain_multiplayer(Word_Game_Hard.this,ads_layout);
         if (sps.getInt(Word_Game_Hard.this, "purchase_ads") == 1)
             ads_layout.setVisibility(View.GONE);
-        else if (Utils.isNetworkAvailable(context)) {
+        else if (isNetworkAvailable(context)) {
             //New_Main_Activity.load_add_fb_rect_score_screen(context, ads_layout);
         } else ads_layout.setVisibility(View.GONE);
 
@@ -4346,7 +4343,7 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         vid_earn.setOnClickListener(v -> {
             rvo = 2;
-            if (Utils.isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
@@ -4385,7 +4382,7 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         rewardvideo.setOnClickListener(v -> {
             rvo = 2;
-            if (Utils.isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
@@ -4406,7 +4403,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         });
         wtp.setOnClickListener(view -> {
             // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.whatsapp");
                 if (appinstalled) {
                     Intent i = new Intent(Intent.ACTION_SEND);
@@ -4431,7 +4428,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         gplus.setOnClickListener(view -> {
 
             // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
                 if (appinstalled) {
                     Intent i = new Intent(Intent.ACTION_SEND);
@@ -5067,73 +5064,74 @@ public class Word_Game_Hard extends AppCompatActivity {
         if (!isFinishing()) openDialog.show();
     }
 
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
+            sps.putString(Word_Game_Hard.this, "game_area", "on");
+            if (popupWindow.isShowing()) popupWindow.dismiss();
+            else {
 
-    public void onBackPressed() {
-        sps.putString(Word_Game_Hard.this, "game_area", "on");
-        if (popupWindow.isShowing()) popupWindow.dismiss();
-        else {
-  /*  public boolean onKeyDown(int keyCode, KeyEvent event) {
-        //return super.onKeyDown(keyCode, event);
-        if(keyCode==KeyEvent.KEYCODE_BACK) {*/
-            sps.putInt(Word_Game_Hard.this, "addlodedd", 0);
-            s = 1;
-            openDialog_p = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-            openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = openDialog_p.findViewById(R.id.yes);
-            TextView no = openDialog_p.findViewById(R.id.no);
+                sps.putInt(Word_Game_Hard.this, "addlodedd", 0);
+                s = 1;
+                openDialog_p = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                openDialog_p.setContentView(R.layout.back_pess);
+                TextView yes = openDialog_p.findViewById(R.id.yes);
+                TextView no = openDialog_p.findViewById(R.id.no);
 
-            yes.setOnClickListener(v -> {
+                yes.setOnClickListener(v -> {
 
-                focus.stop();
-                counter = 0;
-                counter3 = 0;
-
-
-                focus.stop();
-                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    counter = 0;
+                    counter3 = 0;
 
 
-                String date = sps.getString(Word_Game_Hard.this, "date");
-                int pos;
-                if (date.equals("0")) pos = 1;
-                else pos = 2;
+                    focus.stop();
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
-                myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-                myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
 
-                // String date = sps.getString(Word_Game_Hard.this, "date");
-                if (date.equals("0")) if (main_act.equals("")) {
-                    finish();
-                    Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else finish();
-                else if (sps.getString(Word_Game_Hard.this, "Exp_list").equals("on")) {
-                    finish();
-                    Intent i = new Intent(Word_Game_Hard.this, Expandable_List_View.class);
-                    startActivity(i);
-                } else if (main_act.equals("")) {
-                    finish();
-                    Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else finish();
+                    String date = sps.getString(Word_Game_Hard.this, "date");
+                    int pos;
+                    if (date.equals("0")) pos = 1;
+                    else pos = 2;
 
-                openDialog_p.dismiss();
-            });
-            no.setOnClickListener(v -> openDialog_p.dismiss());
-            openDialog_p.show();
+                    myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+                    myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
 
+                    // String date = sps.getString(Word_Game_Hard.this, "date");
+                    if (date.equals("0")) if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else finish();
+                    else if (sps.getString(Word_Game_Hard.this, "Exp_list").equals("on")) {
+                        finish();
+                        Intent i = new Intent(Word_Game_Hard.this, Expandable_List_View.class);
+                        startActivity(i);
+                    } else if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else finish();
+
+                    openDialog_p.dismiss();
+                });
+                no.setOnClickListener(v -> openDialog_p.dismiss());
+                openDialog_p.show();
+
+
+            }
 
         }
-
-        //  return super.onKeyDown(keyCode, event);
-    }
+    };
 
     protected void onResume() {
         super.onResume();
         if (handler != null) handler.postDelayed(my_runnable, 1000);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Word_Game_Hard.this);
-        mFirebaseAnalytics.setCurrentScreen(this, "Sol Game", null);
-
+        Bundle params = new Bundle();
+        params.putString("screen_name", "Sol Game");
+        params.putString("screen_class", "Word_Game_Hard");
+        mFirebaseAnalytics.logEvent( "screen_view", params);
         if (setting_access == 1) {
             setting_access = 0;
             //if ((ContextCompat.checkSelfPermission(Word_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
@@ -5183,7 +5181,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         //  uiHelper.onActivityResult(requestCode, resultCode, data, dialogCallback);
 
 
-        if (requestCode == 0) if (Utils.isNetworkAvailable(Word_Game_Hard.this)) {
+        if (requestCode == 0) if (isNetworkAvailable(Word_Game_Hard.this)) {
 
 
             String date = sps.getString(Word_Game_Hard.this, "date");
@@ -5860,91 +5858,87 @@ if(downok.equals("")){
     }
 
     public void rewarded_adnew() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
+        rewardedAd.setListener(new MaxRewardedAdListener() {
+            @Override
+            public void onRewardedVideoStarted(MaxAd ad) {
 
-        RewardedInterstitialAd.load(this, getResources().getString(R.string.Reward_Ins),
-                new AdRequest.Builder().build(), new RewardedInterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(RewardedInterstitialAd ad) {
-                        rewardedAd = ad;
-                        fb_reward = 1;
+            }
 
-                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.d("FindWFP", "Ad was clicked.");
-                            }
+            @Override
+            public void onRewardedVideoCompleted(MaxAd ad) {
+                reward_status = 1;
+            }
 
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                // Called when ad is dismissed.
-                                // Set the ad reference to null so you don't show the ad a second time.
-                                Log.d("FindWFP", "Ad dismissed fullscreen content.");
-                                rewardedAd = null;
-                            }
+            @Override
+            public void onUserRewarded(MaxAd ad, MaxReward reward) {
 
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                // Called when ad fails to show.
-                                Log.e("FindWFP", "Ad failed to show fullscreen content.");
-                                rewardedAd = null;
-                                rewarded_adnew();
-                            }
+            }
 
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.d("FindWFP", "Ad recorded an impression.");
-                            }
+            @Override
+            public void onAdLoaded(MaxAd ad) {
+                fb_reward = 1;
+            }
 
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.d("FindWFP", "Ad showed fullscreen content.");
-                            }
-                        });
+            @Override
+            public void onAdDisplayed(MaxAd ad) {
+            }
+
+            @Override
+            public void onAdHidden(MaxAd ad) {
+                rewarded_adnew();
+                if (reward_status == 1) {
+                    if (extra_coin_s == 0) {
+                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                        cfx.moveToFirst();
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                        int spx = skx + mCoinCount;
+                        String aStringx = Integer.toString(spx);
+                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
                     }
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (rvo == 2) {
+                                share_earn2(mCoinCount);
+                            } else {
+                                vidcoinearn();
+                            }
+                        }
+                    }, 500);
+                } else {
+                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                }
 
-                    @Override
-                    public void onAdFailedToLoad(LoadAdError loadAdError) {
-                        Log.d("FindWFP", loadAdError.toString());
-                        rewardedAd = null;
-                    }
-                });
+                fb_reward = 0;
+                
+
+
+            }
+
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+                rewardedAd = null;
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                rewardedAd.loadAd();
+            }
+        });
+        rewardedAd.loadAd();
     }
 
     public void show_reward() {
-        OnUserEarnedRewardListener success = rewardItem -> {
-            rewarded_adnew();
-            if (reward_status == 1) {
-                if (extra_coin_s == 0) {
-                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                    cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + mCoinCount;
-                    String aStringx = Integer.toString(spx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                }
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (rvo == 2) {
-                            share_earn2(mCoinCount);
-                        } else {
-                            vidcoinearn();
-                        }
-                    }
-                }, 500);
-            } else {
-                Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-            }
-            fb_reward = 0;
-
-        };
-        if (rewardedAd != null) {
-            rewardedAd.show(this, success);
+        if (rewardedAd != null && rewardedAd.isReady()) {
+            rewardedAd.showAd();
             reward_status = 1;
         } else {
             Log.d("TAG", "The rewarded ad wasn't ready yet.");
@@ -5952,58 +5946,63 @@ if(downok.equals("")){
     }
 
     private void industrialload() {
+        //AppLovinSdk.getInstance( this ).showMediationDebugger();
+        AppLovinSdk.getInstance(this).setMediationProvider("max");
+        AppLovinSdk.initializeSdk(this, config -> {
+            // AppLovin SDK is initialized, start loading ads
+            if (mInterstitialAd != null) return;
+            System.out.println("ad shown  showAdWithDelay initialize done ");
+            mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Ragasiya_sorgal_ins), Word_Game_Hard.this);
+            mInterstitialAd.setListener(new MaxAdListener() {
+                @Override
+                public void onAdLoaded(MaxAd ad) {
+                    System.out.println("ad shown loaded : " + ad.getWaterfall());
+                }
 
-        Utills.INSTANCE.initializeAdzz(this);
-        if (mInterstitialAd != null) return;
+                @Override
+                public void onAdDisplayed(MaxAd ad) {
+                    handler = null;
+                }
 
-        AdRequest adRequest = new AdRequest.Builder().build();
-        InterstitialAd.load(this, getResources().getString(R.string.Ragasiya_sorgal_ins), adRequest, new InterstitialAdLoadCallback() {
-            @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                // The mInterstitialAd reference will be null until
-                // an ad is loaded.
-                mInterstitialAd = interstitialAd;
-                interstiallistener();
-                Log.i("TAG", "onAdLoaded");
-            }
+                @Override
+                public void onAdHidden(MaxAd ad) {
+                    Log.d("TAG", "Ad dismissed fullscreen content.");
+                    mInterstitialAd = null;
+                    handler = null;
+                    Utills.INSTANCE.Loading_Dialog_dismiss();
+                    setSc();
+                    industrialload();
+                }
 
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                // Handle the error
-                Log.d("TAG", loadAdError.toString());
-                mInterstitialAd = null;
-                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
-                handler = null;
+                @Override
+                public void onAdClicked(MaxAd ad) {
 
-            }
+                }
+
+                @Override
+                public void onAdLoadFailed(String adUnitId, MaxError error) {
+                    Log.d("TAG", error.toString());
+                    mInterstitialAd = null;
+                    handler = null;
+                    Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
+                }
+
+                @Override
+                public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                    Log.e("TAG", "Ad failed to show fullscreen content.");
+                    mInterstitialAd = null;
+                    handler = null;
+                    Utills.INSTANCE.Loading_Dialog_dismiss();
+                    sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                    setSc();
+                }
+            });
+
+            // Load the first ad
+            mInterstitialAd.loadAd();
+
         });
 
-    }
-
-
-    public void interstiallistener() {
-        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-            @Override
-            public void onAdDismissedFullScreenContent() {
-                Log.d("TAG", "Ad dismissed fullscreen content.");
-                mInterstitialAd = null;
-                handler = null;
-                Utills.INSTANCE.Loading_Dialog_dismiss();
-                setSc();
-                industrialload();
-            }
-
-            @Override
-            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                Log.e("TAG", "Ad failed to show fullscreen content.");
-                mInterstitialAd = null;
-                handler = null;
-                Utills.INSTANCE.Loading_Dialog_dismiss();
-                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
-                setSc();
-            }
-
-        });
     }
 
     public void adShow() {
@@ -6012,7 +6011,7 @@ if(downok.equals("")){
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.show(this);
+                mInterstitialAd.showAd("Ragasiya sorgal ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -6645,7 +6644,7 @@ if(downok.equals("")){
 
     public void downloaddata_daily() {
 
-        if (Utils.isNetworkAvailable(Word_Game_Hard.this)) {
+        if (isNetworkAvailable(Word_Game_Hard.this)) {
             Cursor c1 = myDbHelper.getQry("select id from dailytest order by id DESC");
             c1.moveToFirst();
 
@@ -6699,7 +6698,7 @@ if(downok.equals("")){
 
             //DownLoad Letters and Words
 
-            if (Utils.isNetworkAvailable(Word_Game_Hard.this)) {
+            if (isNetworkAvailable(Word_Game_Hard.this)) {
                 Cursor c1 = myDbHelper.getQry("select id from maintable order by id DESC");
                 c1.moveToFirst();
 
@@ -6973,13 +6972,13 @@ if(downok.equals("")){
         }
 
         view1.setOnClickListener(view -> {
-            if (Utils.isNetworkAvailable(context))
+            if (isNetworkAvailable(context))
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(inss.getTag().toString())));
             else Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
         });
 
         inss.setOnClickListener(view -> {
-            if (Utils.isNetworkAvailable(context))
+            if (isNetworkAvailable(context))
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(view.getTag().toString())));
             else Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
         });

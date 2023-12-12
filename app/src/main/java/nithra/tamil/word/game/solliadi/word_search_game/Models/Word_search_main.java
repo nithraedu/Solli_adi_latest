@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -43,7 +45,8 @@ public class Word_search_main extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_word_search_main);
 
-
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
         general_play = findViewById(R.id.general_play);
         category_play = findViewById(R.id.category_play);
         challenge_play = findViewById(R.id.challenge_play);
@@ -239,12 +242,13 @@ public class Word_search_main extends AppCompatActivity {
             dialog.dismiss();
         }
     }
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
+            finish();
+        }
+    };
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }
 
     public void startdialog() {
         final Dialog openDialog_s = new Dialog(Word_search_main.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);

@@ -34,3 +34,5 @@
 }
 -dontwarn com.moat.**
 -keep class com.moat.** { public protected private *; }
+-dontwarn com.facebook.infer.annotation.Nullsafe$Mode
+-dontwarn com.facebook.infer.annotation.Nullsafe

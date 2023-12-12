@@ -26,6 +26,10 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -42,7 +46,7 @@ import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.OnAni
 import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.OnLikeListener;
 
 
-public class game_sub_level_page extends Activity implements OnLikeListener, OnAnimationEndListener {
+public class game_sub_level_page extends AppCompatActivity implements OnLikeListener, OnAnimationEndListener {
     public static final ArrayList<String> listview_sub_category = new ArrayList<>();
     public static int game_stage = 0;
     final ArrayList<String> Ad_loaded = new ArrayList<>();
@@ -67,7 +71,8 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
 
 
         setContentView(R.layout.activity_game_sub_level_page);
-
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
         mydb = openOrCreateDatabase("WS_tamil.db", MODE_PRIVATE, null);
         Inner_mydb = openOrCreateDatabase("Inner_DB", 0, null);
         exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
@@ -229,14 +234,15 @@ public class game_sub_level_page extends Activity implements OnLikeListener, OnA
         myDialog_class.media_player(getApplicationContext(), R.raw.click, "stop");
     }
 
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
+            Intent intent = new Intent(game_sub_level_page.this, game_level_page.class);
+            finish();
+            startActivity(intent);
+        }
+    };
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Intent intent = new Intent(game_sub_level_page.this, game_level_page.class);
-        finish();
-        startActivity(intent);
-    }
 
     //***************  Backup funtion   *******************
     public void backup() {

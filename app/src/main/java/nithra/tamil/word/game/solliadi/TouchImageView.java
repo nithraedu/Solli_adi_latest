@@ -1196,7 +1196,7 @@ public class TouchImageView extends androidx.appcompat.widget.AppCompatImageView
     }
 
     @TargetApi(VERSION_CODES.GINGERBREAD)
-    private class CompatScroller {
+    private static class CompatScroller {
         final boolean isPreGingerbread;
         Scroller scroller;
         OverScroller overScroller;
@@ -1262,7 +1262,7 @@ public class TouchImageView extends androidx.appcompat.widget.AppCompatImageView
         }
     }
 
-    private class ZoomVariables {
+    private static class ZoomVariables {
         public final float scale;
         public final float focusX;
         public final float focusY;

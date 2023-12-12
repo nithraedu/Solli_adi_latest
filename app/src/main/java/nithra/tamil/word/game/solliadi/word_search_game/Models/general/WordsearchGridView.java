@@ -636,7 +636,7 @@ public class WordsearchGridView extends LinearLayout implements OnKeyListener {
 
 
                 for (int i = 0; i < wordfounted_word.size(); i++) {
-                    if (mword.getWord().equals(wordfounted_word.get(i))) {
+                    if (wordfounted_word.get(i) != null && mword.getWord().equals(wordfounted_word.get(i))) {
                         go = i;
                         break;
                     }

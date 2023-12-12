@@ -33,6 +33,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -116,6 +118,20 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
     ProgressDialog mProgressDialog;
     ProgressDialog nProgressDialog;
     SQLiteDatabase myDB = null;
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
+
+            if (main_act.equals("")) {
+                finish();
+                Intent i = new Intent(New_Main_Gamelist.this, New_Main_Activity.class);
+                startActivity(i);
+            } else {
+                finish();
+            }
+
+        }
+    };
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
 
     public static boolean determineConnectivity(Context context) {
@@ -143,7 +159,8 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new__main_);
 
-
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
         //Sound Pool Sounds
         click = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
         soundId1 = click.load(New_Main_Gamelist.this, R.raw.click, 1);
@@ -295,19 +312,6 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
             else
                 Toast.makeText(New_Main_Gamelist.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
         });
-
-    }
-
-    @Override
-    public void onBackPressed() {
-
-        if (main_act.equals("")) {
-            finish();
-            Intent i = new Intent(New_Main_Gamelist.this, New_Main_Activity.class);
-            startActivity(i);
-        } else {
-            finish();
-        }
 
     }
 
@@ -1253,7 +1257,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
         done_exit.setOnClickListener(v -> openDialog.dismiss());
         intros.setOnLongClickListener(v -> true);
         intros.loadUrl("file:///android_asset/web.html");
-        if (!isFinishing())openDialog.show();
+        if (!isFinishing()) openDialog.show();
     }
 
     @Override

@@ -23,6 +23,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
 
@@ -68,7 +70,8 @@ public class Price_Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_price__login);
-
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
         //otp_screen();
         System.out.println("###########################onCreate");
         if (sp.getString(Price_Login.this, "prize_phno").equals("")) {
@@ -523,46 +526,47 @@ public class Price_Login extends AppCompatActivity {
 
 
     }
-
-    @Override
-    public void onBackPressed() {
-        sp.putString(Price_Login.this, "game_area", "on");
-        if (sp.getString(Price_Login.this, "sd_prize_st").equals("yes")) {
-            sp.putString(Price_Login.this, "sd_prize_st", "");
-            System.out.println("######################## D1");
-            finish();
-            Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
-            startActivity(i);
-        } else {
-
-            String date = sp.getString(Price_Login.this, "date");
-            if (date.equals("0")) {
-                if (main_act.equals("")) {
-                    System.out.println("######################## D2");
-                    finish();
-                    Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else {
-                    System.out.println("######################## D3");
-                    finish();
-                }
-
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
+            sp.putString(Price_Login.this, "game_area", "on");
+            if (sp.getString(Price_Login.this, "sd_prize_st").equals("yes")) {
+                sp.putString(Price_Login.this, "sd_prize_st", "");
+                System.out.println("######################## D1");
+                finish();
+                Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
+                startActivity(i);
             } else {
-                System.out.println("######################## D4");
-                if (main_act.equals("")) {
-                    System.out.println("######################## D2");
-                    finish();
-                    Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else {
-                    System.out.println("######################## D3");
-                    finish();
-                }
-            }
 
+                String date = sp.getString(Price_Login.this, "date");
+                if (date.equals("0")) {
+                    if (main_act.equals("")) {
+                        System.out.println("######################## D2");
+                        finish();
+                        Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        System.out.println("######################## D3");
+                        finish();
+                    }
+
+                } else {
+                    System.out.println("######################## D4");
+                    if (main_act.equals("")) {
+                        System.out.println("######################## D2");
+                        finish();
+                        Intent i = new Intent(Price_Login.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        System.out.println("######################## D3");
+                        finish();
+                    }
+                }
+
+            }
+            //finish();
         }
-        //finish();
-    }
+    };
 
     public void rule_regulation(String urls) {
         setContentView(R.layout.introsdialog_web);

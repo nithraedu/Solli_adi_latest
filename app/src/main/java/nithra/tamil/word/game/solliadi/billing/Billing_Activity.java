@@ -289,7 +289,7 @@ public class Billing_Activity extends AppCompatActivity implements PurchasesUpda
             return listdata.size();
         }
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
+        public static class ViewHolder extends RecyclerView.ViewHolder {
 
             public final TextView headd;
             public final TextView title;

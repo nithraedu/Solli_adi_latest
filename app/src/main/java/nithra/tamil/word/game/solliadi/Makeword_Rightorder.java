@@ -2,6 +2,7 @@ package nithra.tamil.word.game.solliadi;
 
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.Utils.isNetworkAvailable;
 
 import android.Manifest;
 import android.app.Dialog;
@@ -49,21 +50,21 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinSdk;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -154,8 +155,8 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
     int dia_dismiss = 0;
     Handler handler;
     Runnable my_runnable;
-    private RewardedInterstitialAd rewardedAd;
-    private InterstitialAd mInterstitialAd;
+    private MaxRewardedAd rewardedAd;
+    private MaxInterstitialAd mInterstitialAd;
 
 
     @Override
@@ -184,7 +185,8 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_makeword__rightorder);
 
-
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
         exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
         dbs = this.openOrCreateDatabase("Newgames.db", MODE_PRIVATE, null);
         dbn = this.openOrCreateDatabase("Newgames2.db", MODE_PRIVATE, null);
@@ -227,7 +229,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
             prize_logo.setVisibility(View.GONE);
         }
         prize_logo.setOnClickListener(v -> {
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 if (sps.getString(Makeword_Rightorder.this, "price_registration").equals("com")) {
                     finish();
                     Intent i = new Intent(Makeword_Rightorder.this, Game_Status.class);
@@ -266,9 +268,6 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
 
         if (sps.getInt(Makeword_Rightorder.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
-        } else {
-            //fb_addload_score_screen(context);
-            /**/
         }
 
 
@@ -979,7 +978,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         extra_coin = openDialog.findViewById(R.id.extra_coin);
         extra_coin.setOnClickListener(v -> {
             extra_coin_s = 1;
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(Makeword_Rightorder.this, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
@@ -2537,7 +2536,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
             prize_logo.setVisibility(View.GONE);
         }
         prize_logo.setOnClickListener(v -> {
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 if (sps.getString(Makeword_Rightorder.this, "price_registration").equals("com")) {
                     finish();
                     Intent i = new Intent(Makeword_Rightorder.this, Game_Status.class);
@@ -2561,7 +2560,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
             ads_layout.setVisibility(View.GONE);
         } else {
             // New_Main_Activity.load_addFromMain_multiplayer(Makeword_Rightorder.this,ads_layout);
-            if (Utils.isNetworkAvailable(Makeword_Rightorder.this)) {
+            if (isNetworkAvailable(Makeword_Rightorder.this)) {
                 //New_Main_Activity.load_add_fb_rect_score_screen(Makeword_Rightorder.this, ads_layout);
             } else {
                 ads_layout.setVisibility(View.GONE);
@@ -2639,7 +2638,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
 
         vid_earn.setOnClickListener(v -> {
             rvo = 2;
-            if (Utils.isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
@@ -2668,7 +2667,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
 
         rewardvideo.setOnClickListener(v -> {
             rvo = 2;
-            if (Utils.isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
@@ -2695,7 +2694,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         });
 
         wtp.setOnClickListener(view -> {
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.whatsapp");
                 if (appinstalled) {
                     Intent i = new Intent(Intent.ACTION_SEND);
@@ -2722,7 +2721,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
 
         });
         gplus.setOnClickListener(view -> {
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
                 if (appinstalled) {
                     Intent i = new Intent(Intent.ACTION_SEND);
@@ -2835,11 +2834,6 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         return app_installed;
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connec = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
 
     public void ins_app(final Context context, View view1, int vall) {
         TextView titt = view1.findViewById(R.id.txtlist);
@@ -3058,7 +3052,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         }
 
         view1.setOnClickListener(view -> {
-            if (Utils.isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(inss.getTag().toString())));
             } else {
                 Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
@@ -3066,7 +3060,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         });
 
         inss.setOnClickListener(view -> {
-            if (Utils.isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(view.getTag().toString())));
             } else {
                 Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
@@ -3075,154 +3069,151 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
     }
 
     public void rewarded_adnew() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
+        rewardedAd.setListener(new MaxRewardedAdListener() {
+            @Override
+            public void onRewardedVideoStarted(MaxAd ad) {
 
+            }
 
-        RewardedInterstitialAd.load(this, getResources().getString(R.string.Reward_Ins),
-                new AdRequest.Builder().build(), new RewardedInterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(RewardedInterstitialAd ad) {
-                        rewardedAd = ad;
-                        fb_reward = 1;
+            @Override
+            public void onRewardedVideoCompleted(MaxAd ad) {
+                reward_status = 1;
+            }
 
-                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.d("FindWFP", "Ad was clicked.");
-                            }
+            @Override
+            public void onUserRewarded(MaxAd ad, MaxReward reward) {
 
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                // Called when ad is dismissed.
-                                // Set the ad reference to null so you don't show the ad a second time.
-                                Log.d("FindWFP", "Ad dismissed fullscreen content.");
-                                rewardedAd = null;
-                            }
+            }
 
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                // Called when ad fails to show.
-                                Log.e("FindWFP", "Ad failed to show fullscreen content.");
-                                rewardedAd = null;
-                                rewarded_adnew();
-                            }
+            @Override
+            public void onAdLoaded(MaxAd ad) {
+                fb_reward = 1;
+            }
 
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.d("FindWFP", "Ad recorded an impression.");
-                            }
+            @Override
+            public void onAdDisplayed(MaxAd ad) {
+            }
 
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.d("FindWFP", "Ad showed fullscreen content.");
-                            }
-                        });
+            @Override
+            public void onAdHidden(MaxAd ad) {
+                rewarded_adnew();
+                if (reward_status == 1) {
+                    if (extra_coin_s == 0) {
+                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                        cfx.moveToFirst();
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                        int spx = skx + mCoinCount;
+                        String aStringx = Integer.toString(spx);
+                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
                     }
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (rvo == 2) {
+                                share_earn2(mCoinCount);
+                            } else {
+                                vidcoinearn();
+                            }
+                        }
+                    }, 500);
+                } else {
+                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                }
 
-                    @Override
-                    public void onAdFailedToLoad(LoadAdError loadAdError) {
-                        Log.d("FindWFP", loadAdError.toString());
-                        rewardedAd = null;
-                    }
-                });
+                fb_reward = 0;
+                
+
+
+            }
+
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+                rewardedAd = null;
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                rewardedAd.loadAd();
+            }
+        });
+        rewardedAd.loadAd();
     }
 
     public void show_reward() {
-        OnUserEarnedRewardListener success = rewardItem -> {
-            rewarded_adnew();
-            if (reward_status == 1) {
-                if (extra_coin_s == 0) {
-                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                    cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + mCoinCount;
-                    String aStringx = Integer.toString(spx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                }
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (rvo == 2) {
-                            share_earn2(mCoinCount);
-                        } else {
-                            vidcoinearn();
-                        }
-                    }
-                }, 500);
-            } else {
-                Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-            }
-            fb_reward = 0;
-
-        };
-        if (rewardedAd != null) {
-            rewardedAd.show(this, success);
+        if (rewardedAd != null && rewardedAd.isReady()) {
+            rewardedAd.showAd();
             reward_status = 1;
         } else {
-            Toast.makeText(this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
             Log.d("TAG", "The rewarded ad wasn't ready yet.");
         }
     }
 
     private void industrialload() {
-        Utills.INSTANCE.initializeAdzz(this);
-        if (mInterstitialAd != null) return;
+        //AppLovinSdk.getInstance( this ).showMediationDebugger();
+        AppLovinSdk.getInstance(this).setMediationProvider("max");
+        AppLovinSdk.initializeSdk(this, config -> {
+            // AppLovin SDK is initialized, start loading ads
+            if (mInterstitialAd != null) return;
+            System.out.println("ad shown  showAdWithDelay initialize done ");
+            mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Ragasiya_sorgal_ins), Makeword_Rightorder.this);
+            mInterstitialAd.setListener(new MaxAdListener() {
+                @Override
+                public void onAdLoaded(MaxAd ad) {
+                    System.out.println("ad shown loaded : " + ad.getWaterfall());
+                }
 
-        AdRequest adRequest = new AdRequest.Builder().build();
-        InterstitialAd.load(this, getResources().getString(R.string.Ragasiya_sorgal_ins), adRequest, new InterstitialAdLoadCallback() {
-            @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                // The mInterstitialAd reference will be null until
-                // an ad is loaded.
-                mInterstitialAd = interstitialAd;
-                interstiallistener();
-                Log.i("TAG", "onAdLoaded");
-            }
+                @Override
+                public void onAdDisplayed(MaxAd ad) {
+                    handler = null;
+                }
 
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                // Handle the error
-                Log.d("TAG", loadAdError.toString());
-                mInterstitialAd = null;
-                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
-                handler = null;
+                @Override
+                public void onAdHidden(MaxAd ad) {
+                    Log.d("TAG", "Ad dismissed fullscreen content.");
+                    mInterstitialAd = null;
+                    handler = null;
+                    Utills.INSTANCE.Loading_Dialog_dismiss();
+                    setSc();
+                    industrialload();
+                }
 
-            }
+                @Override
+                public void onAdClicked(MaxAd ad) {
+
+                }
+
+                @Override
+                public void onAdLoadFailed(String adUnitId, MaxError error) {
+                    Log.d("TAG", error.toString());
+                    mInterstitialAd = null;
+                    handler = null;
+                    Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
+                }
+
+                @Override
+                public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                    Log.e("TAG", "Ad failed to show fullscreen content.");
+                    mInterstitialAd = null;
+                    handler = null;
+                    Utills.INSTANCE.Loading_Dialog_dismiss();
+                    sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                    setSc();
+                }
+            });
+
+            // Load the first ad
+            mInterstitialAd.loadAd();
+
         });
 
-
-    }
-
-    public void interstiallistener() {
-        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-            @Override
-            public void onAdDismissedFullScreenContent() {
-                Log.d("TAG", "Ad dismissed fullscreen content.");
-                mInterstitialAd = null;
-                handler = null;
-                Utills.INSTANCE.Loading_Dialog_dismiss();
-                setSc();
-                industrialload();
-            }
-
-            @Override
-            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                // Called when ad fails to show.
-                Log.e("TAG", "Ad failed to show fullscreen content.");
-                mInterstitialAd = null;
-                handler = null;
-                Utills.INSTANCE.Loading_Dialog_dismiss();
-                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
-                setSc();
-
-
-            }
-
-        });
     }
 
     public void adShow() {
@@ -3230,7 +3221,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
             sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
-            my_runnable = () -> mInterstitialAd.show(this);
+            my_runnable = () -> mInterstitialAd.showAd("Ragasiya sorgal ins");
             handler.postDelayed(my_runnable, 2500);
         } else {
             sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") + 1));
@@ -3304,7 +3295,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         video.setOnClickListener(v -> {
             rvo = 1;
             extra_coin_s = 0;
-            if (Utils.isNetworkAvailable(Makeword_Rightorder.this)) {
+            if (isNetworkAvailable(Makeword_Rightorder.this)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(Makeword_Rightorder.this, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
@@ -3332,7 +3323,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         });
 
         wp.setOnClickListener(view -> {
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.whatsapp");
                 if (appinstalled) {
                     openDialog_earncoin.cancel();
@@ -3360,7 +3351,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         gplus.setOnClickListener(view -> {
 
 
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
 
 
                 final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
@@ -3421,8 +3412,10 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         super.onResume();
         if (handler != null) handler.postDelayed(my_runnable, 1000);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Makeword_Rightorder.this);
-        mFirebaseAnalytics.setCurrentScreen(this, "Make Right order game", null);
-
+        Bundle params = new Bundle();
+        params.putString("screen_name", "Make Right order game");
+        params.putString("screen_class", "Makeword_Rightorder");
+        mFirebaseAnalytics.logEvent( "screen_view", params);
 
         if (sps.getString(Makeword_Rightorder.this, "mak_time_start").equals("")) {
             sps.putString(Makeword_Rightorder.this, "mak_time_start", "yes");
@@ -3450,75 +3443,75 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         }
 
     }
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
+            {
 
-    public void onBackPressed() {
- /*   public boolean onKeyDown(int keyCode, KeyEvent event) {
-        //return super.onKeyDown(keyCode, event);
+                sps.putString(Makeword_Rightorder.this, "game_area", "on");
+                sps.putInt(Makeword_Rightorder.this, "addlodedd", 0);
 
-        if(keyCode==KeyEvent.KEYCODE_BACK) {*/
+                s = 1;
+                openDialog_p = new Dialog(Makeword_Rightorder.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                openDialog_p.setContentView(R.layout.back_pess);
+                TextView yes = openDialog_p.findViewById(R.id.yes);
+                TextView no = openDialog_p.findViewById(R.id.no);
 
-        sps.putString(Makeword_Rightorder.this, "game_area", "on");
-        sps.putInt(Makeword_Rightorder.this, "addlodedd", 0);
+                yes.setOnClickListener(v -> {
 
-        s = 1;
-        openDialog_p = new Dialog(Makeword_Rightorder.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        openDialog_p.setContentView(R.layout.back_pess);
-        TextView yes = openDialog_p.findViewById(R.id.yes);
-        TextView no = openDialog_p.findViewById(R.id.no);
+                    String dates = sps.getString(Makeword_Rightorder.this, "date");
+                    int pos;
+                    if (dates.equals("0")) {
+                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                        focus.stop();
+                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
 
-        yes.setOnClickListener(v -> {
-
-            String dates = sps.getString(Makeword_Rightorder.this, "date");
-            int pos;
-            if (dates.equals("0")) {
-                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                focus.stop();
-                newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-
-                //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-            } else {
-                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                focus.stop();
-                newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-
-                //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-            }
-
-            String date = sps.getString(Makeword_Rightorder.this, "date");
-            if (date.equals("0")) {
-                if (main_act.equals("")) {
-                    finish();
-                    Intent i = new Intent(Makeword_Rightorder.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else {
-                    finish();
-                }
-            } else {
-                if (sps.getString(Makeword_Rightorder.this, "Exp_list").equals("on")) {
-                    finish();
-                    Intent i = new Intent(Makeword_Rightorder.this, Expandable_List_View.class);
-                    startActivity(i);
-                } else {
-                    if (main_act.equals("")) {
-                        finish();
-                        Intent i = new Intent(Makeword_Rightorder.this, New_Main_Activity.class);
-                        startActivity(i);
+                        //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                     } else {
-                        finish();
+                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                        focus.stop();
+                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+
+                        //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                     }
-                }
 
+                    String date = sps.getString(Makeword_Rightorder.this, "date");
+                    if (date.equals("0")) {
+                        if (main_act.equals("")) {
+                            finish();
+                            Intent i = new Intent(Makeword_Rightorder.this, New_Main_Activity.class);
+                            startActivity(i);
+                        } else {
+                            finish();
+                        }
+                    } else {
+                        if (sps.getString(Makeword_Rightorder.this, "Exp_list").equals("on")) {
+                            finish();
+                            Intent i = new Intent(Makeword_Rightorder.this, Expandable_List_View.class);
+                            startActivity(i);
+                        } else {
+                            if (main_act.equals("")) {
+                                finish();
+                                Intent i = new Intent(Makeword_Rightorder.this, New_Main_Activity.class);
+                                startActivity(i);
+                            } else {
+                                finish();
+                            }
+                        }
+
+                    }
+
+                    openDialog_p.dismiss();
+
+                });
+                no.setOnClickListener(v -> openDialog_p.dismiss());
+                openDialog_p.show();
+
+
+                // return super.onKeyDown(keyCode, event);
             }
-
-            openDialog_p.dismiss();
-
-        });
-        no.setOnClickListener(v -> openDialog_p.dismiss());
-        openDialog_p.show();
-
-
-        // return super.onKeyDown(keyCode, event);
-    }
+        }
+    };
 
     public void permission(final String a) {
         focus.stop();
@@ -3623,7 +3616,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         //uiHelper.onActivityResult(requestCode, resultCode, data, dialogCallback);
 
         if (requestCode == 0) {
-            if (Utils.isNetworkAvailable(Makeword_Rightorder.this)) {
+            if (isNetworkAvailable(Makeword_Rightorder.this)) {
                 download_datas();
             } else {
 
@@ -4315,7 +4308,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         alertDialogBuilder.setNegativeButton("ஆம்", (dialog, id) -> {
             //DownLoad Letters and Words
 
-            if (Utils.isNetworkAvailable(Makeword_Rightorder.this)) {
+            if (isNetworkAvailable(Makeword_Rightorder.this)) {
                 download_datas();
             } else {
 

@@ -530,7 +530,7 @@
                 android:gravity="center"
                 android:text="றௌ"
                 android:textColor="@color/dark_green"
-                android:textSize="@dimen/info_version_name_font_size"
+                android:textSize="@dimen/txt_12"
                 android:visibility="gone" />
 
             <TextView
@@ -545,7 +545,7 @@
                 android:gravity="center"
                 android:text="றௌ"
                 android:textColor="@color/dark_green"
-                android:textSize="@dimen/info_version_name_font_size"
+                android:textSize="@dimen/txt_12"
                 android:visibility="gone" />
 
             <TextView
@@ -561,7 +561,7 @@
                 android:gravity="center"
                 android:text="றௌ"
                 android:textColor="@color/dark_green"
-                android:textSize="@dimen/info_version_name_font_size"
+                android:textSize="@dimen/txt_12"
                 android:visibility="gone" />
 
             <TextView
@@ -576,7 +576,7 @@
                 android:gravity="center"
                 android:text="றௌ"
                 android:textColor="@color/dark_green"
-                android:textSize="@dimen/info_version_name_font_size"
+                android:textSize="@dimen/txt_12"
                 android:visibility="gone" />
 
             <TextView
@@ -592,7 +592,7 @@
                 android:text="றௌ"
 
                 android:textColor="@color/dark_green"
-                android:textSize="@dimen/info_version_name_font_size"
+                android:textSize="@dimen/txt_12"
                 android:visibility="gone" />
 
             <TextView
@@ -607,7 +607,7 @@
                 android:gravity="center"
                 android:text="றௌ"
                 android:textColor="@color/dark_green"
-                android:textSize="@dimen/info_version_name_font_size"
+                android:textSize="@dimen/txt_12"
                 android:visibility="gone" />
 
             <TextView
@@ -622,7 +622,7 @@
                 android:gravity="center"
                 android:text="றௌ"
                 android:textColor="@color/dark_green"
-                android:textSize="@dimen/info_version_name_font_size"
+                android:textSize="@dimen/txt_12"
                 android:visibility="gone" />
 
             <TextView
@@ -636,7 +636,7 @@
                 android:gravity="center"
                 android:text="றௌ"
                 android:textColor="@color/dark_green"
-                android:textSize="@dimen/info_version_name_font_size"
+                android:textSize="@dimen/txt_12"
                 android:visibility="gone" />
         </LinearLayout>
 

@@ -2,17 +2,22 @@ package nithra.tamil.word.game.solliadi
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Environment
 import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.MobileAds
+import com.applovin.mediation.ads.MaxAdView
+import com.applovin.sdk.AppLovinSdk
+import com.facebook.ads.AudienceNetworkAds
 import nithra.tamil.word.game.solliadi.Utils.getDeviceName
 import java.io.File
 import java.net.URLEncoder
@@ -81,6 +86,26 @@ object Utills {
         requestQueue.add(stringRequest)
     }
 
+    fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val nw = connectivityManager.activeNetwork ?: return false
+            val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
+            return when {
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                //for other device how are able to connect with Ethernet
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                //for check internet over Bluetooth
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH) -> true
+                else -> false
+            }
+        } else {
+            return connectivityManager.activeNetworkInfo?.isConnected ?: false
+        }
+    }
+
     fun Loading_Dialog(activity: Activity) {
         val layoutInflater = activity.layoutInflater.inflate(R.layout.loading_dialog, null)
         Loading_dialog = Dialog(
@@ -103,42 +128,30 @@ object Utills {
         }
     }
 
-    fun loads_ads_banner(
-        activity: Activity,
-        ads_lay: AdView,
-        banner_adParent: LinearLayout,
-        adId: String
-    ) {
-        println("print_Ad")
+    fun load_add_AppLovin(activity: Activity, ads_lay: LinearLayout, adId: String) {
         if (SharedPreference().getInt(activity, "purchase_ads") == 1) {
             ads_lay.visibility = View.GONE
-            banner_adParent.visibility = View.GONE
         } else if (Utils.isNetworkAvailable(activity)) {
-            MobileAds.initialize(activity)
-            val adView = AdView(activity)
-            adView.setAdSize(
-                AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-                    activity, 320
-                )
-            )
-            adView.adUnitId = adId
-            val adRequest = AdRequest.Builder().build()
-            ads_lay.loadAd(adRequest)
+            AppLovinSdk.initializeSdk(activity)
+            AppLovinSdk.getInstance(activity).mediationProvider = "max"
+
+            val adView = MaxAdView(adId, activity)
+            val width = ViewGroup.LayoutParams.MATCH_PARENT
+            val heightPx = activity.resources.getDimensionPixelSize(R.dimen.banner_height)
+            adView.layoutParams = FrameLayout.LayoutParams(width, heightPx)
+            ads_lay.addView(adView)
+            adView.loadAd()
         } else {
             ads_lay.visibility = View.GONE
-            banner_adParent.visibility = View.GONE
         }
     }
 
-    fun load_add_AppLovin(activity: Activity, ads_lay: LinearLayout, adId: String) {
-
-        ads_lay.visibility = View.GONE
-
-    }
-
     fun initializeAdzz(activity: Activity) {
-        MobileAds.initialize(activity)
+        AudienceNetworkAds.initialize(activity)
+        AppLovinSdk.initializeSdk(activity)
+        AppLovinSdk.getInstance(activity).mediationProvider = "max"
     }
+
 
     fun GameComplete(activity: Activity) {
 //padam paarththu
@@ -398,7 +411,8 @@ object Utills {
 
 
     }
-    fun isColumnExists(activity: Activity,tableName: String, columnName: String): Boolean {
+
+    fun isColumnExists(activity: Activity, tableName: String, columnName: String): Boolean {
         val db: SQLiteDatabase = DataBaseHelper(activity).readableDatabase
         val cursor = db.rawQuery("PRAGMA table_info($tableName)", null)
         while (cursor.moveToNext()) {

@@ -15,6 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.apache.http.HttpEntity;
@@ -49,7 +51,8 @@ public class Otp_verification extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otp_verification);
-
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
 
         exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
         exdb.execSQL("create table if not exists userdetail(id integer,name varchar,upic varchar,email varchar,phno integer,address varchar,city varchar,regid varchar);");
@@ -264,11 +267,13 @@ public class Otp_verification extends AppCompatActivity {
         }
 
     }
-
-    public void onBackPressed() {
-        finish();
-        Intent i = new Intent(Otp_verification.this, New_Main_Activity.class);
-        startActivity(i);
-    }
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
+            finish();
+            Intent i = new Intent(Otp_verification.this, New_Main_Activity.class);
+            startActivity(i);
+        }
+    };
 
 }

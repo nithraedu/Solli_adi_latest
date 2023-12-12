@@ -25,9 +25,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -1394,13 +1391,6 @@ public class States_Activity extends AppCompatActivity {
     }
 
 
-    //reward videos***********************//
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connec = (ConnectivityManager) this
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
 
 
 }

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -34,7 +36,8 @@ public class general_play extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_general_play);
-
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
         mydb = general_play.this.openOrCreateDatabase("WS_tamil.db", MODE_PRIVATE, null);
 
         level_category = sp.getString(getApplicationContext(), "level_category");
@@ -60,15 +63,16 @@ public class general_play extends AppCompatActivity {
         // uiHelper = new UiLifecycleHelper(general_play.this, callback);
     }
     // facebook variable ends
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
+            sp.putString(general_play.this, "ws_general_intro", "no");
+            sp.putString(general_play.this, "ws_general_showcase_intro", "yes");
+            exit_function_new();
 
-    @Override
-    public void onBackPressed() {
-        // super.onBackPressed();
-        sp.putString(general_play.this, "ws_general_intro", "no");
-        sp.putString(general_play.this, "ws_general_showcase_intro", "yes");
-        exit_function_new();
+        }
+    };
 
-    }
 
     public void exit_function() {
         start_time = false;

@@ -16,6 +16,9 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -23,7 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import nit_app.CodetoTamilUtil;
 
 
-public class ST_Activity1 extends Activity {
+public class ST_Activity1 extends AppCompatActivity {
     final String tablenew = "noti_cal";
     final SharedPreference spa = new SharedPreference();
     SharedPreference sharedPreference;
@@ -44,7 +47,8 @@ public class ST_Activity1 extends Activity {
         setContentView(R.layout.st_lay);
         System.out.println("#######St Activity1");
 
-
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
         /*getSupportActionBar().hide();*/
         sharedPreference = new SharedPreference();
         myDB = openOrCreateDatabase("myDB", 0, null);
@@ -167,16 +171,14 @@ public class ST_Activity1 extends Activity {
 
 
     }
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+            finish();
+            Intent i = new Intent(ST_Activity1.this, New_Main_Activity.class);
+            startActivity(i);
 
-
-        finish();
-        Intent i = new Intent(ST_Activity1.this, New_Main_Activity.class);
-        startActivity(i);
-
-
-    }
+        }
+    };
 }

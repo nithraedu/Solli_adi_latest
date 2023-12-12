@@ -36,6 +36,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
@@ -107,7 +109,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
 
         if (Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -813,39 +816,41 @@ public class LoginActivity extends AppCompatActivity {
 
 
     }
-
-    @Override
-    public void onBackPressed() {
-        sps.putString(LoginActivity.this, "game_area", "on");
-        if (sps.getString(LoginActivity.this, "price_registration").equals("com")) {
-            finish();
-            Intent i = new Intent(LoginActivity.this, Game_Status.class);
-            startActivity(i);
-        } else {
-            String date = sps.getString(LoginActivity.this, "date");
-            if (date.equals("0")) {
-                if (main_act.equals("")) {
-                    System.out.println("######################## D2");
-                    finish();
-                    Intent i = new Intent(LoginActivity.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else {
-                    System.out.println("######################## D3");
-                    finish();
-                }
-
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
+            sps.putString(LoginActivity.this, "game_area", "on");
+            if (sps.getString(LoginActivity.this, "price_registration").equals("com")) {
+                finish();
+                Intent i = new Intent(LoginActivity.this, Game_Status.class);
+                startActivity(i);
             } else {
-                System.out.println("######################## D4");
-                if (main_act.equals("")) {
-                    System.out.println("######################## D2");
-                    finish();
-                    Intent i = new Intent(LoginActivity.this, New_Main_Activity.class);
-                    startActivity(i);
+                String date = sps.getString(LoginActivity.this, "date");
+                if (date.equals("0")) {
+                    if (main_act.equals("")) {
+                        System.out.println("######################## D2");
+                        finish();
+                        Intent i = new Intent(LoginActivity.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        System.out.println("######################## D3");
+                        finish();
+                    }
+
                 } else {
-                    System.out.println("######################## D3");
-                    finish();
+                    System.out.println("######################## D4");
+                    if (main_act.equals("")) {
+                        System.out.println("######################## D2");
+                        finish();
+                        Intent i = new Intent(LoginActivity.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        System.out.println("######################## D3");
+                        finish();
+                    }
                 }
             }
         }
-    }
+    };
+
 }

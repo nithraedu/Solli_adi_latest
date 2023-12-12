@@ -2,6 +2,7 @@ package nithra.tamil.word.game.solliadi;
 
 import static nithra.tamil.word.game.solliadi.Price_solli_adi.Urls.price_url;
 import static nithra.tamil.word.game.solliadi.Utils.date_put;
+import static nithra.tamil.word.game.solliadi.Utils.isNetworkAvailable;
 
 import android.Manifest;
 import android.animation.ValueAnimator;
@@ -93,13 +94,13 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
@@ -152,6 +153,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
@@ -365,11 +367,12 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     private long mTimeRemaining;
     private int c_counter = 0;
     private byte[] mSaveGameData;
-    private RewardedInterstitialAd rewardedAd;
+    private MaxRewardedAd rewardedAd;
 
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private BillingManager mBillingManager;
+    private MaxInterstitialAd interstitialAd;
 
     public static void sharedPrefAdd(String one, String two, final SharedPreferences mPreferences) {
         // TODO Auto-generated method stub
@@ -605,22 +608,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         sps.putString(getApplicationContext(), "ach12", "yees");
         sps.putString(getApplicationContext(), "signinagain", "yees");
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && sp.getInt(this, "permission") == 0) {
 
-            sp.putInt(this, "permission", 1);
-
-            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 113);
-
-
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && sp.getInt(this, "permission") == 10) {
-
-            sp.putInt(this, "permission", 1);
-            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 113);
-
-        } else {
-            System.out.println("_____________print  con't apply check value  :" + sp.getInt(this, "permission"));
-            sp.putInt(this, "permission", sp.getInt(this, "permission") + 1);
-        }
 
 
 //in_app message(Nithra ad)
@@ -640,6 +628,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         if (spa.getInt(context, "purchase_ads") == 0) {
             Utills.INSTANCE.initializeAdzz(this);
+            industrialload();
             //AppLovinSdk.getInstance( this ).showMediationDebugger();
         }
 
@@ -698,7 +687,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         r_ads.setOnClickListener(v -> {
             //Toast.makeText(New_Main_Activity.this, "purchase", Toast.LENGTH_SHORT).show();
 
-            if (Utils.isNetworkAvailable(getApplicationContext())) purchasedialog();
+            if (isNetworkAvailable(getApplicationContext())) purchasedialog();
             else
                 Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
@@ -764,7 +753,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             }
         });
 
-        if (Utils.isNetworkAvailable(New_Main_Activity.this))
+        if (isNetworkAvailable(New_Main_Activity.this))
             if (sp.getInt(New_Main_Activity.this, "referrerCheck") == 0) {
 
                 mReferrerClient = InstallReferrerClient.newBuilder(this).build();
@@ -781,7 +770,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         //multipalyer.startAnimation(zoomAnim());
 
         multipalyer.setOnClickListener(view -> {
-            if (Utils.isNetworkAvailable(getApplicationContext())) purchasedialog();
+            if (isNetworkAvailable(getApplicationContext())) purchasedialog();
             else
                 Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
@@ -946,6 +935,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         tablescreated();
 
         ///Prgress Bar Running:
+
         new AsyncTask<String, String, String>() {
 
             @Override
@@ -1026,7 +1016,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 //newupdate();
 
                 ///game status sending///
-                if (Utils.isNetworkAvailable(getApplicationContext())) {
+                if (isNetworkAvailable(getApplicationContext())) {
                     Calendar calendar2 = Calendar.getInstance();
                     int cur_year = calendar2.get(Calendar.YEAR);
                     int cur_month = calendar2.get(Calendar.MONTH);
@@ -1072,7 +1062,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                                 if (sps.getString(context, "price_registration").equals("com")) {
                                     // send_prize_data(New_Main_Activity.this);
                                     System.out.println("==================send_prize_data com");
-                                    if (Utils.isNetworkAvailable(New_Main_Activity.this))
+                                    if (isNetworkAvailable(New_Main_Activity.this))
                                         send_prize_data(New_Main_Activity.this);
 
                                 }
@@ -1082,7 +1072,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                             @Override
                             protected void onPostExecute(String s) {
                                 super.onPostExecute(s);
-                                if (Utils.isNetworkAvailable(New_Main_Activity.this))
+                                if (isNetworkAvailable(New_Main_Activity.this))
                                     sps.putString(New_Main_Activity.this, "s2" + str_date, "yes");
 
                             }
@@ -1281,7 +1271,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         home.setOnClickListener(v -> drawer.closeDrawer(navigationView));
         LinearLayout privacypolicy = findViewById(R.id.privacy_pl);
         privacypolicy.setOnClickListener(v -> {
-            if (Utils.isNetworkAvailable(getApplicationContext())) {
+            if (isNetworkAvailable(getApplicationContext())) {
                 // finish();
                 Intent i = new Intent(context, Main_policy.class);
                 startActivity(i);
@@ -1325,7 +1315,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         });
         LinearLayout nithra = findViewById(R.id.nithra);
         nithra.setOnClickListener(v -> {
-            if (Utils.isNetworkAvailable(New_Main_Activity.this))
+            if (isNetworkAvailable(New_Main_Activity.this))
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/developer?id=Nithra")));
             else Utils.toast_center(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ");
         });
@@ -2099,16 +2089,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         if (sps.getInt(New_Main_Activity.this, "purchase_ads") == 1)
             ads_lay.setVisibility(View.GONE);
-        else {
-
-        }
 
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver, new IntentFilter(Config.REGISTRATION_COMPLETE));
-
-        if (!mGameOver && mGamePaused) {
-
-        }
 
 
         // uiHelper.onResume();
@@ -2130,11 +2113,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         if (cv.getCount() <= 9) noti_count.setText("" + cv.getCount());
         else if (cv.getCount() > 9) noti_count.setText("9+");
         else noti_count.setText("0");
-        if (onresume_start == 0) {
-            Handler handel = new Handler(Looper.myLooper());
-            handel.postDelayed(() -> score_update(), 500);
+        Handler handel = new Handler(Looper.myLooper());
+        handel.postDelayed(() -> score_update(), 500);
 
-        }
 
     }
 
@@ -2209,7 +2190,15 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 ratefun();
                 sps.putString(New_Main_Activity.this, "ratefun_shown", "yes");
             } else {
-                finish();
+                if (spa.getInt(context, "purchase_ads") == 0) {
+                    if (interstitialAd != null && interstitialAd.isReady()) {
+                        interstitialAd.showAd();
+                    } else {
+                        finish();
+                    }
+                } else {
+                    finish();
+                }
 
 
             }
@@ -2226,6 +2215,47 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     }
 
+    public void industrialload() {
+
+        interstitialAd = new MaxInterstitialAd(getResources().getString(R.string.App_Exit_Ins), this);
+        interstitialAd.setListener(new MaxAdListener() {
+            @Override
+            public void onAdLoaded(MaxAd ad) {
+                //Toast.makeText(New_Main_Activity.this, "Loaddeeddd", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onAdDisplayed(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdHidden(MaxAd ad) {
+                exit_dia();
+
+            }
+
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+                interstitialAd = null;
+                Log.e("============++++++++" + error.getCode(), error.getMessage());
+                //Toast.makeText(New_Main_Activity.this, "err"+error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+
+            }
+        });
+        interstitialAd.loadAd();
+
+    }
 
     @Override
     public void onInstallReferrerSetupFinished(int responseCode) {
@@ -2355,7 +2385,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         privacy_policy.setOnClickListener(v -> {
             imm.hideSoftInputFromWindow(editText1.getWindowToken(), 0);
             imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
-            if (isNetworkAvailable()) showPrivacy();
+            if (isNetworkAvailable(this)) showPrivacy();
             else
                 Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
         });
@@ -2383,7 +2413,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             // TODO Auto-generated method stub
             if (editText1.getText().toString().trim().length() == 0)
                 Utils.toast_center(New_Main_Activity.this, "உங்களது கருத்துக்களை பதிவு செய்யவும். ");
-            else if (Utils.isNetworkAvailable(New_Main_Activity.this)) {
+            else if (isNetworkAvailable(New_Main_Activity.this)) {
 
                 Utills.INSTANCE.sendFeed(New_Main_Activity.this, name.getText().toString(), emails.getText().toString(), ph_no.getText().toString(), editText1.getText().toString());
 
@@ -2407,9 +2437,11 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             }
             yesratedialog.dismiss();
             if (spa.getInt(context, "purchase_ads") == 0) {
-
-                finish();
-
+                if (interstitialAd != null && interstitialAd.isReady()) {
+                    interstitialAd.showAd();
+                } else {
+                    finish();
+                }
             }
         });
 
@@ -2448,9 +2480,12 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             // TODO Auto-generated method stub
             if (feedcheck == 0) {
                 //ins ad exit
-
                 if (spa.getInt(context, "purchase_ads") == 0) {
-                    finish();
+                    if (interstitialAd != null && interstitialAd.isReady()) {
+                        interstitialAd.showAd();
+                    } else {
+                        finish();
+                    }
                 }
             }
         });
@@ -2460,7 +2495,11 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             if (feedcheck == 0) {
                 //ins ad exit
                 if (spa.getInt(context, "purchase_ads") == 0) {
-                    finish();
+                    if (interstitialAd != null && interstitialAd.isReady()) {
+                        interstitialAd.showAd();
+                    } else {
+                        finish();
+                    }
                 }
             }
         });
@@ -2469,7 +2508,15 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             if (feedcheck == 1) {
                 //ins ad exit
 
-                finish();
+                if (spa.getInt(context, "purchase_ads") == 0) {
+                    if (interstitialAd != null && interstitialAd.isReady()) {
+                        interstitialAd.showAd();
+                    } else {
+                        finish();
+                    }
+                } else {
+                    finish();
+                }
             }
         });
 
@@ -2478,8 +2525,11 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         } else {
             //ins ad exit
             if (spa.getInt(context, "purchase_ads") == 0) {
-
-                finish();
+                if (interstitialAd != null && interstitialAd.isReady()) {
+                    interstitialAd.showAd();
+                } else {
+                    finish();
+                }
             }
 
         }
@@ -2527,7 +2577,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         privacy_policy.setOnClickListener(v -> {
             imm.hideSoftInputFromWindow(txtFeedBack.getWindowToken(), 0);
             imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
-            if (isNetworkAvailable()) showPrivacy();
+            if (isNetworkAvailable(this)) showPrivacy();
             else
                 Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
         });
@@ -2535,7 +2585,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             // TODO Auto-generated method stub
             if (txtFeedBack.getText().toString().trim().length() == 0)
                 Utils.toast_center(New_Main_Activity.this, "உங்களது கருத்துக்களை பதிவு செய்யவும். ");
-            else if (Utils.isNetworkAvailable(New_Main_Activity.this)) {
+            else if (isNetworkAvailable(New_Main_Activity.this)) {
                 Utills.INSTANCE.sendFeed(New_Main_Activity.this, name.getText().toString(), emails.getText().toString(), ph_no.getText().toString(), txtFeedBack.getText().toString());
                 imm.hideSoftInputFromWindow(txtFeedBack.getWindowToken(), 0);
                 imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
@@ -3248,7 +3298,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         RelativeLayout video = openDialog.findViewById(R.id.earnvideo);
         video.setOnClickListener(v -> {
             extra_coin_s = 0;
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
@@ -3274,7 +3324,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         wp.setOnClickListener(view -> {
             onresume_start = 1;
             // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.whatsapp");
                 if (appinstalled) {
 
@@ -3296,7 +3346,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         });
         gplus.setOnClickListener(view -> {
             // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
                 if (appinstalled) {
                     Intent i = new Intent(Intent.ACTION_SEND);
@@ -3315,12 +3365,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         });
         if (!isFinishing()) openDialog.show();
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connec = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 
@@ -3971,7 +4015,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     public void downloaddata() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(New_Main_Activity.this);                            /*.setTitle("Delete entry")*/
         alertDialogBuilder.setMessage("புதிய பதிவுகளை  பதிவிறக்கம் செய்ய வேண்டுமா ?").setPositiveButton("ஆம்", (dialog, which) -> {
-            if (Utils.isNetworkAvailable(getApplicationContext())) {
+            if (isNetworkAvailable(getApplicationContext())) {
                 //DownLoad Letters and Words
                 Cursor c1 = myDbHelper.getQry("select id from maintable order by id DESC");
                 c1.moveToFirst();
@@ -4633,13 +4677,13 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         }
 
         view1.setOnClickListener(view -> {
-            if (Utils.isNetworkAvailable(context))
+            if (isNetworkAvailable(context))
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(inss.getTag().toString())));
             else Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
         });
 
         inss.setOnClickListener(view -> {
-            if (Utils.isNetworkAvailable(context))
+            if (isNetworkAvailable(context))
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(view.getTag().toString())));
             else Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
         });
@@ -4688,7 +4732,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         purchase.setOnClickListener(v -> {
             // L.t(New_Main_Activity.this, U.INA);
-            if (Utils.isNetworkAvailable(getApplicationContext())) {
+            if (isNetworkAvailable(getApplicationContext())) {
                 purchaseDia.dismiss();
                 startActivity(new Intent(New_Main_Activity.this, Billing_Activity.class));
             } else
@@ -4962,7 +5006,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         tomarrow_coin_earn.setText("நாளைய தினத்திற்கான ஊக்க நாணயங்கள் : " + ran_score);
         extra_coin.setOnClickListener(v -> {
             extra_coin_s = 1;
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(New_Main_Activity.this, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
@@ -5042,13 +5086,13 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             startActivity(i);
         });
         nl_removeads.setOnClickListener(v -> {
-            if (Utils.isNetworkAvailable(getApplicationContext())) purchasedialog();
+            if (isNetworkAvailable(getApplicationContext())) purchasedialog();
             else
                 Toast.makeText(New_Main_Activity.this, "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
         });
         nl_feedback.setOnClickListener(v -> send_feed());
         nl_howtoplay.setOnClickListener(v -> {
-            final Dialog openDialog = new Dialog(New_Main_Activity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+            final Dialog openDialog = new Dialog(New_Main_Activity.this, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
             openDialog.setContentView(R.layout.introsdialog_web);
             WebView intros = openDialog.findViewById(R.id.web_introscreen);
             TextView close = openDialog.findViewById(R.id.close);
@@ -5102,83 +5146,77 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     public void rewarded_adnew() {
 
-        RewardedInterstitialAd.load(this, getResources().getString(R.string.Reward_Ins),
-                new AdRequest.Builder().build(), new RewardedInterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(RewardedInterstitialAd ad) {
-                        rewardedAd = ad;
-                        fb_reward = 1;
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
+        rewardedAd.setListener(new MaxRewardedAdListener() {
+            @Override
+            public void onRewardedVideoStarted(MaxAd ad) {
 
-                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.d(TAG, "Ad was clicked.");
-                            }
+            }
 
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                // Called when ad is dismissed.
-                                // Set the ad reference to null so you don't show the ad a second time.
-                                Log.d(TAG, "Ad dismissed fullscreen content.");
-                                rewardedAd = null;
-                            }
+            @Override
+            public void onRewardedVideoCompleted(MaxAd ad) {
+                reward_status = 1;
+            }
 
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                // Called when ad fails to show.
-                                Log.e(TAG, "Ad failed to show fullscreen content.");
-                                rewardedAd = null;
-                                rewarded_adnew();
-                            }
+            @Override
+            public void onUserRewarded(MaxAd ad, MaxReward reward) {
 
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.d(TAG, "Ad recorded an impression.");
-                            }
+            }
 
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.d(TAG, "Ad showed fullscreen content.");
-                            }
-                        });
+            @Override
+            public void onAdLoaded(MaxAd ad) {
+                fb_reward = 1;
+            }
+
+            @Override
+            public void onAdDisplayed(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdHidden(MaxAd ad) {
+                rewarded_adnew();
+                if (reward_status == 1) {
+                    if (extra_coin_s == 0) {
+                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                        cfx.moveToFirst();
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                        int spx = skx + mCoinCount;
+                        String aStringx = Integer.toString(spx);
+                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
                     }
+                    Handler handler = new Handler(Objects.requireNonNull(Looper.myLooper()));
+                    handler.postDelayed(() -> vidcoinearn(), 500);
+                    handler.postDelayed(() -> score_update(), 500);
+                } else {
+                    Toast.makeText(New_Main_Activity.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                }
 
-                    @Override
-                    public void onAdFailedToLoad(LoadAdError loadAdError) {
-                        Log.d(TAG, loadAdError.toString());
-                        rewardedAd = null;
-                    }
-                });
+                fb_reward = 0;
+            }
 
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+                rewardedAd = null;
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                rewardedAd.loadAd();
+            }
+        });
+        rewardedAd.loadAd();
     }
 
     public void show_reward() {
-        OnUserEarnedRewardListener success = rewardItem -> {
-            rewarded_adnew();
-            if (reward_status == 1) {
-                if (extra_coin_s == 0) {
-                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                    cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + mCoinCount;
-                    String aStringx = Integer.toString(spx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                }
-                Handler handler = new Handler(Looper.myLooper());
-                handler.postDelayed(() -> vidcoinearn(), 500);
-            } else {
-                Toast.makeText(New_Main_Activity.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-            }
-
-            fb_reward = 0;
-
-        };
-        if (rewardedAd != null) {
-            rewardedAd.show(this, success);
+        if (rewardedAd != null && rewardedAd.isReady()) {
+            rewardedAd.showAd();
             reward_status = 1;
         } else {
             Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
@@ -5225,7 +5263,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
                     if ((int) timediff >= 10) {
                         System.out.println("new Version 1 " + timediff);
-                        if (Utils.isNetworkAvailable(New_Main_Activity.this))
+                        if (isNetworkAvailable(New_Main_Activity.this))
                             if (sp.getString(New_Main_Activity.this, "inapp_review_first").equals(""))
                                 sp.putString(New_Main_Activity.this, "inapp_review_first", "on");
                             else inapp_review_dialog();
@@ -5315,14 +5353,33 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
 
                 sp.putString(New_Main_Activity.this, "daily_intro" + mnt, "on");
-
+                notiPermission();
                 terms_and_policy();
             }, 5000);
 
         } else terms_and_policy();
     }
+    void notiPermission(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && sp.getInt(this, "permission") == 0) {
+
+            sp.putInt(this, "permission", 1);
+
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 113);
+
+
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && sp.getInt(this, "permission") == 10) {
+
+            sp.putInt(this, "permission", 1);
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 113);
+
+        } else {
+            System.out.println("_____________print  con't apply check value  :" + sp.getInt(this, "permission"));
+            sp.putInt(this, "permission", sp.getInt(this, "permission") + 1);
+        }
+    }
 
     public void terms_and_policy() {
+        notiPermission();
         if (sps.getInt(New_Main_Activity.this, "termsandpollicy") <= 1) {
             openDialogterm = new Dialog(New_Main_Activity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
             openDialogterm.setContentView(R.layout.termsandpolicy);
@@ -5337,7 +5394,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             txt_ex2.setText("Thanks for downloading or updating Solli Adi\n\n" + "By clicking privacy tab you can read our privacy policy and agree to the terms of privacy policy to continue using Nithra Solli Adi.");
             yes.setOnClickListener(v -> {
                 //sps.putInt(New_Main_Activity.this, "termsandpollicy", 1);
-                if (Utils.isNetworkAvailable(getApplicationContext())) {
+                if (isNetworkAvailable(getApplicationContext())) {
                     Intent i = new Intent(context, Main_policy.class);
                     startActivity(i);
                 } else
@@ -5391,7 +5448,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 e.printStackTrace();
             }
         }
-        if (requestCode == 0) if (Utils.isNetworkAvailable(New_Main_Activity.this)) nextapp(random);
+        if (requestCode == 0) if (isNetworkAvailable(New_Main_Activity.this)) nextapp(random);
         else {
 
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(New_Main_Activity.this);                            /*.setTitle("Delete entry")*/
@@ -5720,7 +5777,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             btn.setOnClickListener(view1 -> {
 
 
-                if (list.get(position).getId() == 1) if (Utils.isNetworkAvailable(context)) {
+                if (list.get(position).getId() == 1) if (isNetworkAvailable(context)) {
                     final Intent emailIntent = new Intent(Intent.ACTION_SEND);
                     emailIntent.setType("plain/text");
                     emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Regarding Nithra Solli_Adi Subscription");

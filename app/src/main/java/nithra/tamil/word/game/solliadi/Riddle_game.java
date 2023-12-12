@@ -2,6 +2,7 @@ package nithra.tamil.word.game.solliadi;
 
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.Utils.isNetworkAvailable;
 
 import android.Manifest;
 import android.app.Dialog;
@@ -49,21 +50,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -152,9 +154,8 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
     Handler handler;
     Runnable my_runnable;
-    private RewardedInterstitialAd rewardedAd;
-    private InterstitialAd mInterstitialAd;
-
+    private MaxRewardedAd rewardedAd;
+    private MaxInterstitialAd mInterstitialAd;
 
     @Override
     public void download_completed(String status) {
@@ -181,7 +182,8 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_makeword__rightorder);
-
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
 
         exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
         dbs = this.openOrCreateDatabase("Newgames.db", MODE_PRIVATE, null);
@@ -228,7 +230,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
 
         prize_logo.setOnClickListener(v -> {
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 if (sps.getString(Riddle_game.this, "price_registration").equals("com")) {
                     finish();
                     Intent i = new Intent(Riddle_game.this, Game_Status.class);
@@ -957,7 +959,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         extra_coin = openDialog.findViewById(R.id.extra_coin);
         extra_coin.setOnClickListener(v -> {
             extra_coin_s = 1;
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(Riddle_game.this, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
@@ -3195,7 +3197,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             prize_logo.setVisibility(View.GONE);
         }
         prize_logo.setOnClickListener(v -> {
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 if (sps.getString(Riddle_game.this, "price_registration").equals("com")) {
                     finish();
                     Intent i = new Intent(Riddle_game.this, Game_Status.class);
@@ -3223,7 +3225,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             ads_layout.setVisibility(View.GONE);
         } else {
             //  New_Main_Activity.load_addFromMain_multiplayer(Riddle_game.this,ads_layout);
-            if (Utils.isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 //New_Main_Activity.load_add_fb_rect_score_screen(context, ads_layout);
             } else {
                 ads_layout.setVisibility(View.GONE);
@@ -3271,7 +3273,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
         vid_earn.setOnClickListener(v -> {
             rvo = 2;
-            if (Utils.isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
@@ -3300,7 +3302,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
         rewardvideo.setOnClickListener(v -> {
             rvo = 2;
-            if (Utils.isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
@@ -3327,7 +3329,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         });
 
         wtp.setOnClickListener(view -> {
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.whatsapp");
                 if (appinstalled) {
                     Intent i = new Intent(Intent.ACTION_SEND);
@@ -3354,7 +3356,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
         });
         gplus.setOnClickListener(view -> {
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
                 if (appinstalled) {
                     Intent i = new Intent(Intent.ACTION_SEND);
@@ -3490,11 +3492,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         return app_installed;
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connec = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
+
 
     public void ins_app(final Context context, View view1, int vall) {
         TextView titt = view1.findViewById(R.id.txtlist);
@@ -3713,7 +3711,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         }
 
         view1.setOnClickListener(view -> {
-            if (Utils.isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(inss.getTag().toString())));
             } else {
                 Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
@@ -3721,7 +3719,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         });
 
         inss.setOnClickListener(view -> {
-            if (Utils.isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(view.getTag().toString())));
             } else {
                 Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
@@ -3756,7 +3754,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         video.setOnClickListener(v -> {
             rvo = 1;
             extra_coin_s = 0;
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
 
                 if (fb_reward == 1) {
@@ -3798,7 +3796,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         });
 
         wp.setOnClickListener(view -> {
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.whatsapp");
                 if (appinstalled) {
                     openDialog_earncoin.cancel();
@@ -3826,7 +3824,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         gplus.setOnClickListener(view -> {
 
 
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
 
 
                 final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
@@ -3892,8 +3890,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         if (handler != null) handler.postDelayed(my_runnable, 1000);
         System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV"));
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Riddle_game.this);
-        mFirebaseAnalytics.setCurrentScreen(this, "Riddle Game", null);
-
+        Bundle params = new Bundle();
+        params.putString("screen_name", "Riddle Game");
+        params.putString("screen_class", "Riddle_game");
+        mFirebaseAnalytics.logEvent( "screen_view", params);
 
         if (sps.getString(Riddle_game.this, "riddle_time_start").equals("")) {
             sps.putString(Riddle_game.this, "riddle_time_start", "yes");
@@ -3923,58 +3923,42 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         }
 
     }
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
 
-    public void onBackPressed() {
- /*   public boolean onKeyDown(int keyCode, KeyEvent event) {
-        //return super.onKeyDown(keyCode, event);
+            sps.putString(Riddle_game.this, "game_area", "on");
+            sps.putInt(Riddle_game.this, "addlodedd", 0);
 
-        if(keyCode==KeyEvent.KEYCODE_BACK) {*/
-
-        sps.putString(Riddle_game.this, "game_area", "on");
-        sps.putInt(Riddle_game.this, "addlodedd", 0);
-
-        s = 1;
-        openDialog_p = new Dialog(Riddle_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        openDialog_p.setContentView(R.layout.back_pess);
-        TextView yes = openDialog_p.findViewById(R.id.yes);
-        TextView no = openDialog_p.findViewById(R.id.no);
+            s = 1;
+            openDialog_p = new Dialog(Riddle_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+            openDialog_p.setContentView(R.layout.back_pess);
+            TextView yes = openDialog_p.findViewById(R.id.yes);
+            TextView no = openDialog_p.findViewById(R.id.no);
 
 
-        yes.setOnClickListener(v -> {
+            yes.setOnClickListener(v -> {
 
-            String dates = sps.getString(Riddle_game.this, "date");
-            int pos;
-            if (dates.equals("0")) {
-                pos = 1;
-                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                focus.stop();
-                newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                String dates = sps.getString(Riddle_game.this, "date");
+                int pos;
+                if (dates.equals("0")) {
+                    pos = 1;
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
 
-                //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-            } else {
-                pos = 2;
-                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                focus.stop();
-                newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-
-                //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-            }
-
-            String date = sps.getString(Riddle_game.this, "date");
-            if (date.equals("0")) {
-                if (main_act.equals("")) {
-                    finish();
-                    Intent i = new Intent(Riddle_game.this, New_Main_Activity.class);
-                    startActivity(i);
+                    //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                 } else {
-                    finish();
+                    pos = 2;
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                    newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+
+                    //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                 }
-            } else {
-                if (sps.getString(Riddle_game.this, "Exp_list").equals("on")) {
-                    finish();
-                    Intent i = new Intent(Riddle_game.this, Expandable_List_View.class);
-                    startActivity(i);
-                } else {
+
+                String date = sps.getString(Riddle_game.this, "date");
+                if (date.equals("0")) {
                     if (main_act.equals("")) {
                         finish();
                         Intent i = new Intent(Riddle_game.this, New_Main_Activity.class);
@@ -3982,19 +3966,31 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                     } else {
                         finish();
                     }
+                } else {
+                    if (sps.getString(Riddle_game.this, "Exp_list").equals("on")) {
+                        finish();
+                        Intent i = new Intent(Riddle_game.this, Expandable_List_View.class);
+                        startActivity(i);
+                    } else {
+                        if (main_act.equals("")) {
+                            finish();
+                            Intent i = new Intent(Riddle_game.this, New_Main_Activity.class);
+                            startActivity(i);
+                        } else {
+                            finish();
+                        }
+                    }
+
                 }
 
-            }
+                openDialog_p.dismiss();
 
-            openDialog_p.dismiss();
+            });
+            no.setOnClickListener(v -> openDialog_p.dismiss());
+            openDialog_p.show();
 
-        });
-        no.setOnClickListener(v -> openDialog_p.dismiss());
-        openDialog_p.show();
-
-
-        // return super.onKeyDown(keyCode, event);
-    }
+        }
+    };
 
     public void permission(final String a) {
         focus.stop();
@@ -4106,7 +4102,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
 
         if (requestCode == 0) {
-            if (Utils.isNetworkAvailable(Riddle_game.this)) {
+            if (isNetworkAvailable(Riddle_game.this)) {
                 download_datas();
             } else {
 
@@ -4826,7 +4822,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         alertDialogBuilder.setNegativeButton("ஆம்", (dialog, id) -> {
             //DownLoad Letters and Words
 
-            if (Utils.isNetworkAvailable(Riddle_game.this)) {
+            if (isNetworkAvailable(Riddle_game.this)) {
                 download_datas();
             } else {
 
@@ -4901,58 +4897,67 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
     }
 
     private void industrialload() {
-
-        Utills.INSTANCE.initializeAdzz(this);
-        if (mInterstitialAd != null) return;
-
-        AdRequest adRequest = new AdRequest.Builder().build();
-        InterstitialAd.load(this, getResources().getString(R.string.Puthayal_Sorkal_Ins), adRequest, new InterstitialAdLoadCallback() {
+        //AppLovinSdk.getInstance( this ).showMediationDebugger();
+        AppLovinSdk.getInstance(this).setMediationProvider("max");
+        AppLovinSdk.initializeSdk(this, new AppLovinSdk.SdkInitializationListener() {
             @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                // The mInterstitialAd reference will be null until
-                // an ad is loaded.
-                mInterstitialAd = interstitialAd;
-                interstiallistener();
-                Log.i("TAG", "onAdLoaded");
-            }
+            public void onSdkInitialized(AppLovinSdkConfiguration config) {
+                // AppLovin SDK is initialized, start loading ads
+                if (mInterstitialAd != null) return;
+                System.out.println("ad shown  showAdWithDelay initialize done ");
+                mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Puthayal_Sorkal_Ins), Riddle_game.this);
+                mInterstitialAd.setListener(new MaxAdListener() {
+                    @Override
+                    public void onAdLoaded(MaxAd ad) {
+                        System.out.println("ad shown loaded : " + ad.getWaterfall());
+                    }
 
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                // Handle the error
-                Log.d("TAG", loadAdError.toString());
-                mInterstitialAd = null;
-                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
-                handler = null;
+                    @Override
+                    public void onAdDisplayed(MaxAd ad) {
+                        handler = null;
+                    }
+
+                    @Override
+                    public void onAdHidden(MaxAd ad) {
+                        Log.d("TAG", "Ad dismissed fullscreen content.");
+                        mInterstitialAd = null;
+                        handler = null;
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        setSc();
+                        industrialload();
+                    }
+
+                    @Override
+                    public void onAdClicked(MaxAd ad) {
+
+                    }
+
+                    @Override
+                    public void onAdLoadFailed(String adUnitId, MaxError error) {
+                        Log.d("TAG", error.toString());
+                        mInterstitialAd = null;
+                        handler = null;
+                        Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
+                    }
+
+                    @Override
+                    public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                        Log.e("TAG", "Ad failed to show fullscreen content.");
+                        mInterstitialAd = null;
+                        handler = null;
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
+                        setSc();
+                    }
+                });
+
+                // Load the first ad
+                mInterstitialAd.loadAd();
 
             }
         });
+
     }
-
-    public void interstiallistener() {
-        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-            @Override
-            public void onAdDismissedFullScreenContent() {
-                Log.d("TAG", "Ad dismissed fullscreen content.");
-                mInterstitialAd = null;
-                handler = null;
-                Utills.INSTANCE.Loading_Dialog_dismiss();
-                setSc();
-                industrialload();
-            }
-
-            @Override
-            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                Log.e("TAG", "Ad failed to show fullscreen content.");
-                mInterstitialAd = null;
-                handler = null;
-                Utills.INSTANCE.Loading_Dialog_dismiss();
-                sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
-                setSc();
-            }
-
-        });
-    }
-
 
     public void adShow() {
         if (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") == Utills.interstitialadCount && mInterstitialAd != null) {
@@ -4960,7 +4965,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.show(this);
+                mInterstitialAd.showAd("Puthayal Sorkal Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -4974,93 +4979,87 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
     }
 
     public void rewarded_adnew() {
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
+        rewardedAd.setListener(new MaxRewardedAdListener() {
+            @Override
+            public void onRewardedVideoStarted(MaxAd ad) {
 
+            }
 
-        RewardedInterstitialAd.load(this, getResources().getString(R.string.Reward_Ins),
-                new AdRequest.Builder().build(), new RewardedInterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(RewardedInterstitialAd ad) {
-                        rewardedAd = ad;
-                        fb_reward = 1;
+            @Override
+            public void onRewardedVideoCompleted(MaxAd ad) {
+                reward_status = 1;
+            }
 
-                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.d("FindWFP", "Ad was clicked.");
-                            }
+            @Override
+            public void onUserRewarded(MaxAd ad, MaxReward reward) {
 
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                // Called when ad is dismissed.
-                                // Set the ad reference to null so you don't show the ad a second time.
-                                Log.d("FindWFP", "Ad dismissed fullscreen content.");
-                                rewardedAd = null;
-                            }
+            }
 
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                // Called when ad fails to show.
-                                Log.e("FindWFP", "Ad failed to show fullscreen content.");
-                                rewardedAd = null;
-                                rewarded_adnew();
-                            }
+            @Override
+            public void onAdLoaded(MaxAd ad) {
+                fb_reward = 1;
+            }
 
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.d("FindWFP", "Ad recorded an impression.");
-                            }
+            @Override
+            public void onAdDisplayed(MaxAd ad) {
+            }
 
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.d("FindWFP", "Ad showed fullscreen content.");
-                            }
-                        });
+            @Override
+            public void onAdHidden(MaxAd ad) {
+                rewarded_adnew();
+                if (reward_status == 1) {
+                    if (extra_coin_s == 0) {
+                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                        cfx.moveToFirst();
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                        int spx = skx + mCoinCount;
+                        String aStringx = Integer.toString(spx);
+                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
                     }
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (rvo == 2) {
+                                share_earn2(mCoinCount);
+                            } else {
+                                vidcoinearn();
+                            }
+                        }
+                    }, 500);
+                } else {
+                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                }
 
-                    @Override
-                    public void onAdFailedToLoad(LoadAdError loadAdError) {
-                        Log.d("FindWFP", loadAdError.toString());
-                        rewardedAd = null;
-                    }
-                });
+                fb_reward = 0;
+                
+
+
+            }
+
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+                rewardedAd = null;
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                rewardedAd.loadAd();
+            }
+        });
+        rewardedAd.loadAd();
     }
 
     public void show_reward() {
-        OnUserEarnedRewardListener success = rewardItem -> {
-            rewarded_adnew();
-            if (reward_status == 1) {
-                if (extra_coin_s == 0) {
-                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                    cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + mCoinCount;
-                    String aStringx = Integer.toString(spx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                }
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (rvo == 2) {
-                            share_earn2(mCoinCount);
-                        } else {
-                            vidcoinearn();
-                        }
-                    }
-                }, 500);
-            } else {
-                Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-            }
-            fb_reward = 0;
-
-        };
-
-        if (rewardedAd != null) {
-            rewardedAd.show(this, success);
+        if (rewardedAd != null && rewardedAd.isReady()) {
+            rewardedAd.showAd();
             reward_status = 1;
         } else {
             Log.d("TAG", "The rewarded ad wasn't ready yet.");

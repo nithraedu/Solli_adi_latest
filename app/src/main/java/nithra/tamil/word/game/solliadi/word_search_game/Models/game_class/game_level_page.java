@@ -1,5 +1,7 @@
 package nithra.tamil.word.game.solliadi.word_search_game.Models.game_class;
 
+import static nithra.tamil.word.game.solliadi.Utils.isNetworkAvailable;
+
 import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -31,16 +33,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxRewardedAd;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,6 +53,7 @@ import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper2;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper3;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
+import nithra.tamil.word.game.solliadi.Utills;
 import nithra.tamil.word.game.solliadi.Utils;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.Word_search_main;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.helpclass.my_dialog;
@@ -102,7 +105,7 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
     DataBaseHelper myDbHelper;
     //reward videos process 1***********************
     SQLiteDatabase dbs, dbn, dbn2;
-    private RewardedInterstitialAd rewardedAd;
+    private MaxRewardedAd rewardedAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +113,9 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
 
 
         setContentView(R.layout.activity_game_level_page);
+
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
 
         mydb = openOrCreateDatabase("WS_tamil.db", MODE_PRIVATE, null);
         Inner_mydb = openOrCreateDatabase("Inner_DB", 0, null);
@@ -138,6 +144,7 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
             finish();
             startActivity(intent);
         });
+        Utills.INSTANCE.initializeAdzz(this);
 
         icon_ad_img = findViewById(R.id.icon_ad_img);
         n_icon_ad = findViewById(R.id.n_icon_ad);
@@ -283,11 +290,6 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
         close_unlock.setOnClickListener(v -> dialog.dismiss());
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connec = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
 
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getPackageManager();
@@ -409,15 +411,15 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
 
     //reward videos***********************//
 
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        myDialog_class.media_player(getApplicationContext(), R.raw.click, "normal");
-        Intent intent = new Intent(game_level_page.this, Word_search_main.class);
-        finish();
-        startActivity(intent);
-    }
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
+            myDialog_class.media_player(getApplicationContext(), R.raw.click, "normal");
+            Intent intent = new Intent(game_level_page.this, Word_search_main.class);
+            finish();
+            startActivity(intent);
+        }
+    };
 
     public void yes_no_dialog() {
         final Dialog openDialog_p = new Dialog(game_level_page.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -476,7 +478,7 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
 
         video.setOnClickListener(v -> {
             extra_coin_s = 0;
-            if (Utils.isNetworkAvailable(game_level_page.this)) {
+            if (isNetworkAvailable(game_level_page.this)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(game_level_page.this, "" + "Reward video", "Loading...");
 
                 if (fb_reward == 1) {
@@ -508,7 +510,7 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
 
         });
         wp.setOnClickListener(view -> {
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 if (appInstalledOrNot("com.whatsapp")) {
                     Uri uri = Uri.fromFile(file);
                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -541,7 +543,7 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
 
         });
         gplus.setOnClickListener(view -> {
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
 
                 if (appInstalledOrNot("com.google.android.apps.plus")) {
 
@@ -563,89 +565,85 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
     }
 
     public void rewarded_adnew() {
-        RewardedInterstitialAd.load(this, getResources().getString(R.string.Reward_Ins),
-                new AdRequest.Builder().build(), new RewardedInterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(RewardedInterstitialAd ad) {
-                        rewardedAd = ad;
-                        fb_reward = 1;
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
+        rewardedAd.setListener(new MaxRewardedAdListener() {
+            @Override
+            public void onRewardedVideoStarted(MaxAd ad) {
 
-                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.d("FindWFP", "Ad was clicked.");
-                            }
+            }
 
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                // Called when ad is dismissed.
-                                // Set the ad reference to null so you don't show the ad a second time.
-                                Log.d("FindWFP", "Ad dismissed fullscreen content.");
-                                rewardedAd = null;
-                            }
+            @Override
+            public void onRewardedVideoCompleted(MaxAd ad) {
+                reward_status = 1;
+            }
 
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                // Called when ad fails to show.
-                                Log.e("FindWFP", "Ad failed to show fullscreen content.");
-                                rewardedAd = null;
-                                rewarded_adnew();
-                            }
+            @Override
+            public void onUserRewarded(MaxAd ad, MaxReward reward) {
 
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.d("FindWFP", "Ad recorded an impression.");
-                            }
+            }
 
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.d("FindWFP", "Ad showed fullscreen content.");
-                            }
-                        });
+            @Override
+            public void onAdLoaded(MaxAd ad) {
+                fb_reward = 1;
+            }
+
+            @Override
+            public void onAdDisplayed(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdHidden(MaxAd ad) {
+                rewarded_adnew();
+                if (reward_status == 1) {
+                    if (extra_coin_s == 0) {
+                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                        cfx.moveToFirst();
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                        int spx = skx + mCoinCount;
+                        String aStringx = Integer.toString(spx);
+                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
                     }
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
 
-                    @Override
-                    public void onAdFailedToLoad(LoadAdError loadAdError) {
-                        Log.d("FindWFP", loadAdError.toString());
-                        rewardedAd = null;
-                    }
-                });
+                            vidcoinearn();
+                        }
+                    }, 500);
+                } else {
+                    Toast.makeText(game_level_page.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                }
+
+                fb_reward = 0;
+               // rewardedAd.loadAd();
+
+
+            }
+
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+                rewardedAd = null;
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                rewardedAd.loadAd();
+            }
+        });
+        rewardedAd.loadAd();
     }
 
     public void show_reward() {
-        OnUserEarnedRewardListener success = rewardItem -> {
-            rewarded_adnew();
-            if (reward_status == 1) {
-                if (extra_coin_s == 0) {
-                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                    cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + mCoinCount;
-                    String aStringx = Integer.toString(spx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                }
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        vidcoinearn();
-                    }
-                }, 500);
-            } else {
-                Toast.makeText(game_level_page.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-            }
-            fb_reward = 0;
-
-        };
-
-
-        if (rewardedAd != null) {
-            rewardedAd.show(this, success);
+        if (rewardedAd != null && rewardedAd.isReady()) {
+            rewardedAd.showAd();
             reward_status = 1;
         } else {
             Log.d("TAG", "The rewarded ad wasn't ready yet.");

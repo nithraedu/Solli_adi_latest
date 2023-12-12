@@ -1,6 +1,7 @@
 package nithra.tamil.word.game.solliadi.word_search_game.Models.general;
 
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.Utils.isNetworkAvailable;
 
 import android.animation.ValueAnimator;
 import android.app.Dialog;
@@ -40,21 +41,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinSdk;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.File;
@@ -168,9 +167,8 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
     private String[][] mBoard;
     private TinyDB tinyDB;
     private RecyclerAdapter mWordAdapter;
-    //com.facebook.ads.RewardedVideoAd rewardedVideoAd;
-    private RewardedInterstitialAd rewardedAd;
-    private InterstitialAd mInterstitialAd;
+    private MaxRewardedAd rewardedAd;
+    private MaxInterstitialAd mInterstitialAd;
 
     public void showcase_dismiss() {
         Handler handler30 = new Handler(Looper.myLooper());
@@ -225,7 +223,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             prize_logo.setVisibility(View.GONE);
         }
         prize_logo.setOnClickListener(v -> {
-            if (Utils.isNetworkAvailable(getActivity())) {
+            if (isNetworkAvailable(getActivity())) {
                 if (sp.getString(getActivity(), "price_registration").equals("com")) {
                     getActivity().finish();
                     Intent i = new Intent(getActivity(), Game_Status.class);
@@ -432,7 +430,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
     public void reward_fun() {
         //mCoinCount = 0;
-        if (Utils.isNetworkAvailable(getActivity())) {
+        if (isNetworkAvailable(getActivity())) {
 
 
         } else {
@@ -470,7 +468,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
         System.out.println("======check onStop() dont_call : " + dont_call);
 
-        if (isNetworkAvailable()) {
+        if (isNetworkAvailable(context)) {
             if (!call_onstop.equals("")) {
                 WordsearchGridFragment.timeWhenStopped = chronometer.getBase() - SystemClock.elapsedRealtime();
                 WordsearchGridFragment.chronometer.stop();
@@ -494,8 +492,10 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
         if (handler != null) handler.postDelayed(my_runnable, 1000);
         System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sp.getInt(context, "Game1_Stage_Close_VV"));
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
-        mFirebaseAnalytics.setCurrentScreen(getActivity(), "Word Search General", null);
-
+        Bundle params = new Bundle();
+        params.putString("screen_name", "Word Search General");
+        params.putString("screen_class", "WordsearchGridFragment");
+        mFirebaseAnalytics.logEvent("screen_view", params);
         //reward video pocess :4 ************//
 
         timeWhenStopped = 0;
@@ -1136,7 +1136,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
         vid_earn.setOnClickListener(v -> {
             rvo = 2;
             extra_coin_s = 0;
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(context)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
 
                 if (fb_reward == 1) {
@@ -1205,7 +1205,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
         if (sp.getInt(getActivity(), "purchase_ads") == 1) {
             fl_adplaceholder.setVisibility(View.GONE);
         } else {
-            if (Utils.isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 //New_Main_Activity.load_add_fb_rect_score_screen(context, fl_adplaceholder);
             } else {
                 fl_adplaceholder.setVisibility(View.GONE);
@@ -1795,7 +1795,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
             rvo = 1;
             extra_coin_s = 0;
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(context)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
 
                 if (fb_reward == 1) {
@@ -1828,7 +1828,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
         });
 
         wp.setOnClickListener(view -> {
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(context)) {
                 final boolean appinstalled = appInstalledOrNot("com.whatsapp");
                 if (appinstalled) {
                     Intent i = new Intent(Intent.ACTION_SEND);
@@ -1855,7 +1855,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
         });
         gplus.setOnClickListener(view -> {
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(context)) {
 
                 if (appInstalledOrNot("com.google.android.apps.plus")) {
 
@@ -2002,12 +2002,6 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connec = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getActivity().getPackageManager();
         boolean app_installed = false;
@@ -2133,57 +2127,63 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
     }
 
     private void industrialload() {
+        //AppLovinSdk.getInstance( this ).showMediationDebugger();
+        AppLovinSdk.getInstance(context).setMediationProvider("max");
+        AppLovinSdk.initializeSdk(requireActivity(), config -> {
+            // AppLovin SDK is initialized, start loading ads
+            if (mInterstitialAd != null) return;
+            System.out.println("ad shown  showAdWithDelay initialize done ");
+            mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Senthamil_Thedal_Ins), requireActivity());
+            mInterstitialAd.setListener(new MaxAdListener() {
+                @Override
+                public void onAdLoaded(MaxAd ad) {
+                    System.out.println("ad shown loaded : " + ad.getWaterfall());
+                }
 
-        Utills.INSTANCE.initializeAdzz(getActivity());
-        if (mInterstitialAd != null) return;
+                @Override
+                public void onAdDisplayed(MaxAd ad) {
+                    handler = null;
+                }
 
-        AdRequest adRequest = new AdRequest.Builder().build();
-        InterstitialAd.load(getActivity(), getResources().getString(R.string.Senthamil_Thedal_Ins), adRequest, new InterstitialAdLoadCallback() {
-            @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                // The mInterstitialAd reference will be null until
-                // an ad is loaded.
-                mInterstitialAd = interstitialAd;
-                interstiallistener();
-                Log.i("TAG", "onAdLoaded");
-            }
+                @Override
+                public void onAdHidden(MaxAd ad) {
+                    Log.d("TAG", "Ad dismissed fullscreen content.");
+                    mInterstitialAd = null;
+                    handler = null;
+                    Utills.INSTANCE.Loading_Dialog_dismiss();
+                    winning_report();
+                    industrialload();
+                }
 
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                // Handle the error
-                Log.d("TAG", loadAdError.toString());
-                mInterstitialAd = null;
-                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
-                handler = null;
+                @Override
+                public void onAdClicked(MaxAd ad) {
 
-            }
+                }
+
+                @Override
+                public void onAdLoadFailed(String adUnitId, MaxError error) {
+                    Log.d("TAG", error.toString());
+                    mInterstitialAd = null;
+                    handler = null;
+                    Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
+                }
+
+                @Override
+                public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                    Log.e("TAG", "Ad failed to show fullscreen content.");
+                    mInterstitialAd = null;
+                    handler = null;
+                    Utills.INSTANCE.Loading_Dialog_dismiss();
+                    sp.putInt(requireActivity(), "Game3_Stage_Close_ST", 0);
+                    winning_report();
+                }
+            });
+
+            // Load the first ad
+            mInterstitialAd.loadAd();
+
         });
 
-    }
-
-    public void interstiallistener() {
-        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-            @Override
-            public void onAdDismissedFullScreenContent() {
-                Log.d("TAG", "Ad dismissed fullscreen content.");
-                mInterstitialAd = null;
-                handler = null;
-                Utills.INSTANCE.Loading_Dialog_dismiss();
-                winning_report();
-                industrialload();
-            }
-
-            @Override
-            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                Log.e("TAG", "Ad failed to show fullscreen content.");
-                mInterstitialAd = null;
-                handler = null;
-                Utills.INSTANCE.Loading_Dialog_dismiss();
-                sp.putInt(requireActivity(), "Game3_Stage_Close_ST", 0);
-                winning_report();
-            }
-
-        });
     }
 
 
@@ -2193,7 +2193,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             Utills.INSTANCE.Loading_Dialog(requireActivity());
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.show(getActivity());
+                mInterstitialAd.showAd("Senthamil Thedal Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -2207,94 +2207,88 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
     }
 
     public void rewarded_adnew() {
-        RewardedInterstitialAd.load(getActivity(), getResources().getString(R.string.Reward_Ins),
-                new AdRequest.Builder().build(), new RewardedInterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(RewardedInterstitialAd ad) {
-                        rewardedAd = ad;
-                        fb_reward = 1;
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), requireActivity());
+        rewardedAd.setListener(new MaxRewardedAdListener() {
+            @Override
+            public void onRewardedVideoStarted(MaxAd ad) {
 
-                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.d("FindWFP", "Ad was clicked.");
-                            }
+            }
 
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                // Called when ad is dismissed.
-                                // Set the ad reference to null so you don't show the ad a second time.
-                                Log.d("FindWFP", "Ad dismissed fullscreen content.");
-                                rewardedAd = null;
-                            }
+            @Override
+            public void onRewardedVideoCompleted(MaxAd ad) {
+                reward_status = 1;
+            }
 
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                // Called when ad fails to show.
-                                Log.e("FindWFP", "Ad failed to show fullscreen content.");
-                                rewardedAd = null;
-                                rewarded_adnew();
-                            }
+            @Override
+            public void onUserRewarded(MaxAd ad, MaxReward reward) {
 
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.d("FindWFP", "Ad recorded an impression.");
-                            }
+            }
 
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.d("FindWFP", "Ad showed fullscreen content.");
-                            }
-                        });
+            @Override
+            public void onAdLoaded(MaxAd ad) {
+                fb_reward = 1;
+            }
+
+            @Override
+            public void onAdDisplayed(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdHidden(MaxAd ad) {
+                rewarded_adnew();
+                if (reward_status == 1) {
+                    if (extra_coin_s == 0) {
+                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                        cfx.moveToFirst();
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                        int spx = skx + mCoinCount;
+                        String aStringx = Integer.toString(spx);
+                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
                     }
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (rvo == 2) {
+                                share_earn2(mCoinCount);
+                            } else {
+                                vidcoinearn();
+                            }
+                        }
+                    }, 500);
+                } else {
+                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                }
 
-                    @Override
-                    public void onAdFailedToLoad(LoadAdError loadAdError) {
-                        Log.d("FindWFP", loadAdError.toString());
-                        rewardedAd = null;
-                    }
-                });
+                fb_reward = 0;
+                
+
+
+            }
+
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+                rewardedAd = null;
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                rewardedAd.loadAd();
+            }
+        });
+        rewardedAd.loadAd();
     }
 
     public void show_reward() {
-
-        OnUserEarnedRewardListener success = rewardItem -> {
-            rewarded_adnew();
-            if (reward_status == 1) {
-                if (extra_coin_s == 0) {
-                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                    cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + mCoinCount;
-                    String aStringx = Integer.toString(spx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                }
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (rvo == 2) {
-                            share_earn2(mCoinCount);
-                        } else {
-                            vidcoinearn();
-                        }
-                    }
-                }, 500);
-            } else {
-                Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-            }
-
-            fb_reward = 0;
-
-        };
-
-
-        if (rewardedAd != null) {
-            rewardedAd.show(getActivity(),success);
+        if (rewardedAd != null && rewardedAd.isReady()) {
+            rewardedAd.showAd();
             reward_status = 1;
         } else {
             Log.d("TAG", "The rewarded ad wasn't ready yet.");
@@ -2484,7 +2478,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             return mWords.size();
         }
 
-        class MyViewHolder extends RecyclerView.ViewHolder {
+        static class MyViewHolder extends RecyclerView.ViewHolder {
 
             final TextView tv;
 

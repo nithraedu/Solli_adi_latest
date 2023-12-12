@@ -49,7 +49,7 @@ public class Bonus extends BroadcastReceiver {
 
 
     public void createNotification_double(final Context context) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context,NotificationHelper.PRIMARY_CHANNEL);
         Intent i = new Intent(context, New_Main_Activity.class);
         //i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

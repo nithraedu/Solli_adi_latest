@@ -20,6 +20,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
@@ -82,7 +84,8 @@ public class Game_Status extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game__status);
-
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
         Newgame_DataBaseHelper myDbHelper = new Newgame_DataBaseHelper(Game_Status.this);
         myDbHelper.executeSql("create table if not exists prize_data(id INTEGER PRIMARY KEY AUTOINCREMENT,date varchar,score integer,isfinish integer DEFAULT 0);");
         back = (TextView) findViewById(R.id.back);
@@ -227,40 +230,42 @@ public class Game_Status extends AppCompatActivity {
         });
 
     }
-
-    @Override
-    public void onBackPressed() {
-        sp.putString(Game_Status.this, "game_area", "on");
-        if (sp.getString(Game_Status.this, "sd_prize_st").equals("yes")) {
-            sp.putString(Game_Status.this, "sd_prize_st", "");
-            finish();
-            Intent i = new Intent(Game_Status.this, New_Main_Activity.class);
-            startActivity(i);
-        } else {
-            String date = sp.getString(Game_Status.this, "date");
-            if (date.equals("0")) {
-                if (main_act.equals("")) {
-                    finish();
-                    Intent i = new Intent(Game_Status.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else {
-                    finish();
-                }
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
+            sp.putString(Game_Status.this, "game_area", "on");
+            if (sp.getString(Game_Status.this, "sd_prize_st").equals("yes")) {
+                sp.putString(Game_Status.this, "sd_prize_st", "");
+                finish();
+                Intent i = new Intent(Game_Status.this, New_Main_Activity.class);
+                startActivity(i);
             } else {
-                if (main_act.equals("")) {
-                    System.out.println("###########DDDDDDD 2");
-                    finish();
-                    Intent i = new Intent(Game_Status.this, New_Main_Activity.class);
-                    startActivity(i);
+                String date = sp.getString(Game_Status.this, "date");
+                if (date.equals("0")) {
+                    if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Game_Status.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        finish();
+                    }
                 } else {
-                    System.out.println("###########DDDDDDD 3");
-                    finish();
+                    if (main_act.equals("")) {
+                        System.out.println("###########DDDDDDD 2");
+                        finish();
+                        Intent i = new Intent(Game_Status.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        System.out.println("###########DDDDDDD 3");
+                        finish();
+                    }
                 }
             }
+
+
         }
+    };
 
-
-    }
 
     public void send_prize_data(final Context context) {
 

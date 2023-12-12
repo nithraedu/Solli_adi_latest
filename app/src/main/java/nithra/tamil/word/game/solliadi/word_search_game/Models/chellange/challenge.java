@@ -12,6 +12,8 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -33,15 +35,25 @@ public class challenge extends AppCompatActivity {
     challenge_WS_GridFragment challenge_ws_gridFragment;
     boolean start_time = false;
     FrameLayout fl_adplaceholder;
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
+            exit_fun_new();
 
+
+            sp.putString(challenge.this, "ws_challenge_intro", "no");
+            sp.putString(challenge.this, "ws_challenge_showcase_intro", "yes");
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // no_tool();
-        setContentView(R.layout.activity_challenge);
-
         setContentView(R.layout.activity_general_play);
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
 
         mydb = openOrCreateDatabase("WS_tamil.db", MODE_PRIVATE, null);
 
@@ -69,17 +81,6 @@ public class challenge extends AppCompatActivity {
 
 
         //uiHelper = new UiLifecycleHelper(challenge.this, callback);
-    }
-
-    @Override
-    public void onBackPressed() {
-        //super.onBackPressed();
-        exit_fun_new();
-
-
-        sp.putString(challenge.this, "ws_challenge_intro", "no");
-        sp.putString(challenge.this, "ws_challenge_showcase_intro", "yes");
-
     }
 
     private void exit_fun_new() {

@@ -136,17 +136,14 @@
         android:orientation="horizontal"
         android:visibility="visible">
 
-        <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+        <LinearLayout
             android:id="@+id/ads_lay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginTop="@dimen/txt_10"
             android:background="@color/white"
             android:minHeight="@dimen/wh_50"
-            ads:adUnitId="@string/Noti_Banner"
-            ads:adSize="BANNER">
+            android:orientation="horizontal" />
 
-        </com.google.android.gms.ads.AdView>
     </LinearLayout>
 </LinearLayout>

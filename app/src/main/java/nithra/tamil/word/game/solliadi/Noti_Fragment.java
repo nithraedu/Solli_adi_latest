@@ -24,6 +24,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -63,7 +65,8 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.noti_view);
-
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
         sharedPreference = new SharedPreference();
 
         myDB = openOrCreateDatabase("myDB", 0, null);
@@ -398,9 +401,11 @@ public class Noti_Fragment extends AppCompatActivity implements Notify_del {
             }
         });
     }
-
-    public void onBackPressed() {
-        finish();
-    }
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
+            finish();
+        }
+    };
 
 }

@@ -73,13 +73,8 @@ class NotificationHelper_offline extends ContextWrapper {
         DataBaseHelper myDbHelper;
         myDbHelper = new DataBaseHelper(context);
         exdb = context.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
-        NotificationCompat.Builder builder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder = new NotificationCompat.Builder(context, PRIMARY_CHANNEL);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context,PRIMARY_CHANNEL);
 
-        } else {
-            builder = new NotificationCompat.Builder(context);
-        }
         Intent i = new Intent(context, Clue_Game_Hard.class);
         sps.putString(context, "Exp_list", "off");
         sps.putInt(context, "addlodedd", 2);

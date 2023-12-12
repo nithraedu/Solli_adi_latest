@@ -122,12 +122,12 @@
 
             <ImageView
                 android:id="@+id/coin_img"
-                android:visibility="invisible"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"
-                android:background="@drawable/coins" />
+                android:background="@drawable/coins"
+                android:visibility="invisible" />
 
             <nithra.tamil.word.game.solliadi.word_search_game.Models.extra.MyTextView
                 android:id="@+id/coin_txt"
@@ -152,15 +152,13 @@
             android:layout_marginTop="3dp">
 
 
-
             <RelativeLayout
                 android:id="@+id/progress_lay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_marginRight="5dp"
-                android:layout_toLeftOf="@+id/saval_setting"
-                >
+                android:layout_toLeftOf="@+id/saval_setting">
 
                 <ImageView
                     android:id="@+id/more_timer"
@@ -204,11 +202,10 @@
                 android:id="@+id/saval_setting"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:background="@drawable/sound_on"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="10dp"
                 android:layout_centerVertical="true"
-                />
+                android:layout_marginRight="10dp"
+                android:background="@drawable/sound_on" />
         </RelativeLayout>
 
 
@@ -288,10 +285,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_centerInParent="true"
-                    android:layout_marginBottom="8dp"
                     android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="8dp"
                     android:background="#ffe900"
                     android:gravity="center"
                     android:text="dghvjhdjh"
@@ -317,10 +314,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_centerInParent="true"
-                    android:layout_marginBottom="8dp"
                     android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="8dp"
                     android:background="#ffe900"
                     android:gravity="center"
                     android:text="dghvjhdjh"
@@ -363,7 +360,6 @@
         </nithra.tamil.word.game.solliadi.word_search_game.Models.chellange.challenge_WS_GridView>
 
 
-
         <RelativeLayout
             android:id="@+id/ads_layout"
             android:layout_width="match_parent"
@@ -373,16 +369,14 @@
             >
 
 
-
-
             <LinearLayout
                 android:id="@+id/normal_baner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:orientation="vertical"
-                android:minHeight="@dimen/wh_50"
                 android:background="@color/lighest"
+                android:minHeight="@dimen/wh_50"
+                android:orientation="vertical"
                 android:visibility="visible" />
 
 

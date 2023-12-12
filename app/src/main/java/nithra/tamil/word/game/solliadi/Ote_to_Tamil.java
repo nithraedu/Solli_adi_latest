@@ -2,6 +2,7 @@ package nithra.tamil.word.game.solliadi;
 
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
+import static nithra.tamil.word.game.solliadi.Utils.isNetworkAvailable;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -50,21 +51,21 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
+import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.MaxRewardedAdListener;
+import com.applovin.mediation.ads.MaxInterstitialAd;
+import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinSdk;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -182,8 +183,8 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     //RewardedVideoAd rewardedVideoAd;
     Handler handler;
     Runnable my_runnable;
-    private RewardedInterstitialAd rewardedAd;
-    private InterstitialAd mInterstitialAd;
+    private MaxRewardedAd rewardedAd;
+    private MaxInterstitialAd mInterstitialAd;
 
     @Override
     public void download_completed(String status) {
@@ -204,7 +205,8 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ote_to_tamil_game);
-
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, callback);
 
         Animation myFadeInAnimation = AnimationUtils.loadAnimation(Ote_to_Tamil.this, R.anim.blink_animation);
 
@@ -258,7 +260,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             prize_logo.setVisibility(View.VISIBLE);
         else prize_logo.setVisibility(View.GONE);
         prize_logo.setOnClickListener(v -> {
-            if (isNetworkAvailable())
+            if (isNetworkAvailable(this))
                 if (sps.getString(Ote_to_Tamil.this, "price_registration").equals("com")) {
                     finish();
                     Intent i = new Intent(Ote_to_Tamil.this, Game_Status.class);
@@ -412,92 +414,87 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     }
 
     public void rewarded_adnew() {
-        RewardedInterstitialAd.load(this, getResources().getString(R.string.Reward_Ins),
-                new AdRequest.Builder().build(), new RewardedInterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(RewardedInterstitialAd ad) {
-                        rewardedAd = ad;
-                        fb_reward = 1;
+        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
+        rewardedAd.setListener(new MaxRewardedAdListener() {
+            @Override
+            public void onRewardedVideoStarted(MaxAd ad) {
 
-                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.d("FindWFP", "Ad was clicked.");
-                            }
+            }
 
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                // Called when ad is dismissed.
-                                // Set the ad reference to null so you don't show the ad a second time.
-                                Log.d("FindWFP", "Ad dismissed fullscreen content.");
-                                rewardedAd = null;
-                            }
+            @Override
+            public void onRewardedVideoCompleted(MaxAd ad) {
+                reward_status = 1;
+            }
 
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                // Called when ad fails to show.
-                                Log.e("FindWFP", "Ad failed to show fullscreen content.");
-                                rewardedAd = null;
-                                rewarded_adnew();
-                            }
+            @Override
+            public void onUserRewarded(MaxAd ad, MaxReward reward) {
 
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.d("FindWFP", "Ad recorded an impression.");
-                            }
+            }
 
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.d("FindWFP", "Ad showed fullscreen content.");
-                            }
-                        });
+            @Override
+            public void onAdLoaded(MaxAd ad) {
+                fb_reward = 1;
+            }
+
+            @Override
+            public void onAdDisplayed(MaxAd ad) {
+            }
+
+            @Override
+            public void onAdHidden(MaxAd ad) {
+                rewarded_adnew();
+                if (reward_status == 1) {
+                    if (extra_coin_s == 0) {
+                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                        cfx.moveToFirst();
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                        int spx = skx + mCoinCount;
+                        String aStringx = Integer.toString(spx);
+                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
                     }
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (rvo == 2) {
+                                share_earn2(mCoinCount);
+                            } else {
+                                vidcoinearn();
+                            }
+                        }
+                    }, 500);
+                } else {
+                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                }
 
-                    @Override
-                    public void onAdFailedToLoad(LoadAdError loadAdError) {
-                        Log.d("FindWFP", loadAdError.toString());
-                        rewardedAd = null;
-                    }
-                });
+                fb_reward = 0;
+                
+
+
+            }
+
+            @Override
+            public void onAdClicked(MaxAd ad) {
+
+            }
+
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+                rewardedAd = null;
+            }
+
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                rewardedAd.loadAd();
+            }
+        });
+        rewardedAd.loadAd();
     }
 
     public void show_reward() {
-
-        OnUserEarnedRewardListener success = rewardItem -> {
-            rewarded_adnew();
-            if (reward_status == 1) {
-                if (extra_coin_s == 0) {
-                    Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                    cfx.moveToFirst();
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    int spx = skx + mCoinCount;
-                    String aStringx = Integer.toString(spx);
-                    myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                }
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (rvo == 2) {
-                            share_earn2(mCoinCount);
-                        } else {
-                            vidcoinearn();
-                        }
-                    }
-                }, 500);
-            } else {
-                Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-            }
-            fb_reward = 0;
-
-        };
-
-        if (rewardedAd != null) {
-            rewardedAd.show(this, success);
+        if (rewardedAd != null && rewardedAd.isReady()) {
+            rewardedAd.showAd();
             reward_status = 1;
         } else {
             Log.d("TAG", "The rewarded ad wasn't ready yet.");
@@ -505,59 +502,64 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     }
 
     private void industrialload() {
+        //AppLovinSdk.getInstance( this ).showMediationDebugger();
+        AppLovinSdk.getInstance(this).setMediationProvider("max");
+        AppLovinSdk.initializeSdk(this, config -> {
+            // AppLovin SDK is initialized, start loading ads
+            if (mInterstitialAd != null) return;
+            System.out.println("ad shown  showAdWithDelay initialize done ");
+            mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Ragasiya_sorgal_ins), Ote_to_Tamil.this);
+            mInterstitialAd.setListener(new MaxAdListener() {
+                @Override
+                public void onAdLoaded(MaxAd ad) {
+                    System.out.println("ad shown loaded : " + ad.getWaterfall());
+                }
 
-        Utills.INSTANCE.initializeAdzz(this);
-        if (mInterstitialAd != null) return;
+                @Override
+                public void onAdDisplayed(MaxAd ad) {
+                    handler = null;
+                }
 
-        AdRequest adRequest = new AdRequest.Builder().build();
-        InterstitialAd.load(this, getResources().getString(R.string.Ragasiya_sorgal_ins), adRequest, new InterstitialAdLoadCallback() {
-            @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                // The mInterstitialAd reference will be null until
-                // an ad is loaded.
-                mInterstitialAd = interstitialAd;
-                interstiallistener();
-                Log.i("TAG", "onAdLoaded");
-            }
+                @Override
+                public void onAdHidden(MaxAd ad) {
+                    Log.d("TAG", "Ad dismissed fullscreen content.");
+                    mInterstitialAd = null;
+                    handler = null;
+                    Utills.INSTANCE.Loading_Dialog_dismiss();
+                    setSc();
+                    industrialload();
+                }
 
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                // Handle the error
-                Log.d("TAG", loadAdError.toString());
-                mInterstitialAd = null;
-                Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
-                handler = null;
+                @Override
+                public void onAdClicked(MaxAd ad) {
 
-            }
+                }
+
+                @Override
+                public void onAdLoadFailed(String adUnitId, MaxError error) {
+                    Log.d("TAG", error.toString());
+                    mInterstitialAd = null;
+                    handler = null;
+                    Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
+                }
+
+                @Override
+                public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                    Log.e("TAG", "Ad failed to show fullscreen content.");
+                    mInterstitialAd = null;
+                    handler = null;
+                    Utills.INSTANCE.Loading_Dialog_dismiss();
+                    sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                    setSc();
+                }
+            });
+
+            // Load the first ad
+            mInterstitialAd.loadAd();
+
         });
 
     }
-
-    public void interstiallistener() {
-        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-            @Override
-            public void onAdDismissedFullScreenContent() {
-                Log.d("TAG", "Ad dismissed fullscreen content.");
-                mInterstitialAd = null;
-                handler = null;
-                Utills.INSTANCE.Loading_Dialog_dismiss();
-                setSc();
-                industrialload();
-            }
-
-            @Override
-            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                Log.e("TAG", "Ad failed to show fullscreen content.");
-                mInterstitialAd = null;
-                handler = null;
-                Utills.INSTANCE.Loading_Dialog_dismiss();
-                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
-                setSc();
-            }
-
-        });
-    }
-
 
     public void adShow() {
         if (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") == Utills.interstitialadCount && mInterstitialAd != null) {
@@ -565,7 +567,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.show(this);
+                mInterstitialAd.showAd("Ragasiya sorgal ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -2438,7 +2440,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         extra_coin = openDialog.findViewById(R.id.extra_coin);
         extra_coin.setOnClickListener(v -> {
             extra_coin_s = 1;
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(Ote_to_Tamil.this, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
@@ -2459,67 +2461,69 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         });
         if (!isFinishing()) openDialog.show();
     }
+    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        @Override
+        public void handleOnBackPressed() {
+            sps.putString(Ote_to_Tamil.this, "game_area", "on");
 
-    public void onBackPressed() {
-        sps.putString(Ote_to_Tamil.this, "game_area", "on");
+            if (popupWindow.isShowing()) popupWindow.dismiss();
+            else {
+                sps.putInt(Ote_to_Tamil.this, "addlodedd", 0);
+                s = 1;
+                openDialog_p = new Dialog(Ote_to_Tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                openDialog_p.setContentView(R.layout.back_pess);
+                TextView yes = openDialog_p.findViewById(R.id.yes);
+                TextView no = openDialog_p.findViewById(R.id.no);
 
-        if (popupWindow.isShowing()) popupWindow.dismiss();
-        else {
-            sps.putInt(Ote_to_Tamil.this, "addlodedd", 0);
-            s = 1;
-            openDialog_p = new Dialog(Ote_to_Tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-            openDialog_p.setContentView(R.layout.back_pess);
-            TextView yes = openDialog_p.findViewById(R.id.yes);
-            TextView no = openDialog_p.findViewById(R.id.no);
+                yes.setOnClickListener(v -> {
 
-            yes.setOnClickListener(v -> {
+                    String dates = sps.getString(Ote_to_Tamil.this, "date");
+                    int pos;
+                    if (dates.equals("0")) {
+                        pos = 1;
+                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                        focus.stop();
+                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
 
-                String dates = sps.getString(Ote_to_Tamil.this, "date");
-                int pos;
-                if (dates.equals("0")) {
-                    pos = 1;
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    focus.stop();
-                    newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
+                        //    newhelper2.executeSql("UPDATE newmaintable2 SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
+                    } else {
+                        pos = 2;
+                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                        focus.stop();
+                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
 
-                    //    newhelper2.executeSql("UPDATE newmaintable2 SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                } else {
-                    pos = 2;
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    focus.stop();
-                    newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
-
-                    //   newhelper2.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                }
-
-
-                String date = sps.getString(Ote_to_Tamil.this, "date");
-                if (date.equals("0")) if (main_act.equals("")) {
-                    finish();
-                    Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else finish();
-                else if (sps.getString(Ote_to_Tamil.this, "Exp_list").equals("on")) {
-                    finish();
-                    Intent i = new Intent(Ote_to_Tamil.this, Expandable_List_View.class);
-                    startActivity(i);
-                } else if (main_act.equals("")) {
-                    finish();
-                    Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else finish();
-
-                openDialog_p.dismiss();
-            });
-            no.setOnClickListener(v -> openDialog_p.dismiss());
-            openDialog_p.show();
+                        //   newhelper2.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
+                    }
 
 
+                    String date = sps.getString(Ote_to_Tamil.this, "date");
+                    if (date.equals("0")) if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else finish();
+                    else if (sps.getString(Ote_to_Tamil.this, "Exp_list").equals("on")) {
+                        finish();
+                        Intent i = new Intent(Ote_to_Tamil.this, Expandable_List_View.class);
+                        startActivity(i);
+                    } else if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else finish();
+
+                    openDialog_p.dismiss();
+                });
+                no.setOnClickListener(v -> openDialog_p.dismiss());
+                openDialog_p.show();
+
+
+            }
+
+
+            // return super.onKeyDown(keyCode, event);
         }
-
-
-        // return super.onKeyDown(keyCode, event);
-    }
+    };
 
     public void setSc() {
         if (s == 1) {
@@ -2543,7 +2547,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             prize_logo.setVisibility(View.VISIBLE);
         else prize_logo.setVisibility(View.GONE);
         prize_logo.setOnClickListener(v -> {
-            if (isNetworkAvailable())
+            if (isNetworkAvailable(this))
                 if (sps.getString(Ote_to_Tamil.this, "price_registration").equals("com")) {
                     finish();
                     Intent i = new Intent(Ote_to_Tamil.this, Game_Status.class);
@@ -2568,7 +2572,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
         //New_Main_Activity.load_addFromMain_multiplayer(Ote_to_Tamil.this, ads_layout);
         if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 1) ads_layout.setVisibility(View.GONE);
-        else if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
+        else if (isNetworkAvailable(Ote_to_Tamil.this)) {
             //New_Main_Activity.load_add_fb_rect_score_screen(Ote_to_Tamil.this, ads_layout);
         } else ads_layout.setVisibility(View.GONE);
 
@@ -2605,7 +2609,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
         vid_earn.setOnClickListener(v -> {
             rvo = 2;
-            if (Utils.isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
@@ -2628,7 +2632,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
         rewardvideo.setOnClickListener(v -> {
             rvo = 2;
-            if (Utils.isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
@@ -2650,7 +2654,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
         wtp.setOnClickListener(view -> {
             // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.whatsapp");
                 if (appinstalled) {
                     Intent i = new Intent(Intent.ACTION_SEND);
@@ -2675,7 +2679,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         });
         gplus.setOnClickListener(view -> {
             // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
                 if (appinstalled) {
                     Intent i = new Intent(Intent.ACTION_SEND);
@@ -2759,12 +2763,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         return app_installed;
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connec = (ConnectivityManager) this
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connec.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
+
 
     public void coinanim() {
 ////
@@ -2864,7 +2863,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         video.setOnClickListener(v -> {
             rvo = 1;
             extra_coin_s = 0;
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
 
                 if (fb_reward == 1) {
@@ -2905,7 +2904,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
         wp.setOnClickListener(view -> {
             // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.whatsapp");
                 if (appinstalled) {
                     openDialog_earncoin.cancel();
@@ -2930,7 +2929,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
 
             // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-            if (isNetworkAvailable()) {
+            if (isNetworkAvailable(this)) {
 
 
                 final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
@@ -2974,8 +2973,10 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         super.onResume();
         if (handler != null) handler.postDelayed(my_runnable, 1000);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Ote_to_Tamil.this);
-        mFirebaseAnalytics.setCurrentScreen(this, "Other language to tamil", null);
-
+        Bundle params = new Bundle();
+        params.putString("screen_name", "Other language to tamil");
+        params.putString("screen_class", "Ote_to_Tamil");
+        mFirebaseAnalytics.logEvent( "screen_view", params);
         System.out.println("addloded" + sps.getInt(Ote_to_Tamil.this, "addloded"));
 
         if (setting_access == 1) {
@@ -3002,7 +3003,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         if (sps.getInt(Ote_to_Tamil.this, "goto_sett") == 1) {
             sps.putInt(Ote_to_Tamil.this, "goto_sett", 0);
 
-            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
+            if (isNetworkAvailable(Ote_to_Tamil.this)) {
 
             }
         }
@@ -3048,7 +3049,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         super.onActivityResult(requestCode, resultCode, data);
         //  uiHelper.onActivityResult(requestCode, resultCode, data, dialogCallback);
 
-        if (requestCode == 0) if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) download_datas();
+        if (requestCode == 0) if (isNetworkAvailable(Ote_to_Tamil.this)) download_datas();
         else {
 
 
@@ -3645,7 +3646,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
     public void downloaddata_daily() {
 
-        if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
+        if (isNetworkAvailable(Ote_to_Tamil.this)) {
             Cursor c1 = myDbHelper.getQry("select id from dailytest order by id DESC");
             c1.moveToFirst();
 
@@ -3696,7 +3697,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             //DownLoad Letters and Words
 
 
-            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) {
+            if (isNetworkAvailable(Ote_to_Tamil.this)) {
                 Cursor c1 = newhelper2.getQry("select id from newmaintable2 order by id DESC");
                 c1.moveToFirst();
 
@@ -3976,13 +3977,13 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         }
 
         view1.setOnClickListener(view -> {
-            if (Utils.isNetworkAvailable(context))
+            if (isNetworkAvailable(context))
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(inss.getTag().toString())));
             else Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
         });
 
         inss.setOnClickListener(view -> {
-            if (Utils.isNetworkAvailable(context))
+            if (isNetworkAvailable(context))
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(view.getTag().toString())));
             else Utils.toast_center(context, "இணையதள சேவையை சரிபார்க்கவும் ");
         });
@@ -4050,7 +4051,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         alertDialogBuilder.setNegativeButton("ஆம்", (dialog, id) -> {
             //DownLoad Letters and Words
 
-            if (Utils.isNetworkAvailable(Ote_to_Tamil.this)) download_datas();
+            if (isNetworkAvailable(Ote_to_Tamil.this)) download_datas();
             else {
 
                 w_head.setVisibility(View.INVISIBLE);
