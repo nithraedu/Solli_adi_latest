@@ -725,7 +725,7 @@ public class WordsearchGridView extends LinearLayout implements OnKeyListener {
     private void drawSelection(Word word, Canvas canvas, Paint paint) {
         float angleStep = (float) Math.hypot(mColumnWidth, mColumnWidth);
         float pad = mColumnWidth / 3.2f;
-
+        if (word.getWord() == null) return;
         String[] str = word.getWord().split("\\.");
         StringBuilder builder = new StringBuilder();
         for (String s : str) {
