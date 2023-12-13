@@ -2106,7 +2106,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             @Override
             public void onSdkInitialized(AppLovinSdkConfiguration config) {
                 // AppLovin SDK is initialized, start loading ads
-                if (mInterstitialAd != null) return;
+                if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
                 System.out.println("ad shown  showAdWithDelay initialize done ");
                 mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Viliyodu_Vilaiyadu_Ins), Find_difference_between_pictures.this);
                 mInterstitialAd.setListener(new MaxAdListener() {

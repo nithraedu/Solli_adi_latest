@@ -122,7 +122,7 @@ public class ST_Activity extends AppCompatActivity {
             if (!Utills.INSTANCE.isNetworkAvailable(this)) {
                 banner_adParent.setVisibility(View.GONE);
             }
-        }
+        }else banner_adParent.setVisibility(View.GONE);
         Bundle extras;
         extras = getIntent().getExtras();
         idd = extras.getInt("idd");

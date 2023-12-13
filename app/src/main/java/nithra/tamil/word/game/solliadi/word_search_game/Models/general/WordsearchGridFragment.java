@@ -2131,7 +2131,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
         AppLovinSdk.getInstance(context).setMediationProvider("max");
         AppLovinSdk.initializeSdk(requireActivity(), config -> {
             // AppLovin SDK is initialized, start loading ads
-            if (mInterstitialAd != null) return;
+            if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
             System.out.println("ad shown  showAdWithDelay initialize done ");
             mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Senthamil_Thedal_Ins), requireActivity());
             mInterstitialAd.setListener(new MaxAdListener() {

@@ -3161,7 +3161,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         AppLovinSdk.getInstance(this).setMediationProvider("max");
         AppLovinSdk.initializeSdk(this, config -> {
             // AppLovin SDK is initialized, start loading ads
-            if (mInterstitialAd != null) return;
+            if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
             System.out.println("ad shown  showAdWithDelay initialize done ");
             mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Ragasiya_sorgal_ins), Makeword_Rightorder.this);
             mInterstitialAd.setListener(new MaxAdListener() {

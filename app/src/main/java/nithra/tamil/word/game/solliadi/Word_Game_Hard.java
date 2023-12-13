@@ -5950,7 +5950,7 @@ if(downok.equals("")){
         AppLovinSdk.getInstance(this).setMediationProvider("max");
         AppLovinSdk.initializeSdk(this, config -> {
             // AppLovin SDK is initialized, start loading ads
-            if (mInterstitialAd != null) return;
+            if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
             System.out.println("ad shown  showAdWithDelay initialize done ");
             mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Ragasiya_sorgal_ins), Word_Game_Hard.this);
             mInterstitialAd.setListener(new MaxAdListener() {

@@ -2041,7 +2041,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             @Override
             public void onSdkInitialized(AppLovinSdkConfiguration config) {
                 // AppLovin SDK is initialized, start loading ads
-                if (mInterstitialAd != null) return;
+                if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
                 System.out.println("ad shown  showAdWithDelay initialize done ");
                 mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Senthamil_Thedal_Ins), getActivity());
                 mInterstitialAd.setListener(new MaxAdListener() {

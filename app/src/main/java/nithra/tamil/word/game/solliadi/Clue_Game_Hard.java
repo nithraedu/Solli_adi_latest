@@ -550,7 +550,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
             @Override
             public void onSdkInitialized(AppLovinSdkConfiguration config) {
                 // AppLovin SDK is initialized, start loading ads
-                if (mInterstitialAd != null) return;
+                if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
                 System.out.println("ad shown  showAdWithDelay initialize done ");
                 mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Puthayal_Sorkal_Ins), Clue_Game_Hard.this);
                 mInterstitialAd.setListener(new MaxAdListener() {

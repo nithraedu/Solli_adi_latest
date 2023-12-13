@@ -31,6 +31,7 @@ import java.util.Date
  */
 object Utills {
     const val interstitialadCount = 9
+    const val interstitialloadCount = 7
     const val notiInterstitialadCount = 3
     const val DATE_TIME_FORMAT_WS = "dd/MM/yyyy HH:mm:ss"
     const val TAG_BACKUP_LOCATION = "/Nithra/Tamil_Game/Backup/"

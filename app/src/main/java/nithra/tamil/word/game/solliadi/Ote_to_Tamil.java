@@ -506,7 +506,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         AppLovinSdk.getInstance(this).setMediationProvider("max");
         AppLovinSdk.initializeSdk(this, config -> {
             // AppLovin SDK is initialized, start loading ads
-            if (mInterstitialAd != null) return;
+            if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
             System.out.println("ad shown  showAdWithDelay initialize done ");
             mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Ragasiya_sorgal_ins), Ote_to_Tamil.this);
             mInterstitialAd.setListener(new MaxAdListener() {

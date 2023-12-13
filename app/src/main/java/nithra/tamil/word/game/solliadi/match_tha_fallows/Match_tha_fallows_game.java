@@ -2459,7 +2459,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         AppLovinSdk.getInstance(this).setMediationProvider("max");
         AppLovinSdk.initializeSdk(this, config -> {
             // AppLovin SDK is initialized, start loading ads
-            if (mInterstitialAd != null) return;
+            if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
             System.out.println("ad shown  showAdWithDelay initialize done ");
             mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Ragasiya_sorgal_ins), Match_tha_fallows_game.this);
             mInterstitialAd.setListener(new MaxAdListener() {
