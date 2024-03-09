@@ -609,8 +609,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         sps.putString(getApplicationContext(), "signinagain", "yees");
 
 
-
-
 //in_app message(Nithra ad)
         if (sp.getInt(New_Main_Activity.this, "inappmessage") == 0) {
             sp.putInt(New_Main_Activity.this, "inappmessage", 1);
@@ -1035,7 +1033,11 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                             @Override
                             protected String doInBackground(String... params) {
                                 if (mPreferences.getString("newdbcopied_n3", "").equals("yes"))
-                                    gamestatus();
+                                    try {
+                                        gamestatus();
+                                    } catch (Exception e) {
+
+                                    }
                                 //userstates_send();
                                 return null;
                             }
@@ -1163,9 +1165,13 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
                 myDbHelper = new DataBaseHelper(context);
                 Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                if (cfx != null && cfx.moveToFirst()) {
-                    int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                    nl_coins_show.setText("" + skx);
+                try {
+                    if (cfx != null && cfx.moveToFirst()) {
+                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                        nl_coins_show.setText("" + skx);
+                    }
+                } catch (Exception e) {
+
                 }
 
                 Cursor bb1 = myDbHelper.getQry("select * from score ");
@@ -5359,7 +5365,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         } else terms_and_policy();
     }
-    void notiPermission(){
+
+    void notiPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && sp.getInt(this, "permission") == 0) {
 
             sp.putInt(this, "permission", 1);

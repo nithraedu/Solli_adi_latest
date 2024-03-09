@@ -273,7 +273,11 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         soundset();
         find();
         click();
-        next();
+        try {
+            next();
+        } catch (Exception e) {
+
+        }
         System.out.println("p2");
 
 
@@ -385,7 +389,9 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Viliyodu Vilaiyadu Ins");
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Viliyodu Vilaiyadu Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -1312,12 +1318,14 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         ads_lay = findViewById(R.id.ads_lay);
         qwt = findViewById(R.id.qwt);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-        cfx.moveToFirst();
-        int skx = 0;
-        if (cfx.getCount() != 0) {
-            skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+        if (cfx != null) {
+            cfx.moveToFirst();
+            int skx = 0;
+            if (cfx.getCount() != 0) {
+                skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            }
+            score.setText("" + skx);
         }
-        score.setText("" + skx);
 
         ImageView prize_logo = findViewById(R.id.prize_logo);
         if (sps.getInt(Find_words_from_picture.this, "remoteConfig_prize") == 1) {
@@ -2219,6 +2227,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
         helpshare(a);
     }
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -3227,7 +3236,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 }
 
                 fb_reward = 0;
-                
 
 
             }

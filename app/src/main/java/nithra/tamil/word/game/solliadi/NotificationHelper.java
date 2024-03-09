@@ -51,34 +51,10 @@ class NotificationHelper extends ContextWrapper {
 
             Notification myNotification;
             if (style.equals("bt")) {
-                myNotification = new NotificationCompat.Builder(context, PRIMARY_CHANNEL)
-                        .setSound(mUri)
-                        .setSmallIcon(getSmallIcon())
-                        .setColor(Color.parseColor("#6460AA"))
-                        .setLargeIcon(getlogo1())
-                        .setAutoCancel(true)
-                        .setPriority(2)
-                        .setContentIntent(resultPendingIntent(bm, body, id, activity))
-                        .setContentTitle("சொல்லிஅடி")
-                        .setContentText("")
-                        .setGroup("" + title)
-                        .setStyle(bigtext("சொல்லிஅடி", "சொல்லிஅடி", bm))
-                        .build();
+                myNotification = new NotificationCompat.Builder(context, PRIMARY_CHANNEL).setSound(mUri).setSmallIcon(getSmallIcon()).setColor(Color.parseColor("#6460AA")).setLargeIcon(getlogo1()).setAutoCancel(true).setPriority(2).setContentIntent(resultPendingIntent(bm, body, id, activity)).setContentTitle("சொல்லிஅடி").setContentText("").setGroup(title).setStyle(bigtext("சொல்லிஅடி", "சொல்லிஅடி", bm)).build();
                 notify(id, myNotification);
             } else {
-                myNotification = new NotificationCompat.Builder(context, PRIMARY_CHANNEL)
-                        .setSound(mUri)
-                        .setSmallIcon(getSmallIcon())
-                        .setColor(Color.parseColor("#6460AA"))
-                        .setLargeIcon(getlogo1())
-                        .setAutoCancel(true)
-                        .setPriority(2)
-                        .setContentIntent(resultPendingIntent(bm, body, id, activity))
-                        .setContentTitle(bm)
-                        .setContentText("")
-                        .setGroup("" + title)
-                        .setStyle(bigimg("சொல்லிஅடி", bm, imgg))
-                        .build();
+                myNotification = new NotificationCompat.Builder(context, PRIMARY_CHANNEL).setSound(mUri).setSmallIcon(getSmallIcon()).setColor(Color.parseColor("#6460AA")).setLargeIcon(getlogo1()).setAutoCancel(true).setPriority(2).setContentIntent(resultPendingIntent(bm, body, id, activity)).setContentTitle(bm).setContentText("").setGroup(title).setStyle(bigimg("சொல்லிஅடி", bm, imgg)).build();
                 notify(id, myNotification);
             }
 
@@ -95,34 +71,10 @@ class NotificationHelper extends ContextWrapper {
 
             Notification myNotification;
             if (style.equals("bt")) {
-                myNotification = new NotificationCompat.Builder(context, PRIMARY_CHANNEL)
-                        .setSound(mUri)
-                        .setSmallIcon(getSmallIcon())
-                        .setColor(Color.parseColor("#6460AA"))
-                        .setLargeIcon(getlogo1())
-                        .setAutoCancel(true)
-                        .setPriority(2)
-                        .setContentIntent(resultPendingIntent(bm, body1, id, activity))
-                        .setContentTitle(title)
-                        .setContentText("")
-                        .setGroup("" + title)
-                        .setStyle(bigtext(title, "சொல்லிஅடி", ""))
-                        .build();
+                myNotification = new NotificationCompat.Builder(context, PRIMARY_CHANNEL).setSound(mUri).setSmallIcon(getSmallIcon()).setColor(Color.parseColor("#6460AA")).setLargeIcon(getlogo1()).setAutoCancel(true).setPriority(2).setContentIntent(resultPendingIntent(bm, body1, id, activity)).setContentTitle(title).setContentText("").setGroup(title).setStyle(bigtext(title, "சொல்லிஅடி", "")).build();
                 notify(id, myNotification);
             } else {
-                myNotification = new NotificationCompat.Builder(context, PRIMARY_CHANNEL)
-                        .setSound(mUri)
-                        .setSmallIcon(getSmallIcon())
-                        .setColor(Color.parseColor("#6460AA"))
-                        .setLargeIcon(getlogo1())
-                        .setAutoCancel(true)
-                        .setPriority(2)
-                        .setContentIntent(resultPendingIntent1(bm))
-                        .setContentTitle(title)
-                        .setGroup("" + title)
-                        .setContentText("")
-                        .setStyle(bigimg(title, "சொல்லிஅடி", imgg))
-                        .build();
+                myNotification = new NotificationCompat.Builder(context, PRIMARY_CHANNEL).setSound(mUri).setSmallIcon(getSmallIcon()).setColor(Color.parseColor("#6460AA")).setLargeIcon(getlogo1()).setAutoCancel(true).setPriority(2).setContentIntent(resultPendingIntent1(bm)).setContentTitle(title).setGroup(title).setContentText("").setStyle(bigimg(title, "சொல்லிஅடி", imgg)).build();
                 notify(id, myNotification);
             }
 
@@ -142,22 +94,13 @@ class NotificationHelper extends ContextWrapper {
             contentView.setTextViewText(R.id.title, bm);
             NotificationCompat.Builder mBuilder = null;
             if (style.equals("bt")) {
-                mBuilder = new NotificationCompat.Builder(context, PRIMARY_CHANNEL)
-                        .setSmallIcon(getSmallIcon())
-                        .setColor(Color.parseColor("#6460AA"))
-                        .setGroup("" + titlee)
-                        .setContent(contentView);
+                mBuilder = new NotificationCompat.Builder(context, PRIMARY_CHANNEL).setSmallIcon(getSmallIcon()).setColor(Color.parseColor("#6460AA")).setGroup(titlee).setContent(contentView);
             } else {
                 RemoteViews expandView = new RemoteViews(getPackageName(), R.layout.notification_shown_bi);
                 expandView.setImageViewResource(R.id.image, getlogo());
                 expandView.setTextViewText(R.id.title, bm);
                 expandView.setImageViewBitmap(R.id.imgg, LargeIcon(imgg));
-                mBuilder = new NotificationCompat.Builder(context, PRIMARY_CHANNEL)
-                        .setSmallIcon(getSmallIcon())
-                        .setColor(Color.parseColor("#6460AA"))
-                        .setGroup("" + titlee)
-                        .setContent(contentView)
-                        .setCustomBigContentView(expandView);
+                mBuilder = new NotificationCompat.Builder(context, PRIMARY_CHANNEL).setSmallIcon(getSmallIcon()).setColor(Color.parseColor("#6460AA")).setGroup(titlee).setContent(contentView).setCustomBigContentView(expandView);
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -188,22 +131,13 @@ class NotificationHelper extends ContextWrapper {
             contentView.setTextViewText(R.id.title, bm);
             NotificationCompat.Builder mBuilder = null;
             if (style.equals("bt")) {
-                mBuilder = new NotificationCompat.Builder(context, PRIMARY_CHANNEL)
-                        .setSmallIcon(getSmallIcon())
-                        .setColor(Color.parseColor("#6460AA"))
-                        .setGroup("" + title)
-                        .setContent(contentView);
+                mBuilder = new NotificationCompat.Builder(context, PRIMARY_CHANNEL).setSmallIcon(getSmallIcon()).setColor(Color.parseColor("#6460AA")).setGroup(title).setContent(contentView);
             } else {
                 RemoteViews expandView = new RemoteViews(getPackageName(), R.layout.notification_shown_bi);
                 expandView.setImageViewResource(R.id.image, getlogo());
                 expandView.setTextViewText(R.id.title, bm);
                 expandView.setImageViewBitmap(R.id.imgg, LargeIcon(imgg));
-                mBuilder = new NotificationCompat.Builder(context, PRIMARY_CHANNEL)
-                        .setSmallIcon(getSmallIcon())
-                        .setColor(Color.parseColor("#6460AA"))
-                        .setGroup("" + title)
-                        .setContent(contentView)
-                        .setCustomBigContentView(expandView);
+                mBuilder = new NotificationCompat.Builder(context, PRIMARY_CHANNEL).setSmallIcon(getSmallIcon()).setColor(Color.parseColor("#6460AA")).setGroup(title).setContent(contentView).setCustomBigContentView(expandView);
             }
 
             Notification notification = mBuilder.build();
@@ -268,33 +202,23 @@ class NotificationHelper extends ContextWrapper {
     }
 
     public NotificationCompat.BigTextStyle bigtext(String Title, String Summary, String bigText) {
-        return new NotificationCompat.BigTextStyle()
-                .setBigContentTitle(Title)
-                .setSummaryText(Summary)
-                .bigText(bigText);
+        return new NotificationCompat.BigTextStyle().setBigContentTitle(Title).setSummaryText(Summary).bigText(bigText);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public Notification.BigTextStyle bigtext1(String Title, String Summary, String bigText) {
-        return new Notification.BigTextStyle()
-                .setBigContentTitle(Title)
-                .setSummaryText(Summary)
-                .bigText(bigText);
+        return new Notification.BigTextStyle().setBigContentTitle(Title).setSummaryText(Summary).bigText(bigText);
     }
 
     public NotificationCompat.BigPictureStyle bigimg(String Title, String Summary, String imgg) {
-        return new NotificationCompat.BigPictureStyle()
-                .setBigContentTitle(Title)
+        return new NotificationCompat.BigPictureStyle().setBigContentTitle(Title)
                 // .setSummaryText(Summary)
                 .bigPicture(LargeIcon(imgg));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public Notification.BigPictureStyle bigimg1(String Title, String Summary, String imgg) {
-        return new Notification.BigPictureStyle()
-                .setBigContentTitle(Title)
-                .setSummaryText(Summary)
-                .bigPicture(LargeIcon(imgg));
+        return new Notification.BigPictureStyle().setBigContentTitle(Title).setSummaryText(Summary).bigPicture(LargeIcon(imgg));
     }
 
     public PendingIntent resultPendingIntent(String titt, String msgg, int idd, Class activity) {
@@ -304,7 +228,7 @@ class NotificationHelper extends ContextWrapper {
         stackBuilder.addNextIntent(intent);
         int i;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            i = PendingIntent.FLAG_MUTABLE;
+            i = PendingIntent.FLAG_IMMUTABLE;
         } else {
             i = PendingIntent.FLAG_UPDATE_CURRENT;
         }
@@ -319,7 +243,7 @@ class NotificationHelper extends ContextWrapper {
         stackBuilder.addNextIntent(intent);
         int i;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            i = PendingIntent.FLAG_MUTABLE;
+            i = PendingIntent.FLAG_IMMUTABLE;
         } else {
             i = PendingIntent.FLAG_UPDATE_CURRENT;
         }
@@ -332,7 +256,7 @@ class NotificationHelper extends ContextWrapper {
         stackBuilder.addNextIntent(intent);
         int i;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            i = PendingIntent.FLAG_MUTABLE;
+            i = PendingIntent.FLAG_IMMUTABLE;
         } else {
             i = PendingIntent.FLAG_UPDATE_CURRENT;
         }

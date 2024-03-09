@@ -433,12 +433,14 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
 
     public void next() {
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-        cfx.moveToFirst();
-        int skx = 0;
-        if (cfx.getCount() != 0) {
-            skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+        if (cfx != null) {
+            cfx.moveToFirst();
+            int skx = 0;
+            if (cfx.getCount() != 0) {
+                skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            }
+            c_score_edit.setText("" + skx);
         }
-        c_score_edit.setText("" + skx);
         reset();
         String date = sps.getString(Missing_Words.this, "date");
         // myDbHelper.executeSql("DELETE FROM answertable");
@@ -2604,7 +2606,6 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                 }
 
                 fb_reward = 0;
-                
 
 
             }
@@ -2705,7 +2706,9 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Senthamil Thedal Ins");
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Senthamil Thedal Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {

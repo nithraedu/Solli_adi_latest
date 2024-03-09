@@ -3221,7 +3221,11 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
             sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
-            my_runnable = () -> mInterstitialAd.showAd("Ragasiya sorgal ins");
+            my_runnable = () -> {
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Ragasiya sorgal ins");
+            };
             handler.postDelayed(my_runnable, 2500);
         } else {
             sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") + 1));

@@ -280,7 +280,11 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         soundset();
         find();
         click();
-        next();
+        try {
+            next();
+        } catch (Exception ignored) {
+
+        }
         System.out.println("jas2");
 
         Utills.INSTANCE.initializeAdzz(this);
@@ -2168,7 +2172,9 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Viliyodu Vilaiyadu Ins");
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Viliyodu Vilaiyadu Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {

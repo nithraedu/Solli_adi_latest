@@ -567,7 +567,9 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Ragasiya sorgal ins");
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Ragasiya sorgal ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {

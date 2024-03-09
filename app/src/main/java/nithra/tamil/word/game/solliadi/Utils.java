@@ -38,7 +38,7 @@ public class Utils {
 
     public static int getPendingIntent() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            return PendingIntent.FLAG_MUTABLE;
+            return PendingIntent.FLAG_IMMUTABLE;
         } else {
             return PendingIntent.FLAG_UPDATE_CURRENT;
         }

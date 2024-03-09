@@ -19,8 +19,6 @@ import android.graphics.Canvas;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -172,7 +170,11 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         if (status.equals("nodata")) {
             nextgamesdialog();
         } else {
-            next();
+            try {
+                next();
+            } catch (Exception e) {
+
+            }
         }
     }
 
@@ -280,14 +282,26 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             if (message.length() > 6) {
                 sps.putString(Match_Word.this, "date", message);
-                next();
+                try {
+                    next();
+                } catch (Exception e) {
+
+                }
             } else {
                 sps.putString(Match_Word.this, "date", "0");
-                next();
+                try {
+                    next();
+                } catch (Exception e) {
+
+                }
             }
         } else {
             sps.putString(Match_Word.this, "date", "0");
-            next();
+            try {
+                next();
+            } catch (Exception e) {
+
+            }
         }
 
         if (sps.getString(Match_Word.this, "mtcs_intro").equals("")) {
@@ -2197,6 +2211,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             }
         }
     }
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -2255,7 +2270,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         Bundle params = new Bundle();
         params.putString("screen_name", "Find Equal word Game");
         params.putString("screen_class", "Match_Word");
-        mFirebaseAnalytics.logEvent( "screen_view", params);
+        mFirebaseAnalytics.logEvent("screen_view", params);
 
         String date = sps.getString(Match_Word.this, "date");
         int pos;
@@ -3586,11 +3601,13 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
     public void coinanim() {
         ////
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-        cfx.moveToFirst();
-        if (cfx.getCount() != 0) {
-            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-            int spx = skx + 10;
-            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+        if (cfx != null) {
+            cfx.moveToFirst();
+            if (cfx.getCount() != 0) {
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                int spx = skx + 10;
+                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+            }
         }
 
         //score intial
@@ -4602,7 +4619,9 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Puthayal Sorkal Ins");
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Puthayal Sorkal Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -6035,7 +6054,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 }
 
                 fb_reward = 0;
-                
 
 
             }

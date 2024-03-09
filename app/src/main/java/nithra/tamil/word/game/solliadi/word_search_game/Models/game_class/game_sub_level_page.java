@@ -158,7 +158,7 @@ public class game_sub_level_page extends AppCompatActivity implements OnLikeList
         final Dialog dialog = new Dialog(game_sub_level_page.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         dialog.setContentView(R.layout.dia_level_unlock);
         //dialog.getWindow().getAttributes().windowAnimations = R.style.win_anim;
-        if (!dialog.isShowing()) {
+        if (!isFinishing()&&!dialog.isShowing()) {
             dialog.show();
         }
 

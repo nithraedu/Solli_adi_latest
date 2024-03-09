@@ -15,8 +15,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -73,7 +71,6 @@ import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper3;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
 import nithra.tamil.word.game.solliadi.Utills;
-import nithra.tamil.word.game.solliadi.Utils;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
@@ -315,7 +312,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
         timeBlinkInMilliseconds = 30 * 1000;
 
-        if (!sp.getString(getActivity(), "ws_challenge_intro").equals("")) {
+        if (!sp.getString(requireActivity(), "ws_challenge_intro").equals("")) {
             startTimer();
         }
     }
@@ -650,7 +647,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         Bundle params = new Bundle();
         params.putString("screen_name", "Word Search Challenge");
         params.putString("screen_class", "challenge_WS_GridFragment");
-        mFirebaseAnalytics.logEvent( "screen_view", params);
+        mFirebaseAnalytics.logEvent("screen_view", params);
 
 
         if (timer_stop) {
@@ -924,7 +921,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         Winning_dialog.setContentView(R.layout.dia_winning_report);
         //    Winning_dialog.getWindow().getAttributes().windowAnimations = R.style.win_anim;
         Winning_dialog.setCancelable(false);
-        if (!Winning_dialog.isShowing()) {
+        if (!requireActivity().isFinishing() && !Winning_dialog.isShowing()) {
             Winning_dialog.show();
         }
         my_my_dialog = Winning_dialog;
@@ -987,7 +984,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         my_my_dialog.setOnDismissListener(dialog -> {
             if (goback == 0) {
                 Intent intent = new Intent(challenge_WS_GridFragment.this.context, Word_search_main.class);
-                challenge_WS_GridFragment.this.getActivity().finish();
+                requireActivity().finish();
                 startActivity(intent);
             }
         });
@@ -1141,8 +1138,8 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void option_load() {
-
-        question_txt.setText(question_list.get(mFoundWords.size()).replace(".", ""));
+        if (!question_list.isEmpty())
+            question_txt.setText(question_list.get(mFoundWords.size()).replace(".", ""));
         select_me = "";
 
         if (!sp.getString(context, "option_show").equals("")) {
@@ -1919,7 +1916,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     }
 
 
-
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getActivity().getPackageManager();
         boolean app_installed;
@@ -2102,7 +2098,9 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             Utills.INSTANCE.Loading_Dialog(requireActivity());
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Senthamil Thedal Ins");
+                if (mInterstitialAd == null) winning_report(context, "time_up");
+                else
+                    mInterstitialAd.showAd("Senthamil Thedal Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -2172,7 +2170,6 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                 }
 
                 fb_reward = 0;
-                
 
 
             }

@@ -16,8 +16,6 @@ import android.graphics.Canvas;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -1186,6 +1184,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         bt5.setEnabled(false);
         bt6.setEnabled(false);
     }
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -1292,7 +1291,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         Bundle params = new Bundle();
         params.putString("screen_name", "Find the Opposite Words");
         params.putString("screen_class", "Opposite_word");
-        mFirebaseAnalytics.logEvent( "screen_view", params);
+        mFirebaseAnalytics.logEvent("screen_view", params);
 
     }
 
@@ -3308,7 +3307,9 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Puthayal Sorkal Ins");
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Puthayal Sorkal Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -4298,7 +4299,6 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                 }
 
                 fb_reward = 0;
-                
 
 
             }

@@ -3187,7 +3187,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Puthayal Sorkal Ins");
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Puthayal Sorkal Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {

@@ -479,14 +479,15 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         soundId4 = spz4.load(Match_tha_fallows_game.this, R.raw.coins, 1);
 
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-        cfx.moveToFirst();
-        int skx = 0;
-        if (cfx.getCount() != 0) {
-            skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+        if (cfx!=null) {
+            cfx.moveToFirst();
+            int skx = 0;
+            if (cfx.getCount() != 0) {
+                skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            }
+            score.setText("" + skx);
+            //reward(Match_tha_fallows_game.this);
         }
-        score.setText("" + skx);
-        //reward(Match_tha_fallows_game.this);
-
         next();
 
 
@@ -595,7 +596,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
             String[] split_qus = question.split(",");
             String[] split_suf = sf_word.split(",");
             String[] split_ans = Answer.split(",");
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < split_qus.length; i++) {
                 MyData myData = new MyData(split_qus[i], split_suf[i], split_ans[i]);
 
                 data_list.add(myData);
@@ -2520,7 +2521,9 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Ragasiya sorgal ins");
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Ragasiya sorgal ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {

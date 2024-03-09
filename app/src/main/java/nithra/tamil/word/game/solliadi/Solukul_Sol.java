@@ -597,10 +597,12 @@ public class Solukul_Sol extends AppCompatActivity {
         //score intial
 
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
-        cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
-        String tr = String.valueOf(skq);
-        s_score.setText(tr);
+        if (cfq != null) {
+            cfq.moveToFirst();
+            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
+            String tr = String.valueOf(skq);
+            s_score.setText(tr);
+        }
         //
     }
 
@@ -4285,7 +4287,9 @@ public class Solukul_Sol extends AppCompatActivity {
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Senthamil Thedal Ins");
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Senthamil Thedal Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -5503,7 +5507,6 @@ public class Solukul_Sol extends AppCompatActivity {
                 }
 
                 fb_reward = 0;
-                
 
 
             }

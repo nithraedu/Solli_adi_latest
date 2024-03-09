@@ -1339,7 +1339,9 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Senthamil Thedal Ins");
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Senthamil Thedal Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {

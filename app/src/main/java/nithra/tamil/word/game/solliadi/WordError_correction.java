@@ -18,8 +18,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -4130,7 +4128,6 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                 }
 
                 fb_reward = 0;
-                
 
 
             }
@@ -4228,7 +4225,9 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Ragasiya sorgal ins");
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Ragasiya sorgal ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -4434,7 +4433,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         Bundle params = new Bundle();
         params.putString("screen_name", "Word Error Correction Game");
         params.putString("screen_class", "WordError_correction");
-        mFirebaseAnalytics.logEvent( "screen_view", params);
+        mFirebaseAnalytics.logEvent("screen_view", params);
         //  uiHelper.onResume();
 
 
@@ -4462,6 +4461,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         }
 
     }
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {

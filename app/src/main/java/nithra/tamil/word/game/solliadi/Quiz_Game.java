@@ -7,7 +7,6 @@ import static nithra.tamil.word.game.solliadi.Utils.isNetworkAvailable;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -17,8 +16,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -238,12 +235,14 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         p_coins_red = findViewById(R.id.p_coins_red);
 
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-        cfx.moveToFirst();
-        int skx = 0;
-        if (cfx.getCount() != 0) {
-            skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+        if (cfx != null) {
+            cfx.moveToFirst();
+            int skx = 0;
+            if (cfx.getCount() != 0) {
+                skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            }
+            score.setText("" + skx);
         }
-        score.setText("" + skx);
         c_button1.setOnClickListener(Quiz_Game.this);
         c_button2.setOnClickListener(Quiz_Game.this);
         c_button3.setOnClickListener(Quiz_Game.this);
@@ -932,8 +931,6 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
     }
 
 
-
-
     private void industrialload() {
         //AppLovinSdk.getInstance( this ).showMediationDebugger();
         AppLovinSdk.getInstance(this).setMediationProvider("max");
@@ -1003,7 +1000,10 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
-            my_runnable = () -> mInterstitialAd.showAd("Viliyodu Vilaiyadu Ins");
+            my_runnable = () -> {
+                if (mInterstitialAd == null) setSc();
+                else mInterstitialAd.showAd("Viliyodu Vilaiyadu Ins");
+            };
             handler.postDelayed(my_runnable, 2500);
         } else {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
@@ -2316,7 +2316,6 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                 }
 
                 fb_reward = 0;
-                
 
 
             }

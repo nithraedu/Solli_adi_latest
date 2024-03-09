@@ -19,8 +19,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.ParseException;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -808,9 +806,10 @@ public class Word_Game_Hard extends AppCompatActivity {
                 } else {
 
                     Cursor cd = myDbHelper.getQry("SELECT * FROM answertable where answer ='" + ans + "' and isfinish='0' and levelid='" + letterid + "'and gameid='" + gameid + "' and rd='" + rdvalu + "' ");
-                    cd.moveToFirst();
 
-                    if (cd.getCount() != 0) {
+
+                    if (cd != null && cd.getCount() != 0) {
+                        cd.moveToFirst();
                         if (x <= tans) {
 
 
@@ -3470,17 +3469,17 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         if (date.equals("0")) {
             Cursor c1 = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "'");
-            c1.moveToFirst();
+            if (c1 != null) {
+                c1.moveToFirst();
 
-            Cursor c2 = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "' and isfinish='1'");
-            c2.moveToFirst();
-            int count1 = c2.getCount() + 1;
-            String no = String.valueOf(count1);
-            word_no.setText(no/*+"/"+c1.getCount()*/);
+                Cursor c2 = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "' and isfinish='1'");
+                c2.moveToFirst();
+                int count1 = c2.getCount() + 1;
+                String no = String.valueOf(count1);
+                word_no.setText(no/*+"/"+c1.getCount()*/);
+            } else return;
         } else {
-            if (sps.getInt(Word_Game_Hard.this, "purchase_ads") == 1) {
-
-            } else {
+            if (sps.getInt(Word_Game_Hard.this, "purchase_ads") != 1) {
                 sps.putInt(context, "addloded_rect_bck", 0);
                 sps.putInt(context, "addloded_rect_mul", 0);
 
@@ -4242,7 +4241,6 @@ public class Word_Game_Hard extends AppCompatActivity {
         }
         return app_installed;
     }
-
 
 
     public void setSc() {
@@ -5131,7 +5129,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         Bundle params = new Bundle();
         params.putString("screen_name", "Sol Game");
         params.putString("screen_class", "Word_Game_Hard");
-        mFirebaseAnalytics.logEvent( "screen_view", params);
+        mFirebaseAnalytics.logEvent("screen_view", params);
         if (setting_access == 1) {
             setting_access = 0;
             //if ((ContextCompat.checkSelfPermission(Word_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
@@ -5913,7 +5911,6 @@ if(downok.equals("")){
                 }
 
                 fb_reward = 0;
-                
 
 
             }
@@ -6011,7 +6008,9 @@ if(downok.equals("")){
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Ragasiya sorgal ins");
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Ragasiya sorgal ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {

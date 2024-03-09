@@ -122,7 +122,7 @@ public class ST_Activity extends AppCompatActivity {
             if (!Utills.INSTANCE.isNetworkAvailable(this)) {
                 banner_adParent.setVisibility(View.GONE);
             }
-        }else banner_adParent.setVisibility(View.GONE);
+        } else banner_adParent.setVisibility(View.GONE);
         Bundle extras;
         extras = getIntent().getExtras();
         idd = extras.getInt("idd");
@@ -193,9 +193,13 @@ public class ST_Activity extends AppCompatActivity {
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
-
-                Utils.mProgress(ST_Activity.this, "Loading Please Wait", true).show();
                 super.onPageStarted(view, url, favicon);
+                try {
+                    Utils.mProgress(ST_Activity.this, "Loading Please Wait", true).show();
+                } catch (Exception ignored) {
+
+                }
+
             }
 
             @Override
@@ -282,7 +286,13 @@ public class ST_Activity extends AppCompatActivity {
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Noti Exit INS");
+                if (mInterstitialAd == null) if (show_ads == 1) {
+                    finish();
+                    Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
+                    startActivity(i);
+                } else finish();
+                else
+                    mInterstitialAd.showAd("Noti Exit INS");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {

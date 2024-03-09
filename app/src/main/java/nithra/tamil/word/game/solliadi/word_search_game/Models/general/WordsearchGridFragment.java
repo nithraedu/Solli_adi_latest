@@ -15,8 +15,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -75,7 +73,6 @@ import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
 import nithra.tamil.word.game.solliadi.Utills;
-import nithra.tamil.word.game.solliadi.Utils;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
@@ -341,7 +338,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
 
         try {
             coin_cursor = myDbHelper.getQry("select * from score");
-            if (coin_cursor.getCount() != 0) {
+            if (coin_cursor != null && coin_cursor.getCount() != 0) {
                 coin_cursor.moveToFirst();
                 coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coins"));
                 coin_txt.setText("" + coin_point);
@@ -2193,7 +2190,9 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
             Utills.INSTANCE.Loading_Dialog(requireActivity());
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Senthamil Thedal Ins");
+                if (mInterstitialAd == null) winning_report();
+                else
+                    mInterstitialAd.showAd("Senthamil Thedal Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -2263,7 +2262,6 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
                 }
 
                 fb_reward = 0;
-                
 
 
             }

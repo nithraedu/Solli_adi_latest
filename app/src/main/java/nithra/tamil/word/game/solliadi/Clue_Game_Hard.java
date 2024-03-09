@@ -612,7 +612,9 @@ public class Clue_Game_Hard extends AppCompatActivity {
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Puthayal Sorkal Ins");
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Puthayal Sorkal Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {

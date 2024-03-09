@@ -1996,7 +1996,11 @@ public class Tirukural extends AppCompatActivity {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
-            my_runnable = () -> mInterstitialAd.showAd("Viliyodu Vilaiyadu Ins");
+            my_runnable = () -> {
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Viliyodu Vilaiyadu Ins");
+            };
             handler.postDelayed(my_runnable, 2500);
         } else {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
@@ -3231,7 +3235,7 @@ public class Tirukural extends AppCompatActivity {
                 }
 
                 fb_reward = 0;
-                
+
 
 
             }

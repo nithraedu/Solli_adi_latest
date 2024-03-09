@@ -22,8 +22,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.ParseException;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -543,49 +541,48 @@ public class Picture_Game_Hard extends AppCompatActivity {
         //score intial
 
         Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
-        cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
-        String tr = String.valueOf(skq);
-        score.setText(tr);
-        //
+        if (cfq != null) {
+            cfq.moveToFirst();
+            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
+            String tr = String.valueOf(skq);
+            score.setText(tr);
+        }
         openDialog_s = new Dialog(Picture_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
         adsicon = openDialog_s.findViewById(R.id.adsicon);
-        /////////
 
-        if (sps.getInt(Picture_Game_Hard.this, "purchase_ads") == 1) {
-
-        } else {
-            // advancads();
-        }
-
-        ////////
-        /////////
-
-        if (sps.getInt(Picture_Game_Hard.this, "purchase_ads") == 1) {
-
-        } else {
-            //  advancads_content();
-        }
 
     }
 
 
     public void click1() {
         img1.setOnClickListener(view -> {
-            pic_show(1);
+            try {
+                pic_show(1);
+            } catch (Exception e) {
+            }
             picdig = 1;
         });
         img2.setOnClickListener(view -> {
-            pic_show(2);
+            try {
+                pic_show(2);
+            } catch (Exception e) {
+            }
             picdig = 1;
         });
         img3.setOnClickListener(view -> {
-            pic_show(3);
+            try {
+                pic_show(3);
+            } catch (Exception e) {
+            }
             picdig = 1;
         });
         img4.setOnClickListener(view -> {
-            pic_show(4);
+            try {
+                pic_show(4);
+
+            } catch (Exception e) {
+            }
             picdig = 1;
         });
         p_setting.setOnClickListener(v -> {
@@ -2966,12 +2963,14 @@ public class Picture_Game_Hard extends AppCompatActivity {
         sps.putString(Picture_Game_Hard.this, "face_share", "");
         if (date.equals("0")) {
             Cursor c1 = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "'");
-            c1.moveToFirst();
+            if (c1 != null) {
+                c1.moveToFirst();
 
-            Cursor c2 = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "' and isfinish='1'");
-            int count1 = c2.getCount() + 1;
-            String no = String.valueOf(count1);
-            to_no.setText(no/*+"/"+c1.getCount()*/);
+                Cursor c2 = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "' and isfinish='1'");
+                int count1 = c2.getCount() + 1;
+                String no = String.valueOf(count1);
+                to_no.setText(no/*+"/"+c1.getCount()*/);
+            }
         } else {
             if (sps.getInt(Picture_Game_Hard.this, "purchase_ads") == 1) {
 
@@ -3575,8 +3574,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
     }
 
 
-
-
     public void dialog(int i) {
         openDialog_earncoin = new Dialog(Picture_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_earncoin.setContentView(R.layout.earncoin);
@@ -3707,6 +3704,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
         });
         openDialog_earncoin.show();
     }
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -4150,7 +4148,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
         Bundle params = new Bundle();
         params.putString("screen_name", "Picture Game");
         params.putString("screen_class", "Picture_Game_Hard");
-        mFirebaseAnalytics.logEvent( "screen_view", params);
+        mFirebaseAnalytics.logEvent("screen_view", params);
         if (setting_access == 1) {
             setting_access = 0;
             downloaddata_daily();
@@ -4859,13 +4857,13 @@ public class Picture_Game_Hard extends AppCompatActivity {
             mProgressDialog.setMessage("படங்கள் பதிவிறக்கம் செய்யப்படுகிறது காத்திருக்கவும்.... ");
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             mProgressDialog.setCancelable(false);
-            if (!mProgressDialog.isShowing()) {
+            if (!isFinishing() && !mProgressDialog.isShowing()) {
                 mProgressDialog.show();
             }
 
             // playy();
-
-            return mProgressDialog;
+            if (!isFinishing())
+                return mProgressDialog;
         }
         return null;
     }
@@ -4974,7 +4972,9 @@ public class Picture_Game_Hard extends AppCompatActivity {
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
 //                Toast.makeText(this, "Called", Toast.LENGTH_SHORT).show();
-                mInterstitialAd.showAd("Viliyodu Vilaiyadu Ins");
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Viliyodu Vilaiyadu Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -5487,7 +5487,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 150) {
@@ -6165,7 +6166,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 }
 
                 fb_reward = 0;
-                
 
 
             }

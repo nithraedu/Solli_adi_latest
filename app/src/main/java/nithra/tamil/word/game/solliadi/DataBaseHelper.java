@@ -49,11 +49,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public Cursor getQry(String Qry) {
 
         try {
-            DataBaseHelper myDbHelper = new DataBaseHelper(mContext);
-            SQLiteDatabase sq = this.getReadableDatabase();
-            sq = myDbHelper.getWritableDatabase();
-            sq = myDbHelper.getReadableDatabase();
-            c = sq.rawQuery(Qry, null);
+            c = getReadableDatabase().rawQuery(Qry, null);
         } catch (Exception e) {
             System.out.println("Exception " + e);
         }
@@ -151,14 +147,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void openDataBase() throws SQLException {
         String mPath = DB_PATH + DB_NAME;
         // Log.v("mPath", mPath);
-        mDataBase = SQLiteDatabase.openDatabase(mPath, null,
-                SQLiteDatabase.CREATE_IF_NECESSARY);
+        mDataBase = SQLiteDatabase.openDatabase(mPath, null, SQLiteDatabase.CREATE_IF_NECESSARY);
     }
 
     @Override
     public synchronized void close() {
-        if (mDataBase != null)
-            mDataBase.close();
+        if (mDataBase != null) mDataBase.close();
         super.close();
     }
 

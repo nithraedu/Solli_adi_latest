@@ -17,8 +17,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -857,10 +855,12 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
         w_head.setVisibility(View.VISIBLE);
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-        cfx.moveToFirst();
-        if (cfx.getCount() != 0) {
-            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-            score.setText("" + skx);
+        if (cfx != null) {
+            cfx.moveToFirst();
+            if (cfx.getCount() != 0) {
+                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                score.setText("" + skx);
+            }
         }
         Calendar calendar3 = Calendar.getInstance();
         int cur_year1 = calendar3.get(Calendar.YEAR);
@@ -3494,7 +3494,6 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     }
 
 
-
     private void industrialload() {
         //AppLovinSdk.getInstance( this ).showMediationDebugger();
         AppLovinSdk.getInstance(this).setMediationProvider("max");
@@ -3564,7 +3563,9 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
-                mInterstitialAd.showAd("Senthamil Thedal Ins");
+                if (mInterstitialAd == null) setSc();
+                else
+                    mInterstitialAd.showAd("Senthamil Thedal Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -4650,7 +4651,6 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 }
 
                 fb_reward = 0;
-                
 
 
             }
