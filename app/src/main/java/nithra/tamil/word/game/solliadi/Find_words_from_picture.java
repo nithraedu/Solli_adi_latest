@@ -390,8 +390,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
                 if (mInterstitialAd == null) setSc();
-                else
-                    mInterstitialAd.showAd("Viliyodu Vilaiyadu Ins");
+                else mInterstitialAd.showAd("Viliyodu Vilaiyadu Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -469,7 +468,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         } else {
             String tfoption = date;
             String[] first = tfoption.split("-");
-            questionid.setText("" + first[2] + "-" + first[1] + "-" + first[0]);
+            questionid.setText(first[2] + "-" + first[1] + "-" + first[0]);
             questionid.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         }
 
@@ -526,10 +525,10 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 image_1.setImageResource(im1);
             } else {
                 String fullPath = getFilesDir() + "/Nithra/solliadi/";
-                File file = new File(fullPath + question + "");
+                File file = new File(fullPath + question);
                 System.out.println("printqus1" + file);
                 if (file.exists()) {
-                    Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + question + "");
+                    Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + question);
                     Resources res = getResources();
                     BitmapDrawable bd = new BitmapDrawable(res, bitimg1);
                     image_1.setImageDrawable(bd);
@@ -1386,7 +1385,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             rvo = 1;
             extra_coin_s = 0;
             if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
-                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_words_from_picture.this, "" + "Reward video", "Loading...");
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_words_from_picture.this, "Reward video", "Loading...");
 
                 if (fb_reward == 1) {
                     focus.stop();
@@ -1598,7 +1597,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         vid_earn.setOnClickListener(v -> {
             rvo = 2;
             if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
-                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_words_from_picture.this, "" + "Reward video", "Loading...");
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_words_from_picture.this, "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
                     show_reward();
@@ -1627,7 +1626,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         rewardvideo.setOnClickListener(v -> {
             rvo = 2;
             if (Utils.isNetworkAvailable(Find_words_from_picture.this)) {
-                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_words_from_picture.this, "" + "Reward video", "Loading...");
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_words_from_picture.this, "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
                     show_reward();
@@ -2063,9 +2062,9 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 pic_show.setImageResource(im1);
             } else {
                 String fullPath = getFilesDir() + "/Nithra/solliadi/";
-                File file = new File(fullPath + question + "");
+                File file = new File(fullPath + question);
                 if (file.exists()) {
-                    Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + question + "");
+                    Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + question);
                     Resources res = getResources();
                     BitmapDrawable bd = new BitmapDrawable(res, bitimg1);
                     pic_show.setImageDrawable(bd);
@@ -2101,14 +2100,18 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             } else {
                 pos = 2;
             }
-            Cursor cs = myDbHelper.getQry("select * from answertable where gameid='" + gameid + "' and levelid='" + question_id + "' and rd='" + pos + "'");
-            cs.moveToFirst();
-            long dscore = 0;
-            if (cs.getCount() != 0) {
-                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+            try {
+                Cursor cs = myDbHelper.getQry("select * from answertable where gameid='" + gameid + "' and levelid='" + question_id + "' and rd='" + pos + "'");
+                cs.moveToFirst();
+                long dscore = 0;
+                if (cs.getCount() != 0) {
+                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+                }
+                focus.setBase(SystemClock.elapsedRealtime() + dscore);
+                focus.start();
+            } catch (Exception e) {
+
             }
-            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-            focus.start();
         }
 
         // }
@@ -2758,7 +2761,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             questionid_d = String.valueOf(cz.getInt(cz.getColumnIndexOrThrow("questionid")));
         }
         System.out.println("----------------------Download_server");
-        Download_data_server download_data_server = new Download_data_server(Find_words_from_picture.this, questionid_d, "" + gameid);
+        Download_data_server download_data_server = new Download_data_server(Find_words_from_picture.this, questionid_d, gameid);
         download_data_server.execute();
     }
 

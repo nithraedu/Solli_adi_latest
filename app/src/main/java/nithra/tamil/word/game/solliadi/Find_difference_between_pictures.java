@@ -379,7 +379,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         } else {
             String tfoption = date;
             String[] first = tfoption.split("-");
-            questionid.setText("" + first[2] + "-" + first[1] + "-" + first[0]);
+            questionid.setText(first[2] + "-" + first[1] + "-" + first[0]);
             questionid.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         }
 
@@ -446,9 +446,9 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                 System.out.println("---image 1 : " + word1);
 
                 String fullPath = getFilesDir() + "/Nithra/solliadi/";
-                File file = new File(fullPath + word1 + "");
+                File file = new File(fullPath + word1);
                 if (file.exists()) {
-                    Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + word1 + "");
+                    Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + word1);
                     Resources res = getResources();
                     BitmapDrawable bd = new BitmapDrawable(res, bitimg1);
                     image_1.setImageDrawable(bd);
@@ -465,9 +465,9 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                 System.out.println("---image 2 : " + word2);
 
                 String fullPath = getFilesDir() + "/Nithra/solliadi/";
-                File file = new File(fullPath + word2 + "");
+                File file = new File(fullPath + word2);
                 if (file.exists()) {
-                    Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + word2 + "");
+                    Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + word2);
                     Resources res = getResources();
                     BitmapDrawable bd = new BitmapDrawable(res, bitimg1);
                     image_2.setImageDrawable(bd);
@@ -1314,7 +1314,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             rvo = 1;
             extra_coin_s = 0;
             if (Utils.isNetworkAvailable(Find_difference_between_pictures.this)) {
-                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_difference_between_pictures.this, "" + "Reward video", "Loading...");
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_difference_between_pictures.this, "Reward video", "Loading...");
 
                 if (fb_reward == 1) {
                     focus.stop();
@@ -1525,7 +1525,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         vid_earn.setOnClickListener(v -> {
             rvo = 2;
             if (Utils.isNetworkAvailable(Find_difference_between_pictures.this)) {
-                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_difference_between_pictures.this, "" + "Reward video", "Loading...");
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_difference_between_pictures.this, "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
                     show_reward();
@@ -1554,7 +1554,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         rewardvideo.setOnClickListener(v -> {
             rvo = 2;
             if (Utils.isNetworkAvailable(Find_difference_between_pictures.this)) {
-                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_difference_between_pictures.this, "" + "Reward video", "Loading...");
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_difference_between_pictures.this, "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
                     show_reward();
@@ -2077,7 +2077,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
             extra_coin_s = 1;
             if (Utils.isNetworkAvailable(Find_difference_between_pictures.this)) {
-                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_difference_between_pictures.this, "" + "Reward video", "Loading...");
+                final ProgressDialog reward_progressBar = ProgressDialog.show(Find_difference_between_pictures.this, "Reward video", "Loading...");
                 if (fb_reward == 1) {
                     reward_progressBar.dismiss();
                     show_reward();
@@ -2173,8 +2173,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
                 if (mInterstitialAd == null) setSc();
-                else
-                    mInterstitialAd.showAd("Viliyodu Vilaiyadu Ins");
+                else mInterstitialAd.showAd("Viliyodu Vilaiyadu Ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -2215,9 +2214,9 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                 pic_show.setImageResource(im1);
             } else {
                 String fullPath = getFilesDir() + "/Nithra/solliadi/";
-                File file = new File(fullPath + qs1 + "");
+                File file = new File(fullPath + qs1);
                 if (file.exists()) {
-                    Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + qs1 + "");
+                    Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + qs1);
                     Resources res = getResources();
                     BitmapDrawable bd = new BitmapDrawable(res, bitimg1);
                     pic_show.setImageDrawable(bd);
@@ -2231,9 +2230,9 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                 pic_show2.setImageResource(im1);
             } else {
                 String fullPath = getFilesDir() + "/Nithra/solliadi/";
-                File file = new File(fullPath + qs2 + "");
+                File file = new File(fullPath + qs2);
                 if (file.exists()) {
-                    Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + qs2 + "");
+                    Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + qs2);
                     Resources res = getResources();
                     BitmapDrawable bd = new BitmapDrawable(res, bitimg1);
                     pic_show2.setImageDrawable(bd);
@@ -2268,14 +2267,18 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             } else {
                 pos = 2;
             }
-            Cursor cs = myDbHelper.getQry("select * from answertable where gameid='" + gameid + "' and levelid='" + question_id + "' and rd='" + pos + "'");
-            cs.moveToFirst();
-            long dscore = 0;
-            if (cs.getCount() != 0) {
-                dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+            try {
+                Cursor cs = myDbHelper.getQry("select * from answertable where gameid='" + gameid + "' and levelid='" + question_id + "' and rd='" + pos + "'");
+                cs.moveToFirst();
+                long dscore = 0;
+                if (cs.getCount() != 0) {
+                    dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+                }
+                focus.setBase(SystemClock.elapsedRealtime() + dscore);
+                focus.start();
+            } catch (Exception e) {
+
             }
-            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-            focus.start();
         }
 
        /* if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 1) {
@@ -2961,7 +2964,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             questionid_d = String.valueOf(cz.getInt(cz.getColumnIndexOrThrow("questionid")));
         }
         System.out.println("----------------------Download_server");
-        Download_data_server download_data_server = new Download_data_server(Find_difference_between_pictures.this, questionid_d, "" + gameid);
+        Download_data_server download_data_server = new Download_data_server(Find_difference_between_pictures.this, questionid_d, gameid);
         download_data_server.execute();
     }
 
@@ -3405,7 +3408,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                 }
 
                 fb_reward = 0;
-                
 
 
             }

@@ -921,8 +921,12 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         Winning_dialog.setContentView(R.layout.dia_winning_report);
         //    Winning_dialog.getWindow().getAttributes().windowAnimations = R.style.win_anim;
         Winning_dialog.setCancelable(false);
-        if (!requireActivity().isFinishing() && !Winning_dialog.isShowing()) {
-            Winning_dialog.show();
+        try {
+            if (!requireActivity().isFinishing() && !Winning_dialog.isShowing()) {
+                Winning_dialog.show();
+            }
+        } catch (Exception ignored) {
+
         }
         my_my_dialog = Winning_dialog;
 

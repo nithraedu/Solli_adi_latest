@@ -479,7 +479,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         soundId4 = spz4.load(Match_tha_fallows_game.this, R.raw.coins, 1);
 
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-        if (cfx!=null) {
+        if (cfx != null) {
             cfx.moveToFirst();
             int skx = 0;
             if (cfx.getCount() != 0) {
@@ -488,7 +488,11 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
             score.setText("" + skx);
             //reward(Match_tha_fallows_game.this);
         }
-        next();
+        try {
+            next();
+        } catch (Exception e) {
+
+        }
 
 
     }
@@ -523,13 +527,17 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
     }
 
     public void next() {
-        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-        cfx.moveToFirst();
-        int skx = 0;
-        if (cfx.getCount() != 0) {
-            skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+        try {
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            int skx = 0;
+            if (cfx.getCount() != 0) {
+                skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            }
+            score.setText("" + skx);
+        } catch (Exception e) {
+
         }
-        score.setText("" + skx);
 
         head.setVisibility(View.VISIBLE);
         String date = sps.getString(Match_tha_fallows_game.this, "date");
@@ -546,7 +554,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         } else {
             String tfoption = date;
             String[] first = tfoption.split("-");
-            question_txt.setText("" + first[2] + "-" + first[1] + "-" + first[0]);
+            question_txt.setText(first[2] + "-" + first[1] + "-" + first[0]);
             question_txt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         }
 
@@ -679,7 +687,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                 TO_POS = Integer.parseInt(split_get_maintain[0].trim());
                 FROM_POS = Integer.parseInt(split_get_maintain[1].trim());
 
-                maintain_ans.add("" + TO_POS + "_" + FROM_POS);
+                maintain_ans.add(TO_POS + "_" + FROM_POS);
                 find_qus_list.add(FROM_POS);
                 find_ans_list.add(TO_POS);
 
@@ -1185,7 +1193,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                     }
 
 
-                    maintain_ans.add("" + TO_POS + "_" + FROM_POS);
+                    maintain_ans.add(TO_POS + "_" + FROM_POS);
                     find_qus_list.add(FROM_POS);
                     find_ans_list.add(TO_POS);
 
@@ -1740,7 +1748,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
             public void onClick(View v) {
                 rvo = 2;
                 if (Utils.isNetworkAvailable(Match_tha_fallows_game.this)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Match_tha_fallows_game.this, "" + "Reward video", "Loading...");
+                    final ProgressDialog reward_progressBar = ProgressDialog.show(Match_tha_fallows_game.this, "Reward video", "Loading...");
                     if (fb_reward == 1) {
                         reward_progressBar.dismiss();
                         show_reward();
@@ -1775,7 +1783,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
             public void onClick(View v) {
                 rvo = 2;
                 if (Utils.isNetworkAvailable(Match_tha_fallows_game.this)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Match_tha_fallows_game.this, "" + "Reward video", "Loading...");
+                    final ProgressDialog reward_progressBar = ProgressDialog.show(Match_tha_fallows_game.this, "Reward video", "Loading...");
                     if (fb_reward == 1) {
                         reward_progressBar.dismiss();
                         show_reward();
@@ -2423,7 +2431,6 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                 }
 
                 fb_reward = 0;
-                
 
 
             }
@@ -2522,8 +2529,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
             handler = new Handler(Looper.myLooper());
             my_runnable = () -> {
                 if (mInterstitialAd == null) setSc();
-                else
-                    mInterstitialAd.showAd("Ragasiya sorgal ins");
+                else mInterstitialAd.showAd("Ragasiya sorgal ins");
             };
             handler.postDelayed(my_runnable, 2500);
         } else {
@@ -2604,6 +2610,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
             }
         }, 800);
     }
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -2818,7 +2825,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                 rvo = 1;
                 extra_coin_s = 0;
                 if (Utils.isNetworkAvailable(Match_tha_fallows_game.this)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(Match_tha_fallows_game.this, "" + "Reward video", "Loading...");
+                    final ProgressDialog reward_progressBar = ProgressDialog.show(Match_tha_fallows_game.this, "Reward video", "Loading...");
 
                     if (fb_reward == 1) {
                         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
