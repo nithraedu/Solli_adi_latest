@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    card_view:cardBackgroundColor="#91CA3F"
+    card_view:cardElevation="10dp">
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            card_view:cardBackgroundColor="#91CA3F"
+            card_view:cardElevation="7dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="#ED3237"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/wpro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_toLeftOf="@+id/ssss"
+                    android:gravity="center"
+                    android:padding="@dimen/lrtbp_5"
+                    android:text="நிகழ்நேர போட்டி விளையாட தேவையான நாணயங்கள் உங்களிடம் இல்லை. கூடுதல் நாணயங்கள் பெற பகிரவும் "
+                    android:textColor="#fff"
+                    android:textSize="@dimen/info_version_name_font_size" />
+
+                <TextView
+                    android:id="@+id/ssss"
+                    android:layout_width="@dimen/wh_35"
+                    android:layout_height="@dimen/wh_35"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/kid_dia_cancel"
+                    android:padding="@dimen/lrtbp_10" />
+
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:layout_marginBottom="@dimen/lrtbp_20"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/belo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_toLeftOf="@+id/switchword"
+                android:gravity="center"
+                android:padding="@dimen/lrtbp_5"
+                android:text="கூடுதல் நாணயம் பெற பகிரவும் "
+                android:textColor="@color/black"
+                android:textSize="@dimen/lrtbp_20"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+
+            <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:layout_marginRight="@dimen/lrtbp_10"
+                android:foreground="?android:attr/selectableItemBackground"
+                card_view:cardBackgroundColor="#E4E4E4"
+                card_view:cardCornerRadius="5dp"
+                card_view:cardElevation="5dp">
+
+                <RelativeLayout
+
+                    android:id="@+id/earnvideo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/lrtbp_5">
+
+                    <TextView
+                        android:id="@+id/a5"
+                        android:layout_width="@dimen/wh_40"
+                        android:layout_height="@dimen/wh_40"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/vid_bones" />
+
+                    <TextView
+                        android:id="@+id/b5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="@dimen/lrtbp_10"
+                        android:layout_toLeftOf="@+id/a55"
+                        android:layout_toRightOf="@+id/a5"
+                        android:gravity="left"
+                        android:paddingLeft="@dimen/lrtbp_10"
+                        android:text="காணொளியை பார்த்து கூடுதல் 100 நாணயங்கள் பெற்று கொள்ளவும்."
+                        android:textColor="#ED3237"
+                        android:textSize="@dimen/txt_12"
+                        android:textStyle="normal" />
+
+                    <TextView
+                        android:id="@+id/a55"
+                        android:layout_width="@dimen/wh_50"
+                        android:layout_height="@dimen/wh_50"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/bones_coinicon"
+                        android:gravity="center"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/lrtbp_15"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:layout_marginRight="@dimen/lrtbp_10"
+                android:foreground="?android:attr/selectableItemBackground"
+                card_view:cardBackgroundColor="#E4E4E4"
+                card_view:cardCornerRadius="5dp"
+                card_view:cardElevation="5dp">
+
+                <RelativeLayout
+                    android:id="@+id/earnfb"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/lrtbp_5"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/a1"
+                        android:layout_width="@dimen/wh_40"
+                        android:layout_height="@dimen/wh_40"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/efb" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_toLeftOf="@+id/s11"
+                        android:layout_toRightOf="@+id/a1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/b1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/lrtbp_10"
+                            android:layout_marginBottom="@dimen/lrtbp_5"
+                            android:gravity="left"
+                            android:paddingLeft="@dimen/lrtbp_10"
+                            android:text="நண்பர்களை அழையுங்கள் (ஒவ்வொரு அழைப்பிற்க்கும் 10 நாணயங்கள் )"
+                            android:textColor="#ED3237"
+                            android:textSize="@dimen/txt_12"
+                            android:textStyle="normal" />
+
+                        <TextView
+                            android:id="@+id/kl"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/lrtbp_10"
+                            android:gravity="left"
+                            android:paddingLeft="@dimen/lrtbp_10"
+                            android:text="(10 coins for each person)"
+                            android:textColor="#000"
+                            android:textSize="@dimen/txt_16"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+
+                    <TextView
+                        android:id="@+id/s11"
+                        android:layout_width="@dimen/wh_50"
+                        android:layout_height="@dimen/wh_50"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/bones_coinicon"
+                        android:gravity="center"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/lrtbp_15"
+                        android:textStyle="bold" />
+
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/lrtbp_10"
+                android:layout_marginTop="@dimen/lrtbp_20"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:visibility="gone"
+                card_view:cardBackgroundColor="#E4E4E4"
+                card_view:cardCornerRadius="5dp"
+                card_view:cardElevation="5dp">
+
+                <RelativeLayout
+                    android:id="@+id/earnsms"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/lrtbp_5">
+
+                    <TextView
+                        android:id="@+id/a2"
+                        android:layout_width="@dimen/wh_40"
+                        android:layout_height="@dimen/wh_40"
+                        android:layout_alignParentLeft="true"
+                        android:background="@drawable/esms" />
+
+                    <TextView
+                        android:id="@+id/b2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="@dimen/lrtbp_10"
+                        android:layout_toLeftOf="@+id/a22"
+                        android:layout_toRightOf="@+id/a2"
+                        android:gravity="left"
+                        android:paddingLeft="@dimen/lrtbp_10"
+                        android:text="SMS"
+                        android:textColor="#ED3237"
+                        android:textSize="@dimen/lrtbp_15"
+                        android:textStyle="normal" />
+
+                    <TextView
+                        android:id="@+id/a22"
+                        android:layout_width="@dimen/wh_50"
+                        android:layout_height="@dimen/wh_40"
+                        android:layout_alignParentRight="true"
+                        android:gravity="center"
+                        android:text="10"
+                        app:drawableRightCompat="@drawable/coins" />
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:layout_marginRight="@dimen/lrtbp_10"
+                android:foreground="?android:attr/selectableItemBackground"
+                card_view:cardBackgroundColor="#E4E4E4"
+                card_view:cardCornerRadius="5dp"
+                card_view:cardElevation="5dp">
+
+                <RelativeLayout
+                    android:id="@+id/earnwa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/lrtbp_5">
+
+                    <TextView
+                        android:id="@+id/a3"
+                        android:layout_width="@dimen/wh_40"
+                        android:layout_height="@dimen/wh_40"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/ewa" />
+
+                    <TextView
+                        android:id="@+id/b3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="@dimen/lrtbp_10"
+                        android:layout_toLeftOf="@+id/a33"
+                        android:layout_toRightOf="@+id/a3"
+                        android:gravity="left"
+                        android:paddingLeft="@dimen/lrtbp_10"
+                        android:text=" நண்பர்களை அழையுங்கள் (ஒவ்வொரு அழைப்பிற்க்கும் 20 நாணயங்கள் )"
+                        android:textColor="#ED3237"
+                        android:textSize="@dimen/txt_12"
+                        android:textStyle="normal" />
+
+                    <TextView
+                        android:id="@+id/a33"
+                        android:layout_width="@dimen/wh_50"
+                        android:layout_height="@dimen/wh_50"
+                        android:layout_alignParentRight="true"
+
+                        android:background="@drawable/bones_coinicon"
+                        android:gravity="center"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/lrtbp_15"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:layout_marginRight="@dimen/lrtbp_10"
+                android:foreground="?android:attr/selectableItemBackground"
+                card_view:cardBackgroundColor="#E4E4E4"
+                card_view:cardCornerRadius="5dp"
+                card_view:cardElevation="5dp">
+
+                <RelativeLayout
+                    android:id="@+id/earngplus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/lrtbp_5"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/a4"
+                        android:layout_width="@dimen/wh_40"
+                        android:layout_height="@dimen/wh_40"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/egp" />
+
+                    <TextView
+                        android:id="@+id/b4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="@dimen/lrtbp_10"
+                        android:layout_toLeftOf="@+id/a44"
+                        android:layout_toRightOf="@+id/a4"
+                        android:gravity="left"
+                        android:paddingLeft="@dimen/lrtbp_10"
+                        android:text="நண்பர்களை அழையுங்கள் (ஒவ்வொரு அழைப்பிற்க்கும் 10 நாணயங்கள் )"
+                        android:textColor="#ED3237"
+                        android:textSize="@dimen/txt_12"
+                        android:textStyle="normal" />
+
+                    <TextView
+                        android:id="@+id/a44"
+                        android:layout_width="@dimen/wh_50"
+                        android:layout_height="@dimen/wh_50"
+                        android:layout_alignParentRight="true"
+
+                        android:background="@drawable/bones_coinicon"
+                        android:gravity="center"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/lrtbp_15"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+
+            <TextView
+                android:id="@+id/cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/lrtbp_25"
+                android:layout_marginBottom="@dimen/lrtbp_10"
+                android:background="@color/red"
+                android:gravity="center"
+                android:paddingLeft="@dimen/lrtbp_20"
+                android:paddingTop="@dimen/lrtbp_10"
+                android:paddingRight="@dimen/lrtbp_20"
+                android:paddingBottom="@dimen/lrtbp_10"
+                android:text="சரி"
+                android:textColor="#fff"
+                android:textSize="@dimen/info_version_name_font_size"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

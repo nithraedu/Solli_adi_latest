@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toast_layout_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+
+    <RelativeLayout
+        android:id="@+id/content_lay"
+        android:layout_width="match_parent"
+        android:layout_height="380dp"
+        android:layout_centerInParent="true"
+        android:background="#fff">
+
+
+        <TextView
+            android:id="@+id/title_text"
+            android:padding="@dimen/lrtbp_10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/image"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/selectun_rect"
+            android:gravity="center"
+            android:text="சொல்லைப் பொருத்துக விளையாட்டில் விளையாடிய சொற்களின் தொகுப்பு "
+            android:textColor="#fff"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+
+        <ListView
+            android:id="@+id/all_ans_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/exit_text"
+            android:layout_below="@+id/title_text"
+            android:divider="@null" />
+
+        <TextView
+            android:id="@+id/exit_text"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/selectun_rect"
+            android:gravity="center"
+            android:text="சரி"
+            android:textColor="#fff"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

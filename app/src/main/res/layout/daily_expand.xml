@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:background="@drawable/word_daily_expand"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/wh_80">
+
+        <RelativeLayout
+            android:id="@+id/butts"
+            android:padding="@dimen/lrtbp_5"
+            android:layout_alignParentRight="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_alignParentLeft="true"
+                android:layout_width="wrap_content"
+                android:orientation="vertical"
+                android:layout_height="match_parent"
+                android:layout_toLeftOf="@+id/wqa">
+
+                <TextView
+                    android:id="@+id/word_gametxt"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:padding="@dimen/wh_2"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:text="எழுத்துக்களோடு விளையாடி சொற்களை வெல்லுங்கள் !!"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:id="@+id/anslist1"
+                android:orientation="vertical"
+                android:background="@color/transparent2"
+
+                android:layout_width="@dimen/wh_120"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/ans1"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/txt_18"
+                    android:background="@drawable/single_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/ans2"
+                    android:textColor="@color/white"
+                    android:background="@drawable/single_line"
+                    android:textSize="@dimen/txt_18"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/ans3"
+                    android:background="@drawable/single_line"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/txt_18"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/wqa"
+                android:layout_marginTop="@dimen/lrtbp_5"
+                android:layout_alignParentRight="true"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:id="@+id/exp_btlay1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:background="@drawable/game_buttons"
+                        android:textColor="@color/dark_green"
+                        android:textSize="@dimen/txt_16"
+                        android:id="@+id/w_b1"
+                        android:gravity="center"
+                        android:layout_width="@dimen/wh_40"
+                        android:layout_height="@dimen/wh_40" />
+                    <TextView
+                        android:background="@drawable/game_buttons"
+                        android:id="@+id/w_b2"
+                        android:gravity="center"
+                        android:textColor="@color/dark_green"
+                        android:textSize="@dimen/txt_16"
+                        android:layout_width="@dimen/wh_40"
+                        android:layout_height="@dimen/wh_40" />
+                    <TextView
+                        android:background="@drawable/game_buttons"
+                        android:id="@+id/w_b3"
+                        android:gravity="center"
+                        android:textColor="@color/dark_green"
+                        android:textSize="@dimen/txt_16"
+                        android:layout_width="@dimen/wh_40"
+                        android:layout_height="@dimen/wh_40" />
+                </LinearLayout>
+
+                <LinearLayout
+
+                    android:id="@+id/exp_btlay2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:background="@drawable/game_buttons"
+                        android:textColor="@color/dark_green"
+                        android:textSize="@dimen/txt_16"
+                        android:id="@+id/w_b4"
+                        android:gravity="center"
+                        android:layout_width="@dimen/wh_40"
+                        android:layout_height="@dimen/wh_40" />
+                    <TextView
+                        android:background="@drawable/game_buttons"
+                        android:id="@+id/w_b5"
+                        android:gravity="center"
+                        android:textColor="@color/dark_green"
+                        android:textSize="@dimen/txt_16"
+                        android:layout_width="@dimen/wh_40"
+                        android:layout_height="@dimen/wh_40" />
+                    <TextView
+                        android:background="@drawable/game_buttons"
+                        android:id="@+id/w_b6"
+                        android:gravity="center"
+                        android:textColor="@color/dark_green"
+                        android:textSize="@dimen/txt_16"
+                        android:layout_width="@dimen/wh_40"
+                        android:layout_height="@dimen/wh_40" />
+                </LinearLayout>
+                <LinearLayout
+
+                    android:id="@+id/exp_btlay3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:background="@drawable/game_buttons"
+                        android:textColor="@color/dark_green"
+                        android:textSize="@dimen/txt_16"
+                        android:id="@+id/w_b7"
+                        android:gravity="center"
+                        android:layout_width="@dimen/wh_40"
+                        android:layout_height="@dimen/wh_40" />
+                    <TextView
+                        android:background="@drawable/game_buttons"
+                        android:id="@+id/w_b8"
+                        android:gravity="center"
+                        android:textColor="@color/dark_green"
+                        android:textSize="@dimen/txt_16"
+                        android:layout_width="@dimen/wh_40"
+                        android:layout_height="@dimen/wh_40" />
+                    <TextView
+                        android:background="@drawable/game_buttons"
+                        android:id="@+id/w_b9"
+                        android:gravity="center"
+                        android:textColor="@color/dark_green"
+                        android:textSize="@dimen/txt_16"
+                        android:layout_width="@dimen/wh_40"
+                        android:layout_height="@dimen/wh_40" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:background="#fdedce01"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+    <RelativeLayout
+        android:id="@+id/rel_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+      >
+    <ImageView
+        android:id="@+id/imageview"
+        android:layout_width="@dimen/wh_60"
+        android:layout_height="@dimen/wh_60"
+        android:layout_marginTop="@dimen/lrtbp_10"
+        android:src="@drawable/logo2"
+        android:layout_marginLeft="@dimen/lrtbp_5"/>
+
+    <TextView
+        android:id="@+id/txtlist"
+        android:layout_width="190dp"
+        android:layout_height="wrap_content"
+        android:textSize="16dp"
+        android:gravity="left|center"
+        android:text="solli_adi"
+        android:textColor="#a93e03"
+        android:textStyle="bold"
+        android:layout_toRightOf="@+id/imageview"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/wh_2"/>
+
+
+
+    </RelativeLayout>
+    <Button
+        android:layout_below="@+id/rel_title"
+        android:layout_alignParentRight="true"
+        android:id="@+id/btn_cont"
+        android:layout_width="match_parent"
+        android:layout_height="33dp"
+        android:background="@drawable/b_go"
+        android:text="Install"
+        android:layout_marginRight="@dimen/lrtbp_10"
+        android:layout_marginLeft="@dimen/lrtbp_10"
+        android:textColor="#fff"
+        android:layout_marginTop="@dimen/lrtbp_10"
+        android:textStyle="bold"
+        android:textSize="14dp"
+        android:layout_marginBottom="@dimen/lrtbp_10"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#4298ead4"/>
+
+        </RelativeLayout>
+</LinearLayout>

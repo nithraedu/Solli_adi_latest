@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back_dialog"
+            android:gravity="center"
+            android:padding="@dimen/lrtbp_10"
+            android:text="மீண்டும் விளையாட"
+            android:textColor="#ffff"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/back_dialog"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="இந்த நிலையை மீண்டும் விளையாட விரும்புகிறீர்களா ?"
+                android:gravity="center"
+                android:layout_margin="25dp"
+                android:textColor="#ffff"
+                android:textStyle="bold"
+                android:textSize="15dp"/>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="20dp"
+             android:layout_centerHorizontal="true">
+
+                <TextView
+                    android:id="@+id/cancel_retry"
+                    android:layout_width="140dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/b_no"
+                    android:layout_margin="10dp"
+                    android:text="வேண்டாம்"
+                    android:paddingLeft="20dp"
+                    android:textSize="16dp"
+                    android:textColor="#fff"
+                    android:textStyle="bold"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/done_retry"
+                    android:layout_width="140dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/b_go"
+                    android:layout_margin="10dp"
+                    android:text=" விளையாடு"
+                    android:paddingRight="25dp"
+                    android:textSize="15dp"
+                    android:textColor="#fff"
+                    android:textStyle="bold"
+                    android:gravity="center"/>
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back_dialog" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

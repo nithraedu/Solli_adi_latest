@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/back_next2"
+    android:orientation="vertical">
+<RelativeLayout
+    android:background="@drawable/scoresscreen_background"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_above="@+id/fl_adplaceholder"
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:visibility="gone"
+            android:id="@+id/valthu_lay"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:background="@drawable/valthukal">
+
+            <TextView
+                android:id="@+id/best_valthu_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:padding="10dp"
+                android:text="fdbjkbhjkbhjkjk"
+                android:textColor="#fff"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_marginTop="@dimen/lrtbp_20"
+            android:id="@+id/score_board_lay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/fgh"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:visibility="gone"
+                        android:id="@+id/cub_img"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/win_cub" />
+
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/stage_txt"
+                        android:layout_width="120dp"
+                        android:layout_height="20dp"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/scorecoin1"
+                        android:gravity="center"
+                        android:text="fhbjkfjkf"
+                        android:textColor="#fff"
+                        android:textStyle="bold"
+                        />
+
+
+                    <RelativeLayout
+                        android:id="@+id/sdfas"
+                        android:layout_marginTop="@dimen/wh_35"
+                        android:layout_below="@+id/stage_txt"
+                        android:layout_width="280dp"
+                        android:layout_height="60dp"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/option_hint_b">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_toLeftOf="@+id/best_score"
+                            android:text="சிறந்த நாணயங்கள்"
+                            android:textColor="#fff"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+                        <TextView
+                            android:id="@+id/best_score"
+                            android:layout_width="50dp"
+
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:gravity="center"
+                            android:text="00"
+                            android:paddingLeft="@dimen/lrtbp_5"
+                            android:textColor="#AAff0000"
+                            android:textSize="18dp"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+                </RelativeLayout>
+
+
+                <RelativeLayout
+
+                    android:layout_width="270dp"
+                    android:layout_height="@dimen/wh_40"
+                    android:layout_gravity="center_horizontal"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/time_txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/timer_label_a"
+                        android:gravity="center"
+                        android:text="நேரம்"
+                        android:textColor="#fff"
+                        android:textSize="16dp"
+                        android:textStyle="bold" />
+
+                    <Chronometer
+                        android:id="@+id/best_chronometer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/timer_label_b"
+                        android:gravity="center"
+                        android:text="0.0"
+                        android:textColor="#fff"
+                        android:textSize="16dp"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+
+                <RelativeLayout
+
+                    android:layout_width="230dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/point_lable_a">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="20dp"
+                        android:text="வெற்றி நாணயங்கள்"
+                        android:textColor="#fff"
+                        android:textSize="12dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/win_coin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="30dp"
+                        android:text="0"
+                        android:textColor="#fff"
+                        android:textSize="12dp"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="230dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/point_lable_b">
+
+                    <TextView
+                        android:id="@+id/bonus_txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="20dp"
+                        android:text="வெகுமதி நாணயங்கள்"
+                        android:textColor="#fff"
+                        android:textSize="11dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/credit_coin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="30dp"
+                        android:text="0"
+                        android:textColor="#fff"
+                        android:textSize="12dp"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_below="@+id/score_board_lay"
+            android:id="@+id/ghh"
+            android:layout_centerHorizontal="true"
+            android:layout_width="250dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/option_hint_b">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/current_score"
+                android:text="தற்போதைய நாணயங்கள்"
+                android:textColor="#fff"
+                android:textSize="11dp" />
+
+            <TextView
+                android:id="@+id/current_score"
+                android:layout_width="35dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="5dp"
+                android:gravity="center"
+                android:text="00"
+                android:textColor="#AAff0000"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+
+
+        <TextView
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:layout_below="@+id/rts"
+            android:layout_gravity="center"
+            android:id="@+id/win_meaning_txt"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button1"
+            android:gravity="center"
+            android:paddingBottom="5dp"
+            android:paddingLeft="25dp"
+            android:paddingRight="40dp"
+            android:paddingTop="5dp"
+            android:text="சொல்லுக்கான விளக்கம்"
+            android:textColor="#fff"
+            android:textSize="16dp"
+            />
+        <LinearLayout
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:layout_below="@+id/win_meaning_txt"
+            android:id="@+id/vid_earn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/tts_score"
+            android:elevation="@dimen/lrtbp_10"
+
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/game_button_background"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/coins"
+                android:layout_width="20dp"
+                android:layout_height="20dp" />
+            <TextView
+                android:id="@+id/video_earn"
+                android:padding="@dimen/lrtbp_5"
+                android:layout_centerInParent="true"
+                android:layout_centerHorizontal="true"
+                android:textColor="#ffff"
+                android:text="20+ நாணயங்கள்"
+                android:gravity="center"
+                android:textSize="@dimen/txt_12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/center"
+            android:layout_centerInParent="true"
+            android:layout_width="@dimen/txt_20"
+            android:layout_height="@dimen/txt_20" />
+
+        <LinearLayout
+            android:layout_below="@+id/ghh"
+            android:id="@+id/rts"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:id="@+id/retry_game"
+                android:layout_width="130dp"
+                android:layout_height="50dp"
+                android:background="@drawable/cnt1">
+
+                <nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.LikeButton
+                    android:id="@+id/like_retry_game"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="10dp"
+                    app:circle_end_color="#ff0000"
+                    app:circle_start_color="#e67070"
+                    app:dots_primary_color="#fd9d9d"
+                    app:dots_secondary_color="#ff0000"
+                    app:icon_size="60dp"
+                    app:like_drawable="@drawable/retry_img"
+                    app:liked="false"
+                    app:unlike_drawable="@drawable/retry_img"
+                    android:visibility="gone"/>
+
+
+                <TextView
+                    android:layout_centerInParent="true"
+                    android:id="@+id/retry_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:text="மீண்டும்\nவிளையாட"
+                    android:textColor="#fff"
+                    android:textSize="13dp"
+                    />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/next_game"
+                android:layout_width="130dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="@dimen/wh_40"
+                android:background="@drawable/cnt1">
+
+
+                <nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.LikeButton
+                    android:id="@+id/like_continue_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="10dp"
+                    app:circle_end_color="#ff0000"
+                    app:circle_start_color="#e67070"
+                    app:dots_primary_color="#fd9d9d"
+                    app:dots_secondary_color="#ff0000"
+                    app:icon_size="60dp"
+                    app:like_drawable="@drawable/continue_img"
+                    app:liked="false"
+                    app:unlike_drawable="@drawable/continue_img"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:layout_centerInParent="true"
+                    android:id="@+id/continue_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="20dp"
+                    android:text="தொடர்க"
+                    android:textStyle="bold"
+                    android:textColor="#fff"
+                    android:textSize="13dp"
+                    />
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+
+
+
+
+
+
+        <!-- <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_centerInParent="true"
+             android:layout_margin="10dp"
+             android:orientation="vertical">
+
+             <TextView
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:background="@drawable/scroll_top_a"
+                 android:gravity="center"
+                 android:shadowColor="#ae0606"
+                 android:shadowDx="1"
+                 android:shadowDy="1"
+                 android:shadowRadius="2"
+                 android:text="வெற்றி மடல் "
+                 android:textColor="#000"
+                 android:textSize="18dp"
+                 android:textStyle="bold" />
+
+             <LinearLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:background="@drawable/scroll_center"
+                 android:orientation="vertical">
+
+                 <TextView
+                     android:id="@+id/best_score"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="சிறப்பு நாணயம் "
+                     android:layout_gravity="center_horizontal"
+                     android:gravity="center"
+                     android:layout_margin="5dp"
+                     android:textColor="#000"
+                     android:textSize="20dp"/>
+
+                 <LinearLayout
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:orientation="horizontal"
+                     android:layout_gravity="center_horizontal">
+                     <TextView
+                         android:id="@+id/best_time"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="சிறப்பு நேரம் "
+                         android:gravity="center"
+                         android:layout_margin="5dp"
+                         android:textColor="#000"
+                         android:textSize="20dp"/>
+
+                     <Chronometer
+                         android:id="@+id/best_chronometer"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:textSize="20dp"
+                         android:gravity="center"
+                         android:layout_margin="5dp"
+                         android:textColor="#f70000"/>
+                 </LinearLayout>
+
+                 <TextView
+                     android:id="@+id/win_coin"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="வெற்றி நாணயம் "
+                     android:layout_gravity="center_horizontal"
+                     android:gravity="center"
+                     android:layout_margin="5dp"
+                     android:textColor="#000"
+                     android:textSize="20dp"/>
+                 <TextView
+                     android:id="@+id/credit_coin"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="சிறப்பு நாணயம் "
+                     android:layout_gravity="center_horizontal"
+                     android:gravity="center"
+                     android:layout_margin="5dp"
+                     android:textColor="#000"
+                     android:textSize="20dp"/>
+
+
+
+                 <LinearLayout
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:orientation="horizontal"
+                     android:layout_gravity="center_horizontal">
+
+                     <TextView
+                         android:id="@+id/retry_game"
+                         android:layout_width="150dp"
+                         android:layout_height="70dp"
+                         android:background="@drawable/no_btn"
+                         android:layout_margin="10dp"
+                         android:text="மீண்டும் முயற்சிக்க"
+                         android:paddingLeft="20dp"
+                         android:textSize="14dp"
+                         android:textColor="#fff"
+                         android:textStyle="bold"
+                         android:gravity="center"/>
+
+                     <TextView
+                         android:id="@+id/next_game"
+                         android:layout_width="150dp"
+                         android:layout_height="70dp"
+                         android:background="@drawable/yes_btn"
+                         android:layout_margin="10dp"
+                         android:text="அடுத்த விளையாட்டு"
+                         android:paddingRight="20dp"
+                         android:textSize="14dp"
+                         android:textColor="#fff"
+                         android:textStyle="bold"
+                         android:gravity="center"/>
+
+
+                 </LinearLayout>
+
+             </LinearLayout>
+
+             <ImageView
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:background="@drawable/scroll_bottom" />
+
+         </LinearLayout>-->
+
+    </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/fl_adplaceholder"
+        android:layout_width="wrap_content"
+        android:layout_height="250dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/lrtbp_5"
+        android:orientation="horizontal" />
+
+
+</RelativeLayout>
+
+</RelativeLayout>

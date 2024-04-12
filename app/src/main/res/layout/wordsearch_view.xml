@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lay_wordsearch"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:keepScreenOn="true"
+    android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="#fff">
+
+
+        <RelativeLayout
+            android:id="@+id/toptool"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:layout_alignParentTop="true"
+            android:background="@color/colorPrimary">
+
+            <RelativeLayout
+
+                android:id="@+id/level_lay"
+                android:layout_width="120dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/scorecoin2">
+
+                <nithra.tamil.word.game.solliadi.word_search_game.Models.extra.MyTextView
+                    android:id="@+id/level_txt"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/circle_tool"
+                    android:gravity="center"
+                    android:text="1"
+                    android:textColor="#000"
+                    android:textSize="13dp"
+                    android:textStyle="bold" />
+
+                <nithra.tamil.word.game.solliadi.word_search_game.Models.extra.MyTextView
+                    android:id="@+id/level_name_txt"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_toRightOf="@+id/level_txt"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:text="5 * 5"
+                    android:textColor="#fff"
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/coin_lay"
+                android:layout_width="130dp"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/scorecoin1">
+
+                <nithra.tamil.word.game.solliadi.word_search_game.Models.extra.MyTextView
+                    android:id="@+id/more_coin"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/circle_tool"
+                    android:gravity="center"
+                    android:text="+"
+                    android:textColor="#000"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/coin_img"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/coins"
+                    android:visibility="invisible" />
+
+                <nithra.tamil.word.game.solliadi.word_search_game.Models.extra.MyTextView
+                    android:id="@+id/coin_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/more_coin"
+                    android:layout_toRightOf="@+id/coin_img"
+                    android:gravity="center"
+                    android:text="5000000"
+                    android:textColor="#fff"
+                    android:textSize="13dp"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toLeftOf="@+id/coin_lay"
+                android:layout_toRightOf="@+id/level_lay"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/timer_tool" />
+
+                <Chronometer
+                    android:id="@+id/chronometer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="#032e07"
+                    android:textSize="12dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </RelativeLayout>
+
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@+id/toptool"
+            android:background="#e3e3e3" />
+
+
+        <RelativeLayout
+            android:id="@+id/scratch_lay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view">
+
+            <ImageView
+                android:id="@+id/general_setting"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/sound_on" />
+
+            <LinearLayout
+                android:id="@+id/n_icon_ad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/prize_logo"
+                    android:layout_width="@dimen/croll_insbut_height"
+                    android:layout_height="@dimen/croll_insbut_height"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:src="@drawable/gift"
+                    android:visibility="invisible" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Ad"
+                    android:textColor="#fff" />
+
+                <ImageView
+                    android:id="@+id/icon_ad_img"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="5dp"
+                    android:src="@drawable/share1"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="210dp"
+                android:layout_height="40dp"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/back_button2">
+
+                <nithra.tamil.word.game.solliadi.word_search_game.Models.extra.MyTextView
+                    android:id="@+id/screatch_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_toLeftOf="@+id/counts"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:text="250"
+                    android:textColor="#fff"
+                    android:textSize="18dp"
+                    android:visibility="invisible" />
+
+                <nithra.tamil.word.game.solliadi.word_search_game.Models.extra.MyTextView
+                    android:id="@+id/counts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/circle_tool"
+                    android:gravity="center"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:text="20/20"
+                    android:textColor="#ff0000"
+                    android:textSize="14dp"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+
+            <nithra.tamil.word.game.solliadi.word_search_game.Models.extra.MyTextView
+                android:id="@+id/count_word"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_margin="10dp"
+                android:textColor="#ff0000"
+                android:textSize="20dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/scratch_lay">
+
+            <nithra.tamil.word.game.solliadi.word_search_game.Models.extra.MyTableView
+                android:id="@+id/mytab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:visibility="gone">
+
+            </nithra.tamil.word.game.solliadi.word_search_game.Models.extra.MyTableView>
+
+            <nithra.tamil.word.game.solliadi.word_search_game.Models.general.WordsearchGridView
+                android:id="@+id/grd_wordsearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:visibility="invisible" />
+
+            <RelativeLayout
+                android:id="@+id/hintview"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_below="@+id/grd_wordsearch"
+                android:background="#0d6625">
+
+                <RelativeLayout
+                    android:id="@+id/relativeLayout1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true">
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="1dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_margin="10dp"
+                        android:layout_toLeftOf="@+id/lbl_word_list"
+                        android:background="#FAFAFA"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/lbl_word_list"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:text="Word List"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="1dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_margin="10dp"
+                        android:layout_toRightOf="@+id/lbl_word_list"
+                        android:background="#FAFAFA"
+                        android:visibility="gone" />
+
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/grd_word_list"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/relativeLayout1"
+                    android:fadeScrollbars="false"
+                    android:scrollbarAlwaysDrawHorizontalTrack="true"
+                    android:scrollbarSize="3dp"
+                    android:scrollbarStyle="insideInset"
+                    android:scrollbarThumbHorizontal="@drawable/hthumb"
+                    android:scrollbars="horizontal"
+                    android:visibility="visible">
+
+                </androidx.recyclerview.widget.RecyclerView>
+
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/normal_baner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/wh_50"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:background="@color/lighest"
+        android:visibility="visible" />
+</LinearLayout>

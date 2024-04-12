@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/layout_banner_ad">
+
+        <TextView
+            android:id="@+id/del_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:gravity="center"
+            android:padding="@dimen/wh_2"
+            android:text="Long press to delete"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#12110f"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/view1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/wh_1"
+            android:layout_below="@+id/del_txt"
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:background="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/txtNoNotification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:gravity="center"
+            android:text="அறிவிப்புகள் ஏதும் இல்லை"
+            android:textColor="@color/black"
+            android:textSize="@dimen/txt_22"
+            android:typeface="serif"
+            android:visibility="gone"/>
+
+        <ListView
+            android:id="@+id/listView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view1"
+            android:layout_marginLeft="@dimen/info_margin_left"
+            android:layout_marginTop="@dimen/info_margin_top"
+            android:layout_marginRight="@dimen/info_margin_right"
+            android:layout_marginBottom="@dimen/info_margin_top"
+            android:divider="@color/black"
+            android:dividerHeight="@dimen/wh_1" />
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_banner_ad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:minHeight="50dp"
+        android:visibility="gone"
+        android:orientation="horizontal" />
+</RelativeLayout>

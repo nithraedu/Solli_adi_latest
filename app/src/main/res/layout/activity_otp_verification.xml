@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="nithra.tamil.word.game.solliadi.Main_Login">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:id="@+id/top"
+            android:background="#ffc933"
+            android:layout_above="@+id/bottem"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/pic"
+                android:layout_centerInParent="true"
+                android:background="@drawable/loginscreen"
+                android:layout_width="@dimen/home_screen_topic_substatus_mraginleft2"
+                android:layout_height="@dimen/home_screen_topic_substatus_mraginleft2" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/bottem"
+            android:background="#303032"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/wh_300">
+
+            <LinearLayout
+                android:id="@+id/phlayout"
+                android:layout_marginTop="@dimen/lrtbp_10"
+                android:layout_marginLeft="@dimen/lrtbp_15"
+                android:layout_marginRight="@dimen/lrtbp_15"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:layout_marginTop="@dimen/lrtbp_25"
+                    android:id="@+id/otpverify"
+                    android:inputType="number"
+                    android:textColor="@color/white"
+                    android:textColorHint="#919191"
+                    android:imeOptions="actionDone"
+                    android:background="@drawable/single_line"
+                    android:textSize="@dimen/txt_18"
+                    android:hint="ஒருமுறை கடவுச்சொல் (OTP)"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/lrtbp_30" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/signin"
+                android:layout_marginTop="@dimen/lrtbp_25"
+                android:layout_below="@+id/phlayout"
+                android:text="சரிபார்க்க"
+                android:textSize="@dimen/txt_22"
+                android:textColor="@color/white"
+                android:padding="@dimen/lrtbp_10"
+                android:background="@drawable/yellow_back"
+                android:layout_marginLeft="@dimen/lrtbp_30"
+                android:layout_marginRight="@dimen/lrtbp_30"
+                android:gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/resend"
+                android:visibility="invisible"
+                android:layout_marginTop="@dimen/lrtbp_25"
+                android:layout_below="@+id/signin"
+                android:text="கடவுச்சொல்லை மீண்டும் அனுப்ப"
+                android:textSize="@dimen/txt_18"
+                android:textColor="@color/white"
+                android:padding="@dimen/lrtbp_10"
+                android:background="@drawable/yellow_back"
+                android:layout_marginLeft="@dimen/lrtbp_30"
+                android:layout_marginRight="@dimen/lrtbp_30"
+                android:gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+
+        android:id="@+id/ads_lay"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+
+    </LinearLayout>
+</RelativeLayout>

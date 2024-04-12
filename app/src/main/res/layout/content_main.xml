@@ -1,0 +1,1946 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/app_bar_main">
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/r_head"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/new_background">
+
+        <TextView
+            android:id="@+id/a"
+            android:layout_width="@dimen/wh_40"
+            android:layout_height="@dimen/wh_40"
+            android:layout_marginLeft="@dimen/lrtbp_30"
+            android:gravity="center"
+            android:text="ஆ"
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_22"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/a_para"
+            android:layout_width="@dimen/wh_70"
+            android:layout_height="@dimen/wh_70"
+            android:layout_marginLeft="@dimen/wh_35"
+            android:textColor="@color/dark_green"
+            android:visibility="invisible" />
+
+        <!--       <TextView
+                   android:id="@+id/aa"
+                   android:textColor="@color/light_yellow"
+                   android:textSize="@dimen/txt_25"
+                   android:layout_marginTop="@dimen/lrtbp_20"
+                   android:layout_marginLeft="@dimen/lrtbp_30"
+                   android:background="@drawable/blue_ballun"
+                   android:text=" ஆ"
+                   android:layout_above="@+id/head"
+                   android:layout_width="@dimen/wh_40"
+                   android:layout_height="@dimen/wh_40" />-->
+        <!--
+               <TextView
+                   android:layout_marginTop="@dimen/lrtbp_20"
+                   android:id="@+id/e"
+                   android:textColor="@color/red"
+                   android:textSize="@dimen/txt_25"
+                   android:layout_marginLeft="@dimen/lrtbp_30"
+                   android:background="@drawable/blue_green_ballun"
+                   android:text=" இ"
+                   android:layout_above="@+id/head"
+                   android:layout_width="@dimen/wh_40"
+                   android:layout_height="@dimen/wh_40" />-->
+
+        <TextView
+            android:id="@+id/u"
+            android:layout_width="@dimen/wh_40"
+            android:layout_height="@dimen/wh_40"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="@dimen/lrtbp_30"
+            android:text=" உ"
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_25"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/u_para"
+            android:layout_width="@dimen/wh_70"
+            android:layout_height="@dimen/wh_70"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="@dimen/wh_35"
+            android:textColor="@color/dark_green"
+            android:visibility="invisible" />
+        <!--       <TextView
+                   android:id="@+id/ee"
+                   android:text="ஈ"
+                   android:textColor="@color/rose"
+                   android:layout_alignParentRight="true"
+                   android:layout_marginRight="@dimen/lrtbp_30"
+                   android:background="@drawable/yellow_ballun"
+                   android:textSize="@dimen/txt_25"
+                   android:layout_above="@+id/ee_para"
+                   android:layout_width="@dimen/wh_40"
+                   android:layout_height="@dimen/wh_40" />-->
+        <TextView
+            android:id="@+id/ee"
+            android:layout_width="@dimen/wh_40"
+            android:layout_height="@dimen/wh_40"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/lrtbp_30"
+            android:text="  ஈ"
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_25"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/ee_para"
+            android:layout_width="@dimen/wh_70"
+            android:layout_height="@dimen/wh_70"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/lrtbp_30"
+            android:textColor="@color/dark_green"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/e"
+            android:layout_width="@dimen/wh_40"
+            android:layout_height="@dimen/wh_40"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/wh_80"
+            android:text=" இ"
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_25"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/e_para"
+            android:layout_width="@dimen/wh_70"
+            android:layout_height="@dimen/wh_70"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/wh_80"
+            android:textColor="@color/dark_green"
+            android:visibility="invisible" />
+
+        <ScrollView
+            android:id="@+id/SCROLLER_ID"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/ads_lay"
+            android:fadeScrollbars="false"
+            android:fillViewport="true"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/hd1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/prize_lay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/lrtbp_10"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:layout_marginRight="@dimen/lrtbp_10"
+                    android:background="@drawable/button3"
+                    android:elevation="@dimen/lrtbp_10"
+                    android:padding="@dimen/lrtbp_5">
+
+                    <TextView
+                        android:id="@+id/prize_logo"
+                        android:layout_width="@dimen/lrtbp_25"
+                        android:layout_height="@dimen/lrtbp_25"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="@dimen/lrtbp_15"
+                        android:background="@drawable/giftbox" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/wh_35"
+                            android:gravity="center"
+                            android:text="சொல்லிஅடி பரிசுத்திட்டம்"
+                            android:textColor="#ffff"
+                            android:textSize="@dimen/txt_16"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:padding="@dimen/lrtbp_5"
+                            android:text="( நித்ராவின் பரிசுமழை )"
+                            android:textColor="#ffff" />
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/lrtbp_5">
+
+                    <RelativeLayout
+                        android:id="@+id/re_ads"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:layout_marginLeft="@dimen/lrtbp_10"
+                        android:layout_marginRight="@dimen/lrtbp_10"
+                        android:background="@drawable/button_multiplayer"
+                        android:elevation="@dimen/lrtbp_10">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_toLeftOf="@+id/hand">
+
+                            <TextView
+                                android:id="@+id/icon"
+                                android:layout_width="80dp"
+                                android:layout_height="80dp"
+                                android:layout_alignParentLeft="true"
+                                android:layout_centerInParent="true"
+                                android:background="@drawable/multiplayer_ic" />
+
+                            <TextView
+                                android:id="@+id/rm_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_toRightOf="@+id/icon"
+                                android:gravity="center"
+                                android:padding="@dimen/wh_2"
+                                android:text="நிகழ்நேர போட்டி"
+                                android:textColor="#124b03"
+                                android:textSize="18dp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/ex_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/rm_name"
+                                android:layout_toRightOf="@+id/icon"
+                                android:gravity="center"
+                                android:text="( மற்ற போட்டியாளர்களுடன் விளையாட )"
+                                android:textColor="#86084f"
+                                android:textSize="@dimen/txt_12" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/hand"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_alignParentRight="true"
+                            android:background="@drawable/m_hand" />
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/lrtbp_10"
+                    android:layout_marginRight="@dimen/lrtbp_10"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/head"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/wh_120"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/lrtbp_5"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/pic_game"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:background="@drawable/but1"
+                                android:elevation="@dimen/lrtbp_5"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/p_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_gravity="right"
+                                    android:layout_marginTop="@dimen/lrtbp_5"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+                                    android:padding="@dimen/lrtbp_5"
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/pic_lay"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="@dimen/lrtbp_5"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor1">
+
+                                        <TextView
+                                            android:id="@+id/picgame"
+                                            android:layout_width="60dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_marginTop="@dimen/lrtbp_5"
+                                            android:layout_marginRight="@dimen/lrtbp_5"
+                                            android:layout_weight="1"
+                                            android:background="@drawable/but1_ic"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/pic_lay"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="படம் பார்த்து கண்டுபிடி"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+
+                            </RelativeLayout>
+
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/hint_game"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="@dimen/lrtbp_5"
+                            android:layout_weight="1"
+                            android:elevation="@dimen/lrtbp_10">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:layout_weight="1"
+                                android:background="@drawable/but2"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/c_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_5"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+                                    android:padding="@dimen/lrtbp_5"
+
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/hint_gamew"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/lrtbp_5"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor2">
+
+                                        <TextView
+                                            android:id="@+id/hintgame"
+                                            android:layout_width="60dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_marginTop="@dimen/lrtbp_5"
+                                            android:background="@drawable/but6_ic"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/hint_gamew"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="குறிப்புகள் மூலம் கண்டுபிடி"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+                            </RelativeLayout>
+
+
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/head2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/head"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/lrtbp_10"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/solukulsol"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:elevation="@dimen/lrtbp_10">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:background="@drawable/but3">
+
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/ss_id"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_alignParentRight="true"
+                                        android:layout_centerHorizontal="true"
+                                        android:layout_gravity="center_horizontal"
+                                        android:layout_marginTop="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_15"
+                                        android:gravity="center"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_10" />
+
+                                    <RelativeLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerInParent="true">
+
+                                        <nithra.tamil.word.game.solliadi.RippleView
+                                            android:id="@+id/solukulsolw"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            app:rv_centered="true"
+                                            app:rv_color="@color/rippelColor2">
+
+                                            <TextView
+
+                                                android:id="@+id/solgame"
+                                                android:layout_width="60dp"
+                                                android:layout_height="@dimen/wh_50"
+                                                android:layout_centerInParent="true"
+                                                android:layout_marginTop="@dimen/lrtbp_5"
+                                                android:background="@drawable/but8_ic"
+                                                android:gravity="center"
+                                                android:textColor="@color/white"
+                                                android:textSize="@dimen/txt_10"
+                                                android:textStyle="bold" />
+
+
+                                        </nithra.tamil.word.game.solliadi.RippleView>
+
+                                        <TextView
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/solukulsolw"
+                                            android:layout_marginLeft="@dimen/lrtbp_10"
+                                            android:layout_marginRight="@dimen/lrtbp_10"
+                                            android:gravity="center"
+                                            android:text="சொல்லுக்குள் சொல்"
+                                            android:textColor="#ffff"
+                                            android:textSize="@dimen/txt_16" />
+                                    </RelativeLayout>
+
+
+                                </RelativeLayout>
+                            </RelativeLayout>
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/word_game"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="@dimen/lrtbp_5"
+                            android:layout_weight="1"
+                            android:elevation="@dimen/lrtbp_10">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:layout_weight="1"
+                                android:background="@drawable/but4"
+
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/s_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+                                    android:padding="@dimen/lrtbp_5"
+
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/word_gamew"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/lrtbp_5"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor2">
+
+                                        <TextView
+                                            android:id="@+id/wordgamew"
+                                            android:layout_width="60dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_marginTop="@dimen/lrtbp_5"
+                                            android:background="@drawable/but2_ic"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/word_gamew"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="சொல் விளையாட்டு"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+                            </RelativeLayout>
+                        </nithra.tamil.word.game.solliadi.RippleView>
+                    </LinearLayout>
+
+                    <nithra.tamil.word.game.solliadi.RippleView
+                        android:id="@+id/festival_game"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/lrtbp_5"
+                        android:layout_weight="1">
+
+                        <ImageView
+                            android:id="@+id/festival_game_main_txt"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/wh_120"
+                            android:orientation="vertical"
+                            android:visibility="gone" />
+                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                    <LinearLayout
+                        android:id="@+id/head11"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/head8"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/lrtbp_5"
+                        android:layout_marginBottom="@dimen/lrtbp_5"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/pic_to_words"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:layout_marginLeft="@dimen/lrtbp_5"
+                                android:layout_weight="1"
+                                android:background="@drawable/but8"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/pic_to_words_no"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/pic_to_words_mainw"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor3">
+
+                                        <TextView
+                                            android:id="@+id/pic_to_words_txt"
+                                            android:layout_width="80dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_weight="1"
+                                            android:background="@drawable/padatirkul_kandupidi"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/pic_to_words_mainw"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="படத்திற்குள் கண்டுபிடி"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+
+                            </RelativeLayout>
+
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/match_the_fallows"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/wh_120"
+                            android:layout_marginLeft="@dimen/lrtbp_5"
+                            android:layout_weight="1"
+                            android:background="@drawable/but12">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:layout_marginLeft="@dimen/lrtbp_5"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/match_words_no"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/match_the_fallows_r"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/lrtbp_5"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor2">
+
+                                        <TextView
+                                            android:id="@+id/match_the_fallows_d"
+                                            android:layout_width="80dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_marginTop="@dimen/lrtbp_5"
+                                            android:background="@drawable/match_the_fallowing"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/match_the_fallows_r"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="பொருத்துக"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+
+                            </RelativeLayout>
+
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/head3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/head2"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/lrtbp_5"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/oddmanout"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/wh_120"
+                            android:layout_weight="1">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:background="@drawable/but5">
+
+                                <TextView
+                                    android:id="@+id/oddmanout_ss_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/oddmanoutw"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/lrtbp_5"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor2">
+
+                                        <TextView
+                                            android:id="@+id/oddmanout_t"
+                                            android:layout_width="60dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_marginTop="@dimen/lrtbp_5"
+                                            android:background="@drawable/but4_ic"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/oddmanoutw"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="வேறுபாடுகளை கண்டுபிடி"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+
+                            </RelativeLayout>
+
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/tirukural_s"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/lrtbp_5"
+                            android:layout_weight="1">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:background="@drawable/but11"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tirukuralid"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/tirukural"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/lrtbp_5"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor3">
+
+                                        <TextView
+                                            android:id="@+id/tirukural_txt"
+                                            android:layout_width="60dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_weight="1"
+                                            android:background="@drawable/but11_ic"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/tirukural"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:padding="@dimen/wh_2"
+                                        android:text="திருக்குறள்"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+                            </RelativeLayout>
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/head5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/head3"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/lrtbp_10"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/opposite_word"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:layout_weight="1"
+                                android:background="@drawable/but7"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/opposite_word_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/opposite_wordw"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor2">
+
+                                        <TextView
+                                            android:id="@+id/opposite_word_txt"
+                                            android:layout_width="60dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_marginTop="@dimen/lrtbp_5"
+                                            android:background="@drawable/but7_ic"
+                                            android:gravity="center"
+                                            android:textColor="#ffff"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/opposite_wordw"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="எதிர்சொல்லை  கண்டுபிடி"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+                            </RelativeLayout>
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/english_to_tamil"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/lrtbp_5"
+                            android:layout_weight="1">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:layout_weight="1"
+                                android:background="@drawable/but8"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/english_to_tamil_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/english_to_tamilw"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/lrtbp_5"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor3">
+
+                                        <TextView
+                                            android:id="@+id/english_to_tamil_txt"
+                                            android:layout_width="60dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_marginTop="@dimen/lrtbp_5"
+                                            android:layout_weight="1"
+                                            android:background="@drawable/but10_ic"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/english_to_tamilw"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="பிறமொழி சொற்கள்"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+                            </RelativeLayout>
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/head6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/head5"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/lrtbp_10"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/right_order"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:layout_weight="1"
+                                android:background="@drawable/but9"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/right_order_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/right_orderw"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/lrtbp_5"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor2">
+
+                                        <TextView
+                                            android:id="@+id/right_order_txt"
+                                            android:layout_width="60dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_marginTop="@dimen/lrtbp_5"
+                                            android:background="@drawable/but3_ic"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/right_orderw"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="சீர்படுத்து"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+
+                                </RelativeLayout>
+
+                            </RelativeLayout>
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/riddle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/head6"
+                            android:layout_centerHorizontal="true"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="@dimen/lrtbp_5"
+                            android:layout_marginTop="@dimen/lrtbp_10"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:background="@drawable/but10"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/riddle_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10" />
+
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/riddlew"
+                                        android:layout_width="@dimen/wh_120"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor3">
+
+                                        <TextView
+                                            android:id="@+id/riddle_txt"
+                                            android:layout_width="60dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_marginTop="@dimen/lrtbp_5"
+                                            android:layout_weight="1"
+                                            android:background="@drawable/but5_ic"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/riddlew"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="புதிருக்கு பதில்"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+
+                                </RelativeLayout>
+
+                            </RelativeLayout>
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/head7"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/head6"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="@dimen/lrtbp_5"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/matchwords"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:layout_marginLeft="@dimen/lrtbp_5"
+                                android:layout_weight="1"
+                                android:background="@drawable/but6"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/matchwords_no"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/matchwordsw"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor3">
+
+                                        <TextView
+                                            android:id="@+id/newgame1"
+                                            android:layout_width="60dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_weight="1"
+                                            android:background="@drawable/but9_ic"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/matchwordsw"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="இணைச்சொற்களை  கண்டுபிடி"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+
+                            </RelativeLayout>
+
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/error_correction"
+
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/lrtbp_5"
+                            android:layout_weight="1">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:background="@drawable/but12"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/error_correction_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/error_correctionw"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/lrtbp_5"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor2">
+
+                                        <TextView
+                                            android:id="@+id/error_correction_txt"
+                                            android:layout_width="60dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_marginTop="@dimen/lrtbp_5"
+                                            android:background="@drawable/but12_ic"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/error_correctionw"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="பிழைதிருத்து"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+                            </RelativeLayout>
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/head8"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/head7"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/lrtbp_5"
+                        android:layout_marginBottom="@dimen/lrtbp_5"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/fill_in_blanks"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:layout_marginLeft="@dimen/lrtbp_5"
+                                android:layout_weight="1"
+                                android:background="@drawable/but8"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/fill_in_blanks_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/fill_in_blanks_mainw"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor3">
+
+                                        <TextView
+                                            android:id="@+id/fill_in_blanks_main_txt"
+                                            android:layout_width="60dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_weight="1"
+                                            android:background="@drawable/fill_in_blanks"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/fill_in_blanks_mainw"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="விடுபட்ட எழுத்துக்களை கண்டுபிடி"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+
+                            </RelativeLayout>
+
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/eng_to_tamil"
+
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/wh_120"
+                            android:layout_marginLeft="@dimen/lrtbp_5"
+                            android:layout_weight="1">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/but5"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/eng_to_tamil_no"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/eng_to_tamil_r"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/lrtbp_5"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor2">
+
+                                        <TextView
+                                            android:id="@+id/eng_to_tamil1"
+                                            android:layout_width="80dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_marginTop="@dimen/lrtbp_5"
+                                            android:background="@drawable/quizz"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/eng_to_tamil_r"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="வினாடி வினா"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+                            </RelativeLayout>
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/head10"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/head8"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/lrtbp_5"
+                        android:layout_marginBottom="@dimen/lrtbp_5"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/word_search_main"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/lrtbp_5"
+                            android:layout_weight="1">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:background="@drawable/ws_back"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/word_search_main_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10"
+                                    android:visibility="invisible" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/word_search_mainw"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/lrtbp_5"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor2">
+
+                                        <TextView
+                                            android:id="@+id/word_search_main_txt"
+                                            android:layout_width="60dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_marginTop="@dimen/lrtbp_5"
+                                            android:background="@drawable/ws_icon"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/word_search_mainw"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="வார்த்தை தேடல்"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+                            </RelativeLayout>
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/multipalyer"
+
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/wh_120"
+                            android:layout_marginLeft="@dimen/lrtbp_5"
+                            android:layout_weight="1">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/mul_back"
+
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/multipalyer_no"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+                                    android:textColor="#ffff"
+
+                                    android:textSize="@dimen/txt_10"
+                                    android:visibility="invisible"
+
+                                    />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/multipalyerw"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor3">
+
+                                        <TextView
+                                            android:id="@+id/multipalyer1"
+                                            android:layout_width="@dimen/wh_50"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_weight="1"
+                                            android:background="@drawable/remove_ad_icon"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/multipalyerw"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="விளம்பரங்களை நீக்க"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+
+                            </RelativeLayout>
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/head9"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/festival_game"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/lrtbp_5"
+                        android:layout_marginBottom="@dimen/lrtbp_5"
+                        android:orientation="horizontal"
+                        android:weightSum="2"
+                        android:visibility="gone">
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/leader"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:visibility="gone">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:layout_marginLeft="@dimen/lrtbp_5"
+                                android:layout_weight="1"
+                                android:background="@drawable/leader_back"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/leader_no"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10"
+                                    android:visibility="gone" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/leaderw"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor3">
+
+                                        <TextView
+                                            android:id="@+id/leader1"
+                                            android:layout_width="60dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_weight="1"
+                                            android:background="@drawable/leader_ic"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/leaderw"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="முன்னிலை நிலவரம்"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+
+                            </RelativeLayout>
+
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+
+                        <nithra.tamil.word.game.solliadi.RippleView
+                            android:id="@+id/achivements"
+
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/lrtbp_5"
+                            android:layout_weight="1"
+                            android:visibility="gone">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/wh_120"
+                                android:background="@drawable/achivement_back"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/achivements_id"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="@dimen/lrtbp_10"
+                                    android:layout_marginRight="@dimen/lrtbp_15"
+                                    android:gravity="center"
+                                    android:textColor="#ffff"
+                                    android:textSize="@dimen/txt_10"
+                                    android:visibility="gone" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:visibility="gone">
+
+                                    <nithra.tamil.word.game.solliadi.RippleView
+                                        android:id="@+id/achivementsw"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/lrtbp_5"
+                                        app:rv_centered="true"
+                                        app:rv_color="@color/rippelColor2">
+
+                                        <TextView
+                                            android:id="@+id/achivements_txt"
+                                            android:layout_width="60dp"
+                                            android:layout_height="@dimen/wh_50"
+                                            android:layout_centerInParent="true"
+                                            android:layout_marginTop="@dimen/lrtbp_5"
+                                            android:background="@drawable/achivement_ic"
+                                            android:gravity="center"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/txt_10"
+                                            android:textStyle="bold" />
+                                    </nithra.tamil.word.game.solliadi.RippleView>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/achivementsw"
+                                        android:layout_marginLeft="@dimen/lrtbp_10"
+                                        android:layout_marginRight="@dimen/lrtbp_10"
+                                        android:gravity="center"
+                                        android:text="விருதுகள்"
+                                        android:textColor="#ffff"
+                                        android:textSize="@dimen/txt_16" />
+                                </RelativeLayout>
+
+                            </RelativeLayout>
+                        </nithra.tamil.word.game.solliadi.RippleView>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:visibility="gone"
+                        android:weightSum="2">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <RelativeLayout
+                                android:id="@+id/googleplay"
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp"
+                                android:layout_centerInParent="true"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/multipalyer_o"
+                                    android:layout_width="@dimen/wh_180"
+                                    android:layout_height="50dp"
+                                    android:layout_centerInParent="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:background="@drawable/multiplayer_start"
+                                    android:gravity="center"
+                                    android:textColor="#000"
+                                    android:textStyle="bold" />
+                            </RelativeLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+
+                            android:layout_marginLeft="@dimen/lrtbp_10"
+                            android:layout_weight="1"
+                            android:background="@drawable/ws_icon">
+
+                            <RelativeLayout
+                                android:id="@+id/word_search_main_o"
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp"
+                                android:layout_centerInParent="true"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/ws_img"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp" />
+
+                                <TextView
+                                    android:id="@+id/word_search_game"
+                                    android:layout_width="@dimen/wh_180"
+                                    android:layout_height="50dp"
+                                    android:layout_centerInParent="true"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_toRightOf="@+id/ws_img"
+                                    android:gravity="center"
+                                    android:textColor="@color/white"
+                                    android:textStyle="bold" />
+                            </RelativeLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/leader_lay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:layout_marginBottom="@dimen/lrtbp_5"
+                    android:visibility="gone">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/leader_o"
+                            android:layout_width="@dimen/wh_50"
+                            android:layout_height="@dimen/wh_50"
+                            android:layout_marginLeft="@dimen/lrtbp_10"
+                            android:layout_marginRight="@dimen/lrtbp_10"
+                            android:background="@drawable/reward" />
+
+                        <TextView
+                            android:id="@+id/achivements_o"
+                            android:layout_width="@dimen/wh_50"
+                            android:layout_height="@dimen/wh_50"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginLeft="@dimen/lrtbp_10"
+                            android:layout_marginRight="@dimen/lrtbp_10"
+                            android:background="@drawable/rank" />
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+
+        </ScrollView>
+        <!--<FrameLayout
+            android:id="@+id/fl_adplaceholder"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/dark_yellow"      />-->
+    </RelativeLayout>
+</RelativeLayout>

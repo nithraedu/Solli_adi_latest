@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/new_background">
+
+
+    <RelativeLayout
+        android:id="@+id/sub_level_main_lay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/sub_level_tool__lay"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/colorPrimaryDark">
+
+            <ImageView
+                android:id="@+id/go_back_sub_level"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                android:layout_margin="5dp"
+                android:background="@drawable/back_arrow_green" />
+
+            <LinearLayout
+                android:id="@+id/n_icon_ad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Ad"
+                    android:textColor="#fff" />
+
+                <ImageView
+                    android:id="@+id/icon_ad_img"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="5dp"
+                    android:src="@drawable/share1"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <nithra.tamil.word.game.solliadi.word_search_game.Models.extra.MyTextView
+            android:id="@+id/sub_level_title"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="35dp"
+            android:background="@drawable/button2"
+            android:elevation="@dimen/lrtbp_5"
+            android:gravity="center"
+            android:text="sample"
+            android:textColor="#163e03"
+            android:textSize="20dp" />
+
+
+        <RelativeLayout
+            android:id="@+id/sub_list_lay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/sub_level_title">
+
+
+
+            <ListView
+                android:id="@+id/sub_level_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:layout_marginBottom="@dimen/lrtbp_5">
+
+            </ListView>
+
+            <LinearLayout
+                android:id="@+id/Baner_frame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:orientation="vertical"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

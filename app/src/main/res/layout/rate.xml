@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/FrameLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+ <FrameLayout
+     android:id="@+id/sharemainlayy"
+     android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="#cc98a42d">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:gravity="center"  
+        android:padding="@dimen/lrtbp_15"
+           android:layout_marginLeft="@dimen/lrtbp_5"
+                android:layout_marginRight="@dimen/lrtbp_5"
+                  android:background="@drawable/setting_back"
+        >
+        
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+             android:gravity="center"
+             android:layout_marginTop="@dimen/lrtbp_10"
+            android:text="சொல்லிஅடி  செயலி பிடித்திருக்கிறதா?"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" 
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+<Button
+        android:id="@+id/button2"
+        android:background="@drawable/solukulsol"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ஆம்"
+    android:paddingBottom="@dimen/lrtbp_20"
+    android:paddingTop="@dimen/lrtbp_20"
+          android:textColor="#fff"
+           android:textStyle="bold"
+          android:paddingLeft="@dimen/lrtbp_5"
+          android:paddingRight="@dimen/lrtbp_5"
+    android:layout_weight="0.33"
+
+    android:clickable="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+    <Button
+        android:background="@drawable/button1"
+        android:id="@+id/button1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="இல்லை"
+        android:paddingBottom="@dimen/lrtbp_20"
+        android:paddingTop="@dimen/lrtbp_20"
+        android:textColor="#fff"
+         android:textStyle="bold"
+          android:paddingLeft="@dimen/lrtbp_5"
+        android:layout_weight="0.33"
+          android:paddingRight="@dimen/lrtbp_5"
+                android:layout_marginLeft="@dimen/lrtbp_20"
+
+        android:clickable="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    
+
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>
+</FrameLayout>

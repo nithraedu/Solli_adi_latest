@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+
+    <!-- Declare custom theme attributes that allow changing which styles are
+         used for button bars depending on the API level.
+         ?android:attr/buttonBarStyle is new as of API 11 so this is
+         necessary to support previous API levels. -->
+    <declare-styleable name="ButtonBarContainerTheme">
+        <attr name="metaButtonBarStyle" format="reference" />
+        <attr name="metaButtonBarButtonStyle" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="ViewPagerIndicator">
+        <!-- Style of the circle indicator. -->
+        <attr name="vpiCirclePageIndicatorStyle" format="reference" />
+    </declare-styleable>
+
+    <!--<attr name="selectedColor" format="color"/>-->
+    <!--<attr name="unselectedColor" format="color"/>-->
+
+    <attr name="indicatorGravity">
+        <!-- Push object to the top of its container, not changing its size. -->
+        <flag name="top" value="0x30" />
+        <!-- Push object to the bottom of its container, not changing its size. -->
+        <flag name="bottom" value="0x50" />
+        <!-- Push object to the left of its container, not changing its size. -->
+        <flag name="left" value="0x03" />
+        <!-- Push object to the right of its container, not changing its size. -->
+        <flag name="right" value="0x05" />
+        <!-- Place object in the vertical center of its container, not changing its size. -->
+        <flag name="center_vertical" value="0x10" />
+        <!-- Place object in the horizontal center of its container, not changing its size. -->
+        <flag name="center_horizontal" value="0x01" />
+        <!-- Place the object in the center of its container in both the vertical and horizontal axis, not changing its size. -->
+        <flag name="center" value="0x11" />
+        <!-- Push object to the beginning of its container, not changing its size. -->
+        <flag name="start" value="0x00800003" />
+        <!-- Push object to the end of its container, not changing its size. -->
+        <flag name="end" value="0x00800005" />
+    </attr>
+
+    <attr name="indicatorOrientation">
+        <enum name="horizontal" value="0" />
+        <enum name="vertical" value="1" />
+    </attr>
+
+    <attr name="pageTransformer">
+        <enum name="flow" value="0" />
+        <enum name="depth" value="1" />
+        <enum name="zoom" value="2" />
+        <enum name="slide_over" value="3" />
+    </attr>
+
+    <attr name="centered" format="boolean" />
+    <attr name="strokeWidth" format="dimension" />
+    <attr name="slideInterval" format="integer" />
+    <attr name="pageTransformInterval" format="integer" />
+    <attr name="fillColor" format="color" />
+    <attr name="pageColor" format="color" />
+    <attr name="radius" format="dimension" />
+    <attr name="snap" format="boolean" />
+    <attr name="strokeColor" format="color" />
+    <attr name="autoPlay" format="boolean" />
+    <attr name="disableAutoPlayOnUserInteraction" format="boolean" />
+    <attr name="indicatorMarginHorizontal" format="dimension" />
+    <attr name="indicatorMarginVertical" format="dimension" />
+    <attr name="animateOnBoundary" format="boolean" />
+
+    <declare-styleable name="CirclePageIndicator">
+        <!-- Whether or not the indicators should be centered. -->
+        <attr name="centered" />
+        <!-- Color of the filled circle that represents the current page. -->
+        <attr name="fillColor" />
+        <!-- Color of the filled circles that represents pages. -->
+        <attr name="pageColor" />
+        <!-- Orientation of the indicator. -->
+        <attr name="android:orientation" />
+        <!-- Radius of the circles. This is also the spacing between circles. -->
+        <attr name="radius" />
+        <!-- Whether or not the selected indicator snaps to the circles. -->
+        <attr name="snap" />
+        <!-- Color of the open circles. -->
+        <attr name="strokeColor" />
+        <!-- Width of the stroke used to draw the circles. -->
+        <attr name="strokeWidth" />
+        <!-- View background -->
+        <attr name="android:background" />
+    </declare-styleable>
+
+
+
+    <declare-styleable name="LikeButton">
+        <attr name="icon_type" format="string" />
+        <attr name="icon_size" format="dimension|reference"/>
+        <attr name="like_drawable" format="reference" />
+        <attr name="unlike_drawable" format="reference" />
+        <attr name="dots_primary_color" format="color|reference" />
+        <attr name="dots_secondary_color" format="color|reference" />
+        <attr name="circle_start_color" format="color|reference" />
+        <attr name="circle_end_color" format="color|reference" />
+        <attr name="liked" format="boolean"/>
+        <attr name="is_enabled" format="boolean"/>
+        <attr name="anim_scale_factor" format="float"/>
+    </declare-styleable>
+    <declare-styleable name="wordsearch">
+        <attr name="android:numColumns" />
+    </declare-styleable>
+
+    <declare-styleable name="CountDownTimerView">
+        <attr name="prefixText" format="string" />
+        <attr name="suffixText" format="string" />
+        <attr name="timeMilliSeconds" format="string" />
+    </declare-styleable>
+
+
+    <declare-styleable name="CircleProgressBar">
+        <attr name="line_count" format="integer"/>
+        <attr name="draw_progress_text" format="boolean"/>
+        <attr name="line_width" format="dimension|reference"/>
+        <attr name="background_color" format="color|reference"/>
+        <attr name="progress_start_color" format="color|reference"/>
+        <attr name="progress_end_color" format="color|reference"/>
+        <attr name="progress_text_color" format="color|reference"/>
+        <attr name="progress_text_size" format="dimension|reference"/>
+        <attr name="progress_stroke_width" format="dimension|reference"/>
+        <attr name="progress_background_color" format="color|reference"/>
+        <attr name="progress_text_format_pattern" format="string|reference"/>
+
+        <attr name="style">
+            <enum name="line" value="0"/>
+            <enum name="solid" value="1"/>
+            <enum name="solid_line" value="2"/>
+        </attr>
+
+        <attr name="progress_shader">
+            <enum name="linear" value="0"/>
+            <enum name="radial" value="1"/>
+            <enum name="sweep" value="2"/>
+        </attr>
+
+        <attr name="progress_stroke_cap">
+            <enum name="butt" value="0"/>
+            <enum name="round" value="1"/>
+            <enum name="square" value="2"/>
+        </attr>
+
+    </declare-styleable>
+
+
+
+
+
+    <declare-styleable name="BubbleSeekBar">
+        <attr name="bsb_min" format="float|reference"/> <!--min < max, default: 0.0f-->
+        <attr name="bsb_max" format="float|reference"/> <!--min < max, default: 100.0f-->
+        <attr name="bsb_progress" format="float|reference"/> <!--real time progress value, default: min-->
+        <attr name="bsb_is_float_type" format="boolean"/> <!--support for float type-->
+        <attr name="bsb_track_size" format="dimension|reference"/> <!--height of right-track(on the right of thumb), default: 2dp-->
+        <!--height of left-track(on the left of thumb), default: 2dp higher than right-track's height-->
+        <attr name="bsb_second_track_size" format="dimension|reference"/>
+        <attr name="bsb_thumb_radius" format="dimension|reference"/> <!--radius of thumb, default: 2dp higher than left-track's height-->
+        <!--radius of thumb when be dragging, default: 2 times of left-track's height-->
+        <attr name="bsb_thumb_radius_on_dragging" format="dimension|reference"/>
+        <attr name="bsb_track_color" format="color|reference"/> <!--color of right-track, default: R.color.colorPrimary-->
+        <attr name="bsb_second_track_color" format="color|reference"/> <!--color of left-track, default: R.color.colorAccent-->
+        <attr name="bsb_thumb_color" format="color|reference"/> <!--color of thumb, default: same as left-track's color-->
+        <attr name="bsb_section_count" format="integer|reference"/> <!--shares of whole progress(max - min), default: 10-->
+        <attr name="bsb_show_section_mark" format="boolean"/> <!--show demarcation points or not, default: false-->
+        <attr name="bsb_auto_adjust_section_mark" format="boolean"/> <!--auto scroll to the nearest section_mark or not, default: false-->
+        <attr name="bsb_show_section_text" format="boolean"/> <!--show section-text or not, default: false-->
+        <attr name="bsb_section_text_size" format="dimension|reference"/> <!--text size of section-text, default: 14sp-->
+        <attr name="bsb_section_text_color" format="color|reference"/> <!--text color of section-text, default: same as right-track's color-->
+        <!--text position of section-text relative to track, sides, bottom_sides, below_section_mark, default: sides-->
+        <attr name="bsb_section_text_position">
+            <enum name="sides" value="0"/>
+            <enum name="bottom_sides" value="1"/>
+            <enum name="below_section_mark" value="2"/>
+        </attr>
+        <attr name="bsb_section_text_interval" format="integer"/> <!--the interval of two section-text, default: 1-->
+        <attr name="bsb_show_thumb_text" format="boolean"/> <!--show real time progress-text under thumb or not, default: false-->
+        <attr name="bsb_thumb_text_size" format="dimension|reference"/> <!--text size of progress-text, default: 14sp-->
+        <attr name="bsb_thumb_text_color" format="color|reference"/> <!--text color of progress-text, default: same as left-track's color-->
+        <attr name="bsb_show_progress_in_float" format="boolean"/> <!--show bubble-progress in float or not, default: false-->
+        <attr name="bsb_touch_to_seek" format="boolean"/> <!--touch anywhere on track to quickly seek, default: false-->
+        <attr name="bsb_seek_step_section" format="boolean"/> <!--seek one step by one section, the progress is discrete, default: false-->
+        <attr name="bsb_seek_by_section" format="boolean"/> <!--seek by section, the progress may not be linear, default: false-->
+        <attr name="bsb_bubble_color" format="color|reference"/> <!--color of bubble, default: same as left-track's color-->
+        <attr name="bsb_bubble_text_size" format="dimension|reference"/> <!--text size of bubble-progress, default: 14sp-->
+        <attr name="bsb_bubble_text_color" format="color|reference"/> <!--text color of bubble-progress, default: #ffffffff-->
+        <attr name="bsb_anim_duration" format="integer"/> <!--duration of animation, default: 200ms-->
+        <attr name="bsb_always_show_bubble" format="boolean"/> <!--bubble shows all time, default: false-->
+        <attr name="bsb_always_show_bubble_delay" format="integer"/> <!--the delay duration before bubble shows all the time, default: 200ms-->
+        <attr name="bsb_hide_bubble" format="boolean"/> <!--hide bubble, default: false-->
+        <attr name="bsb_rtl" format="boolean"/> <!--right to left, default: false-->
+    </declare-styleable>
+
+
+</resources>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".New_Main_Activity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+
+        android:layout_height="wrap_content"
+        android:background="@color/intro_transparent"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+            <RelativeLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/name_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerHorizontal="true"
+                    android:layout_toLeftOf="@+id/price"
+                    android:gravity="center"
+                    android:paddingRight="@dimen/lrtbp_5"
+                    android:text="சொல்லிஅடி"
+                    android:textColor="@color/dark_green"
+                    android:textSize="@dimen/txt_16"
+                    android:textStyle="bold" />
+
+                <RelativeLayout
+
+                    android:id="@+id/adsicon2"
+                    android:layout_width="@dimen/wh_35"
+                    android:layout_height="@dimen/wh_35"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="@dimen/lrtbp_5"
+                    android:layout_marginRight="@dimen/lrtbp_5"
+                    android:layout_toLeftOf="@+id/intros"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/ads_logo2"
+                        android:layout_width="33dp"
+                        android:layout_height="33dp" />
+
+                    <ImageView
+                        android:id="@+id/adlogo"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:src="@drawable/adbadge" />
+                </RelativeLayout>
+
+                <Button
+                    android:visibility="gone"
+                    android:id="@+id/price"
+                    android:layout_width="@dimen/wh_35"
+                    android:layout_height="@dimen/wh_35"
+                    android:layout_centerInParent="true"
+                    android:layout_marginRight="@dimen/wh_2"
+                    android:layout_toLeftOf="@+id/intros"
+                    android:background="@drawable/gift"
+                     />
+
+                <Button
+                    android:id="@+id/intros"
+                    android:layout_width="@dimen/wh_35"
+                    android:layout_height="@dimen/wh_35"
+                    android:layout_centerInParent="true"
+                    android:layout_marginRight="@dimen/wh_2"
+                    android:layout_toLeftOf="@+id/refresh"
+                    android:background="@drawable/qtn" />
+
+                <Button
+                    android:id="@+id/refresh"
+                    android:layout_width="@dimen/wh_35"
+                    android:layout_height="@dimen/wh_35"
+                    android:layout_centerInParent="true"
+                    android:layout_marginRight="@dimen/wh_2"
+                    android:layout_toLeftOf="@+id/noti_linear"
+                    android:background="@drawable/refreshs" />
+
+                <TextView
+                    android:id="@+id/noti_linear"
+                    android:layout_width="@dimen/wh_35"
+                    android:layout_height="@dimen/wh_35"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerInParent="true"
+                    android:layout_marginRight="@dimen/wh_2"
+                    android:background="@drawable/notification1"
+                    android:gravity="center"
+                    android:text="1"
+                    android:textColor="@color/red"
+                    android:textSize="@dimen/txt_12"
+                    android:textStyle="bold" />
+
+
+            </RelativeLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <include layout="@layout/content_main" />
+
+    <!-- <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
+         android:layout_width="wrap_content" android:layout_height="wrap_content"
+         android:layout_gravity="bottom|end" android:layout_margin="@dimen/fab_margin"
+         android:src="@android:drawable/ic_dialog_email" />-->
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

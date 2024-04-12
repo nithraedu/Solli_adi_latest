@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ccced246"
+
+   >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/lrtbp_15"
+        android:weightSum="1"
+        android:id="@+id/pickphoto_mainlay"
+        android:background="@drawable/game_button_background"
+        android:orientation="horizontal">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/lrtbp_5"
+            android:layout_toLeftOf="@+id/split_text"
+           >
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:layout_margin="@dimen/lrtbp_5"
+    android:background="@drawable/camaraicon"
+    android:id="@+id/camera"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Camera"
+            android:layout_centerInParent="true"
+           android:layout_below="@+id/camera"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_20"/>
+
+
+        </RelativeLayout>
+
+         <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+       android:id="@+id/split_text"
+       android:layout_centerInParent="true"
+
+        android:textColor="@color/white"
+        android:textSize="@dimen/txt_20"/>
+
+
+        <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/split_text"
+        android:layout_margin="@dimen/lrtbp_5">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/galleryicon"
+        android:layout_margin="@dimen/lrtbp_5"
+        android:id="@+id/gallery"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gallery"
+           android:layout_centerInParent="true"
+            android:layout_below="@+id/gallery"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_20"/>
+
+    </RelativeLayout></RelativeLayout>
+</RelativeLayout>

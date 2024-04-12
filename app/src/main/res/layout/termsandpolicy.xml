@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#c2706767"
+    android:padding="10dp"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/lrtbp_5"
+        android:layout_marginRight="@dimen/lrtbp_5"
+        android:background="@drawable/back_button1"
+        android:paddingTop="@dimen/lrtbp_10"
+        android:paddingBottom="@dimen/lrtbp_20">
+
+
+        <TextView
+            android:id="@+id/txt_ex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:gravity="center"
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="@dimen/txt_18"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="@dimen/wh_40"
+            android:layout_height="@dimen/wh_40"
+            android:layout_below="@+id/txt_ex"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/logo2" />
+
+        <TextView
+            android:id="@+id/txt_ex2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/logo"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="@dimen/lrtbp_5"
+            android:gravity="center"
+
+            android:padding="@dimen/lrtbp_5"
+            android:paddingLeft="@dimen/lrtbp_10"
+            android:paddingRight="@dimen/lrtbp_20"
+            android:text="zdxfzdfdzfszdfsdzfdsd"
+            android:textColor="@color/dark_green"
+            android:textSize="@dimen/txt_12" />
+
+        <LinearLayout
+            android:id="@+id/lir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txt_ex2"
+            android:visibility="gone">
+
+            <CheckBox
+                android:id="@+id/checkbox_ans"
+                android:layout_width="@dimen/wh_35"
+                android:layout_height="@dimen/wh_35"
+                android:layout_below="@+id/txt_ex2"
+                android:layout_marginLeft="@dimen/lrtbp_25"
+                android:textSize="@dimen/txt_10" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txt_ex2"
+                android:layout_toRightOf="@+id/checkbox_ans"
+                android:text="மீண்டும் கேட்க வேண்டாம்."
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lir"
+
+            android:layout_marginTop="@dimen/lrtbp_10">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                app:cardBackgroundColor="#FF0000"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="5dp"
+                app:cardUseCompatPadding="true">
+
+                <TextView
+                    android:id="@+id/yes"
+                    android:layout_width="@dimen/croll_app_height"
+                    android:layout_height="55dp"
+                    android:background="#056302"
+                    android:elevation="@dimen/lrtbp_5"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="PRIVACY POLICY "
+                    android:textColor="@color/white"
+                    android:textSize="12dp" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                app:cardBackgroundColor="#056302"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="5dp"
+                app:cardUseCompatPadding="true">
+
+                <TextView
+                    android:id="@+id/no"
+                    android:layout_width="@dimen/croll_app_height"
+                    android:layout_height="55dp"
+                    android:layout_alignParentRight="true"
+                    android:background="#E6B631"
+                    android:elevation="@dimen/lrtbp_5"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="IVACY "
+                    android:textColor="@color/white"
+                    android:textSize="12dp" />
+            </androidx.cardview.widget.CardView>
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

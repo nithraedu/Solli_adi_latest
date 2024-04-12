@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="#cceef990"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<RelativeLayout
+    android:background="@drawable/back_dialog"
+android:paddingTop="@dimen/lrtbp_10"
+    android:layout_marginRight="@dimen/lrtbp_25"
+    android:layout_marginLeft="@dimen/lrtbp_25"
+    android:paddingBottom="@dimen/lrtbp_20"
+  android:layout_centerInParent="true"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_centerHorizontal="true"
+        android:id="@+id/asd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_marginTop="@dimen/lrtbp_5"
+            android:id="@+id/txt_ex"
+            android:paddingBottom="@dimen/lrtbp_10"
+            android:paddingTop="@dimen/lrtbp_10"
+            android:textSize="@dimen/txt_16"
+            android:background="@color/transparent2"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:layout_marginLeft="@dimen/lrtbp_10"
+            android:layout_marginRight="@dimen/lrtbp_10"
+            android:layout_centerHorizontal="true"
+            android:text="நீங்கள் இறுதியாக விளையாடிய நிலைகள் கூகுள் பிளே கேம்ஸ் பகுதியில் சேமிக்கப்பட்டுள்ளது.அதை உள்ளீடு செய்ய விரும்புகிறீர்களா ?"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_marginTop="@dimen/lrtbp_10"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/asd"
+        android:layout_marginLeft="@dimen/lrtbp_10"
+        android:layout_marginRight="@dimen/lrtbp_10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/yes"
+            android:text="ஆம்"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_16"
+            android:gravity="center"
+            android:paddingTop="@dimen/lrtbp_10"
+            android:paddingBottom="@dimen/lrtbp_10"
+            android:background="@drawable/b_go"
+            android:layout_width="@dimen/croll_app_height"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/no"
+            android:layout_below="@+id/yes"
+            android:layout_marginRight="@dimen/lrtbp_20"
+            android:text="இல்லை"
+            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/lrtbp_10"
+            android:textSize="@dimen/txt_16"
+            android:paddingLeft="@dimen/lrtbp_15"
+            android:paddingRight="@dimen/lrtbp_15"
+            android:gravity="center"
+            android:paddingTop="@dimen/lrtbp_10"
+            android:paddingBottom="@dimen/lrtbp_10"
+            android:background="@drawable/b_no"
+            android:layout_width="@dimen/croll_app_height"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>
+
+</RelativeLayout>
