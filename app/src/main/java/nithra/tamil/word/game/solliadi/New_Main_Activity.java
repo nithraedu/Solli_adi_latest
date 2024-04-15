@@ -494,7 +494,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
 //////////////////////////////////////////////////////////////////////////////////////PRIZE DATA TABLE///////////////////////////////////////////////////////////////////////////
     }
+public void Jack(){
 
+}
     public static void send_prize_data(final Context context) {
 
         Calendar calendar3 = Calendar.getInstance();
