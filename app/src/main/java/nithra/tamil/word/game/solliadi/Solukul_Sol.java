@@ -162,7 +162,7 @@ public class Solukul_Sol extends AppCompatActivity {
     // MediaPlayer w1;
     TextView s_settings;
     TextView toggleButton;
-    LinearLayout adds;
+    LinearLayout adds,adsLay1;
     TextView tx1, tx2;
     int skxw;
     int case2 = 0, tot2 = 30, tt_case2, tt_tot2;
@@ -339,6 +339,8 @@ public class Solukul_Sol extends AppCompatActivity {
         }
 
         adds = findViewById(R.id.ads_lay);
+        adsLay1 = findViewById(R.id.adsLay1);
+        if (sps.getInt(context, "purchase_ads") == 0) {
         if (Utils.isNetworkAvailable(context)) {
             if (!sps.getString(context, "BannerId").equals("") || sps.getString(context, "BannerId") != null) {
                 System.out.println(
@@ -350,8 +352,8 @@ public class Solukul_Sol extends AppCompatActivity {
             System.out.println(
                     "Ads Should be -- empty : " + sps.getString(context, "BannerId")
             );
-            adds.setVisibility(View.GONE);
-        }
+            adsLay1.setVisibility(View.GONE);
+        }}else adsLay1.setVisibility(View.GONE);
         // Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
 
 
@@ -3893,12 +3895,14 @@ public class Solukul_Sol extends AppCompatActivity {
 
                     System.out.print("Result============123" + result);
                 } else {
-
+                    System.out.print("Result Responce goto else  ========== ");
                 }
             }
 
             @Override
             public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " +  call);
+                System.out.print("Result onFailure1 ========== " +  t);
                 // Handle network failures
             }
         });
@@ -3969,7 +3973,7 @@ public class Solukul_Sol extends AppCompatActivity {
 
         map.put("email", email);
 
-        Call<List<HashMap<String, String>>> call = api.getSollukkul_Sol_downloadcheckdata(map);
+        Call<List<HashMap<String, String>>> call = api.getdownloadcheckdata(map);
 
         call.enqueue(new Callback<List<HashMap<String, String>>>() {
             @Override
@@ -4035,9 +4039,12 @@ public class Solukul_Sol extends AppCompatActivity {
                         }
 
                     } catch (JSONException e1) {
+                        System.out.print("Result JSONException  ========== "+e1);
+
                     }
 
                 } else {
+                    System.out.print("Result Responce goto else  ========== ");
 
                 }
                 System.out.print("down ok!!!============" + downok + "===");
@@ -4078,6 +4085,8 @@ public class Solukul_Sol extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " +  call);
+                System.out.print("Result onFailure1 ========== " +  t);
                 // Handle network failures
             }
         });
@@ -4350,7 +4359,7 @@ public class Solukul_Sol extends AppCompatActivity {
 
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("filename", email + "-filename.zip");
-        Call<List<HashMap<String, String>>> call = api.getSollukkul_Sol_newdowndata(map);
+        Call<List<HashMap<String, String>>> call = api.getdeletezipdata(map);
 
         call.enqueue(new Callback<List<HashMap<String, String>>>() {
             @Override
@@ -4367,12 +4376,15 @@ public class Solukul_Sol extends AppCompatActivity {
 
                     System.out.print("Result============123" + result);
                 } else {
+                    System.out.print("Result Responce goto else  ========== ");
 
                 }
             }
 
             @Override
             public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " +  call);
+                System.out.print("Result onFailure1 ========== " +  t);
                 // Handle network failures
             }
         });

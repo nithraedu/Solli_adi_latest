@@ -133,7 +133,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
     Typeface typ, tyr;
     String retype = "s";
     long ttstop;
-    LinearLayout adds, list4;
+    LinearLayout adds, list4,adsLay1;
     LinearLayout qtw;
     Dialog openDialog_p;
     int s = 0;
@@ -253,20 +253,23 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         }
         find();
         adds = findViewById(R.id.ads_lay);
+        adsLay1 = findViewById(R.id.adsLay1);
        // Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
-        if (Utils.isNetworkAvailable(context)) {
-            if (!sps.getString(context, "BannerId").equals("") || sps .getString(context, "BannerId") != null) {
+        if (sps.getInt(WordError_correction.this, "purchase_ads") == 0) {
+            if (Utils.isNetworkAvailable(context)) {
+                if (!sps.getString(context, "BannerId").equals("") || sps.getString(context, "BannerId") != null) {
+                    System.out.println(
+                            "Ads Should be not empty : " + sps.getString(context, "BannerId")
+                    );
+                    Utils.load_add_banner(context, sps.getString(context, "BannerId"), adds);
+                }
+            } else {
                 System.out.println(
-                        "Ads Should be not empty : " + sps.getString(context, "BannerId")
+                        "Ads Should be -- empty : " + sps.getString(context, "BannerId")
                 );
-                Utils.load_add_banner(context, sps.getString(context, "BannerId"), adds);
+                adsLay1.setVisibility(View.GONE);
             }
-        } else {
-            System.out.println(
-                    "Ads Should be -- empty : " + sps.getString(context, "BannerId")
-            );
-            adds.setVisibility(View.GONE);
-        }
+        }else adsLay1.setVisibility(View.GONE);
 
         openDialog_s = new Dialog(WordError_correction.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
@@ -4181,6 +4184,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                      // Handle the error.
                      Log.e("LoadAdError=========", loadAdError.toString());
                      rewardedAd = null;
+                     reward_status=0;
                      //isfaild = 2;
 
                  }
@@ -4190,6 +4194,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                      rewardedAd = ad;
                      //  isfaild = 1;
                      fb_reward = 1;
+                     reward_status=0;
                      Log.e(TAG, "Ad was Called.=========");
                      rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                          @Override
@@ -4237,6 +4242,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                              // Called when ad fails to show.
                              Log.e(TAG, "Ad failed to show fullscreen content.=========");
                              rewardedAd = null;
+                             reward_status=0;
                          }
 
                          @Override

@@ -3246,69 +3246,6 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
     }
 
-    /*private void industrialload() {
-        //AppLovinSdk.getInstance( this ).showMediationDebugger();
-        AppLovinSdk.getInstance(this).setMediationProvider("max");
-        AppLovinSdk.initializeSdk(this, new AppLovinSdk.SdkInitializationListener() {
-            @Override
-            public void onSdkInitialized(AppLovinSdkConfiguration config) {
-                // AppLovin SDK is initialized, start loading ads
-                if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
-                System.out.println("ad shown  showAdWithDelay initialize done ");
-                mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Puthayal_Sorkal_Ins), Opposite_word.this);
-                mInterstitialAd.setListener(new MaxAdListener() {
-                    @Override
-                    public void onAdLoaded(MaxAd ad) {
-                        System.out.println("ad shown loaded : " + ad.getWaterfall());
-                    }
-
-                    @Override
-                    public void onAdDisplayed(MaxAd ad) {
-                        handler = null;
-                    }
-
-                    @Override
-                    public void onAdHidden(MaxAd ad) {
-                        Log.d("TAG", "Ad dismissed fullscreen content.");
-                        mInterstitialAd = null;
-                        handler = null;
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        setSc();
-                        industrialload();
-                    }
-
-                    @Override
-                    public void onAdClicked(MaxAd ad) {
-
-                    }
-
-                    @Override
-                    public void onAdLoadFailed(String adUnitId, MaxError error) {
-                        Log.d("TAG", error.toString());
-                        mInterstitialAd = null;
-                        handler = null;
-                        Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
-                    }
-
-                    @Override
-                    public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                        Log.e("TAG", "Ad failed to show fullscreen content.");
-                        mInterstitialAd = null;
-                        handler = null;
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
-                        setSc();
-                    }
-                });
-
-                // Load the first ad
-                mInterstitialAd.loadAd();
-
-            }
-        });
-
-    }*/
-
     public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
         AdManagerInterstitialAd.load(this,sps.getString(this, "InterstitialId"), adRequest,
@@ -4310,84 +4247,6 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         Download_data_server download_data_server = new Download_data_server(Opposite_word.this, questionid_d, gameid);
         download_data_server.execute();
     }
-
-   /* public void rewarded_adnew() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_adnew();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
-    }*/
    private void rewarded_adnew() {
 
        AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
@@ -4399,6 +4258,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                        // Handle the error.
                        Log.e("LoadAdError=========", loadAdError.toString());
                        rewardedAd = null;
+                       reward_status=0;
                        //isfaild = 2;
 
                    }
@@ -4408,6 +4268,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                        rewardedAd = ad;
                        //  isfaild = 1;
                        fb_reward = 1;
+                       reward_status=0;
                        Log.e(TAG, "Ad was Called.=========");
                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                            @Override
@@ -4456,6 +4317,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                                // Called when ad fails to show.
                                Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                rewardedAd = null;
+                               reward_status=0;
                            }
 
                            @Override
@@ -4474,15 +4336,6 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                    }
                });
    }
-
-  /*  public void show_reward() {
-        if (rewardedAd != null && rewardedAd.isReady()) {
-            rewardedAd.showAd();
-            reward_status = 1;
-        } else {
-            Log.d("TAG", "The rewarded ad wasn't ready yet.");
-        }
-    }*/
 
     public void show_reward() {
         if (rewardedAd != null) {

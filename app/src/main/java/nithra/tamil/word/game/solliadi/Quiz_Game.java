@@ -119,7 +119,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
     Newgame_DataBaseHelper4 newhelper4;
     Newgame_DataBaseHelper5 newhelper5;
     TextView word1, word2, word3, word4, word5, word6, ans, dis, close;
-    LinearLayout ads_lay;
+    LinearLayout ads_lay,adsLay1;
 
     Handler handler;
     Runnable my_runnable;
@@ -187,6 +187,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         adsicon = openDialog_s.findViewById(R.id.adsicon);
         ads_layout = openDialog_s.findViewById(R.id.fl_adplaceholder);
         ads_lay = findViewById(R.id.ads_lay);
+        adsLay1 = findViewById(R.id.adsLay1);
 
 
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
@@ -203,6 +204,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             }
         }
         // Utills.INSTANCE.load_add_AppLovin(this, ads_lay, getResources().getString(R.string.Bottom_Banner));
+        if (sps.getInt(Quiz_Game.this, "purchase_ads") == 0) {
         if (Utils.isNetworkAvailable(this)) {
             if (!sps.getString(this, "BannerId").equals("") || sps.getString(this, "BannerId") != null) {
                 System.out.println(
@@ -214,8 +216,8 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             System.out.println(
                     "Ads Should be -- empty : " + sps.getString(this, "BannerId")
             );
-            ads_lay.setVisibility(View.GONE);
-        }
+            adsLay1.setVisibility(View.GONE);
+        }}else adsLay1.setVisibility(View.GONE);
 
         find();
         next();
@@ -2426,6 +2428,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                         // Handle the error.
                         Log.e("LoadAdError=========", loadAdError.toString());
                         rewardedAd = null;
+                        reward_status=0;
                         //isfaild = 2;
 
                     }
@@ -2435,6 +2438,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
+                        reward_status=0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
@@ -2484,6 +2488,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                                 // Called when ad fails to show.
                                 Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                 rewardedAd = null;
+                                reward_status=0;
                             }
 
                             @Override

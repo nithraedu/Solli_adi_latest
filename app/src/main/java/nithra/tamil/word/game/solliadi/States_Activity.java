@@ -852,7 +852,7 @@ public class States_Activity extends AppCompatActivity {
 
                 map.put("share",share_counts);
 
-                Call<List<HashMap<String,String>>> call = api.getStatesActivity_userstates_senddata(map);
+                Call<List<HashMap<String,String>>> call = api.getGameStates_userstates_senddata(map);
 
                 String finalUp_date = up_date;
                 call.enqueue(new Callback<List<HashMap<String,String>>>() {
@@ -1326,15 +1326,18 @@ public class States_Activity extends AppCompatActivity {
                                     }
                                 }
                             } catch (JSONException e1) {
+                                System.out.print("Result JSONException ========== " + e1 );
                             }
 
                         } else {
-
+                            System.out.print("Result Responce goto else  ========== ");
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
+                        System.out.print("Result onFailure ========== " +  call);
+                        System.out.print("Result onFailure1 ========== " +  t);
                         // Handle network failures
                     }
                 });

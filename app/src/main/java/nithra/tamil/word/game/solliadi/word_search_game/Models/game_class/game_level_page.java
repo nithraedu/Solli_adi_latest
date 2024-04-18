@@ -565,82 +565,6 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
         openDialog_earncoin.show();
     }
 
-    /*public void rewarded_adnew() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_adnew();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            vidcoinearn();
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(game_level_page.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-               // rewardedAd.loadAd();
-
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
-    }*/
     private void rewarded_adnew() {
 
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
@@ -652,6 +576,7 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
                         // Handle the error.
                         Log.e("LoadAdError=========", loadAdError.toString());
                         rewardedAd = null;
+                        reward_status=0;
                         //isfaild = 2;
 
                     }
@@ -661,6 +586,7 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
+                        reward_status=0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
@@ -704,6 +630,7 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
                                 // Called when ad fails to show.
                                 Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                 rewardedAd = null;
+                                reward_status=0;
                             }
 
                             @Override
@@ -723,14 +650,6 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
                 });
     }
 
-/*    public void show_reward() {
-        if (rewardedAd != null && rewardedAd.isReady()) {
-            rewardedAd.showAd();
-            reward_status = 1;
-        } else {
-            Log.d("TAG", "The rewarded ad wasn't ready yet.");
-        }
-    }*/
 
     public void show_reward() {
         if (rewardedAd != null) {

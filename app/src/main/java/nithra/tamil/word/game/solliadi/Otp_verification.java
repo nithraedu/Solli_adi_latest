@@ -151,7 +151,7 @@ public class Otp_verification extends AppCompatActivity {
         map.put("mobileno", "" + sps.getString(Otp_verification.this, "ph_no"));
         map.put("androidid", "" + android_id);
 
-        Call<List<HashMap<String,String>>> call = api.getotp_verification_otp_senddata(map);
+        Call<List<HashMap<String,String>>> call = api.getMainlogindata(map);
 
         call.enqueue(new Callback<List<HashMap<String,String>>>() {
             @Override
@@ -194,15 +194,22 @@ public class Otp_verification extends AppCompatActivity {
 
                         }
                     } catch (JSONException e1) {
+                        System.out.print("Result JSONException ========== " + e1);
+
                     }
 
                 } else {
+                    System.out.print("Result Responce goto else  ========== ");
+
 
                 }
             }
 
             @Override
             public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
+                System.out.print("Result onFailure  ========== " + call);
+                System.out.print("Result onFailure1  ========== " + t);
+
                 // Handle network failures
             }
         });
@@ -210,75 +217,6 @@ public class Otp_verification extends AppCompatActivity {
 
     }
 
-   /* public void otp_sendnew(String otp, String action) {
-        String email = null;
-        email = Utils.android_id(Otp_verification.this);
-        JSONArray jArray;
-        String result = null;
-        InputStream is = null;
-        StringBuilder sb = null;
-
-        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
-        if (action.equals("otp")) {
-            nameValuePairs.add(new BasicNameValuePair("otp", "" + otp));
-        }
-        nameValuePairs.add(new BasicNameValuePair("action", "" + action));
-        nameValuePairs.add(new BasicNameValuePair("email", "" + email));
-        nameValuePairs.add(new BasicNameValuePair("mobileno", "" + sps.getString(Otp_verification.this, "ph_no")));
-        nameValuePairs.add(new BasicNameValuePair("androidid", "" + android_id));
-
-        try {
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost("https://nithra.mobi/solliadi/regisrtation.php");
-            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            HttpResponse response = httpclient.execute(httppost);
-            HttpEntity entity = response.getEntity();
-            is = entity.getContent();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
-            sb = new StringBuilder();
-            sb.append(reader.readLine() + "\n");
-            String line = "0";
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            is.close();
-            result = sb.toString();
-
-            System.out.println("====result**" + result);
-        } catch (Exception e) {
-        }
-        try {
-            jArray = new JSONArray(result);
-            JSONObject json_data = null;
-            for (int i = 0; i < jArray.length(); i++) {
-                json_data = jArray.getJSONObject(i);
-                after_otp = json_data.getString("response");
-                register_id = json_data.getString("registrationid");
-                mobile_noo = json_data.getString("mobileno");
-                System.out.println("====name===" + json_data.getString("name"));
-
-                ContentValues cv = new ContentValues();
-                cv.put("id", json_data.getString("id"));
-                cv.put("name", json_data.getString("name"));
-                cv.put("email", json_data.getString("email"));
-                cv.put("phno", json_data.getString("mobileno"));
-
-                cv.put("address", json_data.getString("address"));
-                cv.put("city", json_data.getString("district"));
-                cv.put("regid", json_data.getString("registrationid"));
-                exdb.insert("userdetail", null, cv);
-
-                //  String isregster2=json_data.getString("email");
-                System.out.println("====////" + after_otp + "  - " + register_id);
-
-            }
-        } catch (JSONException e1) {
-        } catch (android.net.ParseException e1) {
-        }
-
-
-    }*/
 
     public void availcheck(final String phno){
         RetofitClient retrofit = new RetofitClient();
@@ -289,7 +227,7 @@ public class Otp_verification extends AppCompatActivity {
         map.put("action", "first");
         map.put("androidid","" + android_id);
 
-        Call<List<HashMap<String,String>>> call = api.getotp_verification_availcheckdata(map);
+        Call<List<HashMap<String,String>>> call = api.getMainlogindata(map);
 
         call.enqueue(new Callback<List<HashMap<String,String>>>() {
             @Override
@@ -325,83 +263,25 @@ public class Otp_verification extends AppCompatActivity {
                             }
                         }
                     } catch (JSONException e1) {
+                        System.out.print("Result JSONException ========== " +e1);
+
                     }
 
                 } else {
-
+                    System.out.print("Result Responce goto else  ========== ");
                 }
             }
 
             @Override
             public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
+                System.out.print("Result onFailure  ========== " +call );
+                System.out.print("Result onFailure1  ========== " +t );
                 // Handle network failures
             }
         });
 
 
     }
-
-
-/*    public void availchecknew(final String phno) {
-        String result = null;
-
-        InputStream is = null;
-        StringBuilder sb = null;
-
-        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-        nameValuePairs.add(new BasicNameValuePair("mobileno", "" + phno));
-        nameValuePairs.add(new BasicNameValuePair("action", "first"));
-        nameValuePairs.add(new BasicNameValuePair("androidid", "" + android_id));
-
-        //nameValuePairs.add(new BasicNameValuePair("type", "a2z"));
-        try {
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost("https://nithra.mobi/solliadi/regisrtation.php");
-            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            HttpResponse response = httpclient.execute(httppost);
-            HttpEntity entity = response.getEntity();
-            is = entity.getContent();
-        } catch (Exception e) {
-            Log.e("log_tag", "Error in https connection" + e.toString());
-        }
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
-            sb = new StringBuilder();
-            sb.append(reader.readLine() + "\n");
-            String line = "0";
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            is.close();
-            result = sb.toString();
-            System.out.println("====//" + result);
-        } catch (Exception e) {
-        }
-
-        try {
-            JSONArray jArray = new JSONArray(result);
-            System.err.println("Update===" + result);
-            System.out.println("===  " + jArray.length());
-            JSONObject json_data = null;
-            //isvalid=""+jArray.length();
-            if (jArray.length() > 0) {
-                json_data = jArray.getJSONObject(0);
-                //sps.putString(Main_Login.this,"otp_re","yes");
-                for (int i = 0; i < jArray.length(); i++) {
-                    System.out.print("Insert for=======");
-                    json_data = jArray.getJSONObject(i);
-                    isregster = json_data.getString("response");
-                    register_id = json_data.getString("registrationid");
-
-
-                }
-            }
-        } catch (JSONException e1) {
-        } catch (android.net.ParseException e1) {
-        }
-
-    }*/
-
 
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override

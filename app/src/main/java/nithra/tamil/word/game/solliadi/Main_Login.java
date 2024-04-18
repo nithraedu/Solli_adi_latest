@@ -194,14 +194,18 @@ public class Main_Login extends AppCompatActivity {
                             }
                         }
                     } catch (JSONException e1) {
+                        System.out.print("Result JSONException ========== " + e1 );
                     }
                 } else {
+                    System.out.print("Result Responce goto else  ========== ");
 
                 }
             }
 
             @Override
             public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " +  call);
+                System.out.print("Result onFailure1 ========== " +  t);
                 // Handle network failures
             }
         });
@@ -473,7 +477,7 @@ public class Main_Login extends AppCompatActivity {
         map.put("androidid","" + android_id);
 
 
-        Call<List<HashMap<String,String>>> call = api.getMainlogin_otp_senddata(map);
+        Call<List<HashMap<String,String>>> call = api.getMainlogindata(map);
 
         call.enqueue(new Callback<List<HashMap<String,String>>>() {
             @Override
@@ -516,92 +520,26 @@ public class Main_Login extends AppCompatActivity {
 
                         }
                     } catch (JSONException e1) {
+                        System.out.print("Result JSONException ========== " + e1);
                     }
 
                 } else {
+                    System.out.print("Result Responce Goto Else ========== ");
 
                 }
             }
 
             @Override
             public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== "+t);
+                System.out.print("Result onFailure1 ========== "+call);
+
                 // Handle network failures
             }
         });
 
 
     }
-
-   /* public void otp_sendnew(String otp, String action) {
-        String email;
-        email = Utils.android_id(Main_Login.this);
-
-        JSONArray jArray;
-        String result = null;
-        InputStream is;
-        StringBuilder sb;
-
-        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
-        if (action.equals("otp")) {
-            nameValuePairs.add(new BasicNameValuePair("otp", "" + otp));
-        }
-        nameValuePairs.add(new BasicNameValuePair("action", "" + action));
-        nameValuePairs.add(new BasicNameValuePair("email", "" + email));
-        nameValuePairs.add(new BasicNameValuePair("mobileno", "" + sps.getString(Main_Login.this, "ph_no")));
-        nameValuePairs.add(new BasicNameValuePair("androidid", "" + android_id));
-
-        try {
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost("https://nithra.mobi/solliadi/regisrtation.php");
-            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            HttpResponse response = httpclient.execute(httppost);
-            HttpEntity entity = response.getEntity();
-            is = entity.getContent();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
-            sb = new StringBuilder();
-            sb.append(reader.readLine() + "\n");
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            is.close();
-            result = sb.toString();
-
-            System.out.println("====result**" + result);
-        } catch (Exception e) {
-        }
-        try {
-            jArray = new JSONArray(result);
-            JSONObject json_data;
-            for (int i = 0; i < jArray.length(); i++) {
-                json_data = jArray.getJSONObject(i);
-                after_otp = json_data.getString("response");
-                register_id = json_data.getString("registrationid");
-                mobile_noo = json_data.getString("mobileno");
-                System.out.println("====name===" + json_data.getString("name"));
-
-                ContentValues cv = new ContentValues();
-                cv.put("id", json_data.getString("id"));
-                cv.put("name", json_data.getString("name"));
-                cv.put("email", json_data.getString("email"));
-                cv.put("phno", json_data.getString("mobileno"));
-
-                cv.put("address", json_data.getString("address"));
-                cv.put("city", json_data.getString("district"));
-                cv.put("regid", json_data.getString("registrationid"));
-                exdb.insert("userdetail", null, cv);
-
-                //  String isregster2=json_data.getString("email");
-                System.out.println("====////" + after_otp + "  - " + register_id);
-
-            }
-        } catch (JSONException e1) {
-        } catch (android.net.ParseException e1) {
-        }
-
-
-    }*/
 
     public void completd(String com) {
         final Dialog dialog = new Dialog(Main_Login.this);

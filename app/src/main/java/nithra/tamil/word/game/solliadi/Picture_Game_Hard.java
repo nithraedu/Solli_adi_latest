@@ -79,11 +79,9 @@ import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -111,7 +109,6 @@ import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
@@ -178,7 +175,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
     //MediaPlayer r1, play1;
     TextView p_coin;
     int e2;
-    LinearLayout adds, list4;
+    LinearLayout adds, adsLay1,list4;
     TouchImageView pic_show;
     int im11, im12, im13, im14;
     int r = 0;
@@ -371,22 +368,23 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
 
         adds = findViewById(R.id.ads_lay);
+        adsLay1 = findViewById(R.id.adsLay1);
 
-
-        if (Utils.isNetworkAvailable(context)) {
-            if (!sp.getString(context, "BannerId").equals("") || sp.getString(context, "BannerId") != null) {
+        if (sps.getInt(context, "purchase_ads") == 0) {
+            if (Utils.isNetworkAvailable(context)) {
+                if (!sp.getString(context, "BannerId").equals("") || sp.getString(context, "BannerId") != null) {
+                    System.out.println(
+                            "Ads Should be not empty : " + sp.getString(context, "BannerId")
+                    );
+                    Utils.load_add_banner(context, sp.getString(context, "BannerId"), adds);
+                }
+            } else {
                 System.out.println(
-                        "Ads Should be not empty : " + sp.getString(context, "BannerId")
+                        "Ads Should be -- empty : " + sp.getString(context, "BannerId")
                 );
-                Utils.load_add_banner(context, sp.getString(context, "BannerId"), adds);
+                adsLay1.setVisibility(View.GONE);
             }
-        } else {
-            System.out.println(
-                    "Ads Should be -- empty : " + sp.getString(context, "BannerId")
-            );
-            adds.setVisibility(View.GONE);
-        }
-
+        }else adsLay1.setVisibility(View.GONE);
 
         //  Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
 
@@ -608,6 +606,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
         img3 = findViewById(R.id.image_3);
         img4 = findViewById(R.id.image_4);
         adds = findViewById(R.id.ads_lay);
+        adsLay1 = findViewById(R.id.adsLay1);
         list4 = findViewById(R.id.list4);
         //Time Score Making
         to_no = findViewById(R.id.p_word_number);
@@ -4570,7 +4569,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
         map.put("email",email);
 
-        Call<List<HashMap<String,String>>> call = api.getPicture_Game_Hard_data(map);
+        Call<List<HashMap<String,String>>> call = api.getdownloadcheckdata(map);
 
         call.enqueue(new Callback<List<HashMap<String,String>>>() {
             @Override
@@ -4637,9 +4636,12 @@ public class Picture_Game_Hard extends AppCompatActivity {
                         }
 
                     } catch (JSONException e1) {
+                        System.out.print("Result JSONException ========== " + e1 );
+
                     }
 
                 } else {
+                    System.out.print("Result Responce goto else  ========== ");
 
                 }
 
@@ -4695,6 +4697,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " +  call);
+                System.out.print("Result onFailure1 ========== " +  t);
                 // Handle network failures
             }
         });
@@ -4945,7 +4949,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
         HashMap<String,String> map = new  HashMap<String,String>();
         map.put("filename", email + "-filename.zip");
 
-        Call<List<HashMap<String,String>>> call = api.getPicture_Game_Hard_newdowndata(map);
+        Call<List<HashMap<String,String>>> call = api.getdeletezipdata(map);
 
         call.enqueue(new Callback<List<HashMap<String,String>>>() {
             @Override
@@ -4962,12 +4966,15 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
                     System.out.print("Result============123" + result);
                 } else {
+                    System.out.print("Result Responce goto else  ========== ");
 
                 }
             }
 
             @Override
             public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " +  call);
+                System.out.print("Result onFailure1 ========== " +  t);
                 // Handle network failures
             }
         });
@@ -5174,6 +5181,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
     }*/
 
     public void industrialload() {
+        System.out.println("servercalling=============");
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
         AdManagerInterstitialAd.load(this, sp.getString(context, "InterstitialId"), adRequest,
                 new AdManagerInterstitialAdLoadCallback() {
@@ -5728,82 +5736,21 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
                     System.out.print("Result============123" + result);
                 } else {
+                    System.out.print("Result Responce goto else  ========== ");
 
                 }
             }
 
             @Override
             public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " +  call);
+                System.out.print("Result onFailure1 ========== " +  t);
                 // Handle network failures
             }
         });
 
     }
 
-   /* public void downpicnew(final String first, final String last) {
-
-        w_head.setVisibility(View.INVISIBLE);
-        Utils.mProgress(Picture_Game_Hard.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", true).show();
-
-        new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected Void doInBackground(Void... params) {
-
-
-                String result = null;
-
-                InputStream is = null;
-                StringBuilder sb = null;
-
-                ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-                nameValuePairs.add(new BasicNameValuePair("firstid", first));
-                nameValuePairs.add(new BasicNameValuePair("lastid", last));
-                String date = sps.getString(Picture_Game_Hard.this, "date");
-                if (date.equals("0")) {
-                    nameValuePairs.add(new BasicNameValuePair("mode", "regular"));
-                } else {
-                    nameValuePairs.add(new BasicNameValuePair("mode", "daily"));
-                }
-                nameValuePairs.add(new BasicNameValuePair("email", email));
-                //nameValuePairs.add(new BasicNameValuePair("type", "a2z"));
-                try {
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost("https://nithra.mobi/solliadi/missingdata.php");
-                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                    HttpResponse response = httpclient.execute(httppost);
-                    HttpEntity entity = response.getEntity();
-                    is = entity.getContent();
-                } catch (Exception e) {
-                    Log.e("log_tag", "Error in https connection" + e.toString());
-                }
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
-                    sb = new StringBuilder();
-                    sb.append(reader.readLine() + "\n");
-                    String line = "0";
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
-                    is.close();
-                    result = sb.toString();
-
-                    System.out.print("Result============" + result);
-
-                } catch (Exception e) {
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                checkmemory();
-
-            }
-        }.execute();
-    }*/
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
@@ -6441,6 +6388,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                         // Handle the error.
                         Log.e("LoadAdError=========", loadAdError.toString());
                         rewardedAd = null;
+                        reward_status=0;
                         //isfaild = 2;
 
                     }
@@ -6450,6 +6398,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
+                        reward_status=0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
@@ -6499,6 +6448,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                                 // Called when ad fails to show.
                                 Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                 rewardedAd = null;
+                                reward_status=0;
                             }
 
                             @Override

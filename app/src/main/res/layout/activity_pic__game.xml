@@ -714,7 +714,53 @@
 
     </RelativeLayout>
 
+    <!--<LinearLayout
+        android:id="@+id/ads_lay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/wh_50"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/advertise_text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Advertisement"
+            android:textColor="@color/grey"
+            android:textSize="15sp"/>
+
+    </LinearLayout>-->
     <LinearLayout
+        android:id="@+id/adsLay1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/adstext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Advertisement"
+            android:textSize="15sp"
+            android:layout_marginBottom="1dp"/>
+        <LinearLayout
+            android:id="@+id/ads_lay"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/wh_50"
+            android:orientation="horizontal" />
+    </LinearLayout>
+
+    <!--<LinearLayout
         android:id="@+id/ads_lay"
         android:layout_width="match_parent"
         android:gravity="center_horizontal"
@@ -722,7 +768,7 @@
         android:layout_alignParentBottom="true"
         android:background="@color/white"
         android:minHeight="@dimen/wh_50"
-        android:orientation="horizontal" />
+        android:orientation="horizontal" />-->
 </LinearLayout>
 
 

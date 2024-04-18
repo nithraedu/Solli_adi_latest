@@ -18,6 +18,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import nithra.tamil.word.game.solliadi.Utils.getDeviceName
+import nithra.tamil.word.game.solliadi.Utils.versionname_get
 import java.io.File
 import java.net.URLEncoder
 import java.text.SimpleDateFormat
@@ -59,7 +60,7 @@ object Utills {
         }
     }
 
-    fun sendFeed(activity: Activity, name: String, email: String, ph_no: String, feed: String) {
+    fun sendFeed(activity: Activity, name: String, version : Int ,email: String, ph_no: String, feed: String) {
         val stringRequest: StringRequest = object : StringRequest(Method.POST,
             "https://www.nithra.mobi/apps/appfeedback.php",
             Response.Listener {
@@ -75,7 +76,7 @@ object Utills {
                 params["email"] = email
                 params["phno"] = ph_no
                 params["name"] = name
-                params["vcode"] = VERSION_CODE.toString() + ""
+                params["vcode"] =version.toString()
                 params["model"] = getDeviceName()
                 params["type"] = "Tamil_Odu_Viliyadu"
                 return params

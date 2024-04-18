@@ -163,7 +163,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
     RadioButton fn1, fn2, fn3;
     TextView c_settings;
     TextView toggleButton;
-    LinearLayout adds, list4;
+    LinearLayout adds, list4,adsLay1;
     PopupWindow popupWindow;
     int kx = 1;
     RelativeLayout w_head, helpshare_layout;
@@ -350,20 +350,23 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
 
         adds = findViewById(R.id.ads_lay);
+        adsLay1 = findViewById(R.id.adsLay1);
        // Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
-        if (Utils.isNetworkAvailable(context)) {
-            if (!sps.getString(context, "BannerId").equals("") || sps .getString(context, "BannerId") != null) {
+        if (sps.getInt(context, "purchase_ads") == 0) {
+            if (Utils.isNetworkAvailable(context)) {
+                if (!sps.getString(context, "BannerId").equals("") || sps.getString(context, "BannerId") != null) {
+                    System.out.println(
+                            "Ads Should be not empty : " + sps.getString(context, "BannerId")
+                    );
+                    Utils.load_add_banner(context, sps.getString(context, "BannerId"), adds);
+                }
+            } else {
                 System.out.println(
-                        "Ads Should be not empty : " + sps.getString(context, "BannerId")
+                        "Ads Should be -- empty : " + sps.getString(context, "BannerId")
                 );
-                Utils.load_add_banner(context, sps.getString(context, "BannerId"), adds);
+                adsLay1.setVisibility(View.GONE);
             }
-        } else {
-            System.out.println(
-                    "Ads Should be -- empty : " + sps.getString(context, "BannerId")
-            );
-            adds.setVisibility(View.GONE);
-        }
+        }else adsLay1.setVisibility(View.GONE);
 
         ///Alter Answer table
 
@@ -560,69 +563,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
         //
 
     }
-
-/*    private void industrialload() {
-        //AppLovinSdk.getInstance( this ).showMediationDebugger();
-        AppLovinSdk.getInstance(this).setMediationProvider("max");
-        AppLovinSdk.initializeSdk(this, new AppLovinSdk.SdkInitializationListener() {
-            @Override
-            public void onSdkInitialized(AppLovinSdkConfiguration config) {
-                // AppLovin SDK is initialized, start loading ads
-                if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
-                System.out.println("ad shown  showAdWithDelay initialize done ");
-                mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Puthayal_Sorkal_Ins), Clue_Game_Hard.this);
-                mInterstitialAd.setListener(new MaxAdListener() {
-                    @Override
-                    public void onAdLoaded(MaxAd ad) {
-                        System.out.println("ad shown loaded : " + ad.getWaterfall());
-                    }
-
-                    @Override
-                    public void onAdDisplayed(MaxAd ad) {
-                        handler = null;
-                    }
-
-                    @Override
-                    public void onAdHidden(MaxAd ad) {
-                        Log.d("TAG", "Ad dismissed fullscreen content.");
-                        mInterstitialAd = null;
-                        handler = null;
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        setSc();
-                        industrialload();
-                    }
-
-                    @Override
-                    public void onAdClicked(MaxAd ad) {
-
-                    }
-
-                    @Override
-                    public void onAdLoadFailed(String adUnitId, MaxError error) {
-                        Log.d("TAG", error.toString());
-                        mInterstitialAd = null;
-                        handler = null;
-                        Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
-                    }
-
-                    @Override
-                    public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                        Log.e("TAG", "Ad failed to show fullscreen content.");
-                        mInterstitialAd = null;
-                        handler = null;
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
-                        setSc();
-                    }
-                });
-
-                // Load the first ad
-                mInterstitialAd.loadAd();
-
-            }
-        });
-
-    }*/
 
     public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
@@ -3758,7 +3698,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
         }
 
         map.put("email",email);
-               Call<List<HashMap<String,String>>> call = api.getClue_downloadcheckdata(map);
+               Call<List<HashMap<String,String>>> call = api.getdownloadcheckdata(map);
 
         call.enqueue(new Callback<List<HashMap<String,String>>>() {
             @Override
@@ -3811,11 +3751,17 @@ public class Clue_Game_Hard extends AppCompatActivity {
                         }
 
                     } catch (JSONException e1) {
+                        System.out.print("Result JSONException ========== " + e1);
                     } catch (ParseException e1) {
+                        System.out.print("Result ParseException ========== " + e1);
+
                     }
 
 
+
                 } else {
+                    System.out.print("Result responce goto else parrt ========== " );
+
 
                 }
 
@@ -3862,6 +3808,9 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " +call );
+                System.out.print("Result onFailure1 ========== " +t );
+
                 // Handle network failures
             }
         });
@@ -3869,155 +3818,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
 
     }
-
-   /* public void downloadchecknew(final String lastid, final String daily) {
-        w_head.setVisibility(View.INVISIBLE);
-        Utils.mProgress(Clue_Game_Hard.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", false).show();
-        Utils.mProgress.setCancelable(false);
-        new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected Void doInBackground(Void... params) {
-
-
-                String result = null;
-
-                InputStream is = null;
-                StringBuilder sb;
-
-                ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-                nameValuePairs.add(new BasicNameValuePair("lastid", lastid));
-
-                if (daily.equals("ord")) {
-                    nameValuePairs.add(new BasicNameValuePair("mode", "regular"));
-                } else {
-                    nameValuePairs.add(new BasicNameValuePair("mode", "daily"));
-                }
-                nameValuePairs.add(new BasicNameValuePair("email", email));
-                //nameValuePairs.add(new BasicNameValuePair("type", "a2z"));
-                try {
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost(New_Main_Activity.data_check);
-                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                    HttpResponse response = httpclient.execute(httppost);
-                    HttpEntity entity = response.getEntity();
-                    is = entity.getContent();
-                } catch (Exception e) {
-                    Log.e("log_tag", "Error in https connection" + e.toString());
-                }
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
-                    sb = new StringBuilder();
-                    sb.append(reader.readLine() + "\n");
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
-                    is.close();
-                    result = sb.toString();
-
-                    System.out.print("Result============" + result);
-
-                } catch (Exception e) {
-                }
-
-                try {
-                    if (result != null) {
-                        JSONArray jArray = new JSONArray(result);
-                        System.err.println("Update===" + result);
-                        System.out.println("===  " + jArray.length());
-                        JSONObject json_data;
-                        //isvalid=""+jArray.length();
-                        downok = String.valueOf(jArray.length());
-                        System.out.print("insert daily ============" + downok);
-                        if (jArray.length() > 0) {
-                            json_data = jArray.getJSONObject(0);
-                            if (json_data.getString("NoData").equals("NoData")) {
-                                downnodata = "NoData";
-                            } else {
-                                downnodata = "YesData";
-                                for (int i = 0; i < jArray.length(); i++) {
-                                    json_data = jArray.getJSONObject(i);
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("id", json_data.getString("id"));
-                                    cv.put("gameid", json_data.getString("gameid"));
-                                    cv.put("levelid", json_data.getString("levelid"));
-                                    cv.put("letters", json_data.getString("letters"));
-
-                                    String newName = json_data.getString("answer").replaceAll(" ", "");
-                                    cv.put("answer", newName);
-
-                                    cv.put("hints", json_data.getString("hints"));
-                                    cv.put("imagename", json_data.getString("imagename"));
-                                    cv.put("isfinish", "0");
-
-                                    if (daily.equals("ord")) {
-                                        cv.put("isdownload", "1");
-                                        myDbHelper.insert_data("maintable", null, cv);
-                                    } else {
-                                        cv.put("date", json_data.getString("date"));
-                                        myDbHelper.insert_data("dailytest", null, cv);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                } catch (JSONException e1) {
-                } catch (ParseException e1) {
-                }
-
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                System.out.print("down ok!!!============" + downok + "===");
-
-
-                if (downnodata.equals("NoData")) {
-                    Utils.mProgress.dismiss();
-                    w_head.setVisibility(View.INVISIBLE);
-                    nextgamesdialog();
-
-                }
-                else {
-                    downok = "";
-                    downnodata = "";
-                    if (exists("https://nithra.mobi/solliadi/" + email + "-filename.zip")) {
-                        checkmemory();
-                    } else {
-                        Utils.mProgress.dismiss();
-                        String date = sps.getString(Clue_Game_Hard.this, "date");
-                        if (date.equals("0")) {
-                            Cursor c;
-                            c = myDbHelper.getQry("select * from maintable where gameid='2' and isfinish='0' order by id limit 1");
-                            c.moveToFirst();
-                            if (c.getCount() != 0) {
-                                next();
-                            } else {
-                                nextgamesdialog();
-                            }
-                        } else {
-                            Cursor c;
-                            c = myDbHelper.getQry("select * from dailytest where gameid='" + gameid + "' and isfinish='0' and date='" + date + "'");
-                            c.moveToFirst();
-                            if (c.getCount() != 0) {
-                                next();
-                            } else {
-                                nextgamesdialog();
-                            }
-                        }
-
-
-                    }
-
-                }
-            }
-        }.execute();
-    }*/
 
     public void checkmemory() {
         String url;
@@ -4141,7 +3941,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
         HashMap<String,String> map = new  HashMap<String,String>();
         map.put("filename",email + "-filename.zip");
 
-        Call<List<HashMap<String,String>>> call = api.getClue_newdowndata(map);
+        Call<List<HashMap<String,String>>> call = api.getdeletezipdata(map);
 
         call.enqueue(new Callback<List<HashMap<String,String>>>() {
             @Override
@@ -4153,74 +3953,22 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
                     System.out.print("Result============123" + result);
                 } else {
+                    System.out.print("Result responce goto else part ========== " );
 
                 }
             }
 
             @Override
             public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " +call );
+                System.out.print("Result onFailure1 ========== " +t );
+
                 // Handle network failures
             }
         });
 
 
     }
-
-  /*  public void newdownnew() {
-
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-
-                String result;
-
-                InputStream is = null;
-                StringBuilder sb;
-
-                ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-
-                nameValuePairs.add(new BasicNameValuePair("filename", email + "-filename.zip"));
-                //nameValuePairs.add(new BasicNameValuePair("type", "a2z"));
-                try {
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost("https://nithra.mobi/solliadi/solliadi1.php");
-                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                    HttpResponse response = httpclient.execute(httppost);
-                    HttpEntity entity = response.getEntity();
-                    is = entity.getContent();
-                } catch (Exception e) {
-                    Log.e("log_tag", "Error in https connection" + e.toString());
-                }
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
-                    sb = new StringBuilder();
-                    sb.append(reader.readLine() + "\n");
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
-                    is.close();
-                    result = sb.toString();
-
-                    System.out.print("Result============123" + result);
-
-                } catch (Exception e) {
-                }
-
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-
-            }
-
-        }.execute();
-
-    }*/
-
     public void unpackZip(String ZIP_FILE_NAME) throws IOException {
 
         File destDir = new File(getFilesDir() + "/Nithra/solliadi/");
@@ -5483,84 +5231,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
         }
     }
 
-  /*  public void rewarded_adnew() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_adnew();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-                //  rewardedAd.loadAd();
-
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
-    }*/
 
     private void rewarded_adnew() {
 
@@ -5573,6 +5243,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                         // Handle the error.
                         Log.e("LoadAdError=========", loadAdError.toString());
                         rewardedAd = null;
+                        reward_status=0;
                         //isfaild = 2;
 
                     }
@@ -5582,6 +5253,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
+                        reward_status=0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
@@ -5629,6 +5301,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                                 // Called when ad fails to show.
                                 Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                 rewardedAd = null;
+                                reward_status=0;
                             }
 
                             @Override
@@ -5647,15 +5320,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
                     }
                 });
     }
-
- /*   public void show_reward() {
-        if (rewardedAd != null && rewardedAd.isReady()) {
-            rewardedAd.showAd();
-            reward_status = 1;
-        } else {
-            Log.d("TAG", "The rewarded ad wasn't ready yet.");
-        }
-    }*/
 
     public void show_reward() {
         if (rewardedAd != null) {

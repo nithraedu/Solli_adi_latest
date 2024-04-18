@@ -8,13 +8,14 @@ plugins {
 android {
     namespace = "nithra.tamil.word.game.solliadi"
     compileSdk = 34
+    useLibrary("org.apache.http.legacy")
 
     defaultConfig {
         applicationId = "nithra.tamil.word.game.solliadi"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 70
+        versionName = "6.18"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -71,6 +72,4 @@ dependencies {
     implementation(libs.lottie)
     implementation(libs.play.services.ads)
     implementation(libs.androidx.legacy.support.v4)
-
-
 }

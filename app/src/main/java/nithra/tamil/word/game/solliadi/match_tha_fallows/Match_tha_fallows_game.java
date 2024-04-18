@@ -2385,83 +2385,6 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
 
     }
 
-   /* public void rewarded_adnew() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_adnew();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(Match_tha_fallows_game.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
-    }*/
    private void rewarded_adnew() {
 
        AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
@@ -2473,6 +2396,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                        // Handle the error.
                        Log.e("LoadAdError=========", loadAdError.toString());
                        rewardedAd = null;
+                       reward_status=0;
                        //isfaild = 2;
 
                    }
@@ -2482,6 +2406,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                        rewardedAd = ad;
                        //  isfaild = 1;
                        fb_reward = 1;
+                       reward_status=0;
                        Log.e(TAG, "Ad was Called.=========");
                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                            @Override
@@ -2530,6 +2455,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                                // Called when ad fails to show.
                                Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                rewardedAd = null;
+                               reward_status=0;
                            }
 
                            @Override
@@ -2548,15 +2474,6 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                    }
                });
    }
-
-  /*  public void show_reward() {
-        if (rewardedAd != null && rewardedAd.isReady()) {
-            rewardedAd.showAd();
-            reward_status = 1;
-        } else {
-            Log.d("TAG", "The rewarded ad wasn't ready yet.");
-        }
-    }*/
 
     public void show_reward() {
         if (rewardedAd != null) {
@@ -2580,69 +2497,6 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         }
 
     }
-
-
-
-/*    private void industrialload() {
-        //AppLovinSdk.getInstance( this ).showMediationDebugger();
-        AppLovinSdk.getInstance(this).setMediationProvider("max");
-        AppLovinSdk.initializeSdk(this, config -> {
-            // AppLovin SDK is initialized, start loading ads
-            if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
-            System.out.println("ad shown  showAdWithDelay initialize done ");
-            mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Ragasiya_sorgal_ins), Match_tha_fallows_game.this);
-            mInterstitialAd.setListener(new MaxAdListener() {
-                @Override
-                public void onAdLoaded(MaxAd ad) {
-                    System.out.println("ad shown loaded : " + ad.getWaterfall());
-                }
-
-                @Override
-                public void onAdDisplayed(MaxAd ad) {
-                    handler = null;
-                }
-
-                @Override
-                public void onAdHidden(MaxAd ad) {
-                    Log.d("TAG", "Ad dismissed fullscreen content.");
-                    mInterstitialAd = null;
-                    handler = null;
-                    Utills.INSTANCE.Loading_Dialog_dismiss();
-                    setSc();
-                    industrialload();
-                }
-
-                @Override
-                public void onAdClicked(MaxAd ad) {
-
-                }
-
-                @Override
-                public void onAdLoadFailed(String adUnitId, MaxError error) {
-                    Log.d("TAG", error.toString());
-                    mInterstitialAd = null;
-                    handler = null;
-                    Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
-                }
-
-                @Override
-                public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                    Log.e("TAG", "Ad failed to show fullscreen content.");
-                    mInterstitialAd = null;
-                    handler = null;
-                    Utills.INSTANCE.Loading_Dialog_dismiss();
-                    sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
-                    setSc();
-                }
-            });
-
-            // Load the first ad
-            mInterstitialAd.loadAd();
-
-        });
-
-    }*/
-
 
     public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();

@@ -271,20 +271,21 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         adds = findViewById(R.id.ads_lay);
 
         //Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
-        if (Utils.isNetworkAvailable(context)) {
-            if (!sps.getString(context, "BannerId").equals("") || sps .getString(context, "BannerId") != null) {
+        if (sps.getInt(context, "purchase_ads") == 0) {
+            if (Utils.isNetworkAvailable(context)) {
+                if (!sps.getString(context, "BannerId").equals("") || sps.getString(context, "BannerId") != null) {
+                    System.out.println(
+                            "Ads Should be not empty : " + sps.getString(context, "BannerId")
+                    );
+                    Utils.load_add_banner(context, sps.getString(context, "BannerId"), adds);
+                }
+            } else {
                 System.out.println(
-                        "Ads Should be not empty : " + sps.getString(context, "BannerId")
+                        "Ads Should be -- empty : " + sps.getString(context, "BannerId")
                 );
-                Utils.load_add_banner(context, sps.getString(context, "BannerId"), adds);
+                adds.setVisibility(View.GONE);
             }
-        } else {
-            System.out.println(
-                    "Ads Should be -- empty : " + sps.getString(context, "BannerId")
-            );
-            adds.setVisibility(View.GONE);
-        }
-
+        }else adds.setVisibility(View.GONE);
 
         openDialog_s = new Dialog(Riddle_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
@@ -5144,7 +5145,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
     }*/
 
     private void rewarded_adnew() {
-
+        System.out.println("servercalling=============");
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
 
         RewardedAd.load(this, sps.getString(Riddle_game.this, "RewardedId"),
@@ -5154,6 +5155,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                         // Handle the error.
                         Log.e("LoadAdError=========", loadAdError.toString());
                         rewardedAd = null;
+                        reward_status=0;
                         //isfaild = 2;
 
                     }
@@ -5163,6 +5165,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
+                        reward_status=0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
@@ -5210,6 +5213,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                                 // Called when ad fails to show.
                                 Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                 rewardedAd = null;
+                                reward_status=0;
                             }
 
                             @Override

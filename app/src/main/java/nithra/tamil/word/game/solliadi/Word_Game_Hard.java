@@ -181,7 +181,7 @@ public class Word_Game_Hard extends AppCompatActivity {
     int soundId1, soundId2, soundId3, soundId4, soundId5;
     int sv = 0;
     RadioButton fn1, fn2, fn3;
-    LinearLayout adds;
+    LinearLayout adds,adsLay1;
     Dialog openDialog;
     LinearLayout addsdialog;
     TextView tx1, tx2;
@@ -378,22 +378,24 @@ public class Word_Game_Hard extends AppCompatActivity {
             }
         }
         adds = findViewById(R.id.ads_lay);
+        adsLay1 = findViewById(R.id.adsLay1);
 
         //Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
-        if (Utils.isNetworkAvailable(context)) {
-            if (!sps.getString(context, "BannerId").equals("") || sps.getString(context, "BannerId") != null) {
+        if (sps.getInt(Word_Game_Hard.this, "purchase_ads") == 0) {
+            if (Utils.isNetworkAvailable(context)) {
+                if (!sps.getString(context, "BannerId").equals("") || sps.getString(context, "BannerId") != null) {
+                    System.out.println(
+                            "Ads Should be not empty : " + sps.getString(context, "BannerId")
+                    );
+                    Utils.load_add_banner(context, sps.getString(context, "BannerId"), adds);
+                }
+            } else {
                 System.out.println(
-                        "Ads Should be not empty : " + sps.getString(context, "BannerId")
+                        "Ads Should be -- empty : " + sps.getString(context, "BannerId")
                 );
-                Utils.load_add_banner(context, sps.getString(context, "BannerId"), adds);
+                adsLay1.setVisibility(View.GONE);
             }
-        } else {
-            System.out.println(
-                    "Ads Should be -- empty : " + sps.getString(context, "BannerId")
-            );
-            adds.setVisibility(View.GONE);
-        }
-
+        }else adsLay1.setVisibility(View.GONE);
 
         if (!Utills.INSTANCE.isColumnExists(this, "answertable", "rd"))
             myDbHelper.executeSql("alter table answertable add column rd integer DEFAULT 0");
@@ -5506,12 +5508,14 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                     System.out.print("Result============123" + result);
                 } else {
-
+                    System.out.print("Result Responce goto else  ========== ");
                 }
             }
 
             @Override
             public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " +  call);
+                System.out.print("Result onFailure1 ========== " +  t);
                 // Handle network failures
             }
         });
@@ -5578,7 +5582,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         else map.put("mode",  "daily");
         map.put("email", email);
 
-        Call<List<HashMap<String, String>>> call = api.getWordGameHard_downloadcheckdata(map);
+        Call<List<HashMap<String, String>>> call = api.getdownloadcheckdata(map);
 
         call.enqueue(new Callback<List<HashMap<String, String>>>() {
             @Override
@@ -5645,9 +5649,12 @@ public class Word_Game_Hard extends AppCompatActivity {
                         }
 
                     } catch (JSONException e1) {
+                        System.out.print("Result JSONException ========== " + e1 );
+
                     }
 
                 } else {
+                    System.out.print("Result Responce goto else  ========== ");
 
                 }
                 if (downnodata.equals("NoData")) {
@@ -5687,6 +5694,8 @@ public class Word_Game_Hard extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " +  call);
+                System.out.print("Result onFailure1 ========== " +  t);
                 // Handle network failures
             }
         });
@@ -5986,7 +5995,7 @@ if(downok.equals("")){
         HashMap<String,String> map = new  HashMap<String,String>();
         map.put("filename",email + "-filename.zip");
 
-        Call<List<HashMap<String,String>>> call = api.getWordGameHard_newdowndata(map);
+        Call<List<HashMap<String,String>>> call = api.getdeletezipdata(map);
 
         call.enqueue(new Callback<List<HashMap<String,String>>>() {
             @Override
@@ -6003,12 +6012,15 @@ if(downok.equals("")){
 
                     System.out.print("Result============123" + result);
                 } else {
+                    System.out.print("Result Responce goto else  ========== ");
 
                 }
             }
 
             @Override
             public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " +  call);
+                System.out.print("Result onFailure1 ========== " +  t);
                 // Handle network failures
             }
         });
@@ -6189,6 +6201,7 @@ if(downok.equals("")){
                         // Handle the error.
                         Log.e("LoadAdError=========", loadAdError.toString());
                         rewardedAd = null;
+                        reward_status=0;
                         //isfaild = 2;
 
                     }
@@ -6198,6 +6211,7 @@ if(downok.equals("")){
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
+                        reward_status=0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
@@ -6247,6 +6261,7 @@ if(downok.equals("")){
                                 // Called when ad fails to show.
                                 Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                 rewardedAd = null;
+                                reward_status=0;
                             }
 
                             @Override

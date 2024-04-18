@@ -216,6 +216,7 @@ private AdManagerInterstitialAd interstitialAd ;
             }
         }
         //   Utills.INSTANCE.load_add_AppLovin(getActivity(), normal_baner, getResources().getString(R.string.Bottom_Banner));
+        if (sp.getInt(context, "purchase_ads") == 0) {
         if (Utils.isNetworkAvailable(context)) {
             if (!sp.getString(context, "BannerId").equals("") || sp.getString(context, "BannerId") != null) {
                 System.out.println("Ads Should be not empty : " + sp.getString(context, "BannerId"));
@@ -224,7 +225,7 @@ private AdManagerInterstitialAd interstitialAd ;
         } else {
             System.out.println("Ads Should be -- empty : " + sp.getString(context, "BannerId"));
             normal_baner.setVisibility(View.GONE);
-        }
+        }}else normal_baner.setVisibility(View.GONE);
 
 //reward videos process 2***********************
 
@@ -2143,67 +2144,6 @@ private AdManagerInterstitialAd interstitialAd ;
         ////////////////Prize//////////////////
     }
 
-    /*private void industrialload() {
-        //AppLovinSdk.getInstance( this ).showMediationDebugger();
-        AppLovinSdk.getInstance(context).setMediationProvider("max");
-        AppLovinSdk.initializeSdk(requireActivity(), config -> {
-            // AppLovin SDK is initialized, start loading ads
-            if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
-            System.out.println("ad shown  showAdWithDelay initialize done ");
-            mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Senthamil_Thedal_Ins), requireActivity());
-            mInterstitialAd.setListener(new MaxAdListener() {
-                @Override
-                public void onAdLoaded(MaxAd ad) {
-                    System.out.println("ad shown loaded : " + ad.getWaterfall());
-                }
-
-                @Override
-                public void onAdDisplayed(MaxAd ad) {
-                    handler = null;
-                }
-
-                @Override
-                public void onAdHidden(MaxAd ad) {
-                    Log.d("TAG", "Ad dismissed fullscreen content.");
-                    mInterstitialAd = null;
-                    handler = null;
-                    Utills.INSTANCE.Loading_Dialog_dismiss();
-                    winning_report();
-                    industrialload();
-                }
-
-                @Override
-                public void onAdClicked(MaxAd ad) {
-
-                }
-
-                @Override
-                public void onAdLoadFailed(String adUnitId, MaxError error) {
-                    Log.d("TAG", error.toString());
-                    mInterstitialAd = null;
-                    handler = null;
-                    Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
-                }
-
-                @Override
-                public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                    Log.e("TAG", "Ad failed to show fullscreen content.");
-                    mInterstitialAd = null;
-                    handler = null;
-                    Utills.INSTANCE.Loading_Dialog_dismiss();
-                    sp.putInt(requireActivity(), "Game3_Stage_Close_ST", 0);
-                    winning_report();
-                }
-            });
-
-            // Load the first ad
-            mInterstitialAd.loadAd();
-
-        });
-
-    }*/
-
-
     public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
         AdManagerInterstitialAd.load(requireActivity(), sp.getString(requireContext(), "InterstitialId"), adRequest,
@@ -2287,85 +2227,6 @@ private AdManagerInterstitialAd interstitialAd ;
 
     }
 
-   /* public void rewarded_adnew() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), requireActivity());
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_adnew();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
-    }*/
-
     private void rewarded_adnew() {
 
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
@@ -2386,6 +2247,7 @@ private AdManagerInterstitialAd interstitialAd ;
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
+                        reward_status=0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
@@ -2449,15 +2311,6 @@ private AdManagerInterstitialAd interstitialAd ;
                     }
                 });
     }
-
-   /* public void show_reward() {
-        if (rewardedAd != null && rewardedAd.isReady()) {
-            rewardedAd.showAd();
-            reward_status = 1;
-        } else {
-            Log.d("TAG", "The rewarded ad wasn't ready yet.");
-        }
-    }*/
 
     public void show_reward() {
         if (rewardedAd != null) {

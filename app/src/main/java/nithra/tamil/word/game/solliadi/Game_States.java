@@ -391,15 +391,19 @@ public class Game_States extends AppCompatActivity {
                                     }
                                 }
                             } catch (JSONException e1) {
+                                System.out.print("Result JSONException ========== " + e1 );
+
                             }
 
                         } else {
-
+                            System.out.print("Result responce goto else parrt ========== " );
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
+                        System.out.print("Result onFailure ========== " + call );
+                        System.out.print("Result onFailure1 ========== " + t );
                         // Handle network failures
                     }
                 });

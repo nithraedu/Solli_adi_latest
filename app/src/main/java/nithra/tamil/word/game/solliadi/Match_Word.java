@@ -102,7 +102,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
     ImageView value_ans1, value_ans2, value_ans3, value_ans4, value_ans5, value_ans6, value_ans7, value_ans8, value_ans9, value_ans10;
     TextView button1, button2, button3, button4, button5, button6, button7, button8, button9, button10, button11, button12, button13, button14, button15, button16;
     Animation clickzoom;
-    LinearLayout adds, anslist2, list2_pic;
+    LinearLayout adds, anslist2, list2_pic,adsLay1;
     TextView s_word_number, s_score_edit, hint, p_coins, p_coins_red, earncoin, to_no;
     SoundPool click, win, coin, worng, cr_ans;
     Chronometer focus;
@@ -241,6 +241,8 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             }
         }
         adds = (LinearLayout) findViewById(R.id.ads_lay);
+        adsLay1 = (LinearLayout) findViewById(R.id.adsLay1);
+        if (sps.getInt(context, "purchase_ads") == 0) {
         if (Utils.isNetworkAvailable(context)) {
             if (!sps.getString(context, "BannerId").equals("") || sps.getString(context, "BannerId") != null) {
                 System.out.println(
@@ -252,8 +254,8 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             System.out.println(
                     "Ads Should be -- empty : " + sps.getString(context, "BannerId")
             );
-            adds.setVisibility(View.GONE);
-        }
+            adsLay1.setVisibility(View.GONE);
+        }}else adsLay1.setVisibility(View.GONE);
         //Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
 
 
@@ -4571,69 +4573,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
         if (!isFinishing()) openDialog.show();
     }
-
-    /*    private void industrialload() {
-            //AppLovinSdk.getInstance( this ).showMediationDebugger();
-            AppLovinSdk.getInstance(this).setMediationProvider("max");
-            AppLovinSdk.initializeSdk(this, new AppLovinSdk.SdkInitializationListener() {
-                @Override
-                public void onSdkInitialized(AppLovinSdkConfiguration config) {
-                    // AppLovin SDK is initialized, start loading ads
-                    if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
-                    System.out.println("ad shown  showAdWithDelay initialize done ");
-                    mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Puthayal_Sorkal_Ins), Match_Word.this);
-                    mInterstitialAd.setListener(new MaxAdListener() {
-                        @Override
-                        public void onAdLoaded(MaxAd ad) {
-                            System.out.println("ad shown loaded : " + ad.getWaterfall());
-                        }
-
-                        @Override
-                        public void onAdDisplayed(MaxAd ad) {
-                            handler = null;
-                        }
-
-                        @Override
-                        public void onAdHidden(MaxAd ad) {
-                            Log.d("TAG", "Ad dismissed fullscreen content.");
-                            mInterstitialAd = null;
-                            handler = null;
-                            Utills.INSTANCE.Loading_Dialog_dismiss();
-                            setSc();
-                            industrialload();
-                        }
-
-                        @Override
-                        public void onAdClicked(MaxAd ad) {
-
-                        }
-
-                        @Override
-                        public void onAdLoadFailed(String adUnitId, MaxError error) {
-                            Log.d("TAG", error.toString());
-                            mInterstitialAd = null;
-                            handler = null;
-                            Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
-                        }
-
-                        @Override
-                        public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                            Log.e("TAG", "Ad failed to show fullscreen content.");
-                            mInterstitialAd = null;
-                            handler = null;
-                            Utills.INSTANCE.Loading_Dialog_dismiss();
-                            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
-                            setSc();
-                        }
-                    });
-
-                    // Load the first ad
-                    mInterstitialAd.loadAd();
-
-                }
-            });
-
-        }*/
     public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
         AdManagerInterstitialAd.load(this, sps.getString(this, "InterstitialId"), adRequest,
@@ -6080,84 +6019,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         alertDialog.show();
     }
 
-/*    public void rewarded_adnew() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_adnew();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
-    }*/
-
     private void rewarded_adnew() {
 
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
@@ -6169,6 +6030,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                         // Handle the error.
                         Log.e("LoadAdError=========", loadAdError.toString());
                         rewardedAd = null;
+                        reward_status=0;
                         //isfaild = 2;
 
                     }
@@ -6178,6 +6040,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
+                        reward_status=0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
@@ -6226,6 +6089,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                                 // Called when ad fails to show.
                                 Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                 rewardedAd = null;
+                                reward_status=0;
                             }
 
                             @Override
@@ -6244,15 +6108,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                     }
                 });
     }
-
-  /*  public void show_reward() {
-        if (rewardedAd != null && rewardedAd.isReady()) {
-            rewardedAd.showAd();
-            reward_status = 1;
-        } else {
-            Log.d("TAG", "The rewarded ad wasn't ready yet.");
-        }
-    }*/
 
     public void show_reward() {
         if (rewardedAd != null) {

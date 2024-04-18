@@ -39,5 +39,12 @@
 }
 -dontwarn com.moat.**
 -keep class com.moat.** { public protected private *; }
-#-dontwarn com.facebook.infer.annotation.Nullsafe$Mode
-#-dontwarn com.facebook.infer.annotation.Nullsafe
+-dontwarn com.facebook.infer.annotation.Nullsafe$Mode
+-dontwarn com.facebook.infer.annotation.Nullsafe
+
+-keep class retrofit2.** { *; }
+-keepattributes Annotation
+-keep class com.squareup.okhttp.** { *; }
+-keep interface com.squareup.okhttp.** { *; }
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }

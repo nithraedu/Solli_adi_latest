@@ -69,7 +69,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.Word_search_main;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.game_class.Word_search_levels;
@@ -178,7 +177,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
             sv = 1;
         }
 
-        //Utills.INSTANCE.GameComplete(this);
+       // Utills.INSTANCE.GameComplete(this);
 
         mul_tival = 1;
         scroll_view = (ScrollView) findViewById(R.id.scroll_view);
@@ -790,18 +789,12 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
         map.put("mode", "regular");
         map.put("email", sps.getString(New_Main_Gamelist.this, "email"));
 
-        Call<List<HashMap<String, String>>> call = api.getnew_main_gameListdata(map);
+        Call<List<HashMap<String, String>>> call = api.getdownloadcheckdata(map);
 
         call.enqueue(new Callback<List<HashMap<String, String>>>() {
             @Override
             public void onResponse(Call<List<HashMap<String, String>>> call, Response<List<HashMap<String, String>>> response) {
                 if (response.isSuccessful()) {
-                    /*String date = sps.getString(New_Main_Activity.this, "date");
-                    BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-
-                    String line = "";
-                    while ((line = rd.readLine()) != null) Log.e("HttpResponse", line);*/
-
                     Gson gson = new Gson();
                     String result = gson.toJson(response.body());
 
@@ -868,11 +861,12 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
                         }
 
                     } catch (JSONException e1) {
+                        System.out.println("Exceptions ======= : "+e1);
                     }
 
 
                 } else {
-
+                    System.out.println("respose not successfully loaded");
                 }
 
                 Cursor c1 = myDbHelper.getQry("select id from dailytest order by id DESC");
@@ -891,140 +885,13 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
             @Override
             public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
                 // Handle network failures
+                System.out.println("the Failure---- : "+t);
+                System.out.println("the Failure call---- : "+call);
             }
         });
 
 
     }
-
-    /*public void downloadchecknew(final String lastid, final String daily) {
-        Utils.mProgress(New_Main_Gamelist.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", false).show();
-        Utils.mProgress.setCancelable(false);
-        new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected Void doInBackground(Void... params) {
-
-
-                String result = null;
-
-                InputStream is = null;
-                StringBuilder sb = null;
-
-                ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-                nameValuePairs.add(new BasicNameValuePair("lastid", lastid));
-                nameValuePairs.add(new BasicNameValuePair("mode", "regular"));
-                nameValuePairs.add(new BasicNameValuePair("email", sps.getString(New_Main_Gamelist.this, "email")));
-                //nameValuePairs.add(new BasicNameValuePair("type", "a2z"));
-                try {
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost(New_Main_Activity.data_check);
-                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                    HttpResponse response = httpclient.execute(httppost);
-                    HttpEntity entity = response.getEntity();
-                    is = entity.getContent();
-                } catch (Exception e) {
-                    Log.e("log_tag", "Error in https connection" + e.toString());
-                }
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
-                    sb = new StringBuilder();
-                    sb.append(reader.readLine() + "\n");
-                    String line = "0";
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
-                    is.close();
-                    result = sb.toString();
-                    System.out.print("ord Result============" + result);
-                } catch (Exception e) {
-                }
-                try {
-                    if (result != null) {
-                        JSONArray jArray = new JSONArray(result);
-                        System.err.println("Update===" + result);
-                        System.out.println("===  " + jArray.length());
-                        JSONObject json_data = null;
-                        //isvalid=""+jArray.length();
-                        downok = "" + jArray.length();
-                        System.out.print("insert ord ============" + downok);
-                        if (jArray.length() > 0) {
-                            json_data = jArray.getJSONObject(0);
-                            if (json_data.getString("NoData").equals("NoData")) {
-                                downnodata = "NoData";
-                                System.out.print("Insert No=======");
-                                downcheck = downcheck + 1;
-                            } else {
-                                System.out.print("Insert Yes=======");
-
-                                downcheck = 0;
-                                downnodata = "YesData";
-                                for (int i = 0; i < jArray.length(); i++) {
-                                    System.out.print("Insert for=======");
-                                    json_data = jArray.getJSONObject(i);
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("id", json_data.getString("id"));
-                                    cv.put("gameid", json_data.getString("gameid"));
-                                    cv.put("levelid", json_data.getString("levelid"));
-                                    cv.put("letters", json_data.getString("letters"));
-
-                                    String newName = json_data.getString("answer").replaceAll(" ", "");
-
-                                    cv.put("answer", newName);
-                                    cv.put("hints", json_data.getString("hints"));
-                                    cv.put("imagename", json_data.getString("imagename"));
-                                    cv.put("isfinish", "0");
-
-                                    if (daily.equals("ord")) {
-                                        cv.put("isdownload", "1");
-                                        myDbHelper.insert_data("maintable", null, cv);
-
-                                    } else {
-
-                                        cv.put("date", json_data.getString("date"));
-                                        myDbHelper.insert_data("dailytest", null, cv);
-
-                                    }
-
-                                    if (i == (jArray.length() - 1)) {
-                                        if (exists("https://nithra.mobi/solliadi/" + sps.getString(New_Main_Gamelist.this, "email") + "-filename.zip")) {
-                                            checkmemory();
-                                        } else {
-                                            System.out.print("ord image no============");
-                                        }
-                                    }
-
-
-                                }
-                            }
-                        }
-                    }
-
-                } catch (JSONException e1) {
-                } catch (android.net.ParseException e1) {
-                }
-
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                Cursor c1 = myDbHelper.getQry("select id from dailytest order by id DESC");
-                c1.moveToFirst();
-                System.out.print("Count====" + c1.getCount());
-                if (c1.getCount() != 0) {
-                    //c1.getString(c1.getColumnIndexOrThrow("id"));
-                    System.out.print("Last ID===ord=" + c1.getString(c1.getColumnIndexOrThrow("id")));
-                    downloadcheck1("" + c1.getString(c1.getColumnIndexOrThrow("id")), "daily");
-                } else {
-                    System.out.print("else====");
-                    downloadcheck1("0", "daily");
-                }
-            }
-        }.execute();
-    }*/
 
     public void checkmemory() {
         String url = "";
@@ -1145,7 +1012,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
 
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("filename", sps.getString(New_Main_Gamelist.this, "email") + "-filename.zip");
-        Call<List<HashMap<String, String>>> call = api.getnew_main_gameList_deletezipnewdata(map);
+        Call<List<HashMap<String, String>>> call = api.getdeletezipdata(map);
 
         call.enqueue(new Callback<List<HashMap<String, String>>>() {
             @Override
@@ -1162,6 +1029,8 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
 
             @Override
             public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
+                System.out.print("Result onFailure ======= " + t);
+                System.out.print("Result onFailure1 ======= " + call);
                 // Handle network failures
             }
         });
@@ -1169,60 +1038,6 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
 
     }
 
-/*    public void deletezipnew() {
-
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-
-                String result = null;
-
-                InputStream is = null;
-                StringBuilder sb = null;
-
-                ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-
-                nameValuePairs.add(new BasicNameValuePair("filename", sps.getString(New_Main_Gamelist.this, "email") + "-filename.zip"));
-                //nameValuePairs.add(new BasicNameValuePair("type", "a2z"));
-                try {
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost("https://nithra.mobi/solliadi/solliadi1.php");
-                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                    HttpResponse response = httpclient.execute(httppost);
-                    HttpEntity entity = response.getEntity();
-                    is = entity.getContent();
-                } catch (Exception e) {
-                    Log.e("log_tag", "Error in https connection" + e.toString());
-                }
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
-                    sb = new StringBuilder();
-                    sb.append(reader.readLine() + "\n");
-                    String line = "0";
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
-                    is.close();
-                    result = sb.toString();
-
-                    System.out.print("Result============123" + result);
-
-                } catch (Exception e) {
-                }
-
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-
-            }
-
-        }.execute();
-
-    }*/
 
     public void unpackZip(String ZIP_FILE_NAME) {
         InputStream is;
@@ -1273,7 +1088,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
         map.put("mode", daily);
         map.put("email",sps.getString(New_Main_Gamelist.this, "email"));
 
-        Call<List<HashMap<String,String>>> call = api.getnew_main_gameList_downloadcheck1data(map);
+        Call<List<HashMap<String,String>>> call = api.getdownloadcheckdata(map);
 
         call.enqueue(new Callback<List<HashMap<String,String>>>() {
             @Override
@@ -1350,6 +1165,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
 
                 } else {
 
+                    System.out.print("The Responce go to Else Part============");
                 }
 
                 Utils.mProgress.dismiss();
@@ -1377,142 +1193,14 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
 
             @Override
             public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
+                System.out.print("The Responce onFailure ============"+t);
+                System.out.print("The Responce onFailure1 ============"+call);
                 // Handle network failures
             }
         });
 
 
     }
-
-   /* public void downloadcheck1new(final String lastid, final String daily) {
-        new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                String result = null;
-                InputStream is = null;
-                StringBuilder sb = null;
-                ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-                nameValuePairs.add(new BasicNameValuePair("lastid", lastid));
-                nameValuePairs.add(new BasicNameValuePair("mode", "daily"));
-                //   nameValuePairs.add(new BasicNameValuePair("date", ""));
-                nameValuePairs.add(new BasicNameValuePair("email", sps.getString(New_Main_Gamelist.this, "email")));
-                //nameValuePairs.add(new BasicNameValuePair("type", "a2z"));
-                try {
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost("https://nithra.mobi/solliadi/solliadi.php");
-                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                    HttpResponse response = httpclient.execute(httppost);
-                    HttpEntity entity = response.getEntity();
-                    is = entity.getContent();
-                } catch (Exception e) {
-                    Log.e("log_tag", "Error in https connection" + e.toString());
-                }
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
-                    sb = new StringBuilder();
-                    sb.append(reader.readLine() + "\n");
-                    String line = "0";
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
-                    is.close();
-                    result = sb.toString();
-                    System.out.print("daily Result============" + result);
-                } catch (Exception e) {
-                }
-                try {
-                    if (result != null) {
-                        JSONArray jArray = new JSONArray(result);
-                        System.err.println("Update===" + result);
-                        System.out.println("===  " + jArray.length());
-                        JSONObject json_data = null;
-                        //isvalid=""+jArray.length();
-                        downok = "" + jArray.length();
-                        System.out.print("insert daily ============" + downok);
-                        if (jArray.length() > 0) {
-                            json_data = jArray.getJSONObject(0);
-                            if (json_data.getString("NoData").equals("NoData")) {
-                                downnodata = "NoData";
-                                System.out.print("Insert Daily NO=======");
-                                downcheck = downcheck + 1;
-                            } else {
-                                downcheck = 0;
-                                downnodata = "YesData";
-                                System.out.print("Insert Daily Yes=======");
-                                for (int i = 0; i < jArray.length(); i++) {
-                                    System.out.print("Insert Daily For=======");
-                                    json_data = jArray.getJSONObject(i);
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("id", json_data.getString("id"));
-                                    cv.put("gameid", json_data.getString("gameid"));
-                                    cv.put("levelid", json_data.getString("levelid"));
-                                    cv.put("letters", json_data.getString("letters"));
-                                    String newName = json_data.getString("answer").replaceAll(" ", "");
-                                    cv.put("answer", newName);
-                                    cv.put("hints", json_data.getString("hints"));
-                                    cv.put("imagename", json_data.getString("imagename"));
-                                    cv.put("isfinish", "0");
-                                    if (daily.equals("ord")) {
-                                        cv.put("isdownload", "1");
-                                        myDbHelper.insert_data("maintable", null, cv);
-                                    } else {
-                                        cv.put("date", json_data.getString("date"));
-                                        myDbHelper.insert_data("dailytest", null, cv);
-                                    }
-                                    if (i == (jArray.length() - 1)) {
-                                        if (exists("https://nithra.mobi/solliadi/" + sps.getString(New_Main_Gamelist.this, "email") + "-filename.zip")) {
-                                            checkmemory();
-                                        } else {
-                                            System.out.print("daily image no============");
-                                        }
-                                    }
-
-                                }
-                            }
-                        }
-                    } else {
-                        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%null null");
-                    }
-
-                } catch (JSONException e1) {
-                    e1.printStackTrace();
-                } catch (android.net.ParseException e1) {
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-
-                Utils.mProgress.dismiss();
-                if (downcheck == 2) {
-                    new AlertDialog.Builder(New_Main_Gamelist.this)
-                            *//*.setTitle("Delete entry")*//*.setMessage("பதிவுகள் ஏதும் இல்லை .பிறகு முயற்சிக்கவும் ").setPositiveButton("சரி", (dialog, which) -> {
-
-                    }).setIcon(android.R.drawable.ic_dialog_alert).show();
-
-                    downcheck = 0;
-
-                } else {
-
-                    new AlertDialog.Builder(New_Main_Gamelist.this)
-                            *//*.setTitle("Delete entry")*//*.setMessage("புதிய பதிவுகள் ஏற்றப்பட்டது. விளையாடி மகிழவும்.   ").setPositiveButton("சரி", (dialog, which) -> {
-
-                    }).setIcon(android.R.drawable.ic_dialog_alert).show();
-                    downcheck = 0;
-                    downok = "";
-                    downnodata = "";
-
-
-                }
-
-
-            }
-        }.execute();
-    }*/
 
     public void intro() {
         final Dialog openDialog = new Dialog(New_Main_Gamelist.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -1581,48 +1269,6 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
         });
 
     }
-
-/*
-    public void naive_banner(final LinearLayout layout) {
-        final NativeBannerAd mNativeBannerAd = new NativeBannerAd(this, "1746769098928603_2532949333643905");
-        // Initiate a request to load an ad.
-        mNativeBannerAd.setAdListener(new NativeAdListener() {
-            @Override
-            public void onMediaDownloaded(Ad ad) {
-
-            }
-
-            @Override
-            public void onError(Ad ad, AdError adError) {
-                System.out.println("###########################ADS ONERROR" + adError.getErrorCode());
-            }
-
-            @Override
-            public void onAdLoaded(Ad ad) {
-                System.out.println("###########################ADS LODED");
-              */
-/*
-
-
-                // Render the Native Banner Ad Template
-                View adView = NativeBannerAdView.render(New_Main_Gamelist.this, mNativeBannerAd, NativeBannerAdView.Type.HEIGHT_120);
-                // Add the Native Banner Ad View to your ad container
-                layout.addView(adView);
-            }
-
-            @Override
-            public void onAdClicked(Ad ad) {
-
-            }
-
-            @Override
-            public void onLoggingImpression(Ad ad) {
-
-            }
-        });
-        mNativeBannerAd.loadAd();
-    }
-*/
 
     class DownloadFileAsync extends AsyncTask<String, String, String> {
 
