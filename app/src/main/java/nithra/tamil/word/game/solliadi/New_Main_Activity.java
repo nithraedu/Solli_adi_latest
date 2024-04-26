@@ -2386,15 +2386,15 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             if (editText1.getText().toString().trim().length() == 0)
                 Utils.toast_center(New_Main_Activity.this, "உங்களது கருத்துக்களை பதிவு செய்யவும். ");
             else if (isNetworkAvailable(New_Main_Activity.this)) {
-                int varsion=0;
+                int varsion = 0;
                 try {
                     PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
-                    varsion=pInfo.versionCode;
+                    varsion = pInfo.versionCode;
 
                 } catch (PackageManager.NameNotFoundException e) {
                     throw new RuntimeException(e);
                 }
-                Utills.INSTANCE.sendFeed(New_Main_Activity.this, name.getText().toString(),varsion, emails.getText().toString(), ph_no.getText().toString(), editText1.getText().toString());
+                Utills.INSTANCE.sendFeed(New_Main_Activity.this, name.getText().toString(), varsion, emails.getText().toString(), ph_no.getText().toString(), editText1.getText().toString());
 
                 imm.hideSoftInputFromWindow(editText1.getWindowToken(), 0);
                 imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
@@ -2575,15 +2575,15 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             if (txtFeedBack.getText().toString().trim().length() == 0)
                 Utils.toast_center(New_Main_Activity.this, "உங்களது கருத்துக்களை பதிவு செய்யவும். ");
             else if (isNetworkAvailable(New_Main_Activity.this)) {
-                int varsion=0;
+                int varsion = 0;
                 try {
                     PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
-                    varsion=pInfo.versionCode;
+                    varsion = pInfo.versionCode;
 
                 } catch (PackageManager.NameNotFoundException e) {
                     throw new RuntimeException(e);
                 }
-                Utills.INSTANCE.sendFeed(New_Main_Activity.this, name.getText().toString(),varsion, emails.getText().toString(), ph_no.getText().toString(), txtFeedBack.getText().toString());
+                Utills.INSTANCE.sendFeed(New_Main_Activity.this, name.getText().toString(), varsion, emails.getText().toString(), ph_no.getText().toString(), txtFeedBack.getText().toString());
                 imm.hideSoftInputFromWindow(txtFeedBack.getWindowToken(), 0);
                 imm.hideSoftInputFromWindow(emails.getWindowToken(), 0);
                 rating_dialog.dismiss();
@@ -3230,8 +3230,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
             @Override
             public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
-                System.out.println("gamestatus onFailure ======= :"+call);
-                System.out.println("gamestatus onFailure ======= :"+t);
+                System.out.println("gamestatus onFailure ======= :" + call);
+                System.out.println("gamestatus onFailure ======= :" + t);
 
                 // Handle network failures
             }
@@ -3239,6 +3239,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
 
     }
+
     public void dialog() {
         final Dialog openDialog = new Dialog(New_Main_Activity.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.earncoin);
@@ -4841,6 +4842,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         //initialized the admanager ads id
         if (!sp.getString(this, "Date_AD").equals(dates) || sp.getString(this, "Date_AD") == "") {
             if (isNetworkAvailable(this)) {
+                System.out.println("enter setAdKey");
                 setAdKey();
             } else {
                 noDataAdded();
@@ -4928,7 +4930,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     private void rewarded_adnew() {
 
-        System.out.println("the values for reward_status ====== : "+reward_status);
+        System.out.println("the values for reward_status ====== : " + reward_status);
 
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
 
@@ -4946,7 +4948,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
-                        reward_status=0;
+                        reward_status = 0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
@@ -4984,7 +4986,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                                 // Called when ad fails to show.
                                 Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                 rewardedAd = null;
-                                reward_status=0;
+                                reward_status = 0;
                             }
 
                             @Override
@@ -5192,8 +5194,10 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         final Handler handler = new Handler(Looper.myLooper()) {
             public void handleMessage(Message msg) {
                 if (strnew[0] != null && !strnew[0].isEmpty()) {
+                    System.out.println("enter setAdKey1");
                     JSONObject jsonObject = null;
                     try {
+                        System.out.println("enter setAdKey2");
                         jsonObject = new JSONObject(strnew[0]);
 
                         System.out.println("response For Ad Key  new: " + jsonObject.getString("Banner"));
@@ -5204,8 +5208,14 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                         sp.putString(context, "RewardedId", jsonObject.getString("Rewarded").toString());
                         sp.putString(context, "showCountNoti", jsonObject.getString("showCountNoti").toString());
                         //sp.putString(context, "showCountOther", jsonObject.getString("showCountOther").toString()-1);
-                        int showCountOther = Integer.parseInt(jsonObject.getString("showCountOther")) - 1;
+                       /* int showCountOther = Integer.parseInt(jsonObject.getString("showCountOther")) - 1;
+                        sp.putString(context, "showCountOther", String.valueOf(showCountOther));*/
+                        int showCountOther = 0;
+                        if (!jsonObject.getString("showCountOther").isEmpty()) {
+                            showCountOther = Integer.parseInt(jsonObject.getString("showCountOther")) - 1;
+                        }
                         sp.putString(context, "showCountOther", String.valueOf(showCountOther));
+
                         sp.putString(context, "Date_AD", dates);
                         System.out.println("get Data  new: " + sp.getString(context, "Date_AD") + " showCountNoti : " + sp.getString(context, "showCountNoti") + " showCountOther : " + sp.getString(context, "showCountOther") + "InterstitialId : " + sp.getString(context, "InterstitialId"));
                     } catch (JSONException e) {
@@ -5214,6 +5224,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                         // throw new RuntimeException(e);
                     }
                 } else {
+
                     // Handle the case where result is null or empty
                     noDataAdded();
                     Log.e("error", "Result string is null or empty");

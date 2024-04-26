@@ -121,7 +121,14 @@ class CustomKeyboard {
                     System.out.println("######################TYPE 3");
                     if (chr != 1) {
                         edittext.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
-                        edittext.getEditableText().insert(start - 1, word_return(primaryCode));
+                        if (start > 0) {
+                            editable.insert(start - 1, word_return(primaryCode));
+                        } else {
+                            // Handle the case when start is 0
+                            editable.insert(start, word_return(primaryCode));
+                        }
+
+                       // edittext.getEditableText().insert(start - 1, word_return(primaryCode));
                         vall = 1;
                         num_channge1();
                     }

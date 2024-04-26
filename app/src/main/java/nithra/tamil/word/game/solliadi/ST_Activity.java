@@ -85,6 +85,7 @@ public class ST_Activity extends AppCompatActivity {
                     } else finish();
                 }
             else {
+                System.out.println("hnrdfd "+sharedPreference.getString(getApplicationContext(), "showCountNoti"));
                 sharedPreference.putInt(getApplicationContext(), "Noti_Content_Close", (sharedPreference.getInt(getApplicationContext(), "Noti_Content_Close") + 1));
               /*  if (sharedPreference.getInt(context, "Noti_Content_Close") > *//*Utills.notiInterstitialadCount*//*  Integer.parseInt( sharedPreference.getString(getApplicationContext(), "showCountNoti")))
                     sharedPreference.putInt(context, "Noti_Content_Close", 1);*/
@@ -133,8 +134,20 @@ public class ST_Activity extends AppCompatActivity {
 
 
         if (sharedPreference.getInt(this, "purchase_ads") == 0) {
+            String showCountNotiString = sharedPreference.getString(getApplicationContext(), "showCountNoti");
+            System.out.println("tjnhhjs "+showCountNotiString);
+            int showCountNotiValue = 0; // Default value if parsing fails
+            if (showCountNotiString != null && !showCountNotiString.isEmpty()) {
+                try {
+                    showCountNotiValue = Integer.parseInt(showCountNotiString);
+                } catch (NumberFormatException e) {
+                    // Handle the case where the string cannot be parsed as an integer
+                    e.printStackTrace(); // Or log the error
+                }
+            }
            // Utills.INSTANCE.initializeAdzz(this);
-            if (sharedPreference.getInt(context, "Noti_Content_Close") == 0 || sharedPreference.getInt(context, "Noti_Content_Close") == /*Utills.notiInterstitialadCount*/   Integer.parseInt( sharedPreference.getString(getApplicationContext(), "showCountNoti")))
+            //if (sharedPreference.getInt(context, "Noti_Content_Close") == 0 || sharedPreference.getInt(context, "Noti_Content_Close") == /*Utills.notiInterstitialadCount*/   Integer.parseInt( sharedPreference.getString(getApplicationContext(), "showCountNoti")))
+            if (sharedPreference.getInt(context, "Noti_Content_Close") == 0 || sharedPreference.getInt(context, "Noti_Content_Close") == showCountNotiValue)
                 //industrialload();
                 if (!sharedPreference.getString(this, "InterstitialId").equals("")|| sharedPreference.getString(this, "InterstitialId") != null) {
                     industrialload();
@@ -158,7 +171,8 @@ public class ST_Activity extends AppCompatActivity {
             if (!Utills.INSTANCE.isNetworkAvailable(this)) {
                 banner_adParent.setVisibility(View.GONE);
             }
-        } else banner_adParent.setVisibility(View.GONE);
+        }
+        else banner_adParent.setVisibility(View.GONE);
         Bundle extras;
         extras = getIntent().getExtras();
         idd = extras.getInt("idd");
@@ -314,42 +328,56 @@ public class ST_Activity extends AppCompatActivity {
     }
 
     public void adShow() {
-        if (interstitialAd != null) {
-            if (sharedPreference.getInt(context, "Noti_Content_Close") == 0)
+
+        System.out.println(" result "+ sharedPreference.getString(this, "showCountNoti"));
+        if (!sharedPreference.getString(getApplicationContext(), "showCountNoti").isEmpty()) {
+            if (interstitialAd != null) {
+                if (sharedPreference.getInt(context, "Noti_Content_Close") == 0)
+                    sharedPreference.putInt(getApplicationContext(), "Noti_Content_Close", (sharedPreference.getInt(getApplicationContext(), "Noti_Content_Close") + 1));
+                else
+                    sharedPreference.putInt(getApplicationContext(), "Noti_Content_Close", 1);
+                Utills.INSTANCE.Loading_Dialog(this);
+                handler = new Handler(Looper.myLooper());
+                my_runnable = () -> {
+                    if (interstitialAd == null) if (show_ads == 1) {
+                        finish();
+                        Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else finish();
+                    else
+                        interstitialAd.show(this);
+                };
+                handler.postDelayed(my_runnable, 2500);
+            }
+            else {
                 sharedPreference.putInt(getApplicationContext(), "Noti_Content_Close", (sharedPreference.getInt(getApplicationContext(), "Noti_Content_Close") + 1));
-            else
-                sharedPreference.putInt(getApplicationContext(), "Noti_Content_Close", 1);
-            Utills.INSTANCE.Loading_Dialog(this);
-            handler = new Handler(Looper.myLooper());
-            my_runnable = () -> {
-                if (interstitialAd == null) if (show_ads == 1) {
+                /*if (sharedPreference.getInt(context, "Noti_Content_Close") > *//*Utills.notiInterstitialadCount*//*  Integer.parseInt( sharedPreference.getString(getApplicationContext(), "showCountNoti")))
+                sharedPreference.putInt(context, "Noti_Content_Close", 1);*/
+
+                if (!sharedPreference.getString(getApplicationContext(), "showCountNoti").isEmpty()) {
+                    int showCountNoti = Integer.parseInt(sharedPreference.getString(getApplicationContext(), "showCountNoti"));
+                    if (sharedPreference.getInt(context, "Noti_Content_Close") > showCountNoti)
+                        sharedPreference.putInt(context, "Noti_Content_Close", 1);
+                }
+
+
+                //Toast.makeText(this, "" + sharedPreference.getInt(this, "Noti_Content_Close"), Toast.LENGTH_SHORT).show();
+                if (show_ads == 1) {
                     finish();
                     Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
                     startActivity(i);
                 } else finish();
-                else
-                    interstitialAd.show(this);
-            };
-            handler.postDelayed(my_runnable, 2500);
-        } else {
-            sharedPreference.putInt(getApplicationContext(), "Noti_Content_Close", (sharedPreference.getInt(getApplicationContext(), "Noti_Content_Close") + 1));
-            /*if (sharedPreference.getInt(context, "Noti_Content_Close") > *//*Utills.notiInterstitialadCount*//*  Integer.parseInt( sharedPreference.getString(getApplicationContext(), "showCountNoti")))
-                sharedPreference.putInt(context, "Noti_Content_Close", 1);*/
-
-            if (!sharedPreference.getString(getApplicationContext(), "showCountNoti").isEmpty()) {
-                int showCountNoti = Integer.parseInt(sharedPreference.getString(getApplicationContext(), "showCountNoti"));
-                if (sharedPreference.getInt(context, "Noti_Content_Close") > showCountNoti)
-                    sharedPreference.putInt(context, "Noti_Content_Close", 1);
             }
-
-
-            //Toast.makeText(this, "" + sharedPreference.getInt(this, "Noti_Content_Close"), Toast.LENGTH_SHORT).show();
+        }else{
+                       //Toast.makeText(this, "" + sharedPreference.getInt(this, "Noti_Content_Close"), Toast.LENGTH_SHORT).show();
             if (show_ads == 1) {
                 finish();
                 Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
                 startActivity(i);
             } else finish();
         }
+
+
 
     }
 

@@ -5,6 +5,7 @@ import static nithra.tamil.word.game.solliadi.Utils.isNetworkAvailable;
 import static nithra.tamil.word.game.solliadi.Word_Game_Hard.TAG;
 
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -236,7 +237,9 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                         counton_timer.setText("வெற்றி பெற்றுவிட்டீர் !");
                     } else {
                         game_finish = "winning_report";
-                        adShow();
+                        if (isAdded() && getActivity() != null) {
+                            adShow();
+                        }
                     }
 
 
@@ -979,9 +982,15 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                     fb_reward = 0;
                     rewarded_adnew();
                     new Handler(Looper.myLooper()).postDelayed(() -> {
-                        reward_progressBar.dismiss();
+                       /* reward_progressBar.dismiss();
 
-                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();*/
+
+                        // Check if the context is still valid
+                        if (context instanceof Activity && !((Activity) context).isFinishing()) {
+                            reward_progressBar.dismiss();
+                            Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
 
                     }, 2000);
 
@@ -2119,8 +2128,8 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
     }
 
-    public void adShow() {
-        if (sp.getInt(context, "Game3_Stage_Close_ST") == /*Utills.interstitialadCount*/ Integer.parseInt( sp.getString(requireContext(), "showCountOther")) && interstitialAd != null) {
+  /*  public void adShow() {
+        if (sp.getInt(context, "Game3_Stage_Close_ST") == *//*Utills.interstitialadCount*//* Integer.parseInt( sp.getString(requireContext(), "showCountOther")) && interstitialAd != null) {
             sp.putInt(context, "Game3_Stage_Close_ST", 0);
             Utills.INSTANCE.Loading_Dialog(requireActivity());
             handler = new Handler(Looper.myLooper());
@@ -2132,16 +2141,66 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             handler.postDelayed(my_runnable, 2500);
         } else {
             sp.putInt(context, "Game3_Stage_Close_ST", (sp.getInt(context, "Game3_Stage_Close_ST") + 1));
-            if (sp.getInt(context, "Game3_Stage_Close_ST") > /*Utills.interstitialadCount*/ Integer.parseInt( sp.getString(requireContext(), "showCountOther")))
+            if (sp.getInt(context, "Game3_Stage_Close_ST") > *//*Utills.interstitialadCount*//* Integer.parseInt( sp.getString(requireContext(), "showCountOther")))
                 sp.putInt(context, "Game3_Stage_Close_ST", 0);
             winning_report(context, "time_up");
             //Toast.makeText(context, "" + sp.getInt(context, "Game3_Stage_Close_ST"), Toast.LENGTH_SHORT).show();
 
         }
 
+    }*/
+
+    private int safeParseInt(Context context, String key, int defaultValue) {
+        String value = sp.getString(context, key);
+        if (value != null && !value.isEmpty()) {
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                return defaultValue; // Return default value if parsing fails
+            }
+        }
+        return defaultValue; // Return default if the input is null or empty
     }
 
-  private void rewarded_adnew() {
+    public void adShow() {
+        int showCountOther = safeParseInt(requireContext(), "showCountOther", 0);
+        int currentStageCloseST = sp.getInt(context, "Game3_Stage_Close_ST");
+
+        if (!sp.getString(requireContext(), "showCountOther").equals("0")) {
+            if (currentStageCloseST == showCountOther && interstitialAd != null) {
+                sp.putInt(context, "Game3_Stage_Close_ST", 0);
+                Utills.INSTANCE.Loading_Dialog(requireActivity());
+                Handler handler = new Handler(Looper.myLooper());
+                Runnable my_runnable = () -> {
+                    if (interstitialAd == null) {
+                        winning_report(context, "time_up");
+                    } else {
+                        interstitialAd.show(requireActivity());
+                    }
+                };
+                handler.postDelayed(my_runnable, 2500);
+            } else {
+                currentStageCloseST++;
+                sp.putInt(context, "Game3_Stage_Close_ST", currentStageCloseST);
+                if (currentStageCloseST > showCountOther) {
+                    sp.putInt(context, "Game3_Stage_Close_ST", 0);
+                }
+                winning_report(context, "time_up");
+                // Toast.makeText(context, "" + sp.getInt(context, "Game3_Stage_Close_ST"), Toast.LENGTH_SHORT).show();
+            }
+        }else{
+            currentStageCloseST++;
+            sp.putInt(context, "Game3_Stage_Close_ST", currentStageCloseST);
+            if (currentStageCloseST > showCountOther) {
+                sp.putInt(context, "Game3_Stage_Close_ST", 0);
+            }
+            winning_report(context, "time_up");
+        }
+
+    }
+
+
+    private void rewarded_adnew() {
 
       AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
 

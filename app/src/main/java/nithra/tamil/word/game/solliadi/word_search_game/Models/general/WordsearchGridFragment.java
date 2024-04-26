@@ -57,6 +57,7 @@ import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -706,7 +707,7 @@ private AdManagerInterstitialAd interstitialAd ;
 
                 System.out.println("----fff tinyDB==found.size() " + tinyDB.getListObject("found" + level_category + level_id, Word.class).size());
 
-                if (tinyDB.getListObject("found" + level_category + level_id, Word.class).size() != 0) {
+              /*  if (tinyDB.getListObject("found" + level_category + level_id, Word.class).size() != 0) {
                     {
                         List<Word> words = tinyDB.getListObject("found" + level_category + level_id, Word.class);
                         mFoundWords = new HashSet<Word>(words);
@@ -719,7 +720,26 @@ private AdManagerInterstitialAd interstitialAd ;
                         tinyDB.putListObject("found" + level_category + level_id, new ArrayList<>(mFoundWords));
                         System.out.println("----fff mFoundWords_alter.size() " + mFoundWords_alter.size());
                     }
+                }*/
+
+                try {
+                    if (tinyDB.getListObject("found" + level_category + level_id, Word.class).size() != 0) {
+                        List<Word> words = tinyDB.getListObject("found" + level_category + level_id, Word.class);
+                        mFoundWords = new HashSet<>(words);
+                        tinyDB.putListObject("mFoundWords_alter", new ArrayList<>(mFoundWords));
+
+                        List<Word> alter_words = tinyDB.getListObject("mFoundWords_alter", Word.class);
+                        mFoundWords_alter = new HashSet<>(alter_words);
+
+                        mFoundWords.clear();
+                        tinyDB.putListObject("found" + level_category + level_id, new ArrayList<>(mFoundWords));
+                        System.out.println("----fff mFoundWords_alter.size() " + mFoundWords_alter.size());
+                    }
+                } catch (JsonSyntaxException e) {
+                    // Handle the JSON syntax exception
+                    e.printStackTrace(); // or log the error message
                 }
+
             }
         }
 

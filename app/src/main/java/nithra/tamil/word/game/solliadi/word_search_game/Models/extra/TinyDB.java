@@ -289,7 +289,14 @@ public class TinyDB {
 
         for (String jObjString : objStrings) {
             Object value = gson.fromJson(jObjString, mClass);
-            objects.add((Word) value);
+           // objects.add((Word) value);
+            if (value instanceof Word) {
+                objects.add((Word) value);
+            } else {
+                System.out.println("you could log an error message or skip adding the object");
+                // Handle the case where the value is not a Word instance
+                // For example, you could log an error message or skip adding the object
+            }
         }
         return objects;
     }
@@ -428,7 +435,7 @@ public class TinyDB {
     /**
      * null keys would corrupt the shared pref file and make them unreadable this is a preventive measure
      *
-     * @param the pref key
+     * @paramthe pref key
      */
     public void checkForNullKey(String key) {
         if (key == null) {
@@ -439,7 +446,7 @@ public class TinyDB {
     /**
      * null keys would corrupt the shared pref file and make them unreadable this is a preventive measure
      *
-     * @param the pref key
+     * @paramthe pref key
      */
     public void checkForNullValue(String value) {
         if (value == null) {

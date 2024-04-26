@@ -79,9 +79,11 @@ import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -109,6 +111,7 @@ import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
 import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
@@ -175,7 +178,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
     //MediaPlayer r1, play1;
     TextView p_coin;
     int e2;
-    LinearLayout adds, adsLay1,list4;
+    LinearLayout adds, adsLay1, list4;
     TouchImageView pic_show;
     int im11, im12, im13, im14;
     int r = 0;
@@ -384,7 +387,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 );
                 adsLay1.setVisibility(View.GONE);
             }
-        }else adsLay1.setVisibility(View.GONE);
+        } else adsLay1.setVisibility(View.GONE);
 
         //  Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
 
@@ -4549,7 +4552,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
     }
 
-    public void downloadcheck(final String lastid, final String daily){
+    public void downloadcheck(final String lastid, final String daily) {
         w_head.setVisibility(View.INVISIBLE);
         Utils.mProgress(Picture_Game_Hard.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", true).show();
         Utils.mProgress.setCancelable(false);
@@ -4557,23 +4560,23 @@ public class Picture_Game_Hard extends AppCompatActivity {
         RetofitClient retrofit = new RetofitClient();
         Retrofitstart api = retrofit.RetrofitExample().create(Retrofitstart.class);
 
-        HashMap<String,String> map = new  HashMap<String,String>();
-        map.put("lastid",lastid);
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("lastid", lastid);
         if (daily.equals("ord")) {
             map.put("mode", "regular");
-           // nameValuePairs.add(new BasicNameValuePair("mode", "regular"));
+            // nameValuePairs.add(new BasicNameValuePair("mode", "regular"));
         } else {
             map.put("mode", "daily");
-           // nameValuePairs.add(new BasicNameValuePair("mode", "daily"));
+            // nameValuePairs.add(new BasicNameValuePair("mode", "daily"));
         }
 
-        map.put("email",email);
+        map.put("email", email);
 
-        Call<List<HashMap<String,String>>> call = api.getdownloadcheckdata(map);
+        Call<List<HashMap<String, String>>> call = api.getdownloadcheckdata(map);
 
-        call.enqueue(new Callback<List<HashMap<String,String>>>() {
+        call.enqueue(new Callback<List<HashMap<String, String>>>() {
             @Override
-            public void onResponse(Call<List<HashMap<String,String>>> call, Response<List<HashMap<String,String>>> response) {
+            public void onResponse(Call<List<HashMap<String, String>>> call, Response<List<HashMap<String, String>>> response) {
                 if (response.isSuccessful()) {
                     /*String date = sps.getString(New_Main_Activity.this, "date");
                     BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -4581,8 +4584,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     String line = "";
                     while ((line = rd.readLine()) != null) Log.e("HttpResponse", line);*/
 
-                    Gson gson= new Gson();
-                    String result =gson.toJson(response.body());
+                    Gson gson = new Gson();
+                    String result = gson.toJson(response.body());
 
                     System.out.print("Result============123" + result);
 
@@ -4636,7 +4639,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                         }
 
                     } catch (JSONException e1) {
-                        System.out.print("Result JSONException ========== " + e1 );
+                        System.out.print("Result JSONException ========== " + e1);
 
                     }
 
@@ -4653,8 +4656,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
                     w_head.setVisibility(View.INVISIBLE);
                     nextgamesdialog();
-                }
-                else {
+                } else {
                     downok = "";
                     downnodata = "";
                     System.out.print("========###" + email);
@@ -4696,9 +4698,9 @@ public class Picture_Game_Hard extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
-                System.out.print("Result onFailure ========== " +  call);
-                System.out.print("Result onFailure1 ========== " +  t);
+            public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " + call);
+                System.out.print("Result onFailure1 ========== " + t);
                 // Handle network failures
             }
         });
@@ -4946,14 +4948,14 @@ public class Picture_Game_Hard extends AppCompatActivity {
         RetofitClient retrofit = new RetofitClient();
         Retrofitstart api = retrofit.RetrofitExample().create(Retrofitstart.class);
 
-        HashMap<String,String> map = new  HashMap<String,String>();
+        HashMap<String, String> map = new HashMap<String, String>();
         map.put("filename", email + "-filename.zip");
 
-        Call<List<HashMap<String,String>>> call = api.getdeletezipdata(map);
+        Call<List<HashMap<String, String>>> call = api.getdeletezipdata(map);
 
-        call.enqueue(new Callback<List<HashMap<String,String>>>() {
+        call.enqueue(new Callback<List<HashMap<String, String>>>() {
             @Override
-            public void onResponse(Call<List<HashMap<String,String>>> call, Response<List<HashMap<String,String>>> response) {
+            public void onResponse(Call<List<HashMap<String, String>>> call, Response<List<HashMap<String, String>>> response) {
                 if (response.isSuccessful()) {
                     /*String date = sps.getString(New_Main_Activity.this, "date");
                     BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -4961,8 +4963,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     String line = "";
                     while ((line = rd.readLine()) != null) Log.e("HttpResponse", line);*/
 
-                    Gson gson= new Gson();
-                    String result =gson.toJson(response.body());
+                    Gson gson = new Gson();
+                    String result = gson.toJson(response.body());
 
                     System.out.print("Result============123" + result);
                 } else {
@@ -4972,9 +4974,9 @@ public class Picture_Game_Hard extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
-                System.out.print("Result onFailure ========== " +  call);
-                System.out.print("Result onFailure1 ========== " +  t);
+            public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " + call);
+                System.out.print("Result onFailure1 ========== " + t);
                 // Handle network failures
             }
         });
@@ -5243,8 +5245,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
     }
 
 
-    public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") ==/* Utills.interstitialadCount*/ Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
+    /*   public void adShow() {
+           if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") ==*//* Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
@@ -5257,13 +5259,59 @@ public class Picture_Game_Hard extends AppCompatActivity {
             handler.postDelayed(my_runnable, 2500);
         } else {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
-            if (sps.getInt(this, "Game1_Stage_Close_VV") >/* Utills.interstitialadCount*/ Integer.parseInt( sps.getString(this, "showCountOther")))
+            if (sps.getInt(this, "Game1_Stage_Close_VV") >*//* Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
                 sps.putInt(this, "Game1_Stage_Close_VV", 0);
             setSc();
             //Toast.makeText(this, ""+sps.getInt(this, "Game1_Stage_Close_VV"), Toast.LENGTH_SHORT).show();
         }
 
+    }*/
+    public void adShow() {
+        String showCountOther = sps.getString(this, "showCountOther");
+        System.out.println("showCountOther : " + showCountOther);
+        int showCount;
+
+        try {
+            showCount = Integer.parseInt(showCountOther);
+        } catch (NumberFormatException e) {
+            // Log the error or handle it as appropriate
+            showCount = 0; // Set default or fallback value
+        }
+
+
+        if (!sps.getString(this, "showCountOther").equals("0")) {
+            System.out.println("zero not ");
+            if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") == showCount && interstitialAd != null) {
+                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                Utills.INSTANCE.Loading_Dialog(this);
+                Handler handler = new Handler(Looper.myLooper());
+                Runnable my_runnable = () -> {
+                    if (interstitialAd == null) {
+                        setSc();
+                    } else {
+                        interstitialAd.show(Picture_Game_Hard.this);
+                    }
+                };
+                handler.postDelayed(my_runnable, 2500);
+            } else {
+                int currentCount = sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1;
+                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", currentCount);
+                if (currentCount > showCount) {
+                    sps.putInt(this, "Game1_Stage_Close_VV", 0);
+                }
+                setSc();
+            }
+
+        } else {
+            int currentCount = sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1;
+            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", currentCount);
+            if (currentCount > showCount) {
+                sps.putInt(this, "Game1_Stage_Close_VV", 0);
+            }
+            setSc();
+        }
     }
+
 
     @Override
     public void onDestroy() {
@@ -5699,31 +5747,31 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
     }
 
-    public void downpic(final String first, final String last){
+    public void downpic(final String first, final String last) {
         w_head.setVisibility(View.INVISIBLE);
         Utils.mProgress(Picture_Game_Hard.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", true).show();
 
         RetofitClient retrofit = new RetofitClient();
         Retrofitstart api = retrofit.RetrofitExample().create(Retrofitstart.class);
 
-        HashMap<String,String> map = new  HashMap<String,String>();
-        map.put("firstid",first);
-        map.put("lastid",last);
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("firstid", first);
+        map.put("lastid", last);
         String date = sps.getString(Picture_Game_Hard.this, "date");
         if (date.equals("0")) {
-            map.put("mode","regular");
-           // nameValuePairs.add(new BasicNameValuePair("mode", "regular"));
+            map.put("mode", "regular");
+            // nameValuePairs.add(new BasicNameValuePair("mode", "regular"));
         } else {
-            map.put("mode","daily");
-           // nameValuePairs.add(new BasicNameValuePair("mode", "daily"));
+            map.put("mode", "daily");
+            // nameValuePairs.add(new BasicNameValuePair("mode", "daily"));
         }
-        map.put("email",email);
+        map.put("email", email);
 
-        Call<List<HashMap<String,String>>> call = api.getPicture_Game_Hard_downpicdata(map);
+        Call<List<HashMap<String, String>>> call = api.getPicture_Game_Hard_downpicdata(map);
 
-        call.enqueue(new Callback<List<HashMap<String,String>>>() {
+        call.enqueue(new Callback<List<HashMap<String, String>>>() {
             @Override
-            public void onResponse(Call<List<HashMap<String,String>>> call, Response<List<HashMap<String,String>>> response) {
+            public void onResponse(Call<List<HashMap<String, String>>> call, Response<List<HashMap<String, String>>> response) {
                 if (response.isSuccessful()) {
                     /*String date = sps.getString(New_Main_Activity.this, "date");
                     BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -5731,8 +5779,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     String line = "";
                     while ((line = rd.readLine()) != null) Log.e("HttpResponse", line);*/
 
-                    Gson gson= new Gson();
-                    String result =gson.toJson(response.body());
+                    Gson gson = new Gson();
+                    String result = gson.toJson(response.body());
 
                     System.out.print("Result============123" + result);
                 } else {
@@ -5742,9 +5790,9 @@ public class Picture_Game_Hard extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
-                System.out.print("Result onFailure ========== " +  call);
-                System.out.print("Result onFailure1 ========== " +  t);
+            public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " + call);
+                System.out.print("Result onFailure1 ========== " + t);
                 // Handle network failures
             }
         });
@@ -6388,7 +6436,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                         // Handle the error.
                         Log.e("LoadAdError=========", loadAdError.toString());
                         rewardedAd = null;
-                        reward_status=0;
+                        reward_status = 0;
                         //isfaild = 2;
 
                     }
@@ -6398,7 +6446,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
-                        reward_status=0;
+                        reward_status = 0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
@@ -6448,7 +6496,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                                 // Called when ad fails to show.
                                 Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                 rewardedAd = null;
-                                reward_status=0;
+                                reward_status = 0;
                             }
 
                             @Override
@@ -6552,7 +6600,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
     public void show_reward() {
         if (rewardedAd != null) {
             Activity activityContext = Picture_Game_Hard.this;
-          //  reward_status = 1;
+            //  reward_status = 1;
             rewardedAd.show(activityContext, new OnUserEarnedRewardListener() {
 
                 @Override

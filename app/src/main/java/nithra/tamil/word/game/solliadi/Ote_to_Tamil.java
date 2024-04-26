@@ -608,8 +608,8 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
     }
 
-    public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") == /*Utills.interstitialadCount*/ Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
+   /* public void adShow() {
+        if (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
             sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
@@ -621,11 +621,60 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             handler.postDelayed(my_runnable, 2500);
         } else {
             sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") + 1));
-            if (sps.getInt(context, "Game4_Stage_Close_RS") > /*Utills.interstitialadCount*/Integer.parseInt( sps.getString(this, "showCountOther")))
+            if (sps.getInt(context, "Game4_Stage_Close_RS") > *//*Utills.interstitialadCount*//*Integer.parseInt( sps.getString(this, "showCountOther")))
                 sps.putInt(context, "Game4_Stage_Close_RS", 0);
 
             setSc();
             //Toast.makeText(this, ""+sps.getInt(this, "Game4_Stage_Close_RS"), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+*/
+
+    private int safeParseInt(String value, int defaultValue) {
+        if (value != null && !value.isEmpty()) {
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                return defaultValue; // Return the default value if parsing fails
+            }
+        }
+        return defaultValue; // Also return default if the input is null or empty
+    }
+
+
+    public void adShow() {
+        int showCountOther = safeParseInt(sps.getString(this, "showCountOther"), 0);
+        int currentStageCloseRS = sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS");
+
+        if (!sps.getString(this, "showCountOther").equals("0")) {
+            if (currentStageCloseRS == showCountOther && interstitialAd != null) {
+                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                Utills.INSTANCE.Loading_Dialog(this);
+                Handler handler = new Handler(Looper.myLooper());
+                Runnable my_runnable = () -> {
+                    if (interstitialAd == null) {
+                        setSc();
+                    } else {
+                        interstitialAd.show(this);
+                    }
+                };
+                handler.postDelayed(my_runnable, 2500);
+            } else {
+                currentStageCloseRS++;
+                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", currentStageCloseRS);
+                if (currentStageCloseRS > showCountOther) {
+                    sps.putInt(context, "Game4_Stage_Close_RS", 0);
+                }
+                setSc();
+            }
+        }else {
+            currentStageCloseRS++;
+            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", currentStageCloseRS);
+            if (currentStageCloseRS > showCountOther) {
+                sps.putInt(context, "Game4_Stage_Close_RS", 0);
+            }
+            setSc();
         }
 
     }

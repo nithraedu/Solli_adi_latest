@@ -3577,8 +3577,8 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
     }
 
-    public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game3_Stage_Close_ST") == /*Utills.interstitialadCount*/ Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
+  /*  public void adShow() {
+        if (sps.getInt(getApplicationContext(), "Game3_Stage_Close_ST") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
             sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
@@ -3598,7 +3598,55 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
         }
 
+    }*/
+
+    private int safeParseInt(String value, int defaultValue) {
+        if (value != null && !value.isEmpty()) {
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                return defaultValue; // Return default value if parsing fails
+            }
+        }
+        return defaultValue; // Return default value if the input is null or empty
     }
+
+    public void adShow() {
+        int showCountOther = safeParseInt(sps.getString(this, "showCountOther"), 0);
+        int currentStageCloseST = sps.getInt(getApplicationContext(), "Game3_Stage_Close_ST");
+
+        if (!sps.getString(this, "showCountOther").equals("0")) {
+            if (currentStageCloseST == showCountOther && interstitialAd != null) {
+                sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
+                Utills.INSTANCE.Loading_Dialog(this);
+                Handler handler = new Handler(Looper.myLooper());
+                Runnable my_runnable = () -> {
+                    if (interstitialAd == null) {
+                        setSc();
+                    } else {
+                        interstitialAd.show(this);
+                    }
+                };
+                handler.postDelayed(my_runnable, 2500);
+            } else {
+                currentStageCloseST++;
+                sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", currentStageCloseST);
+                if (currentStageCloseST > showCountOther) {
+                    sps.putInt(this, "Game3_Stage_Close_ST", 0);
+                }
+                setSc();
+            }
+        }else{
+            currentStageCloseST++;
+            sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", currentStageCloseST);
+            if (currentStageCloseST > showCountOther) {
+                sps.putInt(this, "Game3_Stage_Close_ST", 0);
+            }
+            setSc();
+        }
+
+    }
+
 
     public void share_earn2(int a) {
         final Dialog openDialog = new Dialog(Fill_in_blanks.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);

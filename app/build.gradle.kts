@@ -14,8 +14,8 @@ android {
         applicationId = "nithra.tamil.word.game.solliadi"
         minSdk = 24
         targetSdk = 34
-        versionCode = 70
-        versionName = "6.18"
+        versionCode = 71
+        versionName = "6.19"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

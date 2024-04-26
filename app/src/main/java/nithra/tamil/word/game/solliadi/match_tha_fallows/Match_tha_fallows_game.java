@@ -2559,8 +2559,8 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
 
     }
 
-    public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") == /*Utills.interstitialadCount*/ Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
+    /*public void adShow() {
+        if (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
             sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
@@ -2571,14 +2571,61 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
             handler.postDelayed(my_runnable, 2500);
         } else {
             sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") + 1));
-            if (sps.getInt(Match_tha_fallows_game.this, "Game4_Stage_Close_RS") > /*Utills.interstitialadCount*/ Integer.parseInt( sps.getString(this, "showCountOther")))
+            if (sps.getInt(Match_tha_fallows_game.this, "Game4_Stage_Close_RS") > *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
                 sps.putInt(Match_tha_fallows_game.this, "Game4_Stage_Close_RS", 0);
 
             setSc();
             //Toast.makeText(this, ""+sps.getInt(this, "Game4_Stage_Close_RS"), Toast.LENGTH_SHORT).show();
         }
 
+    }*/
+
+    public void adShow() {
+        // Fetch the string value from shared preferences or set it to a default value if empty or null
+        String showCountOther = sps.getString(this, "showCountOther");
+        if (showCountOther == null || showCountOther.isEmpty()) {
+            showCountOther = "0";  // Default value if the preference is not set or empty
+        }
+        int showCount;
+        try {
+            showCount = Integer.parseInt(showCountOther);
+        } catch (NumberFormatException e) {
+            // Log the error and handle it appropriately
+            showCount = 0;  // Set a fallback value
+        }
+
+        int currentStageCloseRS = sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS");
+
+        if (!sps.getString(this, "showCountOther").equals("0")) {
+            if (currentStageCloseRS == showCount && interstitialAd != null) {
+                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                Utills.INSTANCE.Loading_Dialog(this);
+                Handler handler = new Handler(Looper.myLooper());
+                Runnable my_runnable = () -> {
+                    if (interstitialAd == null) {
+                        setSc();
+                    } else {
+                        interstitialAd.show(this);
+                    }
+                };
+                handler.postDelayed(my_runnable, 2500);
+            } else {
+                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", currentStageCloseRS + 1);
+                if (currentStageCloseRS > showCount) {
+                    sps.putInt(this, "Game4_Stage_Close_RS", 0);
+                }
+                setSc();
+            }
+        }else{
+            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", currentStageCloseRS + 1);
+            if (currentStageCloseRS > showCount) {
+                sps.putInt(this, "Game4_Stage_Close_RS", 0);
+            }
+            setSc();
+        }
+
     }
+
 
 
     @Override

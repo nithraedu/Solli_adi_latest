@@ -131,7 +131,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
     Typeface typ, tyr;
     String retype = "s";
     long ttstop;
-    LinearLayout adds, list4;
+    LinearLayout adds, list4,adsLay1;
     LinearLayout qtw;
     Dialog openDialog_p;
     int s = 0;
@@ -269,6 +269,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             }
         }
         adds = findViewById(R.id.ads_lay);
+        adsLay1 = findViewById(R.id.adsLay1);
 
         //Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
         if (sps.getInt(context, "purchase_ads") == 0) {
@@ -283,9 +284,9 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                 System.out.println(
                         "Ads Should be -- empty : " + sps.getString(context, "BannerId")
                 );
-                adds.setVisibility(View.GONE);
+                adsLay1.setVisibility(View.GONE);
             }
-        }else adds.setVisibility(View.GONE);
+        }else adsLay1.setVisibility(View.GONE);
 
         openDialog_s = new Dialog(Riddle_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
@@ -3041,6 +3042,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         c_settings = findViewById(R.id.c_settings);
         c_edit = findViewById(R.id.clue_ans_editer);
         adds = findViewById(R.id.ads_lay);
+        adsLay1 = findViewById(R.id.adsLay1);
         qtw = findViewById(R.id.qwt);
 
         list4 = findViewById(R.id.list4);
@@ -5044,8 +5046,8 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
     }
 
 
-    public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") == /*Utills.interstitialadCount*/ Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
+   /* public void adShow() {
+        if (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
             sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
@@ -5057,10 +5059,57 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             handler.postDelayed(my_runnable, 2500);
         } else {
             sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") + 1));
-            if (sps.getInt(this, "Game2_Stage_Close_PS") > /*Utills.interstitialadCount*/ Integer.parseInt( sps.getString(this, "showCountOther")))
+            if (sps.getInt(this, "Game2_Stage_Close_PS") > *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
                 sps.putInt(this, "Game2_Stage_Close_PS", 0);
             setSc();
             //Toast.makeText(this, ""+sps.getInt(this, "Game2_Stage_Close_PS"), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+*/
+   private int safeParseInt(String value, int defaultValue) {
+       if (value != null && !value.isEmpty()) {
+           try {
+               return Integer.parseInt(value);
+           } catch (NumberFormatException e) {
+               return defaultValue; // Return the default value if parsing fails
+           }
+       }
+       return defaultValue; // Also return default if the input is null or empty
+   }
+
+    public void adShow() {
+        int showCountOther = safeParseInt(sps.getString(this, "showCountOther"), 0);
+        int currentStageClosePS = sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS");
+
+        if (!sps.getString(this, "showCountOther").equals("0")) {
+            if (currentStageClosePS == showCountOther && interstitialAd != null) {
+                sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
+                Utills.INSTANCE.Loading_Dialog(this);
+                Handler handler = new Handler(Looper.myLooper());
+                Runnable my_runnable = () -> {
+                    if (interstitialAd == null) {
+                        setSc();
+                    } else {
+                        interstitialAd.show(this);
+                    }
+                };
+                handler.postDelayed(my_runnable, 2500);
+            } else {
+                currentStageClosePS++;
+                sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", currentStageClosePS);
+                if (currentStageClosePS > showCountOther) {
+                    sps.putInt(this, "Game2_Stage_Close_PS", 0);
+                }
+                setSc();
+            }
+        }else {
+            currentStageClosePS++;
+            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", currentStageClosePS);
+            if (currentStageClosePS > showCountOther) {
+                sps.putInt(this, "Game2_Stage_Close_PS", 0);
+            }
+            setSc();
         }
 
     }

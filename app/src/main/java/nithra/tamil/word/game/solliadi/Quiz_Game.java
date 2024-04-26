@@ -1084,8 +1084,8 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
 
     }
 
-    public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") == /*Utills.interstitialadCount*/ Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
+    /*public void adShow() {
+        if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
@@ -1096,13 +1096,61 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             handler.postDelayed(my_runnable, 2500);
         } else {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
-            if (sps.getInt(this, "Game1_Stage_Close_VV") > /*Utills.interstitialadCount*/ Integer.parseInt( sps.getString(this, "showCountOther")))
+            if (sps.getInt(this, "Game1_Stage_Close_VV") > *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
                 sps.putInt(this, "Game1_Stage_Close_VV", 0);
             setSc();
             //Toast.makeText(this, "" + sps.getInt(this, "Game1_Stage_Close_VV"), Toast.LENGTH_SHORT).show();
         }
 
+    }*/
+
+    public void adShow() {
+        // Retrieve the value from SharedPreferences
+        String showCountOther = sps.getString(this, "showCountOther");
+        int showCount;
+
+        // Safely parse the integer or use a default value
+        try {
+            showCount = Integer.parseInt(showCountOther);
+        } catch (NumberFormatException e) {
+            // Default to 0 or another sensible value if parsing fails
+            showCount = 0;
+        }
+
+        int currentStageCloseVV = sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV");
+
+        if (!sps.getString(this, "showCountOther").equals("0")) {
+            if (currentStageCloseVV == showCount && interstitialAd != null) {
+                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                Utills.INSTANCE.Loading_Dialog(this);
+                Handler handler = new Handler(Looper.myLooper());
+                Runnable my_runnable = () -> {
+                    if (interstitialAd == null) {
+                        setSc();
+                    } else {
+                        interstitialAd.show(this);
+                    }
+                };
+                handler.postDelayed(my_runnable, 2500);
+            } else {
+                currentStageCloseVV++;
+                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", currentStageCloseVV);
+                if (currentStageCloseVV > showCount) {
+                    sps.putInt(this, "Game1_Stage_Close_VV", 0);
+                }
+                setSc();
+            }
+        }else{
+            currentStageCloseVV++;
+            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", currentStageCloseVV);
+            if (currentStageCloseVV > showCount) {
+                sps.putInt(this, "Game1_Stage_Close_VV", 0);
+            }
+            setSc();
+        }
+
     }
+
 
     public void share_earn2(int a) {
         final Dialog openDialog = new Dialog(Quiz_Game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);

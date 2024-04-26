@@ -3182,8 +3182,8 @@ public void industrialload() {
 
 }
 
-    public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") == /*Utills.interstitialadCount*/ Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
+/*    public void adShow() {
+        if (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
             sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
@@ -3195,13 +3195,65 @@ public void industrialload() {
             handler.postDelayed(my_runnable, 2500);
         } else {
             sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") + 1));
-            if (sps.getInt(this, "Game2_Stage_Close_PS") > /*Utills.interstitialadCount*/ Integer.parseInt( sps.getString(this, "showCountOther")))
+            if (sps.getInt(this, "Game2_Stage_Close_PS") > *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
                 sps.putInt(this, "Game2_Stage_Close_PS", 0);
             setSc();
             //Toast.makeText(this, ""+sps.getInt(this, "Game2_Stage_Close_PS"), Toast.LENGTH_SHORT).show();
         }
 
+    }*/
+
+
+    public void adShow() {
+        String showCountOther = sps.getString(this, "showCountOther");
+        int showCount;
+
+        // Check if the retrieved string is not empty and is a valid integer, otherwise set to default value
+        if (showCountOther != null && !showCountOther.isEmpty()) {
+            try {
+                showCount = Integer.parseInt(showCountOther);
+            } catch (NumberFormatException e) {
+                // Log error or provide fallback
+                showCount = 0;  // Default or fallback value if parsing fails
+            }
+        } else {
+            showCount = 0;  // Default value if string is null or empty
+        }
+
+        int currentStageClosePS = sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS");
+
+        if (!sps.getString(this, "showCountOther").equals("0")) {
+            if (currentStageClosePS == showCount && interstitialAd != null) {
+                sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
+                Utills.INSTANCE.Loading_Dialog(this);
+                Handler handler = new Handler(Looper.myLooper());
+                Runnable my_runnable = () -> {
+                    if (interstitialAd == null) {
+                        setSc();
+                    } else {
+                        interstitialAd.show(this);
+                    }
+                };
+                handler.postDelayed(my_runnable, 2500);
+            } else {
+                sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", currentStageClosePS + 1);
+                if (currentStageClosePS > showCount) {
+                    sps.putInt(this, "Game2_Stage_Close_PS", 0);
+                }
+                setSc();
+            }
+        }else{
+            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", currentStageClosePS + 1);
+            if (currentStageClosePS > showCount) {
+                sps.putInt(this, "Game2_Stage_Close_PS", 0);
+            }
+            setSc();
+        }
+
+
     }
+
+
 
 
     private void dialog_dicription() {
