@@ -225,7 +225,6 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         ans_txt3.setEnabled(false);
         ans_txt4.setEnabled(false);
         ans_txt5.setEnabled(false);
-
     }
 
     public void btn_enable() {
@@ -1153,7 +1152,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
 
     }
 
-    public void validate() {
+  /*  public void validate() {
 
         Cursor cf = myDbHelper.getQry("SELECT * FROM score ");
         cf.moveToFirst();
@@ -1305,6 +1304,133 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         }
 
 
+    }*/
+
+
+    public void validate() {
+        Cursor cf = myDbHelper.getQry("SELECT * FROM score");
+
+        // Check if the cursor is not null
+        if (cf != null && cf.moveToFirst()) {
+            int sk = cf.getInt(cf.getColumnIndexOrThrow("coins"));
+            if (sk > 50) {
+                if (vali_handler != null) {
+                    vali_handler.removeCallbacksAndMessages(null);
+                }
+
+                if (FROMVIEW != null && TOVIEW != null) {
+                    btn_dissable();
+                    if (TOVIEW.getText().toString().equals(data_list.get(FROM_POS - 1).get_ans())) {
+                        // Correct answer case
+                        scroll_act = true;
+                        arrow_layout.animateArrows(1000, FROMVIEW, TOVIEW, true, true, arrow_move);
+
+                        vali_handler = new Handler(Looper.myLooper());
+                        vali_handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Animation zoom_in_m = AnimationUtils.loadAnimation(Match_tha_fallows_game.this, R.anim.zoom_in_m);
+
+                                if (FROMVIEW != null) {
+                                    FROMVIEW.setAnimation(zoom_in_m);
+                                }
+
+                                btn_enable();
+                                TOVIEW.setAnimation(zoom_in_m);
+
+                                arrow_layout.animateArrows(0, FROMVIEW, TOVIEW, true, true, arrow_move);
+                                show_ans_num(TO_POS, FROM_POS, "validate");
+                            }
+                        }, 800);
+
+                        if (!hint_act) {
+                            coinanim();
+                        }
+
+                        maintain_ans.add(TO_POS + "_" + FROM_POS);
+                        find_qus_list.add(FROM_POS);
+                        find_ans_list.add(TO_POS);
+
+                        String my_maintain = TextUtils.join(", ", maintain_ans);
+                        newhelper5.executeSql("update newgames5 set my_maintain='" + my_maintain + "' where questionid='" + questionid + "' and gameid='" + gameid + "'");
+
+                        if (maintain_ans.size() == 5) {
+                            if (sp.getInt(Match_tha_fallows_game.this, "mt_hint_count") < 5) {
+                                price_update();
+                            }
+
+                            newhelper5.executeSql("update newgames5 set isfinish='1' where questionid='" + questionid + "' and gameid='" + gameid + "'");
+
+                            vali_handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    adShow();
+                                }
+                            }, 2100);
+                        }
+                    } else {
+                        // Incorrect answer case
+                        if (!hint_act) {
+                            scroll_act = true;
+                            arrow_layout.animateArrows(1000, FROMVIEW, TOVIEW, true, false, arrow_move);
+
+                            vali_handler = new Handler(Looper.myLooper());
+                            vali_handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Animation shake = AnimationUtils.loadAnimation(Match_tha_fallows_game.this, R.anim.shake);
+                                    FROMVIEW.setAnimation(shake);
+                                    TOVIEW.setAnimation(shake);
+
+                                    arrow_layout.animateArrows(0, FROMVIEW, TOVIEW, true, false, arrow_move);
+                                    btn_enable();
+
+                                    custom_toast("தவறான பதில் மீண்டும் முயற்சிக்கவும்", "custom_toast");
+                                    sp.putString(Match_tha_fallows_game.this, "all_corret", "all_corret");
+
+                                    FROMVIEW.setBackgroundResource(R.drawable.selectun_rect);
+                                    TOVIEW.setBackgroundResource(R.drawable.selectun_rect);
+                                    FROMVIEW = null;
+                                    TOVIEW = null;
+                                    FROM_POS = 0;
+                                    TO_POS = 0;
+                                }
+                            }, 800);
+
+                            coinanim_reds();
+                        } else {
+                            custom_toast("முதலில் வினா சொல்லை தேர்வு செய்யுங்கள்", "normal");
+                        }
+                    }
+
+                    if (FROMVIEW != null && FROMVIEW.getAnimation() != null) {
+                        FROMVIEW.getAnimation().cancel();
+                        FROMVIEW.clearAnimation();
+                    }
+                    if (TOVIEW != null && TOVIEW.getAnimation() != null) {
+                        TOVIEW.getAnimation().cancel();
+                        TOVIEW.clearAnimation();
+                    }
+
+                    if (QUSNUMVIEW != null) {
+                        QUSNUMVIEW.setText("" + FROM_POS);
+                        QUSNUMVIEW.setBackgroundResource(R.drawable.circle_shap);
+                    }
+
+                    Handler handler = new Handler(Looper.myLooper());
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            arrow_layout.animateArrows(100, ans_txt1, ans_txt1, false, false, arrow_move);
+                        }
+                    }, 2000);
+                }
+            }
+        } else {
+            // Handle the null cursor scenario (query failed or returned nothing)
+            Log.e("DatabaseError", "Cursor is null. Query might have failed.");
+            dialog(1);
+        }
     }
 
 

@@ -177,7 +177,9 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
 
             yes.setOnClickListener(v -> {
-
+                // Logic to stop the timer and update the database
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
                 String dates = sps.getString(Fill_in_blanks.this, "date");
                 int pos;
                 if (dates.equals("0")) {

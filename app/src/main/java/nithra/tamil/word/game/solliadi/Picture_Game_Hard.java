@@ -3022,7 +3022,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
         }
     }
 
-    public void next() {
+  /*  public void next() {
         //reward correcr ans
         //reward correcr ans
         if (picdig == 1) {
@@ -3069,7 +3069,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 Cursor c2 = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "' and isfinish='1'");
                 int count1 = c2.getCount() + 1;
                 String no = String.valueOf(count1);
-                to_no.setText(no/*+"/"+c1.getCount()*/);
+                to_no.setText(no*//*+"/"+c1.getCount()*//*);
             }
         } else {
             if (sps.getInt(Picture_Game_Hard.this, "purchase_ads") == 1) {
@@ -3184,7 +3184,163 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
             }
         }
+    }*/
+
+    public void next() {
+        // Reward correct answer
+        if (picdig == 1) {
+            openDialogk.dismiss();
+            picdig = 0;
+        }
+
+        Calendar calendar3 = Calendar.getInstance();
+        int cur_year1 = calendar3.get(Calendar.YEAR);
+        int cur_month1 = calendar3.get(Calendar.MONTH);
+        int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
+
+        String str_month1 = String.valueOf(cur_month1 + 1);
+        if (str_month1.length() == 1) {
+            str_month1 = "0" + str_month1;
+        }
+
+        String str_day1 = String.valueOf(cur_day1);
+        if (str_day1.length() == 1) {
+            str_day1 = "0" + str_day1;
+        }
+        final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
+
+        // Daily bonus
+        f = 0;
+
+        w_head.setVisibility(View.VISIBLE);
+        bt4.setVisibility(View.VISIBLE);
+        bt8.setVisibility(View.VISIBLE);
+        bt12.setVisibility(View.VISIBLE);
+        bt13.setVisibility(View.VISIBLE);
+        bt14.setVisibility(View.VISIBLE);
+        bt15.setVisibility(View.VISIBLE);
+        bt16.setVisibility(View.VISIBLE);
+        u_verify.setEnabled(true);
+
+        String date = sps.getString(Picture_Game_Hard.this, "date");
+        sps.putString(Picture_Game_Hard.this, "watts_app", "");
+        sps.putString(Picture_Game_Hard.this, "watts_app_s", "");
+        sps.putString(Picture_Game_Hard.this, "gplues", "yes");
+        sps.putString(Picture_Game_Hard.this, "face_share", "");
+
+        if (date.equals("0")) {
+            Cursor c1 = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "'");
+
+            // Check if cursor is not null
+            if (c1 != null && c1.moveToFirst()) {
+                Cursor c2 = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "' and isfinish='1'");
+                int count1 = c2.getCount() + 1;
+                String no = String.valueOf(count1);
+                to_no.setText(no/*+"/"+c1.getCount()*/);
+            } else {
+                Log.e("DatabaseError", "Query for maintable failed or returned no results.");
+            }
+        } else {
+            if (sps.getInt(Picture_Game_Hard.this, "purchase_ads") != 1) {
+                sps.putInt(context, "addloded_rect_bck", 0);
+                sps.putInt(context, "addloded_rect_mul", 0);
+            }
+
+            String tfoption = date;
+            String[] first = tfoption.split("-");
+            to_no.setText(first[2] + "-" + first[1] + "-" + first[0]);
+            to_no.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        }
+
+        Cursor c = null;
+
+        if (date.equals("0")) {
+            c = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "' and isfinish='0' order by id limit 1");
+        } else {
+            c = myDbHelper.getQry("select * from dailytest where gameid='" + gameid + "' and isfinish='0' and date='" + date + "'");
+        }
+
+        // Check if cursor is not null and move to the first row
+        if (c != null && c.moveToFirst()) {
+            sa = c.getString(c.getColumnIndexOrThrow("letters"));
+            imid = c.getString(c.getColumnIndexOrThrow("imagename"));
+            wordid = Integer.parseInt(c.getString(c.getColumnIndexOrThrow("levelid")));
+            id = c.getString(c.getColumnIndexOrThrow("id"));
+
+            if (sps.getString(Picture_Game_Hard.this, str_date1).equals("")) {
+                daily_bones();
+                System.out.println("Daily bonus awarded.");
+                sps.putString(Picture_Game_Hard.this, str_date1, "yes");
+            }
+
+            int playtime = 0;
+
+            try {
+                playtime = c.getInt(c.getColumnIndexOrThrow("playtime"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (playtime == 0) {
+                if (sps.getString(Picture_Game_Hard.this, "resume_ptr").equals("")) {
+                    sps.putString(Picture_Game_Hard.this, "resume_ptr", "yes");
+                } else {
+                    focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();
+                }
+            }
+
+            String tfoption = sa;
+            String[] first = tfoption.split(",");
+            word_type = first.length;
+
+            String tfoptiona = imid;
+            String[] firsta = tfoptiona.split(",");
+            image_type = firsta.length;
+
+            answer = c.getString(c.getColumnIndexOrThrow("answer"));
+            clue = c.getString(c.getColumnIndexOrThrow("hints"));
+
+            if (date.equals("0")) {
+                isdown = c.getString(c.getColumnIndexOrThrow("isdownload"));
+            } else {
+                isdown = String.valueOf(1);
+            }
+
+            Random rn = new Random();
+            random = rn.nextInt(max - min + 1) + min;
+
+            if (random == 1) {
+                simple();
+            } else if (random == 2) {
+                medium();
+            } else if (random == 3) {
+                hard();
+            }
+        } else {
+            // Handle case where there are no rows returned from the query
+            if (date.equals("0")) {
+                if (isNetworkAvailable(this)) {
+                    downloaddata_regular();
+                } else {
+                    Toast.makeText(this, "Please check your internet connection.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                if (sps.getString(Picture_Game_Hard.this, "Exp_list").equals("on")) {
+                    finish();
+                    Intent i = new Intent(Picture_Game_Hard.this, Expandable_List_View.class);
+                    startActivity(i);
+                } else {
+                    Toast.makeText(Picture_Game_Hard.this, "Daily game finished. Switching to regular game.", Toast.LENGTH_LONG).show();
+                    finish();
+                    sps.putString(Picture_Game_Hard.this, "date", "0");
+                    Intent i = new Intent(Picture_Game_Hard.this, Picture_Game_Hard.class);
+                    startActivity(i);
+                }
+            }
+        }
     }
+
 
     private void daily_bones() {
         System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeee daily_bones_openDialog");

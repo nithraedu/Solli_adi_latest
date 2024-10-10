@@ -118,7 +118,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
     int ea = 0;
     int setval_vid;
     TextView coin_value, c_settings;
-    LinearLayout ads_lay,adsLay1;
+    LinearLayout ads_lay, adsLay1;
     RelativeLayout head;
     TextView ch_watts_app, ch_facebook;
     int share_name = 0;
@@ -136,9 +136,9 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         }
     };
     //private MaxRewardedAd rewardedAd;
-  //  private MaxInterstitialAd mInterstitialAd;
+    //  private MaxInterstitialAd mInterstitialAd;
     private RewardedAd rewardedAd;
-  private AdManagerInterstitialAd interstitialAd ;
+    private AdManagerInterstitialAd interstitialAd;
 
 
     @Override
@@ -206,18 +206,18 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
 
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
 
-       // Utills.INSTANCE.initializeAdzz(this);
+        // Utills.INSTANCE.initializeAdzz(this);
         rewarded_adnew();
         if (sps.getInt(Missing_Words.this, "purchase_ads") == 0) {
             //industrialload();
-            if (!sps.getString(Missing_Words.this, "InterstitialId").equals("")|| sps.getString(Missing_Words.this, "InterstitialId") != null) {
+            if (!sps.getString(Missing_Words.this, "InterstitialId").equals("") || sps.getString(Missing_Words.this, "InterstitialId") != null) {
                 industrialload();
             }
         }
         soundset();
         ads_lay = findViewById(R.id.ads_lay);
         adsLay1 = findViewById(R.id.adsLay1);
-       // Utills.INSTANCE.load_add_AppLovin(this, ads_lay, getResources().getString(R.string.Bottom_Banner));
+        // Utills.INSTANCE.load_add_AppLovin(this, ads_lay, getResources().getString(R.string.Bottom_Banner));
         if (sps.getInt(Missing_Words.this, "purchase_ads") == 0) {
             if (Utils.isNetworkAvailable(this)) {
                 if (!sps.getString(this, "BannerId").equals("") || sps.getString(this, "BannerId") != null) {
@@ -232,7 +232,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                 );
                 adsLay1.setVisibility(View.GONE);
             }
-        }else adsLay1.setVisibility(View.GONE);
+        } else adsLay1.setVisibility(View.GONE);
         ImageView prize_logo = findViewById(R.id.prize_logo);
         if (sps.getInt(Missing_Words.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
@@ -658,13 +658,15 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
     public void coinanim() {
 ////
         //score intial
-        Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
-        cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
-        String tr = String.valueOf(skq);
-        c_score_edit.setText(tr);
-        //
-        e2 = skq;
+        try (Cursor cfq = myDbHelper.getQry("SELECT * FROM score ")) {
+            if (cfq.moveToFirst()) {
+                int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
+                String tr = String.valueOf(skq);
+                c_score_edit.setText(tr);
+                //
+                e2 = skq;
+            }
+        }
         //play1.start();
         spz4.play(soundId4, sv, sv, 0, 0, sv);
         p_coins.setVisibility(View.VISIBLE);
@@ -1012,7 +1014,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
 
         });
         if (!isFinishing()) {
-            openDialog_s.show();
+                openDialog_s.show();
         }
     }
 
@@ -2586,7 +2588,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                         // Handle the error.
                         Log.e("LoadAdError=========", loadAdError.toString());
                         rewardedAd = null;
-                        reward_status=0;
+                        reward_status = 0;
                         //isfaild = 2;
 
                     }
@@ -2596,7 +2598,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
-                        reward_status=0;
+                        reward_status = 0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
@@ -2643,7 +2645,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                                 // Called when ad fails to show.
                                 Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                 rewardedAd = null;
-                                reward_status=0;
+                                reward_status = 0;
                             }
 
                             @Override
@@ -2662,6 +2664,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                     }
                 });
     }
+
     public void show_reward() {
         if (rewardedAd != null) {
             Activity activityContext = Missing_Words.this;
@@ -2689,12 +2692,12 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
 
     public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
-        AdManagerInterstitialAd.load(this,sps.getString(this, "InterstitialId"), adRequest,
+        AdManagerInterstitialAd.load(this, sps.getString(this, "InterstitialId"), adRequest,
                 new AdManagerInterstitialAdLoadCallback() {
                     @Override
                     public void onAdLoaded(@NonNull AdManagerInterstitialAd interstitial) {
                         interstitialAd = interstitial;
-                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
+                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
                             public void onAdClicked() {
                                 // Called when a click is recorded for an ad.
@@ -2735,6 +2738,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                         });
 
                     }
+
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
@@ -2805,7 +2809,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                 }
                 setSc();
             }
-        }else{
+        } else {
             currentStageCloseST++;
             sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", currentStageCloseST);
             if (currentStageCloseST > showCountOther) {

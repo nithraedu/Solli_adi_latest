@@ -846,7 +846,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
             //update the text and color in the target view to reflect the data being dropped
             System.out.println("#########ttdropTarget" + dropTarget.getText().toString());
             tuch_val = dropTarget.getText().toString();
-            System.out.println("#########ttuch_val" + dropped.getText().toString());
+//            System.out.println("#########ttuch_val" + dropped.getText().toString());
             dropTarget.setText(dropped.getText().toString());
             dropped.setText(tuch_val);
             validate();

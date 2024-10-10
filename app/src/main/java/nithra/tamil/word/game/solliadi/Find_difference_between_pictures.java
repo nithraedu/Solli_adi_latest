@@ -3338,13 +3338,13 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 ////
 
         //score intial
-        Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
-        cfq.moveToFirst();
+         try (Cursor cfq = myDbHelper.getQry("SELECT * FROM score ")){
+             if (cfq.moveToFirst()) {
         int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         score.setText(tr);
         //
-        e2 = skq;
+        e2 = skq;}}
         //play1.start();
         spz4.play(soundId4, sv, sv, 0, 0, sv);
         p_coins.setVisibility(View.VISIBLE);

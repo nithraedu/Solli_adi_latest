@@ -3475,15 +3475,15 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
         //score intial
 
-        Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
-        cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
-        String tr = String.valueOf(skq);
-        score.setText(tr);
-        //
-        e2 = skq;
-        //
-
+       try (Cursor cfq = myDbHelper.getQry("SELECT * FROM score ")){
+        if (cfq.moveToFirst()) {
+            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
+            String tr = String.valueOf(skq);
+            score.setText(tr);
+            //
+            e2 = skq;
+            //
+        }}
         coin.play(soundId4, sv, sv, 0, 0, sv);
         c_coin.setVisibility(View.VISIBLE);
         int[] locationInWindow = new int[2];

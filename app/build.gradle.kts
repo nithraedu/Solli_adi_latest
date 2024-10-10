@@ -14,8 +14,8 @@ android {
         applicationId = "nithra.tamil.word.game.solliadi"
         minSdk = 24
         targetSdk = 34
-        versionCode = 71
-        versionName = "6.19"
+        versionCode = 72 //71
+        versionName = "6.20" //6.19
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -65,7 +65,11 @@ dependencies {
     implementation(libs.billing)
     implementation(libs.gson)
     implementation(libs.volley)
-    implementation(libs.core)
+  // implementation(libs.core)
+    //replace code for com.google.android.play:core:1.10.3
+    implementation(libs.play.review)
+    implementation(libs.play.update)
+    //------------------
     implementation(libs.firebase.inappmessaging.display)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)

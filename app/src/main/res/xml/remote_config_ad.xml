@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><!-- START xml_defaults -->
+<defaultsMap>
+    <entry>
+        <key>SolliAdi_Ads</key>
+        <value>{"Banner": "/23102680889,23066960576/MB_NITHARA_BANNER","Interstitial":
+            "/23102680889,23066960576/MB_NITHARA_INTERSTITIAL","Native":
+            "/23102680889,23066960576/MB_NITHARA_NATIVE","Rewarded":
+            "/23102680889,23066960576/MB_NITHRA_REWARDED","AppOpen": "0","showCount":
+            "1","showCountNoti": "1","showCountOther": "3"}
+        </value>
+    </entry>
+
+
+</defaultsMap><!-- END xml_defaults -->

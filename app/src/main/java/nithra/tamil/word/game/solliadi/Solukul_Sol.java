@@ -2562,6 +2562,7 @@ public class Solukul_Sol extends AppCompatActivity {
             else rdvalu = 2;
 
             Cursor answ = myDbHelper.getQry("select * from answertable where gameid='" + gameid + "' and levelid='" + letterid + "' and rd='" + rdvalu + "'");
+
             if (answ.getCount() == 0) for (int i = 0; i < answer_type; i++) {
                 ContentValues cv = new ContentValues();
                 cv.put("gameid", gameid);

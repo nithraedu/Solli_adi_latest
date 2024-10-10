@@ -106,6 +106,7 @@ import com.google.android.gms.ads.admanager.AdManagerAdRequest;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.gms.tasks.Task;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
@@ -4843,7 +4844,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         if (!sp.getString(this, "Date_AD").equals(dates) || sp.getString(this, "Date_AD") == "") {
             if (isNetworkAvailable(this)) {
                 System.out.println("enter setAdKey");
-                setAdKey();
+                // setAdKey();
+                RemoteConfigureAds();
             } else {
                 noDataAdded();
             }
@@ -4965,6 +4967,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                                         cfx.moveToFirst();
                                         int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                                        //coin increase
                                         int spx = skx + mCoinCount;
                                         String aStringx = Integer.toString(spx);
                                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
@@ -5033,7 +5036,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     }
 
-    private void app_update_manager() {
+    /*private void app_update_manager() {
         appUpdateManager = AppUpdateManagerFactory.create(New_Main_Activity.this);
         com.google.android.play.core.tasks.Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
         appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
@@ -5081,9 +5084,67 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         });
 
+    }*/
+
+    private void app_update_manager() {
+        appUpdateManager = AppUpdateManagerFactory.create(New_Main_Activity.this);
+        Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+        appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+
+                try {
+                    appUpdateManager.startUpdateFlowForResult(
+                            appUpdateInfo,
+                            AppUpdateType.IMMEDIATE,
+                            New_Main_Activity.this,
+                            200);
+                } catch (IntentSender.SendIntentException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                if (sp.getString(New_Main_Activity.this, "review_complete").equals("")) {
+                    if (!sp.getString(New_Main_Activity.this, "review_time").equals("")) {
+                        long before_date = Long.parseLong(sp.getString(New_Main_Activity.this, "review_time"));
+
+                        Calendar current_date = Calendar.getInstance();
+
+                        long currentdate_mills = current_date.getTimeInMillis();
+
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+                        String string_current_date = sdf.format(currentdate_mills);
+                        String string_before_date = sdf.format(before_date);
+
+
+                        //System.out.println("new Version " + date);
+                        long timediff = 0;
+
+                        try {
+                            timediff = TimeUnit.DAYS.convert(sdf.parse(string_current_date).getTime() - sdf.parse(string_before_date).getTime(), TimeUnit.MILLISECONDS);
+
+                            System.out.println("new Version " + timediff);
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
+
+                        if ((int) timediff >= 10) {
+                            System.out.println("new Version 1 " + timediff);
+                            if (Utils.isNetworkAvailable(New_Main_Activity.this)) {
+                                inapp_review_dialog();
+                            }
+                        }
+                    }
+
+                }
+            }
+
+        });
+
     }
 
-    private void inapp_review_dialog() {
+
+    /*private void inapp_review_dialog() {
         //        ReviewManager manager =new FakeReviewManager(Main_open.this);
         final ReviewManager manager = ReviewManagerFactory.create(New_Main_Activity.this);
         com.google.android.play.core.tasks.Task<ReviewInfo> request = manager.requestReviewFlow();
@@ -5098,6 +5159,33 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
                     sp.putString(New_Main_Activity.this, "review_complete", "review_completed");
                     System.out.println("####################===review_complete");
+                    //Toast.makeText(Main_open.this, "review completed ", Toast.LENGTH_SHORT).show();
+                    // The flow has finished. The API does not indicate whether the user
+                    // reviewed or not, or even whether the review dialog was shown. Thus, no
+                    // matter the result, we continue our app flow.
+                });
+            } else {
+                // There was some problem, continue regardless of the result.
+                //Toast.makeText(Main_open.this, "There was a problem", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
+    }*/
+
+    private void inapp_review_dialog() {
+        //        ReviewManager manager =new FakeReviewManager(Main_open.this);
+        final ReviewManager manager = ReviewManagerFactory.create(New_Main_Activity.this);
+        Task<ReviewInfo> request = manager.requestReviewFlow();
+        request.addOnCompleteListener(task -> {
+
+            if (task.isSuccessful()) {
+                // We can get the ReviewInfo object
+                ReviewInfo reviewInfo = task.getResult();
+
+                Task<Void> flow = manager.launchReviewFlow(New_Main_Activity.this, reviewInfo);
+                flow.addOnCompleteListener(task1 -> {
+                    sp.putString(New_Main_Activity.this, "review_complete", "review_completed");
                     //Toast.makeText(Main_open.this, "review completed ", Toast.LENGTH_SHORT).show();
                     // The flow has finished. The API does not indicate whether the user
                     // reviewed or not, or even whether the review dialog was shown. Thus, no
@@ -5188,6 +5276,66 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         }
     }
 
+    public void RemoteConfigureAds() {
+
+        final FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                //TimeUnit.HOURS.toSeconds(12)
+                .build();
+        mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings);
+        mFirebaseRemoteConfig.fetch(0);
+        mFirebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_ad);
+
+
+        mFirebaseRemoteConfig.fetchAndActivate().addOnCompleteListener(New_Main_Activity.this, task -> {
+            if (task.isSuccessful()) {
+                String adVal = "";
+                try {
+                    adVal = mFirebaseRemoteConfig.getString("SolliAdi_Ads");
+                    System.out.println("RESPONSE from config == " + adVal);
+                } catch (Exception e) {
+                    Log.e("ErrorOnAds1", e.getMessage());
+                    adVal = "{\"Banner\": \"/23102680889,23066960576/MB_NITHARA_BANNER\",\"Interstitial\": \"/23102680889,23066960576/MB_NITHARA_INTERSTITIAL\",\"Native\": \"/23102680889,23066960576/MB_NITHARA_NATIVE\",\"Rewarded\": \"/23102680889,23066960576/MB_NITHRA_REWARDED\",\"AppOpen\": \"0\",\"showCount\": \"1\",\"showCountNoti\": \"1\",\"showCountOther\": \"3\"}";
+                }
+                try {
+                    JSONObject obj = null;
+                    if (!adVal.isEmpty()) {
+                        obj = new JSONObject(adVal);
+                        new SharedPreference().putString(this, "BannerId", obj.getString("Banner"));
+                        new SharedPreference().putString(this, "InterstitialId", obj.getString("Interstitial"));
+                        new SharedPreference().putString(this, "NativeId", obj.getString("Native"));
+                      //  new SharedPreference().putString(this, "showCountOther", obj.getString("showCountOther"));
+                        new SharedPreference().putString(this, "RewardedId", obj.getString("Rewarded"));
+                      //  new SharedPreference().putString(this, "showCountNoti", obj.getString("showCountNoti"));
+                       // new SharedPreference().putString(this, "Date_AD", dates);
+                        sp.putString(context, "showCountNoti", obj.getString("showCountNoti").toString());
+                        //sp.putString(context, "showCountOther", jsonObject.getString("showCountOther").toString()-1);
+                       /* int showCountOther = Integer.parseInt(jsonObject.getString("showCountOther")) - 1;
+                        sp.putString(context, "showCountOther", String.valueOf(showCountOther));*/
+                        int showCountOther = 0;
+                        if (!obj.getString("showCountOther").isEmpty()) {
+                            showCountOther = Integer.parseInt(obj.getString("showCountOther")) - 1;
+                        }
+                        sp.putString(context, "showCountOther", String.valueOf(showCountOther));
+
+                        sp.putString(context, "Date_AD", dates);
+                        System.out.println("get Data  new: " + sp.getString(context, "Date_AD") + " showCountNoti : " + sp.getString(context, "showCountNoti") + " showCountOther : " + sp.getString(context, "showCountOther") + "InterstitialId : " + sp.getString(context, "InterstitialId"));
+
+                    } else {
+                        noDataAdded();
+                    }
+
+                } catch (Exception e) {
+                    Log.e("ErrorOnAds2", e.getMessage());
+                    noDataAdded();
+                }
+                // pref.putString(context, Key, adVal);
+            } else {
+                noDataAdded();
+            }
+        });
+    }
+
 
     private void setAdKey() {
         final String[] strnew = {""};
@@ -5262,6 +5410,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         sp.putString(context, "RewardedId", "/23102680889,23066960576/MB_NITHRA_REWARDED");
         sp.putString(context, "showCountNoti", "3");
         sp.putString(context, "showCountOther", "10");
+        sp.putString(context, "Date_AD", dates);
     }
 
     public void terms_and_policy() {

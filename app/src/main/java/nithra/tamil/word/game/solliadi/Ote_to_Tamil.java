@@ -133,7 +133,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     RadioButton fn1, fn2, fn3;
     TextView c_settings;
     TextView toggleButton;
-    LinearLayout adds, list4,adsLay1;
+    LinearLayout adds, list4, adsLay1;
     PopupWindow popupWindow;
     int kx = 1;
     RelativeLayout w_head, helpshare_layout;
@@ -185,9 +185,9 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     Handler handler;
     Runnable my_runnable;
     //private MaxRewardedAd rewardedAd;
-  //  private MaxInterstitialAd mInterstitialAd;
+    //  private MaxInterstitialAd mInterstitialAd;
     private RewardedAd rewardedAd;
-  private AdManagerInterstitialAd interstitialAd ;
+    private AdManagerInterstitialAd interstitialAd;
 
 
     @Override
@@ -247,7 +247,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         rewarded_adnew();
         if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 0) {
             //industrialload();
-            if (!sps.getString(Ote_to_Tamil.this, "InterstitialId").equals("")|| sps.getString(Ote_to_Tamil.this, "InterstitialId") != null) {
+            if (!sps.getString(Ote_to_Tamil.this, "InterstitialId").equals("") || sps.getString(Ote_to_Tamil.this, "InterstitialId") != null) {
                 industrialload();
             }
         }
@@ -329,21 +329,22 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         clicklistner();
         adds = findViewById(R.id.ads_lay);
         adsLay1 = findViewById(R.id.adsLay1);
-      //  Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
+        //  Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
         if (sps.getInt(context, "purchase_ads") == 0) {
-        if (Utils.isNetworkAvailable(context)) {
-            if (!sps.getString(context, "BannerId").equals("") || sps .getString(context, "BannerId") != null) {
+            if (Utils.isNetworkAvailable(context)) {
+                if (!sps.getString(context, "BannerId").equals("") || sps.getString(context, "BannerId") != null) {
+                    System.out.println(
+                            "Ads Should be not empty : " + sps.getString(context, "BannerId")
+                    );
+                    Utils.load_add_banner(context, sps.getString(context, "BannerId"), adds);
+                }
+            } else {
                 System.out.println(
-                        "Ads Should be not empty : " + sps.getString(context, "BannerId")
+                        "Ads Should be -- empty : " + sps.getString(context, "BannerId")
                 );
-                Utils.load_add_banner(context, sps.getString(context, "BannerId"), adds);
+                adsLay1.setVisibility(View.GONE);
             }
-        } else {
-            System.out.println(
-                    "Ads Should be -- empty : " + sps.getString(context, "BannerId")
-            );
-            adsLay1.setVisibility(View.GONE);
-        }}else adsLay1.setVisibility(View.GONE);
+        } else adsLay1.setVisibility(View.GONE);
 
         c_ans = findViewById(R.id.c_ans);
         h_watts_app = findViewById(R.id.ch_watts_app);
@@ -446,7 +447,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                         // Handle the error.
                         Log.e("LoadAdError=========", loadAdError.toString());
                         rewardedAd = null;
-                        reward_status=0;
+                        reward_status = 0;
                         //isfaild = 2;
 
                     }
@@ -456,7 +457,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
-                        reward_status=0;
+                        reward_status = 0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
@@ -505,7 +506,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                                 // Called when ad fails to show.
                                 Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                 rewardedAd = null;
-                                reward_status=0;
+                                reward_status = 0;
                             }
 
                             @Override
@@ -550,12 +551,12 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
     public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
-        AdManagerInterstitialAd.load(this,sps.getString(this, "InterstitialId"), adRequest,
+        AdManagerInterstitialAd.load(this, sps.getString(this, "InterstitialId"), adRequest,
                 new AdManagerInterstitialAdLoadCallback() {
                     @Override
                     public void onAdLoaded(@NonNull AdManagerInterstitialAd interstitial) {
                         interstitialAd = interstitial;
-                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
+                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
                             public void onAdClicked() {
                                 // Called when a click is recorded for an ad.
@@ -596,6 +597,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                         });
 
                     }
+
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
@@ -668,7 +670,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                 }
                 setSc();
             }
-        }else {
+        } else {
             currentStageCloseRS++;
             sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", currentStageCloseRS);
             if (currentStageCloseRS > showCountOther) {
@@ -2559,6 +2561,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         });
         if (!isFinishing()) openDialog.show();
     }
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -2862,16 +2865,17 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     }
 
 
-
     public void coinanim() {
 ////
-        Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
-        cfq.moveToFirst();
-        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
-        String tr = String.valueOf(skq);
-        score.setText(tr);
-        //
-        e2 = skq;
+        try (Cursor cfq = myDbHelper.getQry("SELECT * FROM score ")) {
+            if (cfq.moveToFirst()) {
+                int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
+                String tr = String.valueOf(skq);
+                score.setText(tr);
+                //
+                e2 = skq;
+            }
+        }
         coin.play(soundId4, sv, sv, 0, 0, sv);
         c_coin.setVisibility(View.VISIBLE);
         int[] locationInWindow = new int[2];
@@ -3074,7 +3078,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         Bundle params = new Bundle();
         params.putString("screen_name", "Other language to tamil");
         params.putString("screen_class", "Ote_to_Tamil");
-        mFirebaseAnalytics.logEvent( "screen_view", params);
+        mFirebaseAnalytics.logEvent("screen_view", params);
         System.out.println("addloded" + sps.getInt(Ote_to_Tamil.this, "addloded"));
 
         if (setting_access == 1) {

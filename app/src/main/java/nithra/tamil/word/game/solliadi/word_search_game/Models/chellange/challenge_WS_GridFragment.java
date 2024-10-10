@@ -257,7 +257,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
 
         try {
             coin_cursor = myDbHelper.getQry("select * from score");
-            if (coin_cursor.getCount() != 0) {
+            if (coin_cursor != null && coin_cursor.getCount() > 0) {
                 coin_cursor.moveToFirst();
                 coin_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("coins"));
                 leader_point = coin_cursor.getInt(coin_cursor.getColumnIndexOrThrow("l_points"));
@@ -275,7 +275,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             System.out.println("88888888888888888888 cursor.getCount() : select * from '" + table_name + "' where is_finish='" + 0 + "' ORDER BY RANDOM() LIMIT 20");
             System.out.println("88888888888888888888 cursor.getCount() : " + cursor.getCount());
 
-            if (cursor.getCount() != 0) {
+            if (cursor != null && cursor.getCount() > 0) {
 
                 elephantList.clear();
 

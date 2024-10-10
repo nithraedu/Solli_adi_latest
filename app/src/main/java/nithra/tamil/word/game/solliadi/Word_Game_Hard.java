@@ -4315,824 +4315,824 @@ public class Word_Game_Hard extends AppCompatActivity {
         return app_installed;
     }
 
-    public void setSc() {
+        public void setSc() {
 
 
-        if (s == 1) {
-            openDialog_p.dismiss();
-            s = 0;
-        }
-        sps.putString(Word_Game_Hard.this, "answer_tb", "");
+            if (s == 1) {
+                openDialog_p.dismiss();
+                s = 0;
+            }
+            sps.putString(Word_Game_Hard.this, "answer_tb", "");
 
 
-        long timeElapsed = SystemClock.elapsedRealtime() - focus.getBase();
-        int hours = (int) (timeElapsed / 3600000);
-        int minutes = (int) (timeElapsed - hours * 3600000) / 60000;
-        int seconds = (int) (timeElapsed - hours * 3600000 - minutes * 60000) / 1000;
+            long timeElapsed = SystemClock.elapsedRealtime() - focus.getBase();
+            int hours = (int) (timeElapsed / 3600000);
+            int minutes = (int) (timeElapsed - hours * 3600000) / 60000;
+            int seconds = (int) (timeElapsed - hours * 3600000 - minutes * 60000) / 1000;
 
-        int min = hours * 60;
-        int sec = min * 60;
-        int sec2 = minutes * 60;
-        f_sec = sec + sec2 + seconds;
-
-
-        TextView arputham = openDialog.findViewById(R.id.arputham);
-        TextView extracoin = openDialog.findViewById(R.id.extracoin);
-        next_continue = openDialog.findViewById(R.id.continues);
-        ttscores = openDialog.findViewById(R.id.tts_score);
-        final TextView bsscores = openDialog.findViewById(R.id.bs_score);
-        final TextView dumy = openDialog.findViewById(R.id.bs_score_dum);
-        final TextView cns1 = openDialog.findViewById(R.id.cnse1);
-        final TextView cns2 = openDialog.findViewById(R.id.cnse2);
-        final TextView cns3 = openDialog.findViewById(R.id.cnse3);
-        final TextView cns4 = openDialog.findViewById(R.id.cnse4);
-        final TextView cns5 = openDialog.findViewById(R.id.cnse5);
-        final TextView cns6 = openDialog.findViewById(R.id.cnse6);
-        final TextView cns7 = openDialog.findViewById(R.id.cnse7);
-        addsdialog = openDialog.findViewById(R.id.ads_lay);
-        tx2 = openDialog.findViewById(R.id.tt2);
-        final TextView wtp = openDialog.findViewById(R.id.wtp);
-        final TextView fbs = openDialog.findViewById(R.id.fbp);
-        final TextView gplus = openDialog.findViewById(R.id.gplus);
-        final LinearLayout vid_earn = openDialog.findViewById(R.id.vid_earn);
-        final LinearLayout rewardvideo = openDialog.findViewById(R.id.rewardvideo);
-
-        ImageView prize_logo = openDialog.findViewById(R.id.prize_logo);
-        if (sps.getInt(Word_Game_Hard.this, "remoteConfig_prize") == 1)
-            prize_logo.setVisibility(View.VISIBLE);
-        else prize_logo.setVisibility(View.GONE);
-        prize_logo.setOnClickListener(v -> {
-            if (isNetworkAvailable(this))
-                if (sps.getString(Word_Game_Hard.this, "price_registration").equals("com")) {
-                    finish();
-                    Intent i = new Intent(Word_Game_Hard.this, Game_Status.class);
-                    startActivity(i);
-                } else if (sps.getString(Word_Game_Hard.this, "otp_verify").equals("yes")) {
-                    finish();
-                    Intent i = new Intent(Word_Game_Hard.this, LoginActivity.class);
-                    startActivity(i);
-                } else {
-                    finish();
-                    Intent i = new Intent(Word_Game_Hard.this, Price_Login.class);
-                    startActivity(i);
-                }
-            else
-                Toast.makeText(Word_Game_Hard.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
-        });
-
-        LinearLayout ads_layout = openDialog.findViewById(R.id.fl_adplaceholder);
-
-        TextView video_earn = openDialog.findViewById(R.id.video_earn);
-        video_earn.setText("காணொளியை பார்த்து " + sps.getInt(Word_Game_Hard.this, "reward_coin_txt") + "+ நாணயங்கள் பெற");
-
-        Animation myFadeInAnimation = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.blink_animation);
-        vid_earn.startAnimation(myFadeInAnimation);
+            int min = hours * 60;
+            int sec = min * 60;
+            int sec2 = minutes * 60;
+            f_sec = sec + sec2 + seconds;
 
 
-        //  New_Main_Activity.load_addFromMain_multiplayer(Word_Game_Hard.this,ads_layout);
-        if (sps.getInt(Word_Game_Hard.this, "purchase_ads") == 1)
-            ads_layout.setVisibility(View.GONE);
-        else if (isNetworkAvailable(context)) {
-            //New_Main_Activity.load_add_fb_rect_score_screen(context, ads_layout);
-        } else ads_layout.setVisibility(View.GONE);
+            TextView arputham = openDialog.findViewById(R.id.arputham);
+            TextView extracoin = openDialog.findViewById(R.id.extracoin);
+            next_continue = openDialog.findViewById(R.id.continues);
+            ttscores = openDialog.findViewById(R.id.tts_score);
+            final TextView bsscores = openDialog.findViewById(R.id.bs_score);
+            final TextView dumy = openDialog.findViewById(R.id.bs_score_dum);
+            final TextView cns1 = openDialog.findViewById(R.id.cnse1);
+            final TextView cns2 = openDialog.findViewById(R.id.cnse2);
+            final TextView cns3 = openDialog.findViewById(R.id.cnse3);
+            final TextView cns4 = openDialog.findViewById(R.id.cnse4);
+            final TextView cns5 = openDialog.findViewById(R.id.cnse5);
+            final TextView cns6 = openDialog.findViewById(R.id.cnse6);
+            final TextView cns7 = openDialog.findViewById(R.id.cnse7);
+            addsdialog = openDialog.findViewById(R.id.ads_lay);
+            tx2 = openDialog.findViewById(R.id.tt2);
+            final TextView wtp = openDialog.findViewById(R.id.wtp);
+            final TextView fbs = openDialog.findViewById(R.id.fbp);
+            final TextView gplus = openDialog.findViewById(R.id.gplus);
+            final LinearLayout vid_earn = openDialog.findViewById(R.id.vid_earn);
+            final LinearLayout rewardvideo = openDialog.findViewById(R.id.rewardvideo);
 
-
-        next_continue.setVisibility(View.INVISIBLE);
-
-
-        if (sps.getString(Word_Game_Hard.this, "complite_reg").equals("yes")) {
-            String dates = sps.getString(Word_Game_Hard.this, "date");
-            if (dates.equals("0")) rewardvideo.setVisibility(View.VISIBLE);
-        }
-
-
-        Cursor csk = myDbHelper.getQry("select * from answertable where gameid='" + gameid + "' and levelid='" + letterid + "' and rd='" + rdvalu + "' and isfinish='1' and useranswer='0'");
-        csk.moveToFirst();
-        if (csk.getCount() == 0) rewardvideo.setVisibility(View.INVISIBLE);
-
-
-        vid_earn.setOnClickListener(v -> {
-            rvo = 2;
-            if (isNetworkAvailable(context)) {
-                final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
-                if (fb_reward == 1) {
-                    reward_progressBar.dismiss();
-                    show_reward();
-                    rewardvideo.setVisibility(View.INVISIBLE);
-                } else new Handler(Looper.myLooper()).postDelayed(() -> {
-                    reward_progressBar.dismiss();
-                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                    if (fb_reward == 1) show_reward();
-                    else {
-
-                        rewarded_adnew();
-                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+            ImageView prize_logo = openDialog.findViewById(R.id.prize_logo);
+            if (sps.getInt(Word_Game_Hard.this, "remoteConfig_prize") == 1)
+                prize_logo.setVisibility(View.VISIBLE);
+            else prize_logo.setVisibility(View.GONE);
+            prize_logo.setOnClickListener(v -> {
+                if (isNetworkAvailable(this))
+                    if (sps.getString(Word_Game_Hard.this, "price_registration").equals("com")) {
+                        finish();
+                        Intent i = new Intent(Word_Game_Hard.this, Game_Status.class);
+                        startActivity(i);
+                    } else if (sps.getString(Word_Game_Hard.this, "otp_verify").equals("yes")) {
+                        finish();
+                        Intent i = new Intent(Word_Game_Hard.this, LoginActivity.class);
+                        startActivity(i);
+                    } else {
+                        finish();
+                        Intent i = new Intent(Word_Game_Hard.this, Price_Login.class);
+                        startActivity(i);
                     }
-                }, 2000);
-            } else
-                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(Word_Game_Hard.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
+            });
 
-        });
+            LinearLayout ads_layout = openDialog.findViewById(R.id.fl_adplaceholder);
 
+            TextView video_earn = openDialog.findViewById(R.id.video_earn);
+            video_earn.setText("காணொளியை பார்த்து " + sps.getInt(Word_Game_Hard.this, "reward_coin_txt") + "+ நாணயங்கள் பெற");
 
-        c_counter = 0;
-        current_sc = 0;
-        case2 = 0;
-        tt_case2 = 0;
-        tt_tot2 = 0;
-        total_sc = 0;
-        c_total = 0;
-        ttscores.setText("");
-
-        final RelativeLayout adsicon = openDialog.findViewById(R.id.adsicon);
-        Animation shake;
-        shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulam);
-        adsicon.startAnimation(shake);
+            Animation myFadeInAnimation = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.blink_animation);
+            vid_earn.startAnimation(myFadeInAnimation);
 
 
-        rewardvideo.setOnClickListener(v -> {
-            rvo = 2;
-            if (isNetworkAvailable(context)) {
-                final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
-                if (fb_reward == 1) {
-                    reward_progressBar.dismiss();
-                    show_reward();
-                    rewardvideo.setVisibility(View.INVISIBLE);
-                } else new Handler(Looper.myLooper()).postDelayed(() -> {
-                    reward_progressBar.dismiss();
-                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                    if (fb_reward == 1) show_reward();
-                    else {
-
-                        rewarded_adnew();
-                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                    }
-                }, 2000);
-            } else
-                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-        });
-        wtp.setOnClickListener(view -> {
-            // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-            if (isNetworkAvailable(this)) {
-                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                if (appinstalled) {
-                    Intent i = new Intent(Intent.ACTION_SEND);
-                    i.setType("text/plain");
-                    i.setPackage("com.whatsapp");
-
-                    String msg = ("நான் சொல்லிஅடி செயலியில் சொல் விளையாட்டில் நிலை " + word_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                    i.putExtra(Intent.EXTRA_TEXT, msg);
-                    startActivity(Intent.createChooser(i, "Share via"));
-                    startActivityForResult(Intent.createChooser(i, "Share via"), 21);
+            //  New_Main_Activity.load_addFromMain_multiplayer(Word_Game_Hard.this,ads_layout);
+            if (sps.getInt(Word_Game_Hard.this, "purchase_ads") == 1)
+                ads_layout.setVisibility(View.GONE);
+            else if (isNetworkAvailable(context)) {
+                //New_Main_Activity.load_add_fb_rect_score_screen(context, ads_layout);
+            } else ads_layout.setVisibility(View.GONE);
 
 
+            next_continue.setVisibility(View.INVISIBLE);
+
+
+            if (sps.getString(Word_Game_Hard.this, "complite_reg").equals("yes")) {
+                String dates = sps.getString(Word_Game_Hard.this, "date");
+                if (dates.equals("0")) rewardvideo.setVisibility(View.VISIBLE);
+            }
+
+
+            Cursor csk = myDbHelper.getQry("select * from answertable where gameid='" + gameid + "' and levelid='" + letterid + "' and rd='" + rdvalu + "' and isfinish='1' and useranswer='0'");
+            csk.moveToFirst();
+            if (csk.getCount() == 0) rewardvideo.setVisibility(View.INVISIBLE);
+
+
+            vid_earn.setOnClickListener(v -> {
+                rvo = 2;
+                if (isNetworkAvailable(context)) {
+                    final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
+                    if (fb_reward == 1) {
+                        reward_progressBar.dismiss();
+                        show_reward();
+                        rewardvideo.setVisibility(View.INVISIBLE);
+                    } else new Handler(Looper.myLooper()).postDelayed(() -> {
+                        reward_progressBar.dismiss();
+                        // mShowVideoButton.setVisibility(View.VISIBLE);
+                        if (fb_reward == 1) show_reward();
+                        else {
+
+                            rewarded_adnew();
+                            Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
                 } else
-                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
-            } else
-                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-        });
-        fbs.setOnClickListener(view -> {
+            });
 
-        });
-        gplus.setOnClickListener(view -> {
-
-            // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-            if (isNetworkAvailable(this)) {
-                final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
-                if (appinstalled) {
-                    Intent i = new Intent(Intent.ACTION_SEND);
-                    i.setType("text/plain");
-                    i.setPackage("com.google.android.apps.plus");
-
-                    String msg = ("நான் சொல்லிஅடி செயலியில் சொல் விளையாட்டில்  நிலை " + word_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                    i.putExtra(Intent.EXTRA_TEXT, msg);
-                    startActivityForResult(Intent.createChooser(i, "Share via"), 16);
-
-
-                } else
-                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-
-            } else
-                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
-        });
-
-
-        if (b_score >= tscore && f_sec <= ttime) {
-            //condition=1
-            b_score = 0;
-            arputham.setTypeface(tyr);
-            arputham.setText("Iè ÜŸ¹î‹");
-            extracoin.setTypeface(tyr);
-            extracoin.setText("Ã´î™ ï£íòƒèœ");
-            tx2.setTypeface(tyr);
-            tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
-            next_continue.setTypeface(tyr);
-            next_continue.setText("ªî£ì˜è");
-            String date = sps.getString(Word_Game_Hard.this, "date");
-            if (!date.equals("0")) next_continue.setText("சரி");
-            Handler handler1 = new Handler(Looper.myLooper());
-            handler1.postDelayed(() -> {
-                coin.play(soundId4, sv, sv, 0, 0, sv);
-                //play1.start();
-                cns6.setVisibility(View.VISIBLE);
-            }, 500);
-            Handler handler2 = new Handler(Looper.myLooper());
-            handler2.postDelayed(() -> {
-                //play2.start();
-                coin.play(soundId4, sv, sv, 0, 0, sv);
-                cns4.setVisibility(View.VISIBLE);
-            }, 1000);
-            Handler handler3 = new Handler(Looper.myLooper());
-            handler3.postDelayed(() -> {
-                //play3.start();
-                coin.play(soundId4, sv, sv, 0, 0, sv);
-                cns3.setVisibility(View.VISIBLE);
-            }, 1500);
-            Handler handler4 = new Handler(Looper.myLooper());
-            handler4.postDelayed(() -> {
-                //play4.start();
-                coin.play(soundId4, sv, sv, 0, 0, sv);
-                cns1.setVisibility(View.VISIBLE);
-            }, 2000);
-            Handler handler5 = new Handler(Looper.myLooper());
-            handler5.postDelayed(() -> {
-                //play5.start();
-                coin.play(soundId4, sv, sv, 0, 0, sv);
-                cns2.setVisibility(View.VISIBLE);
-            }, 2500);
-            Handler handler6 = new Handler(Looper.myLooper());
-            handler6.postDelayed(() -> {
-                // play6.start();
-                coin.play(soundId4, sv, sv, 0, 0, sv);
-                cns5.setVisibility(View.VISIBLE);
-            }, 3000);
-            Handler handler7 = new Handler(Looper.myLooper());
-            handler7.postDelayed(() -> {
-                //play7.start();
-                coin.play(soundId4, sv, sv, 0, 0, sv);
-                cns7.setVisibility(View.VISIBLE);
-            }, 3500);
-
-            Handler handler8 = new Handler(Looper.myLooper());
-            handler8.postDelayed(() -> {
-                int[] locationInWindow = new int[2];
-                cns7.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                cns7.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                dumy.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                dumy.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                transAnimation.setDuration(400);
-                cns7.startAnimation(transAnimation);
-                cns7.postDelayed(() -> cns7.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-
-            }, 3900);
-            Handler handler9 = new Handler(Looper.myLooper());
-            handler9.postDelayed(() -> {
-                int[] locationInWindow = new int[2];
-                cns5.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                cns5.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                dumy.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                dumy.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                transAnimation.setDuration(400);
-                cns5.startAnimation(transAnimation);
-                cns5.postDelayed(() -> cns5.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-
-            }, 4300);
-            Handler handler10 = new Handler(Looper.myLooper());
-            handler10.postDelayed(() -> {
-                int[] locationInWindow = new int[2];
-                cns2.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                cns2.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                dumy.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                dumy.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                transAnimation.setDuration(400);
-                cns2.startAnimation(transAnimation);
-                cns2.postDelayed(() -> cns2.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-
-            }, 4700);
-            Handler handler11 = new Handler(Looper.myLooper());
-            handler11.postDelayed(() -> {
-                int[] locationInWindow = new int[2];
-                cns1.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                cns1.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                dumy.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                dumy.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                transAnimation.setDuration(400);
-                cns1.startAnimation(transAnimation);
-                cns1.postDelayed(() -> cns1.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-
-            }, 5100);
-            Handler handler12 = new Handler(Looper.myLooper());
-            handler12.postDelayed(() -> {
-                int[] locationInWindow = new int[2];
-                cns3.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                cns3.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                dumy.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                dumy.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                transAnimation.setDuration(400);
-                cns3.startAnimation(transAnimation);
-                cns3.postDelayed(() -> cns3.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-            }, 5500);
-            Handler handler13 = new Handler(Looper.myLooper());
-            handler13.postDelayed(() -> {
-                int[] locationInWindow = new int[2];
-                cns4.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                cns4.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                dumy.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                dumy.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                transAnimation.setDuration(400);
-                cns4.startAnimation(transAnimation);
-                cns4.postDelayed(() -> cns4.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-            }, 5900);
-            Handler handler14 = new Handler(Looper.myLooper());
-            handler14.postDelayed(() -> {
-                int[] locationInWindow = new int[2];
-                cns6.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                cns6.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                dumy.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                dumy.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                transAnimation.setDuration(400);
-                cns6.startAnimation(transAnimation);
-                cns6.postDelayed(() -> cns6.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-            }, 6300);
 
             c_counter = 0;
-            c_total = 70;
-
-            new Thread(() -> {
-                while (c_counter < c_total) {
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    bsscores.post(() -> bsscores.setText("" + c_counter));
-                    c_counter++;
-                }
-
-            }).start();
-
-
-            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-            cfx.moveToFirst();
-            current_sc = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-            total_sc = current_sc + 70;
-            String aStringx = Integer.toString(current_sc);
-            ttscores.setText(aStringx);
-            myDbHelper.executeSql("UPDATE score SET coins='" + total_sc + "'");
-
-            Handler handler15 = new Handler(Looper.myLooper());
-            handler15.postDelayed(() -> new Thread(() -> {
-
-                while (current_sc < total_sc) {
-                    try {
-                        Thread.sleep(45);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    ttscores.post(() -> ttscores.setText("" + current_sc));
-                    current_sc++;
-                }
-
-            }).start(), 3900);
-            Handler hand = new Handler(Looper.myLooper());
-            hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 6200);
-
-            next_continue.setOnClickListener(view -> {
-                c_counter = 0;
-                current_sc = 0;
-                case2 = 0;
-                tt_case2 = 0;
-                tt_tot2 = 0;
-                total_sc = 0;
-                c_total = 0;
-
-
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
-
-                dia_dismiss = 1;
-                openDialog.dismiss();
-                next();
-                sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
-
-
-            });
-        } else if (b_score >= tscore && f_sec > ttime) {
-            //Condition 2
-            b_score = 0;
-            arputham.setTypeface(tyr);
-            arputham.setText("ÜŸ¹î‹");
-            extracoin.setTypeface(tyr);
-            extracoin.setText("Ã´î™ ï£íòƒèœ");
-            tx2.setTypeface(tyr);
-            tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
-            next_continue.setTypeface(tyr);
-            next_continue.setText("ªî£ì˜è");
-            String date = sps.getString(Word_Game_Hard.this, "date");
-            if (!date.equals("0")) next_continue.setText("சரி");
-            Handler handler1 = new Handler(Looper.myLooper());
-            handler1.postDelayed(() -> {
-                coin.play(soundId4, sv, sv, 0, 0, sv);
-                //play1.start();
-                cns5.setVisibility(View.VISIBLE);
-            }, 500);
-            Handler handler2 = new Handler(Looper.myLooper());
-            handler2.postDelayed(() -> {
-                // play2.start();
-                coin.play(soundId4, sv, sv, 0, 0, sv);
-                cns2.setVisibility(View.VISIBLE);
-            }, 1000);
-            Handler handler3 = new Handler(Looper.myLooper());
-            handler3.postDelayed(() -> {
-                //play3.start();
-                coin.play(soundId4, sv, sv, 0, 0, sv);
-                cns1.setVisibility(View.VISIBLE);
-            }, 1500);
-            Handler handler4 = new Handler(Looper.myLooper());
-            handler4.postDelayed(() -> {
-                // play4.start();
-                coin.play(soundId4, sv, sv, 0, 0, sv);
-                cns3.setVisibility(View.VISIBLE);
-            }, 2000);
-            Handler handler5 = new Handler(Looper.myLooper());
-            handler5.postDelayed(() -> {
-                //play5.start();
-                coin.play(soundId4, sv, sv, 0, 0, sv);
-                cns4.setVisibility(View.VISIBLE);
-            }, 2500);
-
-
-            Handler handler8 = new Handler(Looper.myLooper());
-            handler8.postDelayed(() -> {
-                int[] locationInWindow = new int[2];
-                cns5.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                cns5.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                dumy.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                dumy.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                transAnimation.setDuration(400);
-                cns5.startAnimation(transAnimation);
-                cns5.postDelayed(() -> cns5.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-
-            }, 2500);
-            Handler handler9 = new Handler(Looper.myLooper());
-            handler9.postDelayed(() -> {
-                int[] locationInWindow = new int[2];
-                cns2.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                cns2.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                dumy.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                dumy.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                transAnimation.setDuration(400);
-                cns2.startAnimation(transAnimation);
-                cns2.postDelayed(() -> cns2.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-
-            }, 2900);
-            Handler handler10 = new Handler(Looper.myLooper());
-            handler10.postDelayed(() -> {
-                int[] locationInWindow = new int[2];
-                cns1.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                cns1.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                dumy.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                dumy.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                transAnimation.setDuration(400);
-                cns1.startAnimation(transAnimation);
-                cns1.postDelayed(() -> cns1.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-
-            }, 3300);
-            Handler handler11 = new Handler(Looper.myLooper());
-            handler11.postDelayed(() -> {
-                int[] locationInWindow = new int[2];
-                cns3.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                cns3.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                dumy.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                dumy.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                transAnimation.setDuration(400);
-                cns3.startAnimation(transAnimation);
-                cns3.postDelayed(() -> cns3.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-
-            }, 3700);
-            Handler handler12 = new Handler(Looper.myLooper());
-            handler12.postDelayed(() -> {
-                int[] locationInWindow = new int[2];
-                cns4.getLocationInWindow(locationInWindow);
-                int[] locationOnScreen = new int[2];
-                cns4.getLocationOnScreen(locationOnScreen);
-                float sourceX = locationOnScreen[0];
-                float sourceY = locationOnScreen[1];
-                int[] locationInWindowSecond = new int[2];
-                dumy.getLocationInWindow(locationInWindowSecond);
-                int[] locationOnScreenSecond = new int[2];
-                dumy.getLocationOnScreen(locationOnScreenSecond);
-                float destinationX = locationOnScreenSecond[0];
-                float destinationY = locationOnScreenSecond[1];
-                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                transAnimation.setDuration(400);
-                cns4.startAnimation(transAnimation);
-                cns4.postDelayed(() -> cns4.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-            }, 4100);
-
+            current_sc = 0;
             case2 = 0;
-            tot2 = 50;
-            new Thread(() -> {
-                while (case2 < tot2) {
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    bsscores.post(() -> bsscores.setText("" + case2));
-                    case2++;
-                }
+            tt_case2 = 0;
+            tt_tot2 = 0;
+            total_sc = 0;
+            c_total = 0;
+            ttscores.setText("");
 
-            }).start();
+            final RelativeLayout adsicon = openDialog.findViewById(R.id.adsicon);
+            Animation shake;
+            shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulam);
+            adsicon.startAnimation(shake);
 
 
-            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-            cfx.moveToFirst();
-            tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-            tt_tot2 = tt_case2 + 50;
-            String aStringx = Integer.toString(tt_case2);
-            ttscores.setText(aStringx);
-            myDbHelper.executeSql("UPDATE score SET coins='" + tt_tot2 + "'");
+            rewardvideo.setOnClickListener(v -> {
+                rvo = 2;
+                if (isNetworkAvailable(context)) {
+                    final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
+                    if (fb_reward == 1) {
+                        reward_progressBar.dismiss();
+                        show_reward();
+                        rewardvideo.setVisibility(View.INVISIBLE);
+                    } else new Handler(Looper.myLooper()).postDelayed(() -> {
+                        reward_progressBar.dismiss();
+                        // mShowVideoButton.setVisibility(View.VISIBLE);
+                        if (fb_reward == 1) show_reward();
+                        else {
+
+                            rewarded_adnew();
+                            Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
+                } else
+                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+            });
+            wtp.setOnClickListener(view -> {
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                if (isNetworkAvailable(this)) {
+                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                    if (appinstalled) {
+                        Intent i = new Intent(Intent.ACTION_SEND);
+                        i.setType("text/plain");
+                        i.setPackage("com.whatsapp");
+
+                        String msg = ("நான் சொல்லிஅடி செயலியில் சொல் விளையாட்டில் நிலை " + word_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                        i.putExtra(Intent.EXTRA_TEXT, msg);
+                        startActivity(Intent.createChooser(i, "Share via"));
+                        startActivityForResult(Intent.createChooser(i, "Share via"), 21);
 
 
-            Handler handler13 = new Handler(Looper.myLooper());
-            handler13.postDelayed(() -> new Thread(() -> {
+                    } else
+                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
 
-                while (tt_case2 < tt_tot2) {
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    ttscores.post(() -> ttscores.setText("" + tt_case2));
-                    tt_case2++;
-                }
-
-            }).start(), 2500);
-
-
-            Handler hand = new Handler(Looper.myLooper());
-            hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 3500);
-
-            next_continue.setOnClickListener(view -> {
-                c_counter = 0;
-                current_sc = 0;
-                case2 = 0;
-                tt_case2 = 0;
-                tt_tot2 = 0;
-                c_counter = 0;
-                current_sc = 0;
-                case2 = 0;
-                tt_case2 = 0;
-                tt_tot2 = 0;
-                total_sc = 0;
-                c_total = 0;
-
-
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
-
-                dia_dismiss = 1;
-                openDialog.dismiss();
-                next();
-                sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
-
+                } else
+                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+            });
+            fbs.setOnClickListener(view -> {
 
             });
-        } else if (b_score < tscore) {
-            b_score = 0;
-            arputham.setTypeface(tyr);
-            arputham.setText("Iè ÜŸ¹î‹");
-            extracoin.setTypeface(tyr);
-            extracoin.setText("Ã´î™ ï£íòƒèœ");
-            tx2.setTypeface(tyr);
-            tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
-            next_continue.setTypeface(tyr);
-            next_continue.setText("ªî£ì˜è");
-            String date = sps.getString(Word_Game_Hard.this, "date");
-            if (!date.equals("0")) next_continue.setText("சரி");
-            arputham.setTypeface(tyr);
-            arputham.setText("ï¡Á");
-            extracoin.setTypeface(tyr);
-            extracoin.setText("Ã´î™ ï£íòƒèœ");
-            tx2.setTypeface(tyr);
-            tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
-            next_continue.setTypeface(tyr);
-            next_continue.setText("ªî£ì˜è");
-            String dates = sps.getString(Word_Game_Hard.this, "date");
-            if (!dates.equals("0")) next_continue.setText("சரி");
-            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-            cfx.moveToFirst();
-            tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-            tt_tot2 = tt_case2;
-            String aStringx = Integer.toString(tt_case2);
-            ttscores.setText(aStringx);
-            bsscores.setText("0");
+            gplus.setOnClickListener(view -> {
 
-            next_continue.setVisibility(View.VISIBLE);
-            next_continue.setOnClickListener(view -> {
-                c_counter = 0;
-                current_sc = 0;
-                case2 = 0;
-                tt_case2 = 0;
-                tt_tot2 = 0;
-                tt_tot2 = 0;
-                total_sc = 0;
-                c_total = 0;
+                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
+                if (isNetworkAvailable(this)) {
+                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
+                    if (appinstalled) {
+                        Intent i = new Intent(Intent.ACTION_SEND);
+                        i.setType("text/plain");
+                        i.setPackage("com.google.android.apps.plus");
+
+                        String msg = ("நான் சொல்லிஅடி செயலியில் சொல் விளையாட்டில்  நிலை " + word_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                        i.putExtra(Intent.EXTRA_TEXT, msg);
+                        startActivityForResult(Intent.createChooser(i, "Share via"), 16);
 
 
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
+                    } else
+                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
 
-                dia_dismiss = 1;
-                openDialog.dismiss();
-                next();
-                sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
+                } else
+                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
             });
-        }
 
-        openDialog.setOnDismissListener(dialog -> {
-            if (dia_dismiss != 1) {
+
+            if (b_score >= tscore && f_sec <= ttime) {
+                //condition=1
+                b_score = 0;
+                arputham.setTypeface(tyr);
+                arputham.setText("Iè ÜŸ¹î‹");
+                extracoin.setTypeface(tyr);
+                extracoin.setText("Ã´î™ ï£íòƒèœ");
+                tx2.setTypeface(tyr);
+                tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
+                next_continue.setTypeface(tyr);
+                next_continue.setText("ªî£ì˜è");
+                String date = sps.getString(Word_Game_Hard.this, "date");
+                if (!date.equals("0")) next_continue.setText("சரி");
+                Handler handler1 = new Handler(Looper.myLooper());
+                handler1.postDelayed(() -> {
+                    coin.play(soundId4, sv, sv, 0, 0, sv);
+                    //play1.start();
+                    cns6.setVisibility(View.VISIBLE);
+                }, 500);
+                Handler handler2 = new Handler(Looper.myLooper());
+                handler2.postDelayed(() -> {
+                    //play2.start();
+                    coin.play(soundId4, sv, sv, 0, 0, sv);
+                    cns4.setVisibility(View.VISIBLE);
+                }, 1000);
+                Handler handler3 = new Handler(Looper.myLooper());
+                handler3.postDelayed(() -> {
+                    //play3.start();
+                    coin.play(soundId4, sv, sv, 0, 0, sv);
+                    cns3.setVisibility(View.VISIBLE);
+                }, 1500);
+                Handler handler4 = new Handler(Looper.myLooper());
+                handler4.postDelayed(() -> {
+                    //play4.start();
+                    coin.play(soundId4, sv, sv, 0, 0, sv);
+                    cns1.setVisibility(View.VISIBLE);
+                }, 2000);
+                Handler handler5 = new Handler(Looper.myLooper());
+                handler5.postDelayed(() -> {
+                    //play5.start();
+                    coin.play(soundId4, sv, sv, 0, 0, sv);
+                    cns2.setVisibility(View.VISIBLE);
+                }, 2500);
+                Handler handler6 = new Handler(Looper.myLooper());
+                handler6.postDelayed(() -> {
+                    // play6.start();
+                    coin.play(soundId4, sv, sv, 0, 0, sv);
+                    cns5.setVisibility(View.VISIBLE);
+                }, 3000);
+                Handler handler7 = new Handler(Looper.myLooper());
+                handler7.postDelayed(() -> {
+                    //play7.start();
+                    coin.play(soundId4, sv, sv, 0, 0, sv);
+                    cns7.setVisibility(View.VISIBLE);
+                }, 3500);
+
+                Handler handler8 = new Handler(Looper.myLooper());
+                handler8.postDelayed(() -> {
+                    int[] locationInWindow = new int[2];
+                    cns7.getLocationInWindow(locationInWindow);
+                    int[] locationOnScreen = new int[2];
+                    cns7.getLocationOnScreen(locationOnScreen);
+                    float sourceX = locationOnScreen[0];
+                    float sourceY = locationOnScreen[1];
+                    int[] locationInWindowSecond = new int[2];
+                    dumy.getLocationInWindow(locationInWindowSecond);
+                    int[] locationOnScreenSecond = new int[2];
+                    dumy.getLocationOnScreen(locationOnScreenSecond);
+                    float destinationX = locationOnScreenSecond[0];
+                    float destinationY = locationOnScreenSecond[1];
+                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                    transAnimation.setDuration(400);
+                    cns7.startAnimation(transAnimation);
+                    cns7.postDelayed(() -> cns7.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+
+                }, 3900);
+                Handler handler9 = new Handler(Looper.myLooper());
+                handler9.postDelayed(() -> {
+                    int[] locationInWindow = new int[2];
+                    cns5.getLocationInWindow(locationInWindow);
+                    int[] locationOnScreen = new int[2];
+                    cns5.getLocationOnScreen(locationOnScreen);
+                    float sourceX = locationOnScreen[0];
+                    float sourceY = locationOnScreen[1];
+                    int[] locationInWindowSecond = new int[2];
+                    dumy.getLocationInWindow(locationInWindowSecond);
+                    int[] locationOnScreenSecond = new int[2];
+                    dumy.getLocationOnScreen(locationOnScreenSecond);
+                    float destinationX = locationOnScreenSecond[0];
+                    float destinationY = locationOnScreenSecond[1];
+                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                    transAnimation.setDuration(400);
+                    cns5.startAnimation(transAnimation);
+                    cns5.postDelayed(() -> cns5.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+
+                }, 4300);
+                Handler handler10 = new Handler(Looper.myLooper());
+                handler10.postDelayed(() -> {
+                    int[] locationInWindow = new int[2];
+                    cns2.getLocationInWindow(locationInWindow);
+                    int[] locationOnScreen = new int[2];
+                    cns2.getLocationOnScreen(locationOnScreen);
+                    float sourceX = locationOnScreen[0];
+                    float sourceY = locationOnScreen[1];
+                    int[] locationInWindowSecond = new int[2];
+                    dumy.getLocationInWindow(locationInWindowSecond);
+                    int[] locationOnScreenSecond = new int[2];
+                    dumy.getLocationOnScreen(locationOnScreenSecond);
+                    float destinationX = locationOnScreenSecond[0];
+                    float destinationY = locationOnScreenSecond[1];
+                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                    transAnimation.setDuration(400);
+                    cns2.startAnimation(transAnimation);
+                    cns2.postDelayed(() -> cns2.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+
+                }, 4700);
+                Handler handler11 = new Handler(Looper.myLooper());
+                handler11.postDelayed(() -> {
+                    int[] locationInWindow = new int[2];
+                    cns1.getLocationInWindow(locationInWindow);
+                    int[] locationOnScreen = new int[2];
+                    cns1.getLocationOnScreen(locationOnScreen);
+                    float sourceX = locationOnScreen[0];
+                    float sourceY = locationOnScreen[1];
+                    int[] locationInWindowSecond = new int[2];
+                    dumy.getLocationInWindow(locationInWindowSecond);
+                    int[] locationOnScreenSecond = new int[2];
+                    dumy.getLocationOnScreen(locationOnScreenSecond);
+                    float destinationX = locationOnScreenSecond[0];
+                    float destinationY = locationOnScreenSecond[1];
+                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                    transAnimation.setDuration(400);
+                    cns1.startAnimation(transAnimation);
+                    cns1.postDelayed(() -> cns1.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+
+                }, 5100);
+                Handler handler12 = new Handler(Looper.myLooper());
+                handler12.postDelayed(() -> {
+                    int[] locationInWindow = new int[2];
+                    cns3.getLocationInWindow(locationInWindow);
+                    int[] locationOnScreen = new int[2];
+                    cns3.getLocationOnScreen(locationOnScreen);
+                    float sourceX = locationOnScreen[0];
+                    float sourceY = locationOnScreen[1];
+                    int[] locationInWindowSecond = new int[2];
+                    dumy.getLocationInWindow(locationInWindowSecond);
+                    int[] locationOnScreenSecond = new int[2];
+                    dumy.getLocationOnScreen(locationOnScreenSecond);
+                    float destinationX = locationOnScreenSecond[0];
+                    float destinationY = locationOnScreenSecond[1];
+                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                    transAnimation.setDuration(400);
+                    cns3.startAnimation(transAnimation);
+                    cns3.postDelayed(() -> cns3.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+                }, 5500);
+                Handler handler13 = new Handler(Looper.myLooper());
+                handler13.postDelayed(() -> {
+                    int[] locationInWindow = new int[2];
+                    cns4.getLocationInWindow(locationInWindow);
+                    int[] locationOnScreen = new int[2];
+                    cns4.getLocationOnScreen(locationOnScreen);
+                    float sourceX = locationOnScreen[0];
+                    float sourceY = locationOnScreen[1];
+                    int[] locationInWindowSecond = new int[2];
+                    dumy.getLocationInWindow(locationInWindowSecond);
+                    int[] locationOnScreenSecond = new int[2];
+                    dumy.getLocationOnScreen(locationOnScreenSecond);
+                    float destinationX = locationOnScreenSecond[0];
+                    float destinationY = locationOnScreenSecond[1];
+                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                    transAnimation.setDuration(400);
+                    cns4.startAnimation(transAnimation);
+                    cns4.postDelayed(() -> cns4.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+                }, 5900);
+                Handler handler14 = new Handler(Looper.myLooper());
+                handler14.postDelayed(() -> {
+                    int[] locationInWindow = new int[2];
+                    cns6.getLocationInWindow(locationInWindow);
+                    int[] locationOnScreen = new int[2];
+                    cns6.getLocationOnScreen(locationOnScreen);
+                    float sourceX = locationOnScreen[0];
+                    float sourceY = locationOnScreen[1];
+                    int[] locationInWindowSecond = new int[2];
+                    dumy.getLocationInWindow(locationInWindowSecond);
+                    int[] locationOnScreenSecond = new int[2];
+                    dumy.getLocationOnScreen(locationOnScreenSecond);
+                    float destinationX = locationOnScreenSecond[0];
+                    float destinationY = locationOnScreenSecond[1];
+                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                    transAnimation.setDuration(400);
+                    cns6.startAnimation(transAnimation);
+                    cns6.postDelayed(() -> cns6.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+                }, 6300);
+
+                c_counter = 0;
+                c_total = 70;
+
+                new Thread(() -> {
+                    while (c_counter < c_total) {
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        bsscores.post(() -> bsscores.setText("" + c_counter));
+                        c_counter++;
+                    }
+
+                }).start();
+
+
+                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                cfx.moveToFirst();
+                current_sc = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                total_sc = current_sc + 70;
+                String aStringx = Integer.toString(current_sc);
+                ttscores.setText(aStringx);
+                myDbHelper.executeSql("UPDATE score SET coins='" + total_sc + "'");
+
+                Handler handler15 = new Handler(Looper.myLooper());
+                handler15.postDelayed(() -> new Thread(() -> {
+
+                    while (current_sc < total_sc) {
+                        try {
+                            Thread.sleep(45);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        ttscores.post(() -> ttscores.setText("" + current_sc));
+                        current_sc++;
+                    }
+
+                }).start(), 3900);
+                Handler hand = new Handler(Looper.myLooper());
+                hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 6200);
+
+                next_continue.setOnClickListener(view -> {
+                    c_counter = 0;
+                    current_sc = 0;
+                    case2 = 0;
+                    tt_case2 = 0;
+                    tt_tot2 = 0;
+                    total_sc = 0;
+                    c_total = 0;
+
+
+                    focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();
+
+                    dia_dismiss = 1;
+                    openDialog.dismiss();
+                    next();
+                    sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
+
+
+                });
+            } else if (b_score >= tscore && f_sec > ttime) {
+                //Condition 2
+                b_score = 0;
+                arputham.setTypeface(tyr);
+                arputham.setText("ÜŸ¹î‹");
+                extracoin.setTypeface(tyr);
+                extracoin.setText("Ã´î™ ï£íòƒèœ");
+                tx2.setTypeface(tyr);
+                tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
+                next_continue.setTypeface(tyr);
+                next_continue.setText("ªî£ì˜è");
+                String date = sps.getString(Word_Game_Hard.this, "date");
+                if (!date.equals("0")) next_continue.setText("சரி");
+                Handler handler1 = new Handler(Looper.myLooper());
+                handler1.postDelayed(() -> {
+                    coin.play(soundId4, sv, sv, 0, 0, sv);
+                    //play1.start();
+                    cns5.setVisibility(View.VISIBLE);
+                }, 500);
+                Handler handler2 = new Handler(Looper.myLooper());
+                handler2.postDelayed(() -> {
+                    // play2.start();
+                    coin.play(soundId4, sv, sv, 0, 0, sv);
+                    cns2.setVisibility(View.VISIBLE);
+                }, 1000);
+                Handler handler3 = new Handler(Looper.myLooper());
+                handler3.postDelayed(() -> {
+                    //play3.start();
+                    coin.play(soundId4, sv, sv, 0, 0, sv);
+                    cns1.setVisibility(View.VISIBLE);
+                }, 1500);
+                Handler handler4 = new Handler(Looper.myLooper());
+                handler4.postDelayed(() -> {
+                    // play4.start();
+                    coin.play(soundId4, sv, sv, 0, 0, sv);
+                    cns3.setVisibility(View.VISIBLE);
+                }, 2000);
+                Handler handler5 = new Handler(Looper.myLooper());
+                handler5.postDelayed(() -> {
+                    //play5.start();
+                    coin.play(soundId4, sv, sv, 0, 0, sv);
+                    cns4.setVisibility(View.VISIBLE);
+                }, 2500);
+
+
+                Handler handler8 = new Handler(Looper.myLooper());
+                handler8.postDelayed(() -> {
+                    int[] locationInWindow = new int[2];
+                    cns5.getLocationInWindow(locationInWindow);
+                    int[] locationOnScreen = new int[2];
+                    cns5.getLocationOnScreen(locationOnScreen);
+                    float sourceX = locationOnScreen[0];
+                    float sourceY = locationOnScreen[1];
+                    int[] locationInWindowSecond = new int[2];
+                    dumy.getLocationInWindow(locationInWindowSecond);
+                    int[] locationOnScreenSecond = new int[2];
+                    dumy.getLocationOnScreen(locationOnScreenSecond);
+                    float destinationX = locationOnScreenSecond[0];
+                    float destinationY = locationOnScreenSecond[1];
+                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                    transAnimation.setDuration(400);
+                    cns5.startAnimation(transAnimation);
+                    cns5.postDelayed(() -> cns5.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+
+                }, 2500);
+                Handler handler9 = new Handler(Looper.myLooper());
+                handler9.postDelayed(() -> {
+                    int[] locationInWindow = new int[2];
+                    cns2.getLocationInWindow(locationInWindow);
+                    int[] locationOnScreen = new int[2];
+                    cns2.getLocationOnScreen(locationOnScreen);
+                    float sourceX = locationOnScreen[0];
+                    float sourceY = locationOnScreen[1];
+                    int[] locationInWindowSecond = new int[2];
+                    dumy.getLocationInWindow(locationInWindowSecond);
+                    int[] locationOnScreenSecond = new int[2];
+                    dumy.getLocationOnScreen(locationOnScreenSecond);
+                    float destinationX = locationOnScreenSecond[0];
+                    float destinationY = locationOnScreenSecond[1];
+                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                    transAnimation.setDuration(400);
+                    cns2.startAnimation(transAnimation);
+                    cns2.postDelayed(() -> cns2.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+
+                }, 2900);
+                Handler handler10 = new Handler(Looper.myLooper());
+                handler10.postDelayed(() -> {
+                    int[] locationInWindow = new int[2];
+                    cns1.getLocationInWindow(locationInWindow);
+                    int[] locationOnScreen = new int[2];
+                    cns1.getLocationOnScreen(locationOnScreen);
+                    float sourceX = locationOnScreen[0];
+                    float sourceY = locationOnScreen[1];
+                    int[] locationInWindowSecond = new int[2];
+                    dumy.getLocationInWindow(locationInWindowSecond);
+                    int[] locationOnScreenSecond = new int[2];
+                    dumy.getLocationOnScreen(locationOnScreenSecond);
+                    float destinationX = locationOnScreenSecond[0];
+                    float destinationY = locationOnScreenSecond[1];
+                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                    transAnimation.setDuration(400);
+                    cns1.startAnimation(transAnimation);
+                    cns1.postDelayed(() -> cns1.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+
+                }, 3300);
+                Handler handler11 = new Handler(Looper.myLooper());
+                handler11.postDelayed(() -> {
+                    int[] locationInWindow = new int[2];
+                    cns3.getLocationInWindow(locationInWindow);
+                    int[] locationOnScreen = new int[2];
+                    cns3.getLocationOnScreen(locationOnScreen);
+                    float sourceX = locationOnScreen[0];
+                    float sourceY = locationOnScreen[1];
+                    int[] locationInWindowSecond = new int[2];
+                    dumy.getLocationInWindow(locationInWindowSecond);
+                    int[] locationOnScreenSecond = new int[2];
+                    dumy.getLocationOnScreen(locationOnScreenSecond);
+                    float destinationX = locationOnScreenSecond[0];
+                    float destinationY = locationOnScreenSecond[1];
+                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                    transAnimation.setDuration(400);
+                    cns3.startAnimation(transAnimation);
+                    cns3.postDelayed(() -> cns3.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+
+                }, 3700);
+                Handler handler12 = new Handler(Looper.myLooper());
+                handler12.postDelayed(() -> {
+                    int[] locationInWindow = new int[2];
+                    cns4.getLocationInWindow(locationInWindow);
+                    int[] locationOnScreen = new int[2];
+                    cns4.getLocationOnScreen(locationOnScreen);
+                    float sourceX = locationOnScreen[0];
+                    float sourceY = locationOnScreen[1];
+                    int[] locationInWindowSecond = new int[2];
+                    dumy.getLocationInWindow(locationInWindowSecond);
+                    int[] locationOnScreenSecond = new int[2];
+                    dumy.getLocationOnScreen(locationOnScreenSecond);
+                    float destinationX = locationOnScreenSecond[0];
+                    float destinationY = locationOnScreenSecond[1];
+                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                    transAnimation.setDuration(400);
+                    cns4.startAnimation(transAnimation);
+                    cns4.postDelayed(() -> cns4.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+                }, 4100);
+
+                case2 = 0;
+                tot2 = 50;
+                new Thread(() -> {
+                    while (case2 < tot2) {
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        bsscores.post(() -> bsscores.setText("" + case2));
+                        case2++;
+                    }
+
+                }).start();
+
+
+                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                cfx.moveToFirst();
+                tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                tt_tot2 = tt_case2 + 50;
+                String aStringx = Integer.toString(tt_case2);
+                ttscores.setText(aStringx);
+                myDbHelper.executeSql("UPDATE score SET coins='" + tt_tot2 + "'");
+
+
+                Handler handler13 = new Handler(Looper.myLooper());
+                handler13.postDelayed(() -> new Thread(() -> {
+
+                    while (tt_case2 < tt_tot2) {
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        ttscores.post(() -> ttscores.setText("" + tt_case2));
+                        tt_case2++;
+                    }
+
+                }).start(), 2500);
+
+
+                Handler hand = new Handler(Looper.myLooper());
+                hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 3500);
+
+                next_continue.setOnClickListener(view -> {
+                    c_counter = 0;
+                    current_sc = 0;
+                    case2 = 0;
+                    tt_case2 = 0;
+                    tt_tot2 = 0;
+                    c_counter = 0;
+                    current_sc = 0;
+                    case2 = 0;
+                    tt_case2 = 0;
+                    tt_tot2 = 0;
+                    total_sc = 0;
+                    c_total = 0;
+
+
+                    focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();
+
+                    dia_dismiss = 1;
+                    openDialog.dismiss();
+                    next();
+                    sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
+
+
+                });
+            } else if (b_score < tscore) {
+                b_score = 0;
+                arputham.setTypeface(tyr);
+                arputham.setText("Iè ÜŸ¹î‹");
+                extracoin.setTypeface(tyr);
+                extracoin.setText("Ã´î™ ï£íòƒèœ");
+                tx2.setTypeface(tyr);
+                tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
+                next_continue.setTypeface(tyr);
+                next_continue.setText("ªî£ì˜è");
+                String date = sps.getString(Word_Game_Hard.this, "date");
+                if (!date.equals("0")) next_continue.setText("சரி");
+                arputham.setTypeface(tyr);
+                arputham.setText("ï¡Á");
+                extracoin.setTypeface(tyr);
+                extracoin.setText("Ã´î™ ï£íòƒèœ");
+                tx2.setTypeface(tyr);
+                tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
+                next_continue.setTypeface(tyr);
+                next_continue.setText("ªî£ì˜è");
+                String dates = sps.getString(Word_Game_Hard.this, "date");
+                if (!dates.equals("0")) next_continue.setText("சரி");
+                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                cfx.moveToFirst();
+                tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                tt_tot2 = tt_case2;
+                String aStringx = Integer.toString(tt_case2);
+                ttscores.setText(aStringx);
+                bsscores.setText("0");
+
+                next_continue.setVisibility(View.VISIBLE);
+                next_continue.setOnClickListener(view -> {
+                    c_counter = 0;
+                    current_sc = 0;
+                    case2 = 0;
+                    tt_case2 = 0;
+                    tt_tot2 = 0;
+                    tt_tot2 = 0;
+                    total_sc = 0;
+                    c_total = 0;
+
+
+                    focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();
+
+                    dia_dismiss = 1;
+                    openDialog.dismiss();
+                    next();
+                    sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
+
+                });
+            }
+
+            openDialog.setOnDismissListener(dialog -> {
+                if (dia_dismiss != 1) {
+                    sps.putString(Word_Game_Hard.this, "game_area", "on");
+                    c_counter = 0;
+                    current_sc = 0;
+                    tt_tot2 = 0;
+                    c_counter = 0;
+                    current_sc = 0;
+                    tt_tot2 = 0;
+                    total_sc = 0;
+                    c_total = 0;
+                    case2 = 0;
+                    tt_case2 = 0;
+
+
+                    String date = sps.getString(Word_Game_Hard.this, "date");
+                    if (date.equals("0")) if (main_act.equals("")) {
+                        finish();
+                        openDialog.dismiss();
+                        Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        openDialog.dismiss();
+                        finish();
+                    }
+                    else if (sps.getString(Word_Game_Hard.this, "Exp_list").equals("on")) {
+                        finish();
+                        openDialog.dismiss();
+                        Intent i = new Intent(Word_Game_Hard.this, Expandable_List_View.class);
+                        startActivity(i);
+
+                    } else if (main_act.equals("")) {
+                        finish();
+                        openDialog.dismiss();
+                        Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else {
+                        openDialog.dismiss();
+                        finish();
+                    }
+
+
+                } else dia_dismiss = 0;
+
+            });
+            openDialog.setOnKeyListener((dialog, keyCode, event) -> {
                 sps.putString(Word_Game_Hard.this, "game_area", "on");
-                c_counter = 0;
-                current_sc = 0;
-                tt_tot2 = 0;
-                c_counter = 0;
-                current_sc = 0;
-                tt_tot2 = 0;
-                total_sc = 0;
-                c_total = 0;
-                case2 = 0;
-                tt_case2 = 0;
+                focus.stop();
+                counter = 0;
+                counter3 = 0;
+                focus.stop();
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
 
                 String date = sps.getString(Word_Game_Hard.this, "date");
+                int pos;
+                if (date.equals("0")) pos = 1;
+                else pos = 2;
+
+                myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+                myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+
+                // String date = sps.getString(Word_Game_Hard.this, "date");
                 if (date.equals("0")) if (main_act.equals("")) {
                     finish();
-                    openDialog.dismiss();
                     Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
                     startActivity(i);
-                } else {
-                    openDialog.dismiss();
-                    finish();
-                }
+                } else finish();
                 else if (sps.getString(Word_Game_Hard.this, "Exp_list").equals("on")) {
                     finish();
-                    openDialog.dismiss();
                     Intent i = new Intent(Word_Game_Hard.this, Expandable_List_View.class);
                     startActivity(i);
-
                 } else if (main_act.equals("")) {
                     finish();
-                    openDialog.dismiss();
                     Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
                     startActivity(i);
-                } else {
-                    openDialog.dismiss();
-                    finish();
-                }
+                } else finish();
 
 
-            } else dia_dismiss = 0;
+                //  Toast.makeText(context, "back", Toast.LENGTH_SHORT).show();
 
-        });
-        openDialog.setOnKeyListener((dialog, keyCode, event) -> {
-            sps.putString(Word_Game_Hard.this, "game_area", "on");
-            focus.stop();
-            counter = 0;
-            counter3 = 0;
-            focus.stop();
-            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                // Prevent dialog close on back press button
+                return keyCode == KeyEvent.KEYCODE_BACK;
+            });
 
-
-            String date = sps.getString(Word_Game_Hard.this, "date");
-            int pos;
-            if (date.equals("0")) pos = 1;
-            else pos = 2;
-
-            myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-            myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-
-            // String date = sps.getString(Word_Game_Hard.this, "date");
-            if (date.equals("0")) if (main_act.equals("")) {
-                finish();
-                Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
-                startActivity(i);
-            } else finish();
-            else if (sps.getString(Word_Game_Hard.this, "Exp_list").equals("on")) {
-                finish();
-                Intent i = new Intent(Word_Game_Hard.this, Expandable_List_View.class);
-                startActivity(i);
-            } else if (main_act.equals("")) {
-                finish();
-                Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
-                startActivity(i);
-            } else finish();
-
-
-            //  Toast.makeText(context, "back", Toast.LENGTH_SHORT).show();
-
-            // Prevent dialog close on back press button
-            return keyCode == KeyEvent.KEYCODE_BACK;
-        });
-
-        if (!isFinishing()) openDialog.show();
-    }
+            if (!isFinishing()) openDialog.show();
+        }
 
     protected void onResume() {
         super.onResume();
@@ -5167,12 +5167,26 @@ public class Word_Game_Hard extends AppCompatActivity {
             else pos = 2;
 
             Cursor cs = myDbHelper.getQry("select * from answertable where gameid='" + gameid + "' and levelid='" + letterid + "' and rd='" + pos + "'");
-            cs.moveToFirst();
+          /*  cs.moveToFirst();
             long dscore = 0;
             if (cs.getCount() != 0) dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
             //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
             focus.setBase(SystemClock.elapsedRealtime() + dscore);
-            focus.start();
+            focus.start();*/
+            // Check if the cursor is not null
+            if (cs != null) {
+                if (cs.moveToFirst()) {
+                    long dscore = 0;
+                    if (cs.getCount() != 0) {
+                        dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
+                    }
+                    focus.setBase(SystemClock.elapsedRealtime() + dscore);
+                    focus.start();
+                }
+                cs.close();
+            } else {
+                Log.e("DatabaseError", "Cursor is null. Query might have failed.");
+            }
 
         }
 
@@ -5437,9 +5451,13 @@ public class Word_Game_Hard extends AppCompatActivity {
         if (openDialog_p != null && openDialog_p.isShowing()) {
             openDialog_p.dismiss();
         }
+        if (openDialog != null && openDialog.isShowing()) {
+            openDialog.dismiss();
+        }
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
+
         rewardedAd = null;
         interstitialAd = null;
         handler = null;

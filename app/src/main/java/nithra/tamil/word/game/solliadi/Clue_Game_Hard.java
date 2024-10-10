@@ -3010,13 +3010,14 @@ public class Clue_Game_Hard extends AppCompatActivity {
         if (clue2.length() == 0) {
             //score intial
 
-            Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
-            cfq.moveToFirst();
-            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
-            String tr = String.valueOf(skq);
-            score.setText(tr);
-            //
-            e2 = skq;
+         try(   Cursor cfq = myDbHelper.getQry("SELECT * FROM score ")) {
+             if (cfq.moveToFirst()) {
+             int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
+             String tr = String.valueOf(skq);
+             score.setText(tr);
+             //
+             e2 = skq;
+         }}
             coin.play(soundId4, sv, sv, 0, 0, sv);
             c_coin.setVisibility(View.VISIBLE);
             int[] locationInWindow = new int[2];

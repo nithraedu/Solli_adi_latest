@@ -421,6 +421,8 @@ public class WordsearchGridView extends LinearLayout implements OnKeyListener {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 View v = getChildAtPosition(i * mColumns + j);
+
+                System.out.println("the table data :mBoard" +  board[i][j]);
                 ((TextView) v.findViewById(R.id.lbl_char)).setText("" + board[i][j]);
 
 

@@ -173,7 +173,7 @@ public class WordsearchGridFragment extends Fragment implements WordsearchGridVi
     //private MaxRewardedAd rewardedAd;
 //    private MaxInterstitialAd mInterstitialAd;
     private RewardedAd rewardedAd;
-private AdManagerInterstitialAd interstitialAd ;
+    private AdManagerInterstitialAd interstitialAd;
 
 
     public void showcase_dismiss() {
@@ -210,23 +210,24 @@ private AdManagerInterstitialAd interstitialAd ;
             //Utills.INSTANCE.initializeAdzz(getActivity());
             rewarded_adnew();
             if (sp.getInt(context, "purchase_ads") == 0) {
-               // industrialload();
-                if (!sp.getString(getActivity(), "InterstitialId").equals("")|| sp.getString(getActivity(), "InterstitialId") != null) {
+                // industrialload();
+                if (!sp.getString(getActivity(), "InterstitialId").equals("") || sp.getString(getActivity(), "InterstitialId") != null) {
                     industrialload();
                 }
             }
         }
         //   Utills.INSTANCE.load_add_AppLovin(getActivity(), normal_baner, getResources().getString(R.string.Bottom_Banner));
         if (sp.getInt(context, "purchase_ads") == 0) {
-        if (Utils.isNetworkAvailable(context)) {
-            if (!sp.getString(context, "BannerId").equals("") || sp.getString(context, "BannerId") != null) {
-                System.out.println("Ads Should be not empty : " + sp.getString(context, "BannerId"));
-                Utils.load_add_banner(context, sp.getString(context, "BannerId"), normal_baner);
+            if (Utils.isNetworkAvailable(context)) {
+                if (!sp.getString(context, "BannerId").equals("") || sp.getString(context, "BannerId") != null) {
+                    System.out.println("Ads Should be not empty : " + sp.getString(context, "BannerId"));
+                    Utils.load_add_banner(context, sp.getString(context, "BannerId"), normal_baner);
+                }
+            } else {
+                System.out.println("Ads Should be -- empty : " + sp.getString(context, "BannerId"));
+                normal_baner.setVisibility(View.GONE);
             }
-        } else {
-            System.out.println("Ads Should be -- empty : " + sp.getString(context, "BannerId"));
-            normal_baner.setVisibility(View.GONE);
-        }}else normal_baner.setVisibility(View.GONE);
+        } else normal_baner.setVisibility(View.GONE);
 
 //reward videos process 2***********************
 
@@ -701,7 +702,12 @@ private AdManagerInterstitialAd interstitialAd ;
         System.out.println("----fff sp==app_version " + sp.getInt(getActivity(), "app_version"));
         System.out.println("----fff version_code " + version_code);
         System.out.println("----fff sp======alter " + sp.getString(getActivity(), "alter"));
-
+        //Error fixed for the varthai thedal game-------
+        if (sp.getBoolean(getActivity(), "resetfound" + level_category + level_id)) {
+            tinyDB.putString("found" + level_category + level_id, "");
+            sp.putBoolean(getActivity(), "resetfound" + level_category + level_id, false);
+        }
+        //----------------------------
         if (sp.getString(getActivity(), "alter").equals("done")) {
             if (sp.getInt(getActivity(), "app_version") == version_code) {
 
@@ -735,7 +741,8 @@ private AdManagerInterstitialAd interstitialAd ;
                         tinyDB.putListObject("found" + level_category + level_id, new ArrayList<>(mFoundWords));
                         System.out.println("----fff mFoundWords_alter.size() " + mFoundWords_alter.size());
                     }
-                } catch (JsonSyntaxException e) {
+                } catch (Exception e) {
+                    System.out.println("----fff getMessage " + e.getMessage());
                     // Handle the JSON syntax exception
                     e.printStackTrace(); // or log the error message
                 }
@@ -762,15 +769,22 @@ private AdManagerInterstitialAd interstitialAd ;
 
 
             List<Word> words = tinyDB.getListObject("solutions" + level_category + level_id, Word.class);
-
+            Boolean check = false;
             for (Word word : words) {
                 placeWord(word);
+                System.out.println("Size word:" + word.getWord());
                 System.out.println("Size word:" + word);
+                if (word.getWord() == "null") {
+                    generateBoard();
+                    check = true;
+                    return;
+                }
             }
-
-            words = tinyDB.getListObject("found" + level_category + level_id, Word.class);
-            mFoundWords = new HashSet<Word>(words);
-            wordsearchGridView.wordMaintain(mFoundWords);
+            if (!check) {
+                words = tinyDB.getListObject("found" + level_category + level_id, Word.class);
+                mFoundWords = new HashSet<Word>(words);
+                wordsearchGridView.wordMaintain(mFoundWords);
+            }
         }
 
 
@@ -793,6 +807,8 @@ private AdManagerInterstitialAd interstitialAd ;
 
 
         List<Word> sortedWords = new ArrayList<Word>(mSolution);
+
+        System.out.println("the table data :" + sortedWords);
         //Collections.sort(sortedWords);
         mWordAdapter = new RecyclerAdapter(getActivity(), sortedWords);
         mWordAdapter.setWordsFound(mFoundWords);
@@ -2168,11 +2184,11 @@ private AdManagerInterstitialAd interstitialAd ;
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
         AdManagerInterstitialAd.load(requireActivity(), sp.getString(requireContext(), "InterstitialId"), adRequest,
 
-        new AdManagerInterstitialAdLoadCallback() {
+                new AdManagerInterstitialAdLoadCallback() {
                     @Override
                     public void onAdLoaded(@NonNull AdManagerInterstitialAd interstitial) {
                         interstitialAd = interstitial;
-                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
+                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
                             public void onAdClicked() {
                                 // Called when a click is recorded for an ad.
@@ -2182,7 +2198,7 @@ private AdManagerInterstitialAd interstitialAd ;
                             @Override
                             public void onAdDismissedFullScreenContent() {
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
-                               interstitialAd = null;
+                                interstitialAd = null;
                                 handler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 winning_report();
@@ -2192,7 +2208,7 @@ private AdManagerInterstitialAd interstitialAd ;
                             @Override
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
-                               interstitialAd = null;
+                                interstitialAd = null;
                                 handler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sp.putInt(requireActivity(), "Game3_Stage_Close_ST", 0);
@@ -2213,6 +2229,7 @@ private AdManagerInterstitialAd interstitialAd ;
                         });
 
                     }
+
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
@@ -2226,9 +2243,8 @@ private AdManagerInterstitialAd interstitialAd ;
     }
 
 
-
     public void adShow() {
-        if (sp.getInt(context, "Game3_Stage_Close_ST") == Integer.parseInt( sp.getString(requireContext(), "showCountOther")) && interstitialAd != null) {
+     /*   if (sp.getInt(context, "Game3_Stage_Close_ST") == Integer.parseInt( sp.getString(requireContext(), "showCountOther")) && interstitialAd != null) {
             sp.putInt(context, "Game3_Stage_Close_ST", 0);
             Utills.INSTANCE.Loading_Dialog(requireActivity());
             handler = new Handler(Looper.myLooper());
@@ -2243,7 +2259,36 @@ private AdManagerInterstitialAd interstitialAd ;
                 sp.putInt(context, "Game3_Stage_Close_ST", 0);
             winning_report();
             //Toast.makeText(context, ""+sp.getInt(context, "Game3_Stage_Close_ST"), Toast.LENGTH_SHORT).show();
+        }*/
+
+        String showCountStr = sp.getString(requireContext(), "showCountOther");
+        if (showCountStr != null && !showCountStr.isEmpty()) {
+            int showCount = Integer.parseInt(showCountStr);
+            if (sp.getInt(context, "Game3_Stage_Close_ST") == showCount && interstitialAd != null) {
+                sp.putInt(context, "Game3_Stage_Close_ST", 0);
+                Utills.INSTANCE.Loading_Dialog(requireActivity());
+                handler = new Handler(Looper.myLooper());
+                my_runnable = () -> {
+                    if (interstitialAd == null) {
+                        winning_report();
+                    } else {
+                        interstitialAd.show(requireActivity());
+                    }
+                };
+                handler.postDelayed(my_runnable, 2500);
+            } else {
+                sp.putInt(context, "Game3_Stage_Close_ST", sp.getInt(context, "Game3_Stage_Close_ST") + 1);
+                if (sp.getInt(context, "Game3_Stage_Close_ST") > showCount) {
+                    sp.putInt(context, "Game3_Stage_Close_ST", 0);
+                }
+                winning_report();
+            }
+        } else {
+            // Handle the case when "showCountOther" is missing or invalid
+            Log.e("AdShowError", "'showCountOther' is null or empty");
+            // Fallback action
         }
+
 
     }
 
@@ -2267,7 +2312,7 @@ private AdManagerInterstitialAd interstitialAd ;
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
-                        reward_status=0;
+                        reward_status = 0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override

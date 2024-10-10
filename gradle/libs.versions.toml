@@ -1,7 +1,8 @@
 [versions]
-agp = "8.3.2"
+agp = "8.5.2"
 billing = "6.1.0"
-core = "1.10.3"
+review = "2.0.1"
+update = "2.1.0"
 firebase-config = "21.6.2"
 firebase-core = "21.1.1"
 firebase-inappmessaging-display = "20.4.0"
@@ -32,7 +33,9 @@ androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "mult
 androidx-runner = { module = "androidx.test:runner", version.ref = "runner" }
 billing = { module = "com.android.billingclient:billing", version.ref = "billing" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
-core = { module = "com.google.android.play:core", version.ref = "core" }
+
+play-review = { module = "com.google.android.play:review", version.ref = "review" }
+play-update = { module = "com.google.android.play:app-update", version.ref = "update" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 firebase-config = { module = "com.google.firebase:firebase-config", version.ref = "firebase-config" }
 firebase-core = { module = "com.google.firebase:firebase-core", version.ref = "firebase-core" }

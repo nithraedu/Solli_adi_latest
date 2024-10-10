@@ -5,7 +5,6 @@ import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_updat
 import static nithra.tamil.word.game.solliadi.Utils.isNetworkAvailable;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -19,8 +18,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -3099,14 +3096,17 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
         //score intial
 
-        Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
-        cfq.moveToFirst();
+        try(  Cursor cfq = myDbHelper.getQry("SELECT * FROM score ")){
+            if (cfq != null && cfq.moveToFirst()) {
         int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
         String tr = String.valueOf(skq);
         score.setText(tr);
         //
         e2 = skq;
-        //
+            }
+        }catch (Exception ignored){
+
+        }
 
         coin.play(soundId4, sv, sv, 0, 0, sv);
         c_coin.setVisibility(View.VISIBLE);
