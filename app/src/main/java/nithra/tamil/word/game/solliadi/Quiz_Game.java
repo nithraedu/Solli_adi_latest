@@ -121,8 +121,11 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
     TextView word1, word2, word3, word4, word5, word6, ans, dis, close;
     LinearLayout ads_lay,adsLay1;
 
-    Handler handler;
-    Runnable my_runnable;
+    private final long countdownDuration = 30000; // 30 seconds in milliseconds
+    private Handler timerHandler;
+    private Runnable timerRunnable;
+    private boolean isTimerRunning = false;
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -148,6 +151,10 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz__game);
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
         newhelper5 = new Newgame_DataBaseHelper5(this);
@@ -235,14 +242,66 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                 if (position == 1) {
                     sps.putString(Quiz_Game.this, "qz_time_start", "yes");
                     sps.putString(Quiz_Game.this, "showcase_dismiss_qz", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                    startChronometerCountdown(countdownDuration); // initial 30 seconds
+
                 }
             });
             sps.putString(Quiz_Game.this, "qz_intro", "no");
             sequence.start();
         }
 
+    }
+
+    private void startChronometerCountdown(long durationInMillis) {
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Check if timerHandler is null and initialize it if necessary
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        if (timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+        // Create a new Runnable for the countdown
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+                if (remainingMillis <= 0) {
+                    focus.stop();
+                    isTimerRunning = false;
+                    showExtendTimeDialog();  // Show dialog when time is up
+                } else {
+                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                }
+            }
+        };
+
+        // Post the Runnable to start the countdown
+        timerHandler.postDelayed(timerRunnable, 500);
+        isTimerRunning = true;
+    }
+
+    private void showExtendTimeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Quiz_Game.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            startChronometerCountdown(countdownDuration); // Restart with another 30s
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+            // handle what happens if user says no (optional)
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void find() {
@@ -364,8 +423,8 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                 if (sps.getString(Quiz_Game.this, "resume_qza").equals("")) {
                     sps.putString(Quiz_Game.this, "resume_qza", "yes");
                 } else {
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                    startChronometerCountdown(countdownDuration); // initial 30 seconds
+
                 }
             }
         } else {
@@ -671,13 +730,6 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
 
     }
 
-    public void change_red() {
-        c_button1.setBackgroundResource(R.drawable.button3);
-        c_button2.setBackgroundResource(R.drawable.button3);
-        c_button3.setBackgroundResource(R.drawable.button3);
-        c_button4.setBackgroundResource(R.drawable.button3);
-    }
-
     public void setSc() {
         if (s == 1) {
             openDialog_p.dismiss();
@@ -947,70 +999,6 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         }
     }
 
-
-    /*private void industrialload() {
-        //AppLovinSdk.getInstance( this ).showMediationDebugger();
-        AppLovinSdk.getInstance(this).setMediationProvider("max");
-        AppLovinSdk.initializeSdk(this, new AppLovinSdk.SdkInitializationListener() {
-            @Override
-            public void onSdkInitialized(AppLovinSdkConfiguration config) {
-                // AppLovin SDK is initialized, start loading ads
-                if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
-                System.out.println("ad shown  showAdWithDelay initialize done ");
-                mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Viliyodu_Vilaiyadu_Ins), Quiz_Game.this);
-                mInterstitialAd.setListener(new MaxAdListener() {
-                    @Override
-                    public void onAdLoaded(MaxAd ad) {
-                        System.out.println("ad shown loaded : " + ad.getWaterfall());
-                    }
-
-                    @Override
-                    public void onAdDisplayed(MaxAd ad) {
-                        handler = null;
-                    }
-
-                    @Override
-                    public void onAdHidden(MaxAd ad) {
-                        Log.d("TAG", "Ad dismissed fullscreen content.");
-                        mInterstitialAd = null;
-                        handler = null;
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        setSc();
-                        industrialload();
-                    }
-
-                    @Override
-                    public void onAdClicked(MaxAd ad) {
-
-                    }
-
-                    @Override
-                    public void onAdLoadFailed(String adUnitId, MaxError error) {
-                        Log.d("TAG", error.toString());
-                        mInterstitialAd = null;
-                        handler = null;
-                        Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
-                    }
-
-                    @Override
-                    public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                        Log.e("TAG", "Ad failed to show fullscreen content.");
-                        mInterstitialAd = null;
-                        handler = null;
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
-                        setSc();
-                    }
-                });
-
-                // Load the first ad
-                mInterstitialAd.loadAd();
-
-            }
-        });
-
-    }*/
-
     public boolean appInstalledOrNot(String uri) {
         PackageManager pm = getPackageManager();
         boolean app_installed = false;
@@ -1041,7 +1029,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                             public void onAdDismissedFullScreenContent() {
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 setSc();
                                 industrialload();
@@ -1051,7 +1039,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
                                 setSc();
@@ -1076,33 +1064,13 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
                         interstitialAd = null;
-                        handler = null;
+                        timerHandler = null;
                         Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                     }
 
                 });
 
     }
-
-    /*public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
-            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
-            handler = new Handler(Looper.myLooper());
-            my_runnable = () -> {
-                if (interstitialAd == null) setSc();
-                else interstitialAd.show(this);
-            };
-            handler.postDelayed(my_runnable, 2500);
-        } else {
-            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
-            if (sps.getInt(this, "Game1_Stage_Close_VV") > *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
-                sps.putInt(this, "Game1_Stage_Close_VV", 0);
-            setSc();
-            //Toast.makeText(this, "" + sps.getInt(this, "Game1_Stage_Close_VV"), Toast.LENGTH_SHORT).show();
-        }
-
-    }*/
 
     public void adShow() {
         // Retrieve the value from SharedPreferences
@@ -1213,62 +1181,54 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
     @Override
     protected void onPause() {
         super.onPause();
-        System.out.println("#################OnStop");
-        if (handler != null) handler.removeCallbacks(my_runnable);
-        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-        focus.stop();
-
-        String date = sps.getString(Quiz_Game.this, "date");
-        int pos;
-        if (date.equals("0")) {
-            pos = 1;
-            newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
-        } else {
-            pos = 2;
-            newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
+        if (timerHandler != null) {
+            if (timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+            }
         }
     }
-
     @Override
     protected void onResume() {
         super.onResume();
-        if (handler != null) handler.postDelayed(my_runnable, 1000);
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV"));
+        // Ensure timerHandler is initialized
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
         if (sps.getString(Quiz_Game.this, "resume_qz").equals("")) {
             sps.putString(Quiz_Game.this, "resume_qz", "yes");
         } else {
-            String date = sps.getString(Quiz_Game.this, "date");
-            int pos;
-            if (date.equals("0")) {
-                pos = 1;
-            } else {
-                pos = 2;
-            }
             Cursor cs = newhelper5.getQry("select * from newgames5 where gameid='" + gameid + "' and questionid='" + question_id + "'");
             cs.moveToFirst();
             long dscore = 0;
             if (cs.getCount() != 0) {
                 dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
             }
-            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-            focus.start();
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
         }
-
     }
 
     public void showcase_dismiss() {
+        // Initialize timerHandler if it's null
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
         Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
-
             if (sps.getString(Quiz_Game.this, "showcase_dismiss_qz").equals("")) {
                 showcase_dismiss();
             } else {
                 sps.putString(Quiz_Game.this, "qz_time_start", "yes");
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
-
+                startChronometerCountdown(countdownDuration); // initial 30 seconds
             }
-
         }, 800);
     }
 
@@ -1279,23 +1239,19 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         TextView yes = openDialog_p.findViewById(R.id.yes);
         TextView no = openDialog_p.findViewById(R.id.no);
 
-        yes.setOnClickListener(v -> {
+        if (isTimerRunning) {
+            timerHandler.removeCallbacks(timerRunnable);
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
             focus.stop();
+        }
+
+        yes.setOnClickListener(v -> {
 
             focus.stop();
             ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
 
             String date = sps.getString(Quiz_Game.this, "date");
-            int pos;
-            if (date.equals("0")) {
-                pos = 1;
-            } else {
-                pos = 2;
-            }
-
-            newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
-
             // String date = sps.getString(Quiz_Game.this, "date");
             if (date.equals("0")) {
                 if (main_act.equals("")) {
@@ -1325,22 +1281,36 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             openDialog_p.dismiss();
 
         });
-        no.setOnClickListener(v -> openDialog_p.dismiss());
+        no.setOnClickListener(v ->{
+            openDialog_p.dismiss();
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
+
+        openDialog_p.setOnDismissListener(dialog -> {
+            // Check if the timer was paused and resume if necessary
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
 
         openDialog_p.show();
-
 
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (timerHandler != null) {
+            timerHandler.removeCallbacksAndMessages(null);
+            timerHandler = null;
+        }
         if (openDialog_p != null && openDialog_p.isShowing()) {
             openDialog_p.cancel();
         }
         rewardedAd = null;
         interstitialAd = null;
-        handler = null;
     }
 
     private void soundset() {

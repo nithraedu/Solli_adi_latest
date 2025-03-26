@@ -164,8 +164,14 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
     //RewardedVideoAd rewardedVideoAd;
-    Handler handler;
-    Runnable my_runnable;
+/*    Handler handler;
+    Runnable my_runnable;*/
+
+    private final long countdownDuration = 30000; // 30 seconds in milliseconds
+    private Handler timerHandler;
+    private Runnable timerRunnable;
+    private boolean isTimerRunning = false;
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -181,10 +187,16 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
                 TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
                 TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
+                if (isTimerRunning) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                }
+
                 yes.setOnClickListener(v -> {
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                     focus.stop();
-                    newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                   // newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
                     newhelper.executeSql("UPDATE newmaintable SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
 
                     if (main_act.equals("")) {
@@ -199,7 +211,18 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
                     openDialog_p.dismiss();
                 });
-                no.setOnClickListener(v -> openDialog_p.dismiss());
+                no.setOnClickListener(v -> {
+                    openDialog_p.dismiss();
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
+                openDialog_p.setOnDismissListener(dialog -> {
+                    // Check if the timer was paused and resume if necessary
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 openDialog_p.show();
 
 
@@ -236,6 +259,11 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_odd_man_out);
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
         exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
@@ -322,9 +350,10 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
                 if (position == 1) {
                     sps.putString(Odd_man_out.this, "odd_time_start", "yes");
                     sps.putString(Odd_man_out.this, "showcase_dismiss_odd", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
+                  /*  focus.setBase(SystemClock.elapsedRealtime());
                     focus.start();
-
+*/
+                    startChronometerCountdown(countdownDuration); // initial 30 seconds
                 }
             });
 
@@ -758,6 +787,59 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
     }
 
+    private void startChronometerCountdown(long durationInMillis) {
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Check if timerHandler is null and initialize it if necessary
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        if (timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+
+        // Create a new Runnable for the countdown
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+                if (remainingMillis <= 0) {
+                    focus.stop();
+                    isTimerRunning = false;
+                    showExtendTimeDialog();  // Show dialog when time is up
+                } else {
+                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                }
+            }
+        };
+
+        // Post the Runnable to start the countdown
+        timerHandler.postDelayed(timerRunnable, 500);
+        isTimerRunning = true;
+    }
+
+    private void showExtendTimeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Odd_man_out.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            startChronometerCountdown(countdownDuration); // Restart with another 30s
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+            // handle what happens if user says no (optional)
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private void next() {
 
         myFadeInAnimation = AnimationUtils.loadAnimation(Odd_man_out.this, R.anim.blink_animation);
@@ -988,8 +1070,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
                 if (sps.getString(Odd_man_out.this, "odd_time_start").equals("")) {
 
                 } else {
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                  /*  focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();*/
+                    startChronometerCountdown(countdownDuration); // initial 30 seconds
 
                 }
             }
@@ -1356,19 +1439,26 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
     @Override
     protected void onPause() {
         super.onPause();
-        if (handler != null) handler.removeCallbacks(my_runnable);
-        focus.stop();
-        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            if (timerHandler != null) {
+                if (timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                }
+                if (isTimerRunning) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                }
+              }
         String date = sps.getString(Odd_man_out.this, "date");
         System.out.println("######################Timer ttstop" + ttstop);
         int pos;
         if (date.equals("0")) {
             pos = 1;
-            newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+            ////newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
             newhelper.executeSql("UPDATE newmaintable SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
         } else {
             pos = 2;
-            newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+           // newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
             newhelper.executeSql("UPDATE newmaintable SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
         }
 
@@ -1376,9 +1466,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
     protected void onResume() {
         super.onResume();
-        if (handler != null) handler.postDelayed(my_runnable, 1000);
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV"));
-
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         long ptime = 0;
         int clue = 0;
         Cursor cs;
@@ -1398,9 +1488,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
 
         } else {
-
-            focus.setBase(SystemClock.elapsedRealtime() + ptime);
-            focus.start();
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
 
         }
 
@@ -2439,65 +2529,6 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
             } else {
                 Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
             }
-/*
-
-            rvo = 1;
-            if (isNetworkAvailable()) {
-                final ProgressDialog reward_progressBar = ProgressDialog.show(Odd_man_out.this, "" + "Reward video", "Loading...");
-
-               */
-/*
-
-                if (mRewardedVideoAd.isLoaded()) {
-
-                    focus.stop();
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    String date = sps.getString(Odd_man_out.this, "date");
-                    System.out.println("######################Timer ttstop"+ttstop);
-                    int pos;
-                    if (date.equals("0")) {
-                        pos = 1;
-                        newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                        newhelper.executeSql("UPDATE newmaintable SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                    } else {
-                        pos = 2;
-                        newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-                        newhelper.executeSql("UPDATE newmaintable SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-                    }
-                    reward_progressBar.dismiss();
-                    showRewardedVideo();
-                    openDialog_earncoin.cancel();
-
-                    // mShowVideoButton.setVisibility(View.VISIBLE);
-                } else {
-
-
-                    startGame();
-
-                    new Handler(Looper.myLooper()).postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            reward_progressBar.dismiss();
-                            if (mRewardedVideoAd.isLoaded()) {
-                                showRewardedVideo();
-                                openDialog_earncoin.cancel();
-                                // mShowVideoButton.setVisibility(View.VISIBLE);
-                            } else {
-                                startGame();
-                                Toast.makeText(Odd_man_out.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }, 2000);
-
-
-                }
-            } else {
-
-                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
-            }
-*/
-
         });
 
         wp.setOnClickListener(view -> {
@@ -3140,7 +3171,7 @@ public void industrialload() {
                         public void onAdDismissedFullScreenContent() {
                             Log.d("TAG", "Ad dismissed fullscreen content.");
                             interstitialAd = null;
-                            handler = null;
+                            timerHandler = null;
                             Utills.INSTANCE.Loading_Dialog_dismiss();
                             setSc();
                             industrialload();
@@ -3150,7 +3181,7 @@ public void industrialload() {
                         public void onAdFailedToShowFullScreenContent(AdError adError) {
                             Log.e("TAG", "Ad failed to show fullscreen content.");
                             interstitialAd = null;
-                            handler = null;
+                            timerHandler = null;
                             Utills.INSTANCE.Loading_Dialog_dismiss();
                             sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
                             setSc();
@@ -3174,7 +3205,7 @@ public void industrialload() {
                 public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                     Log.d("TAG", loadAdError.toString());
                     interstitialAd = null;
-                    handler = null;
+                    timerHandler = null;
                     Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                 }
 
@@ -3991,16 +4022,22 @@ public void industrialload() {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //uiHelper.onDestroy();
+        if (timerHandler != null) {
+            timerHandler.removeCallbacksAndMessages(null);
+            timerHandler = null;
+        }
         if (openDialog_p != null && openDialog_p.isShowing()) {
-            openDialog_p.dismiss();
+            openDialog_p.cancel();
         }
         rewardedAd = null;
         interstitialAd = null;
-        handler = null;
     }
 
     public void showcase_dismiss() {
+        // Initialize timerHandler if it's null
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
 
@@ -4008,12 +4045,8 @@ public void industrialload() {
                 showcase_dismiss();
             } else {
                 sps.putString(Odd_man_out.this, "odd_time_start", "yes");
-
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
-
+                startChronometerCountdown(countdownDuration); // initial 30 seconds
             }
-
         }, 800);
     }
 

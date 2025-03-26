@@ -162,10 +162,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
     FirebaseAnalytics mFirebaseAnalytics;
     int f_sec;
     int dia_dismiss = 0;
-    Handler handler;
-    Runnable my_runnable;
-    //private MaxRewardedAd rewardedAd;
-    // private MaxInterstitialAd mInterstitialAd;
+    private final long countdownDuration = 30000; // 30 seconds in milliseconds
+    private Handler timerHandler;
+    private Runnable timerRunnable;
+    private boolean isTimerRunning = false;
     private RewardedAd rewardedAd;
     private AdManagerInterstitialAd interstitialAd;
 
@@ -198,6 +198,12 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_match__word);
+
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
         exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
@@ -344,8 +350,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                     if (position == 1) {
                         sps.putString(Match_Word.this, "mtc_time_start", "yes");
                         sps.putString(Match_Word.this, "showcase_dismiss_mw", "yes");
-                        focus.setBase(SystemClock.elapsedRealtime());
-                        focus.start();
+                        startChronometerCountdown(countdownDuration);
 
                     }
                 }
@@ -921,6 +926,58 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 }
             }
         });
+    }
+
+    private void startChronometerCountdown(long durationInMillis) {
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Check if timerHandler is null and initialize it if necessary
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        if (timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+        // Create a new Runnable for the countdown
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+                if (remainingMillis <= 0) {
+                    focus.stop();
+                    isTimerRunning = false;
+                    showExtendTimeDialog();  // Show dialog when time is up
+                } else {
+                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                }
+            }
+        };
+
+        // Post the Runnable to start the countdown
+        timerHandler.postDelayed(timerRunnable, 500);
+        isTimerRunning = true;
+    }
+
+    private void showExtendTimeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Match_Word.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            startChronometerCountdown(countdownDuration); // Restart with another 30s
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+            // handle what happens if user says no (optional)
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void user_ask() {
@@ -1755,8 +1812,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         if (sps.getString(Match_Word.this, "mtc_time_start").equals("")) {
 
         } else {
-            focus.setBase(SystemClock.elapsedRealtime());
-            focus.start();
+            startChronometerCountdown(countdownDuration);
         }
 
         value_ans1.setClickable(true);
@@ -2250,13 +2306,18 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 openDialog_p.setContentView(R.layout.back_pess);
                 TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
                 TextView no = (TextView) openDialog_p.findViewById(R.id.no);
+                if (isTimerRunning) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                }
 
                 yes.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                         focus.stop();
-                        newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                       // newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
                         newhelper.executeSql("UPDATE newmaintable SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
                         if (main_act.equals("")) {
                             finish();
@@ -2271,11 +2332,17 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
                     }
                 });
-                no.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                no.setOnClickListener(v ->{
+                    openDialog_p.dismiss();
+                    if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                    }
+                } );
 
-                        openDialog_p.dismiss();
+                openDialog_p.setOnDismissListener(dialog -> {
+                    // Check if the timer was paused and resume if necessary
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
                     }
                 });
                 openDialog_p.show();
@@ -2287,20 +2354,15 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
     protected void onResume() {
         super.onResume();
-        if (handler != null) handler.postDelayed(my_runnable, 1000);
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV"));
-
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Match_Word.this);
         Bundle params = new Bundle();
         params.putString("screen_name", "Find Equal word Game");
         params.putString("screen_class", "Match_Word");
         mFirebaseAnalytics.logEvent("screen_view", params);
-
-        String date = sps.getString(Match_Word.this, "date");
-        int pos;
-        if (date.equals("0")) {
-        } else {
-        }
 
         Cursor cs = newhelper.getQry("select * from newmaintable where gameid='" + gameid + "' and questionid='" + questionid + "'");
         cs.moveToFirst();
@@ -2308,13 +2370,12 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         if (cs.getCount() != 0) {
             dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
         }
-        //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
-
         if (sps.getString(Match_Word.this, "mtc_time_start").equals("")) {
 
         } else {
-            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-            focus.start();
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
         }
 
     }
@@ -3558,20 +3619,16 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
     @Override
     protected void onPause() {
         super.onPause();
-        if (handler != null) handler.removeCallbacks(my_runnable);
-        focus.stop();
-        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-        String date = sps.getString(Match_Word.this, "date");
-        int pos;
-        if (date.equals("0")) {
-            newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-            //  myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-        } else {
-            newhelper.executeSql("UPDATE newmaintable SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-            //  myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+        if (timerHandler != null) {
+            if (timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+            }
         }
-
-
     }
 
     public void showpopup() {
@@ -4591,7 +4648,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                             public void onAdDismissedFullScreenContent() {
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 setSc();
                                 industrialload();
@@ -4601,7 +4658,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
                                 setSc();
@@ -4626,7 +4683,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
                         interstitialAd = null;
-                        handler = null;
+                        timerHandler = null;
                         Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                     }
 
@@ -5882,17 +5939,23 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // uiHelper.onDestroy();
+        if (timerHandler != null) {
+            timerHandler.removeCallbacksAndMessages(null);
+            timerHandler = null;
+        }
         if (openDialog_p != null && openDialog_p.isShowing()) {
-            openDialog_p.dismiss();
+            openDialog_p.cancel();
         }
         rewardedAd = null;
         interstitialAd = null;
-        handler = null;
     }
 
 
     public void showcase_dismiss() {
+        // Initialize timerHandler if it's null
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
 
@@ -5900,9 +5963,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 showcase_dismiss();
             } else {
                 sps.putString(context, "mtc_time_start", "yes");
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
-
+                startChronometerCountdown(countdownDuration);
             }
 
         }, 800);

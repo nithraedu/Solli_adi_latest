@@ -56,6 +56,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
+import androidx.cardview.widget.CardView;
 
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.FullScreenContentCallback;
@@ -94,6 +95,8 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
     static int ry;
     static int rvo = 0;
     static int mCoinCount = 20;
+    static int questionCounter = 0; // Add counter for questions
+    static int skipCounter = 0; // Add counter for skips
     final SharedPreference sps = new SharedPreference();
     final String gameid = "11";
     final Context context = this;
@@ -133,7 +136,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
     Typeface typ, tyr;
     String retype = "s";
     long ttstop;
-    LinearLayout adds, list4,adsLay1;
+    LinearLayout adds, list4, adsLay1;
     LinearLayout qtw;
     Dialog openDialog_p;
     int s = 0;
@@ -157,12 +160,19 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
     int dia_dismiss = 0;
     //RewardedVideoAd rewardedVideoAd;
 
-    Handler handler;
-    Runnable my_runnable;
-   // private MaxRewardedAd rewardedAd;
+/*    Handler handler;
+    Runnable my_runnable;*/
+    // private MaxRewardedAd rewardedAd;
     //private MaxInterstitialAd mInterstitialAd;
-   private RewardedAd rewardedAd;
-    private AdManagerInterstitialAd interstitialAd ;
+
+    private final long countdownDuration = 30000; // 30 seconds in milliseconds
+    private Handler timerHandler;
+    private Runnable timerRunnable;
+    private boolean isTimerRunning = false;
+    private RewardedAd rewardedAd;
+    private AdManagerInterstitialAd interstitialAd;
+
+    LinearLayout skip_btn;
 
 
     @Override
@@ -184,12 +194,20 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_error_correction);
+
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
         exdb = openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
         dbs = openOrCreateDatabase("Newgames.db", MODE_PRIVATE, null);
         dbn = openOrCreateDatabase("Newgames2.db", MODE_PRIVATE, null);
         dbn2 = openOrCreateDatabase("Newgames3.db", MODE_PRIVATE, null);
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
+
+        skip_btn = findViewById(R.id.skip_btn);
 
         if (sps.getString(WordError_correction.this, "new_user_db").equals("")) {
 
@@ -243,18 +261,18 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
 
-      //  Utills.INSTANCE.initializeAdzz(this);
+        //  Utills.INSTANCE.initializeAdzz(this);
         rewarded_adnew();
         if (sps.getInt(WordError_correction.this, "purchase_ads") == 0) {
-           // industrialload();
-            if (!sps.getString(WordError_correction.this, "InterstitialId").equals("")|| sps.getString(WordError_correction.this, "InterstitialId") != null) {
+            // industrialload();
+            if (!sps.getString(WordError_correction.this, "InterstitialId").equals("") || sps.getString(WordError_correction.this, "InterstitialId") != null) {
                 industrialload();
             }
         }
         find();
         adds = findViewById(R.id.ads_lay);
         adsLay1 = findViewById(R.id.adsLay1);
-       // Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
+        // Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
         if (sps.getInt(WordError_correction.this, "purchase_ads") == 0) {
             if (Utils.isNetworkAvailable(context)) {
                 if (!sps.getString(context, "BannerId").equals("") || sps.getString(context, "BannerId") != null) {
@@ -269,7 +287,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                 );
                 adsLay1.setVisibility(View.GONE);
             }
-        }else adsLay1.setVisibility(View.GONE);
+        } else adsLay1.setVisibility(View.GONE);
 
         openDialog_s = new Dialog(WordError_correction.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
@@ -337,8 +355,9 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                 if (position == 1) {
                     sps.putString(WordError_correction.this, "Error_time_start", "yes");
                     sps.putString(WordError_correction.this, "showcase_dismiss_errc", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                   /* focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();*/
+                    startChronometerCountdown(ttstop);
 
                 }
             });
@@ -719,10 +738,86 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             permission(a);
         });
 
+        skip_btn.setOnClickListener(v -> {
+            focus.stop();
+            skipCounter++; // Increment skip counter
+
+            // Show congratulations dialog after every 5 skips
+            if (skipCounter % 5 == 0) {
+                showCompletionDialog();
+            }
+
+            // Update the current question as finished in the database
+            String date = sps.getString(WordError_correction.this, "date");
+            if (date.equals("0")) {
+                newhelper3.executeSql("UPDATE right_order SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+            } else {
+                newhelper3.executeSql("UPDATE right_order SET daily=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+            }
+            next();
+        });
 
     }
 
+    private void startChronometerCountdown(long durationInMillis) {
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Check if timerHandler is null and initialize it if necessary
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        if (timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+        // Create a new Runnable for the countdown
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+                if (remainingMillis <= 0) {
+                    focus.stop();
+                    isTimerRunning = false;
+                    showExtendTimeDialog();  // Show dialog when time is up
+                } else {
+                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                }
+            }
+        };
+
+        // Post the Runnable to start the countdown
+        timerHandler.postDelayed(timerRunnable, 500);
+        isTimerRunning = true;
+    }
+
+    private void showExtendTimeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(WordError_correction.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            startChronometerCountdown(countdownDuration); // Restart with another 30s
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+            // handle what happens if user says no (optional)
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private void next() {
+        questionCounter++; // Increment counter
+
+        // Show completion dialog after every 5 questions
+        if (questionCounter % 5 == 0) {
+            showCompletionDialog();
+        }
 
         c_edit.setText("");
         ans_high.setVisibility(View.GONE);
@@ -828,13 +923,15 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             if (playtime == 0) {
 
                 if (sps.getString(WordError_correction.this, "Error_time_start").equals("yes")) {
-                    focus.setBase(SystemClock.elapsedRealtime() + playtime);
-                    focus.start();
+                   /* focus.setBase(SystemClock.elapsedRealtime() + playtime);
+                    focus.start();*/
+                    startChronometerCountdown(countdownDuration);
                 }
 
             } else {
-                focus.setBase(SystemClock.elapsedRealtime() + playtime);
-                focus.start();
+               /* focus.setBase(SystemClock.elapsedRealtime() + playtime);
+                focus.start();*/
+                startChronometerCountdown(countdownDuration);
 
 
             }
@@ -1707,10 +1804,10 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             bt3.setText(word3);
             bt4.setText(letter4);
             bt5.setText(letter6);
-            bt6.setText(word1);
-            bt7.setText(letter7);
+            bt6.setText(letter7);
+            bt7.setText(letter10);
             bt8.setText(letter3);
-            bt9.setText(letter10);
+            bt9.setText(word1);
             bt10.setText(word4);
             bt11.setText(letter12);
             bt12.setText(word2);
@@ -2480,7 +2577,9 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             bt8.setText(word11);
             bt9.setText(word6);
             bt10.setText(word3);
-            bt11.setText(word8);
+            //bt11.setText(word8);
+            bt11.setText(word4);
+
             bt12.setText(word10);
 
         } else if (type == 12) {
@@ -2634,8 +2733,8 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             bt6.setText(letter9);
             bt7.setText(word2);
             bt8.setText(letter3);
-            bt9.setText(word1);
-            bt10.setText(letter6);
+            bt9.setText(letter6);
+            bt10.setText(word1);
             bt11.setText(letter2);
             bt12.setText(word2);
 
@@ -2827,11 +2926,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             bt1.setText(word6);
             bt2.setText(word8);
             bt3.setText(letter6);
-            bt4.setText(word5);
-            bt5.setText(letter3);
+            bt4.setText(letter3);
+            bt5.setText(word5);
             bt6.setText(word4);
-            bt7.setText(word7);
-            bt8.setText(letter7);
+            bt7.setText(letter7);
+            bt8.setText(word7);
             bt9.setText(word1);
             bt10.setText(word3);
             bt11.setText(word2);
@@ -2953,14 +3052,16 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             bt1.setText(word2);
             bt2.setText(word1);
             bt3.setText(word8);
-            bt4.setText(word8);
+            bt4.setText(word4);
             bt5.setText(word5);
             bt6.setText(word9);
             bt7.setText(word7);
             bt8.setText(word11);
             bt9.setText(word6);
             bt10.setText(word3);
+            //bt11.setText(word8);
             bt11.setText(word4);
+
             bt12.setText(word10);
 
         } else if (type == 12) {
@@ -3002,8 +3103,8 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             bt6.setText(word9);
             bt7.setText(word10);
             bt8.setText(word4);
-            bt9.setText(word3);
-            bt10.setText(word2);
+            bt9.setText(word2);
+            bt10.setText(word3);
             bt11.setText(word8);
             bt12.setText(word7);
 
@@ -3475,15 +3576,16 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
         //score intial
 
-       try (Cursor cfq = myDbHelper.getQry("SELECT * FROM score ")){
-        if (cfq.moveToFirst()) {
-            int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
-            String tr = String.valueOf(skq);
-            score.setText(tr);
-            //
-            e2 = skq;
-            //
-        }}
+        try (Cursor cfq = myDbHelper.getQry("SELECT * FROM score ")) {
+            if (cfq.moveToFirst()) {
+                int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
+                String tr = String.valueOf(skq);
+                score.setText(tr);
+                //
+                e2 = skq;
+                //
+            }
+        }
         coin.play(soundId4, sv, sv, 0, 0, sv);
         c_coin.setVisibility(View.VISIBLE);
         int[] locationInWindow = new int[2];
@@ -4095,181 +4197,94 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         });
     }
 
+    private void rewarded_adnew() {
 
- /*   public void rewarded_adnew() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
+        AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
 
-            }
-
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_adnew();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+        RewardedAd.load(this, sps.getString(WordError_correction.this, "RewardedId"),
+                adRequest, new RewardedAdLoadCallback() {
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        // Handle the error.
+                        Log.e("LoadAdError=========", loadAdError.toString());
+                        rewardedAd = null;
+                        reward_status = 0;
+                        //isfaild = 2;
 
                     }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
+
+                    @Override
+                    public void onAdLoaded(@NonNull RewardedAd ad) {
+                        rewardedAd = ad;
+                        //  isfaild = 1;
+                        fb_reward = 1;
+                        reward_status = 0;
+                        Log.e(TAG, "Ad was Called.=========");
+                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                            @Override
+                            public void onAdClicked() {
+                                // Called when a click is recorded for an ad.
+                                Log.e(TAG, "Ad was clicked.=========");
                             }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
 
-                fb_reward = 0;
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                rewarded_adnew();
+                                if (reward_status == 1) {
+                                    if (extra_coin_s == 0) {
+                                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                                        cfx.moveToFirst();
+                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                                        int spx = skx + mCoinCount;
+                                        String aStringx = Integer.toString(spx);
+                                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
 
+                                    }
+                                    Handler handler = new Handler();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (rvo == 2) {
+                                                share_earn2(mCoinCount);
+                                            } else {
+                                                vidcoinearn();
+                                            }
+                                        }
+                                    }, 500);
+                                } else {
+                                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                                }
 
-            }
+                                fb_reward = 0;
+                                // Set the ad reference to null so you don't show the ad a second time.
+                                Log.e(TAG, "Ad dismissed fullscreen content.=========");
 
-            @Override
-            public void onAdClicked(MaxAd ad) {
+                            }
 
-            }
+                            @Override
+                            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                // Called when ad fails to show.
+                                Log.e(TAG, "Ad failed to show fullscreen content.=========");
+                                rewardedAd = null;
+                                reward_status = 0;
+                            }
 
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-            }
+                            @Override
+                            public void onAdImpression() {
+                                // Called when an impression is recorded for an ad.
+                                Log.e(TAG, "Ad recorded an impression.=========");
+                            }
 
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
-    }*/
- private void rewarded_adnew() {
+                            @Override
+                            public void onAdShowedFullScreenContent() {
+                                // Called when ad is shown.
+                                Log.e(TAG, "Ad showed fullscreen content.=========");
+                            }
+                        });
 
-     AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
-
-     RewardedAd.load(this, sps.getString(WordError_correction.this, "RewardedId"),
-             adRequest, new RewardedAdLoadCallback() {
-                 @Override
-                 public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                     // Handle the error.
-                     Log.e("LoadAdError=========", loadAdError.toString());
-                     rewardedAd = null;
-                     reward_status=0;
-                     //isfaild = 2;
-
-                 }
-
-                 @Override
-                 public void onAdLoaded(@NonNull RewardedAd ad) {
-                     rewardedAd = ad;
-                     //  isfaild = 1;
-                     fb_reward = 1;
-                     reward_status=0;
-                     Log.e(TAG, "Ad was Called.=========");
-                     rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                         @Override
-                         public void onAdClicked() {
-                             // Called when a click is recorded for an ad.
-                             Log.e(TAG, "Ad was clicked.=========");
-                         }
-
-                         @Override
-                         public void onAdDismissedFullScreenContent() {
-                             rewarded_adnew();
-                             if (reward_status == 1) {
-                                 if (extra_coin_s == 0) {
-                                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                     cfx.moveToFirst();
-                                     int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                     int spx = skx + mCoinCount;
-                                     String aStringx = Integer.toString(spx);
-                                     myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                 }
-                                 Handler handler = new Handler();
-                                 handler.postDelayed(new Runnable() {
-                                     @Override
-                                     public void run() {
-                                         if (rvo == 2) {
-                                             share_earn2(mCoinCount);
-                                         } else {
-                                             vidcoinearn();
-                                         }
-                                     }
-                                 }, 500);
-                             } else {
-                                 Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                             }
-
-                             fb_reward = 0;
-                             // Set the ad reference to null so you don't show the ad a second time.
-                             Log.e(TAG, "Ad dismissed fullscreen content.=========");
-
-                         }
-
-                         @Override
-                         public void onAdFailedToShowFullScreenContent(AdError adError) {
-                             // Called when ad fails to show.
-                             Log.e(TAG, "Ad failed to show fullscreen content.=========");
-                             rewardedAd = null;
-                             reward_status=0;
-                         }
-
-                         @Override
-                         public void onAdImpression() {
-                             // Called when an impression is recorded for an ad.
-                             Log.e(TAG, "Ad recorded an impression.=========");
-                         }
-
-                         @Override
-                         public void onAdShowedFullScreenContent() {
-                             // Called when ad is shown.
-                             Log.e(TAG, "Ad showed fullscreen content.=========");
-                         }
-                     });
-
-                 }
-             });
- }
-
-   /* public void show_reward() {
-        if (rewardedAd != null && rewardedAd.isReady()) {
-            rewardedAd.showAd();
-            reward_status = 1;
-        } else {
-            Log.d("TAG", "The rewarded ad wasn't ready yet.");
-        }
-    }*/
+                    }
+                });
+    }
 
     public void show_reward() {
         if (rewardedAd != null) {
@@ -4294,74 +4309,14 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
     }
 
-/*    private void industrialload() {
-        //AppLovinSdk.getInstance( this ).showMediationDebugger();
-        AppLovinSdk.getInstance(this).setMediationProvider("max");
-        AppLovinSdk.initializeSdk(this, config -> {
-            // AppLovin SDK is initialized, start loading ads
-            if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
-            System.out.println("ad shown  showAdWithDelay initialize done ");
-            mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Ragasiya_sorgal_ins), WordError_correction.this);
-            mInterstitialAd.setListener(new MaxAdListener() {
-                @Override
-                public void onAdLoaded(MaxAd ad) {
-                    System.out.println("ad shown loaded : " + ad.getWaterfall());
-                }
-
-                @Override
-                public void onAdDisplayed(MaxAd ad) {
-                    handler = null;
-                }
-
-                @Override
-                public void onAdHidden(MaxAd ad) {
-                    Log.d("TAG", "Ad dismissed fullscreen content.");
-                    mInterstitialAd = null;
-                    handler = null;
-                    Utills.INSTANCE.Loading_Dialog_dismiss();
-                    setSc();
-                    industrialload();
-                }
-
-                @Override
-                public void onAdClicked(MaxAd ad) {
-
-                }
-
-                @Override
-                public void onAdLoadFailed(String adUnitId, MaxError error) {
-                    Log.d("TAG", error.toString());
-                    mInterstitialAd = null;
-                    handler = null;
-                    Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
-                }
-
-                @Override
-                public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                    Log.e("TAG", "Ad failed to show fullscreen content.");
-                    mInterstitialAd = null;
-                    handler = null;
-                    Utills.INSTANCE.Loading_Dialog_dismiss();
-                    sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
-                    setSc();
-                }
-            });
-
-            // Load the first ad
-            mInterstitialAd.loadAd();
-
-        });
-
-    }*/
-
     public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
-        AdManagerInterstitialAd.load(this,sps.getString(this, "InterstitialId"), adRequest,
+        AdManagerInterstitialAd.load(this, sps.getString(this, "InterstitialId"), adRequest,
                 new AdManagerInterstitialAdLoadCallback() {
                     @Override
                     public void onAdLoaded(@NonNull AdManagerInterstitialAd interstitial) {
                         interstitialAd = interstitial;
-                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
+                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
                             public void onAdClicked() {
                                 // Called when a click is recorded for an ad.
@@ -4372,7 +4327,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                             public void onAdDismissedFullScreenContent() {
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 setSc();
                                 industrialload();
@@ -4382,7 +4337,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
                                 setSc();
@@ -4402,11 +4357,12 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                         });
 
                     }
+
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
                         interstitialAd = null;
-                        handler = null;
+                        timerHandler = null;
                         Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                     }
 
@@ -4414,30 +4370,6 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
     }
 
-
-
-    /*public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
-            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
-            handler = new Handler(Looper.myLooper());
-            my_runnable = () -> {
-                if (interstitialAd == null) setSc();
-                else
-                    interstitialAd.show(this);
-            };
-            handler.postDelayed(my_runnable, 2500);
-        } else {
-            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") + 1));
-            if (sps.getInt(context, "Game4_Stage_Close_RS") > *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
-                sps.putInt(context, "Game4_Stage_Close_RS", 0);
-
-            setSc();
-            //Toast.makeText(this, ""+sps.getInt(this, "Game4_Stage_Close_RS"), Toast.LENGTH_SHORT).show();
-        }
-
-    }
-*/
     private int safeParseInt(String value, int defaultValue) {
         if (value != null && !value.isEmpty()) {
             try {
@@ -4475,7 +4407,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                 }
                 setSc();
             }
-        }else{
+        } else {
             currentStageCloseRS++;
             sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", currentStageCloseRS);
             if (currentStageCloseRS > showCountOther) {
@@ -4550,7 +4482,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
                 if (fb_reward == 1) {
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    String date = sps.getString(WordError_correction.this, "date");
+                   /* String date = sps.getString(WordError_correction.this, "date");
                     int pos;
                     if (date.equals("0")) {
                         pos = 1;
@@ -4560,7 +4492,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                         pos = 2;
                         newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
                         // myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    }
+                    }*/
 
                     reward_progressBar.dismiss();
                     show_reward();
@@ -4618,7 +4550,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                     String date = sps.getString(WordError_correction.this, "date");
                     int pos;
-                    if (date.equals("0")) {
+                 /*   if (date.equals("0")) {
                         pos = 1;
                         newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
 
@@ -4628,7 +4560,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                         newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
 
                         // myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    }
+                    }*/
                     openDialog_earncoin.cancel();
                     Intent i1 = new Intent(Intent.ACTION_SEND);
                     i1.setType("text/plain");
@@ -4651,29 +4583,26 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
     @Override
     protected void onPause() {
         super.onPause();
-        if (handler != null) handler.removeCallbacks(my_runnable);
-        focus.stop();
-        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-
-
-        String date = sps.getString(WordError_correction.this, "date");
-        int pos;
-        if (date.equals("0")) {
-            pos = 1;
-            newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-
-            //  myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-        } else {
-            pos = 2;
-            newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-
-            //  myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+        if (timerHandler != null) {
+            if (timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+            }
         }
     }
 
     protected void onResume() {
         super.onResume();
-        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+       // if (handler != null) handler.postDelayed(my_runnable, 1000);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(WordError_correction.this);
         Bundle params = new Bundle();
         params.putString("screen_name", "Word Error Correction Game");
@@ -4701,8 +4630,9 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                 cs.moveToFirst();
                 if (cs.getCount() != 0) dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
             }
-            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-            focus.start();
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
         }
 
     }
@@ -4721,6 +4651,12 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             TextView yes = openDialog_p.findViewById(R.id.yes);
             TextView no = openDialog_p.findViewById(R.id.no);
 
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+            }
+
             yes.setOnClickListener(v -> {
 
                 String dates = sps.getString(WordError_correction.this, "date");
@@ -4729,14 +4665,14 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                     pos = 1;
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                     focus.stop();
-                    newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                  //  newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
 
                     //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                 } else {
                     pos = 2;
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                     focus.stop();
-                    newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+                    //newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
 
                     //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                 }
@@ -4760,9 +4696,20 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
                 openDialog_p.dismiss();
             });
-            no.setOnClickListener(v -> openDialog_p.dismiss());
-            openDialog_p.show();
+            no.setOnClickListener(v ->{
+                openDialog_p.dismiss();
+                if (ttstop > 0) {
+                startChronometerCountdown(ttstop);}
+            } );
 
+            openDialog_p.setOnDismissListener(dialog -> {
+                // Check if the timer was paused and resume if necessary
+                if (ttstop > 0) {
+                    startChronometerCountdown(ttstop);
+                }
+            });
+
+            openDialog_p.show();
         }
     };
 
@@ -4773,7 +4720,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
         String date = sps.getString(WordError_correction.this, "date");
         int pos;
-        if (date.equals("0")) {
+    /*    if (date.equals("0")) {
             pos = 1;
             newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
 
@@ -4783,7 +4730,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
 
             //  myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-        }
+        }*/
         helpshare(a);
     }
 
@@ -4819,7 +4766,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                     String date = sps.getString(WordError_correction.this, "date");
                     int pos;
-                    if (date.equals("0")) {
+                  /*  if (date.equals("0")) {
                         pos = 1;
                         newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
 
@@ -4829,7 +4776,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                         newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
 
                         // myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    }
+                    }*/
 
                     //Uri uri = Uri.fromFile(file);
                     Uri uri = FileProvider.getUriForFile(WordError_correction.this, WordError_correction.this.getPackageName(), file);
@@ -5085,12 +5032,16 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (openDialog_p != null && openDialog_p.isShowing()) openDialog_p.dismiss();
+        if (timerHandler != null) {
+            timerHandler.removeCallbacksAndMessages(null);
+            timerHandler = null;
+        }
+        if (openDialog_p != null && openDialog_p.isShowing()) {
+            openDialog_p.cancel();
+        }
         rewardedAd = null;
         interstitialAd = null;
-        handler = null;
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
@@ -5119,6 +5070,10 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
     }
 
     public void showcase_dismiss() {
+        // Initialize timerHandler if it's null
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
 
@@ -5126,9 +5081,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                 showcase_dismiss();
             else {
                 sps.putString(WordError_correction.this, "Error_time_start", "yes");
-
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
+                startChronometerCountdown(countdownDuration);
 
             }
 
@@ -5226,6 +5179,45 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         System.out.println("----------------------Download_server");
         Download_data_server download_data_server = new Download_data_server(WordError_correction.this, questionid_d, "" + gameid);
         download_data_server.execute();
+    }
+
+    private void showCompletionDialog() {
+        Dialog dialog = new Dialog(WordError_correction.this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar);
+        dialog.setContentView(R.layout.activity_congrats_layout);
+
+        // Set the game count text
+        TextView gameCount = dialog.findViewById(R.id.GameCount);
+        gameCount.setText(to_no.getText().toString());
+
+        // Set the completed count
+        TextView completedCount = dialog.findViewById(R.id.completedCount);
+        completedCount.setText(String.valueOf(questionCounter));
+
+        // Set the skip count
+        TextView skipCount = dialog.findViewById(R.id.skipCount);
+        skipCount.setText(String.valueOf(skipCounter));
+
+        // Handle continue button click
+        CardView continueBtn = dialog.findViewById(R.id.continueToPlayGame);
+        continueBtn.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        // Handle exit button click
+        CardView exitBtn = dialog.findViewById(R.id.exitToPlayGame);
+        exitBtn.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (main_act.equals("")) {
+                finish();
+                Intent i = new Intent(WordError_correction.this, New_Main_Activity.class);
+                startActivity(i);
+            } else {
+                sps.putString(WordError_correction.this, "game_area", "on");
+                finish();
+            }
+        });
+
+        dialog.show();
     }
 
 }

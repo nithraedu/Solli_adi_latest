@@ -154,10 +154,11 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
     int setval_vid;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
-    Handler handler;
-    Runnable my_runnable;
-    //private MaxRewardedAd rewardedAd;
-    //private MaxInterstitialAd mInterstitialAd;
+
+    private final long countdownDuration = 30000; // 30 seconds in milliseconds
+    private Handler timerHandler;
+    private Runnable timerRunnable;
+    private boolean isTimerRunning = false;
     private RewardedAd rewardedAd;
     private AdManagerInterstitialAd interstitialAd ;
 
@@ -188,6 +189,10 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_makeword__rightorder);
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
 
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
@@ -386,8 +391,8 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
                     sps.putString(Makeword_Rightorder.this, "mak_time_start", "yes");
                     sps.putString(Makeword_Rightorder.this, "showcase_dismiss_ro", "yes");
 
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                    startChronometerCountdown(countdownDuration);
+
 
                 }
             });
@@ -775,6 +780,60 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
 
     }
 
+    private void startChronometerCountdown(long durationInMillis) {
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Check if timerHandler is null and initialize it if necessary
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        if (timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+
+        // Create a new Runnable for the countdown
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+                if (remainingMillis <= 0) {
+                    focus.stop();
+                    isTimerRunning = false;
+                    showExtendTimeDialog();  // Show dialog when time is up
+                } else {
+                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                }
+            }
+        };
+
+        // Post the Runnable to start the countdown
+        timerHandler.postDelayed(timerRunnable, 500);
+        isTimerRunning = true;
+    }
+
+
+    private void showExtendTimeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Makeword_Rightorder.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            startChronometerCountdown(countdownDuration); // Restart with another 30s
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+            // handle what happens if user says no (optional)
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private void next() {
 
         c_edit.setText("");
@@ -886,13 +945,13 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
             if (playtime == 0) {
 
                 if (sps.getString(Makeword_Rightorder.this, "mak_time_start").equals("yes")) {
-                    focus.setBase(SystemClock.elapsedRealtime() + playtime);
-                    focus.start();
+                    startChronometerCountdown(countdownDuration);
+
                 }
 
             } else {
-                focus.setBase(SystemClock.elapsedRealtime() + playtime);
-                focus.start();
+                startChronometerCountdown(countdownDuration);
+
 
 
             }
@@ -3221,7 +3280,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
                             public void onAdDismissedFullScreenContent() {
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 setSc();
                                 industrialload();
@@ -3231,7 +3290,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
                                 setSc();
@@ -3255,7 +3314,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
                         interstitialAd = null;
-                        handler = null;
+                        timerHandler = null;
                         Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                     }
 
@@ -3493,23 +3552,23 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
     @Override
     protected void onPause() {
         super.onPause();
-        if (handler != null) handler.removeCallbacks(my_runnable);
-        focus.stop();
-        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-        String date = sps.getString(Makeword_Rightorder.this, "date");
-        int pos;
-        if (date.equals("0")) {
-            newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-            //  myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-        } else {
-            newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'  and daily='0'");
-            //  myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+        if (timerHandler != null) {
+            if (timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+            }
         }
     }
 
     protected void onResume() {
         super.onResume();
-        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Makeword_Rightorder.this);
         Bundle params = new Bundle();
         params.putString("screen_name", "Make Right order game");
@@ -3537,8 +3596,9 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
                     dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                 }
             }
-            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-            focus.start();
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
         }
 
     }
@@ -3556,9 +3616,15 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
                 TextView yes = openDialog_p.findViewById(R.id.yes);
                 TextView no = openDialog_p.findViewById(R.id.no);
 
+                if (isTimerRunning) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                }
+
                 yes.setOnClickListener(v -> {
 
-                    String dates = sps.getString(Makeword_Rightorder.this, "date");
+                   /* String dates = sps.getString(Makeword_Rightorder.this, "date");
                     int pos;
                     if (dates.equals("0")) {
                         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
@@ -3573,7 +3639,9 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
 
                         //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                     }
-
+*/
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
                     String date = sps.getString(Makeword_Rightorder.this, "date");
                     if (date.equals("0")) {
                         if (main_act.equals("")) {
@@ -3603,7 +3671,18 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
                     openDialog_p.dismiss();
 
                 });
-                no.setOnClickListener(v -> openDialog_p.dismiss());
+                no.setOnClickListener(v -> {
+                    openDialog_p.dismiss();
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
+                openDialog_p.setOnDismissListener(dialog -> {
+                    // Check if the timer was paused and resume if necessary
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 openDialog_p.show();
 
 
@@ -3995,12 +4074,15 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (timerHandler != null) {
+            timerHandler.removeCallbacksAndMessages(null);
+            timerHandler = null;
+        }
         if (openDialog_p != null && openDialog_p.isShowing()) {
-            openDialog_p.dismiss();
+            openDialog_p.cancel();
         }
         rewardedAd = null;
         interstitialAd = null;
-        handler = null;
     }
 
 
@@ -4350,6 +4432,10 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
     }
 
     public void showcase_dismiss() {
+        // Initialize timerHandler if it's null
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
 
@@ -4357,8 +4443,8 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
                 showcase_dismiss();
             } else {
                 sps.putString(context, "mak_time_start", "yes");
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
+                startChronometerCountdown(countdownDuration);
+
 
             }
 

@@ -210,8 +210,15 @@ public class Clue_Game_Hard extends AppCompatActivity {
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
 
-    Handler handler;
-    Runnable my_runnable;
+   /* Handler handler;
+    Runnable my_runnable;*/
+
+
+    private final long countdownDuration = 30000; // 30 seconds in milliseconds
+    private Handler timerHandler;
+    private Runnable timerRunnable;
+    private boolean isTimerRunning = false;
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -227,6 +234,11 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog_p.findViewById(R.id.yes);
                 TextView no = openDialog_p.findViewById(R.id.no);
 
+                if (isTimerRunning) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                }
 
                 yes.setOnClickListener(v -> {
 
@@ -235,13 +247,13 @@ public class Clue_Game_Hard extends AppCompatActivity {
                     if (dates.equals("0")) {
                         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                         focus.stop();
-                        myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                      ////  myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
 
                         myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                     } else {
                         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                         focus.stop();
-                        myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+                      //  myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
 
                         myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                     }
@@ -273,7 +285,19 @@ public class Clue_Game_Hard extends AppCompatActivity {
                     openDialog_p.dismiss();
 
                 });
-                no.setOnClickListener(v -> openDialog_p.dismiss());
+                no.setOnClickListener(v -> {
+                    openDialog_p.dismiss();
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
+
+                openDialog_p.setOnDismissListener(dialog -> {
+                    // Check if the timer was paused and resume if necessary
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 openDialog_p.show();
 
 
@@ -281,6 +305,63 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
         }
     };
+
+
+    private void startChronometerCountdown(long durationInMillis) {
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Check if timerHandler is null and initialize it if necessary
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        if (timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+
+        // Create a new Runnable for the countdown
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+                if (remainingMillis <= 0) {
+                    focus.stop();
+                    isTimerRunning = false;
+                    showExtendTimeDialog();  // Show dialog when time is up
+                } else {
+                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                }
+            }
+        };
+
+        // Post the Runnable to start the countdown
+        timerHandler.postDelayed(timerRunnable, 500);
+        isTimerRunning = true;
+    }
+
+
+    private void showExtendTimeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Clue_Game_Hard.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            startChronometerCountdown(countdownDuration); // Restart with another 30s
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+            // handle what happens if user says no (optional)
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
   //  private MaxRewardedAd rewardedAd;
   //  private MaxInterstitialAd mInterstitialAd;
   private RewardedAd rewardedAd;
@@ -305,8 +386,15 @@ public class Clue_Game_Hard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_clue__game);
+
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
+
         c_clue = findViewById(R.id.next_clue);
         Animation myFadeInAnimation = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.blink_animation);
         c_clue.startAnimation(myFadeInAnimation);
@@ -500,8 +588,9 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 if (position == 2) {
                     sps.putString(Clue_Game_Hard.this, "clue_time_start", "yes");
                     sps.putString(Clue_Game_Hard.this, "showcase_dismiss_c", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                   /* focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();*/
+                    startChronometerCountdown(countdownDuration);
 
                 }
             });
@@ -582,7 +671,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                             public void onAdDismissedFullScreenContent() {
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 setSc();
                                 industrialload();
@@ -592,7 +681,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
                                 setSc();
@@ -616,7 +705,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
                         interstitialAd = null;
-                        handler = null;
+                        timerHandler = null;
                         Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                     }
 
@@ -2652,8 +2741,9 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 if (sps.getString(Clue_Game_Hard.this, "clue_time_start").equals("")) {
                     sps.putString(Clue_Game_Hard.this, "clue_time_start", "yes");
                 } else {
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                   /* focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();*/
+                    startChronometerCountdown(countdownDuration);
 
                 }
             }
@@ -3387,10 +3477,11 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-        if (handler != null) handler.postDelayed(my_runnable, 1000);
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS"));
-
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(Clue_Game_Hard.this);
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+       mFirebaseAnalytics = FirebaseAnalytics.getInstance(Clue_Game_Hard.this);
         Bundle params = new Bundle();
         params.putString("screen_name", "Clue Game");
         params.putString("screen_class", "Clue_Game_Hard");
@@ -3400,7 +3491,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
         if (setting_access == 1) {
             setting_access = 0;
-            //  if ((ContextCompat.checkSelfPermission(Clue_Game_Hard.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
             downloaddata_daily();
         } else if (setting_access == 2) {
             setting_access = 0;
@@ -3438,9 +3528,9 @@ public class Clue_Game_Hard extends AppCompatActivity {
                     noofclue = cs.getInt(cs.getColumnIndexOrThrow("noclue"));
                 }
             }
-            //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
-            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-            focus.start();
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
 
         }
     }
@@ -3690,16 +3780,22 @@ public class Clue_Game_Hard extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if (handler != null) handler.removeCallbacks(my_runnable);
-        focus.stop();
-        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+
+        if (timerHandler != null) {
+            if (timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+            }
+        }
+
         String date = sps.getString(Clue_Game_Hard.this, "date");
-        int pos;
         if (date.equals("0")) {
-            myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
             myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
         } else {
-            myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
             myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
         }
 
@@ -3710,23 +3806,25 @@ public class Clue_Game_Hard extends AppCompatActivity {
         } catch (Exception e) {
 
         }
-        // AppEventsLogger.deactivateApp(this);
-
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (timerHandler != null) {
+            timerHandler.removeCallbacksAndMessages(null);
+            timerHandler = null;
+        }
         if (openDialog_p != null && openDialog_p.isShowing()) {
-            openDialog_p.dismiss();
+            openDialog_p.cancel();
         }
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
         rewardedAd = null;
         interstitialAd = null;
-        handler = null;
     }
+
 
     public void downloadcheck(final String lastid, final String daily) {
         w_head.setVisibility(View.INVISIBLE);
@@ -5181,15 +5279,19 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
     //*** In ad area **
     public void showcase_dismiss() {
+
+        // Initialize timerHandler if it's null
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
         Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
-
             if (sps.getString(Clue_Game_Hard.this, "showcase_dismiss_c").equals("")) {
                 showcase_dismiss();
             } else {
                 sps.putString(context, "clue_time_start", "yes");
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
+                startChronometerCountdown(countdownDuration);
 
             }
 

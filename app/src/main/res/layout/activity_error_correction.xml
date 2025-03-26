@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".Makeword_Rightorder">
 
     <RelativeLayout
@@ -51,20 +51,51 @@
                 </LinearLayout>
 
                 <RelativeLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_toLeftOf="@+id/c_word_number1"
+                    android:layout_toRightOf="@+id/asd"
+                    android:paddingHorizontal="5dp">
+
+                    <LinearLayout
+                        android:id="@+id/skip_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/wh_2"
+                        android:layout_marginRight="@dimen/lrtbp_5"
+                        android:background="@drawable/time_background"
+                        android:paddingHorizontal="5dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/lrtbp_5"
+                            android:layout_marginRight="@dimen/lrtbp_10"
+                            android:text="Skip"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/txt_18" />
+
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toLeftOf="@+id/c_word_number1"
                     android:layout_toRightOf="@+id/asd">
 
                     <ImageView
-                        android:layout_centerInParent="true"
                         android:id="@+id/prize_logo"
-                        android:visibility="invisible"
-
                         android:layout_width="@dimen/croll_insbut_height"
-                        android:gravity="center"
                         android:layout_height="@dimen/croll_insbut_height"
-                        android:src="@drawable/gift" />
+
+                        android:layout_centerInParent="true"
+                        android:gravity="center"
+                        android:src="@drawable/gift"
+                        android:visibility="invisible" />
 
                     <RelativeLayout
                         android:id="@+id/adsicon2"
@@ -126,15 +157,31 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
                     android:layout_toLeftOf="@+id/qwt"
                     android:layout_toRightOf="@+id/c_word_number1">
 
-                    <TextView
-                        android:id="@+id/c_settings"
-                        android:layout_width="@dimen/croll_insbut_height"
-                        android:layout_height="@dimen/croll_insbut_height"
-                        android:layout_centerInParent="true"
-                        android:background="@drawable/settings" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="20dp">
+
+                        <TextView
+                            android:id="@+id/c_settings"
+                            android:layout_width="@dimen/croll_insbut_height"
+                            android:layout_height="@dimen/croll_insbut_height"
+                            android:background="@drawable/settings" />
+
+                        <ImageView
+                            android:id="@+id/reset_btn"
+                            android:layout_width="@dimen/croll_insbut_height"
+                            android:layout_height="@dimen/croll_insbut_height"
+                            android:layout_gravity="center"
+                            android:src="@drawable/baseline_refresh_24" />
+
+                    </LinearLayout>
+
 
                 </RelativeLayout>
 
@@ -304,11 +351,11 @@
                     android:layout_centerInParent="true">
 
                     <RelativeLayout
-                        android:layout_centerInParent="true"
                         android:id="@+id/helpshare_layout"
                         android:layout_width="@dimen/wh_40"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true">
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true">
 
                         <TextView
                             android:id="@+id/ch_facebook"
@@ -330,7 +377,6 @@
                             android:background="@drawable/watsapp" />
 
                         <TextView
-                            android:visibility="gone"
                             android:id="@+id/ch_gplues"
                             android:layout_width="@dimen/wh_35"
                             android:layout_height="@dimen/wh_35"
@@ -338,7 +384,8 @@
                             android:layout_alignParentRight="true"
                             android:layout_marginTop="@dimen/lrtbp_10"
                             android:layout_marginRight="@dimen/lrtbp_5"
-                            android:background="@drawable/gplues" />
+                            android:background="@drawable/gplues"
+                            android:visibility="gone" />
                     </RelativeLayout>
 
 
@@ -545,15 +592,6 @@
 
             </RelativeLayout>
         </ScrollView>
-        <!--    <TextView
-                android:id="@+id/c_settings"
-                android:layout_marginTop="@dimen/lrtbp_10"
-                android:layout_marginLeft="@dimen/lrtbp_10"
-                android:layout_below="@+id/c_sc_view"
-                android:background="@drawable/settings"
-                android:layout_width="@dimen/wh_35"
-                android:layout_height="@dimen/wh_35" />-->
-
         <TextView
             android:id="@+id/c_coins"
             android:layout_width="@dimen/wh_35"
@@ -576,24 +614,24 @@
     </RelativeLayout>
 
 
- <!--   <LinearLayout
+    <!--   <LinearLayout
 
-        android:id="@+id/ads_lay"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal"
-        android:background="@color/white"
-        android:minHeight="@dimen/wh_50">
+           android:id="@+id/ads_lay"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:gravity="center_horizontal"
+           android:orientation="horizontal"
+           android:background="@color/white"
+           android:minHeight="@dimen/wh_50">
 
-    </LinearLayout>-->
+       </LinearLayout>-->
 
     <LinearLayout
         android:id="@+id/adsLay1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         android:layout_alignParentBottom="true"
+        android:background="@color/white"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="visible">
@@ -602,14 +640,15 @@
             android:id="@+id/adstext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
             android:text="Advertisement"
-            android:textSize="15sp"
-            android:layout_marginBottom="1dp"/>
+            android:textSize="15sp" />
+
         <LinearLayout
             android:id="@+id/ads_lay"
             android:layout_width="match_parent"
-            android:gravity="center"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:minHeight="@dimen/wh_50"
             android:orientation="horizontal" />
     </LinearLayout>

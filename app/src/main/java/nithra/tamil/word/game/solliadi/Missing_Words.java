@@ -80,9 +80,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
     static int mCoinCount = 20;
     final SharedPreference sps = new SharedPreference();
     final String gameid = "19";
-    TextView ed1, ed2, ed3, ed4, ed5, ed6, ed7, ed8, ed9;
-    TextView c_button1, c_button2, c_button3, c_button4, p_coins, p_coins_red;
-    TextView c_score_edit, c_word_number, c_ans;
+    TextView ed1, ed2, ed3, ed4, ed5, ed6, ed7, ed8, ed9 , c_button1, c_button2, c_button3, c_button4, p_coins, p_coins_red , c_score_edit, c_word_number, c_ans , next_continue , ttscores , coin_value, c_settings , ch_watts_app, ch_facebook , word1, word2, word3, word4, word5, word6, ans, dis, close;
     Chronometer focus;
     DataBaseHelper myDbHelper;
     Newgame_DataBaseHelper newhelper;
@@ -93,10 +91,8 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
     Newgame_DataBaseHelper6 newhelper6;
     RelativeLayout adsicon;
     LinearLayout ads_layout;
-    String question_id = "", question = "", answer = "";
+    String question_id = "", question = "", answer = "" , isdown = "0", sf_word , retype = "s" , answers = "";
     int u_id = 0;
-    String isdown = "0";
-    String sf_word;
     SoundPool spz1, spz2, spz3, spz4;
     int soundId1, soundId2, soundId3, soundId4;
     int sv = 0;
@@ -104,8 +100,6 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
     Dialog openDialog_s, openDialog_p, openDialog_odd_man;
     int e2;
     int s = 0;
-    TextView next_continue;
-    TextView ttscores;
     Typeface tyr;
     int f_sec;
     int r = 0;
@@ -117,34 +111,38 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
     int reward_play_count = 0;
     int ea = 0;
     int setval_vid;
-    TextView coin_value, c_settings;
     LinearLayout ads_lay, adsLay1;
     RelativeLayout head;
-    TextView ch_watts_app, ch_facebook;
     int share_name = 0;
     LinearLayout qwt;
-    TextView word1, word2, word3, word4, word5, word6, ans, dis, close;
-    String retype = "s";
     int setting_access = 0;
-    String answers = "";
-    Handler handler;
-    Runnable my_runnable;
+    private final long countdownDuration = 30000; // 30 seconds in milliseconds
+    private Handler timerHandler;
+    private Runnable timerRunnable;
+    private boolean isTimerRunning = false;
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
             back();
         }
     };
-    //private MaxRewardedAd rewardedAd;
-    //  private MaxInterstitialAd mInterstitialAd;
     private RewardedAd rewardedAd;
     private AdManagerInterstitialAd interstitialAd;
+
+
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_missing__words);
+
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
         newhelper6 = new Newgame_DataBaseHelper6(Missing_Words.this);
@@ -197,19 +195,10 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
 
         if (sps.getInt(Missing_Words.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase interstitial done");
-        } else {
-            //fb_addload_score_screen(Missing_Words.this);
-            /**/
         }
-
-        //New_Main_Activity.fb_addload(Missing_Words.this);
-
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
-
-        // Utills.INSTANCE.initializeAdzz(this);
         rewarded_adnew();
         if (sps.getInt(Missing_Words.this, "purchase_ads") == 0) {
-            //industrialload();
             if (!sps.getString(Missing_Words.this, "InterstitialId").equals("") || sps.getString(Missing_Words.this, "InterstitialId") != null) {
                 industrialload();
             }
@@ -217,19 +206,14 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         soundset();
         ads_lay = findViewById(R.id.ads_lay);
         adsLay1 = findViewById(R.id.adsLay1);
-        // Utills.INSTANCE.load_add_AppLovin(this, ads_lay, getResources().getString(R.string.Bottom_Banner));
         if (sps.getInt(Missing_Words.this, "purchase_ads") == 0) {
             if (Utils.isNetworkAvailable(this)) {
                 if (!sps.getString(this, "BannerId").equals("") || sps.getString(this, "BannerId") != null) {
-                    System.out.println(
-                            "Ads Should be not empty : " + sps.getString(this, "BannerId")
-                    );
+                    System.out.println("Ads Should be not empty : " + sps.getString(this, "BannerId"));
                     Utils.load_add_banner(this, sps.getString(this, "BannerId"), ads_lay);
                 }
             } else {
-                System.out.println(
-                        "Ads Should be -- empty : " + sps.getString(this, "BannerId")
-                );
+                System.out.println("Ads Should be -- empty : " + sps.getString(this, "BannerId"));
                 adsLay1.setVisibility(View.GONE);
             }
         } else adsLay1.setVisibility(View.GONE);
@@ -264,6 +248,9 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         c_word_number = findViewById(R.id.c_word_number);
         c_ans = findViewById(R.id.c_ans);
         focus = findViewById(R.id.c_time_edit);
+/*
+        focus.setBase(SystemClock.elapsedRealtime() - 30000);  // 30 seconds
+        focus.start();  // Start the Chronometer*/
 
         c_button1.setOnClickListener(v -> validate("" + c_button1.getText().toString(), "b1"));
         c_button2.setOnClickListener(v -> validate("" + c_button2.getText().toString(), "b2"));
@@ -306,8 +293,10 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                 if (position == 1) {
                     sps.putString(Missing_Words.this, "mw_time_start", "yes");
                     sps.putString(Missing_Words.this, "showcase_dismiss_mw", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                   /* focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();*/
+                    startChronometerCountdown(countdownDuration); // initial 30 seconds
+
                 }
             });
             sps.putString(Missing_Words.this, "mw_intro", "no");
@@ -315,6 +304,60 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         }
         next();
     }
+
+
+    private void startChronometerCountdown(long durationInMillis) {
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Check if timerHandler is null and initialize it if necessary
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        if (timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+        // Create a new Runnable for the countdown
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+                if (remainingMillis <= 0) {
+                    focus.stop();
+                    isTimerRunning = false;
+                    showExtendTimeDialog();  // Show dialog when time is up
+                } else {
+                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                }
+            }
+        };
+
+        // Post the Runnable to start the countdown
+        timerHandler.postDelayed(timerRunnable, 500);
+        isTimerRunning = true;
+    }
+
+    private void showExtendTimeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Missing_Words.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            startChronometerCountdown(countdownDuration); // Restart with another 30s
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+            // handle what happens if user says no (optional)
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
 
     public void validate(String ans, String dtn_name) {
         Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
@@ -519,8 +562,10 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                 if (sps.getString(Missing_Words.this, "resume_mwa").equals("")) {
                     sps.putString(Missing_Words.this, "resume_mwa", "yes");
                 } else {
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                 /*   focus.setBase(SystemClock.elapsedRealtime() - 30000);  // 30 seconds
+                    focus.start();*/
+                    startChronometerCountdown(countdownDuration); // initial 30 seconds
+
                 }
             }
         } else {
@@ -534,126 +579,6 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         ed1.setText("" + qs);
     }
 
-    private void set_question(String qs) {
-        String tfoption = qs;
-        String[] first = tfoption.split(",");
-        int optlen = first.length;
-        if (optlen == 3) {
-            ed1.setVisibility(View.VISIBLE);
-            if (first[0].equals("_")) {
-                first[0] = "________________";
-            } else if (first[1].equals("_")) {
-                first[1] = "________________";
-            } else if (first[2].equals("_")) {
-                first[2] = "________________";
-            }
-            ed1.setText("" + first[0] + " " + first[1] + " " + first[2]);
-        } else if (optlen == 4) {
-            ed1.setVisibility(View.VISIBLE);
-            if (first[0].equals("_")) {
-                first[0] = "________________";
-            } else if (first[1].equals("_")) {
-                first[1] = "________________";
-            } else if (first[2].equals("_")) {
-                first[2] = "________________";
-            } else if (first[3].equals("_")) {
-                first[3] = "________________";
-            }
-            ed1.setText("" + first[0] + " " + first[1] + " " + first[2] + " " + first[3]);
-        } else if (optlen == 5) {
-            ed1.setVisibility(View.VISIBLE);
-            if (first[0].equals("_")) {
-                first[0] = "________________";
-            } else if (first[1].equals("_")) {
-                first[1] = "________________";
-            } else if (first[2].equals("_")) {
-                first[2] = "________________";
-            } else if (first[3].equals("_")) {
-                first[3] = "________________";
-            } else if (first[4].equals("_")) {
-                first[4] = "________________";
-            }
-            ed1.setText("" + first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4]);
-        } else if (optlen == 6) {
-            ed1.setVisibility(View.VISIBLE);
-            if (first[0].equals("_")) {
-                first[0] = "________________";
-            } else if (first[1].equals("_")) {
-                first[1] = "________________";
-            } else if (first[2].equals("_")) {
-                first[2] = "________________";
-            } else if (first[3].equals("_")) {
-                first[3] = "________________";
-            } else if (first[4].equals("_")) {
-                first[4] = "________________";
-            } else if (first[5].equals("_")) {
-                first[5] = "________________";
-            }
-            ed1.setText("" + first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4] + " " + first[5]);
-        } else if (optlen == 7) {
-            ed1.setVisibility(View.VISIBLE);
-            if (first[0].equals("_")) {
-                first[0] = "________________";
-            } else if (first[1].equals("_")) {
-                first[1] = "________________";
-            } else if (first[2].equals("_")) {
-                first[2] = "________________";
-            } else if (first[3].equals("_")) {
-                first[3] = "________________";
-            } else if (first[4].equals("_")) {
-                first[4] = "________________";
-            } else if (first[5].equals("_")) {
-                first[5] = "________________";
-            } else if (first[6].equals("_")) {
-                first[6] = "________________";
-            }
-            ed1.setText("" + first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4] + " " + first[5] + " " + first[6]);
-        } else if (optlen == 8) {
-            ed1.setVisibility(View.VISIBLE);
-            if (first[0].equals("_")) {
-                first[0] = "________________";
-            } else if (first[1].equals("_")) {
-                first[1] = "________________";
-            } else if (first[2].equals("_")) {
-                first[2] = "________________";
-            } else if (first[3].equals("_")) {
-                first[3] = "________________";
-            } else if (first[4].equals("_")) {
-                first[4] = "________________";
-            } else if (first[5].equals("_")) {
-                first[5] = "________________";
-            } else if (first[6].equals("_")) {
-                first[6] = "________________";
-            } else if (first[7].equals("_")) {
-                first[7] = "________________";
-            }
-            ed1.setText("" + first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4] + " " + first[5] + " " + first[6] + " " + first[7]);
-        } else if (optlen == 9) {
-            ed1.setVisibility(View.VISIBLE);
-            // ed2.setVisibility(View.VISIBLE);
-            if (first[0].equals("_")) {
-                first[0] = "________________";
-            } else if (first[1].equals("_")) {
-                first[1] = "________________";
-            } else if (first[2].equals("_")) {
-                first[2] = "________________";
-            } else if (first[3].equals("_")) {
-                first[3] = "________________";
-            } else if (first[4].equals("_")) {
-                first[4] = "________________";
-            } else if (first[5].equals("_")) {
-                first[5] = "________________";
-            } else if (first[6].equals("_")) {
-                first[6] = "________________";
-            } else if (first[7].equals("_")) {
-                first[7] = "________________";
-            } else if (first[8].equals("_")) {
-                first[8] = "________________";
-            }
-            ed1.setText("" + first[0] + " " + first[1] + " " + first[2] + " " + first[3] + " " + first[4] + " " + first[5] + " " + first[6] + " " + first[7] + " " + first[8]);
-        }
-
-    }
 
     public void coinanim() {
 ////
@@ -1089,13 +1014,6 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         }
 
     }
-
-    private void addCoins(int coins) {
-        mCoinCount = coins;
-        sps.putInt(Missing_Words.this, "reward_coin_txt", coins);
-        //mCoinCountText.setText("Coins: " + mCoinCount);
-    }
-
     @Override
     public void onClick(View v) {
 
@@ -1570,53 +1488,43 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                 prize_data_update(Missing_Words.this, 50);
             }
         }
-        ////////////////Prize//////////////////
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        System.out.println("#################OnStop");
-
-        if (handler != null) handler.removeCallbacks(my_runnable);
-
-        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-        focus.stop();
-
-        String date = sps.getString(Missing_Words.this, "date");
-        int pos;
-        if (date.equals("0")) {
-            pos = 1;
-            newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
-        } else {
-            pos = 2;
-            newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
+        if (timerHandler != null) {
+            if (timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+            }
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+      //  if (handler != null) handler.postDelayed(my_runnable, 1000);
         System.out.println("#################OnResume");
         if (sps.getString(Missing_Words.this, "resume_mw").equals("")) {
             sps.putString(Missing_Words.this, "resume_mw", "yes");
         } else {
-            String date = sps.getString(Missing_Words.this, "date");
-            int pos;
-            if (date.equals("0")) {
-                pos = 1;
-            } else {
-                pos = 2;
-            }
             Cursor cs = newhelper6.getQry("select * from newgames5 where gameid='" + gameid + "' and questionid='" + question_id + "'");
             cs.moveToFirst();
             long dscore = 0;
             if (cs.getCount() != 0) {
                 dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
             }
-            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-            focus.start();
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
         }
 
 
@@ -1660,10 +1568,10 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                     int pos;
                     if (date.equals("0")) {
                         pos = 1;
-                        newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
+                        //newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
                     } else {
                         pos = 2;
-                        newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
+                      //  newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
                     }
 
                     //Uri uri = Uri.fromFile(file);
@@ -1739,10 +1647,10 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                     int pos;
                     if (date.equals("0")) {
                         pos = 1;
-                        newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
+                     //   newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
                     } else {
                         pos = 2;
-                        newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
+                      //  newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
                     }
                     reward_progressBar.dismiss();
                     show_reward();
@@ -1801,7 +1709,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                     } else {
                         pos = 2;
                     }
-                    newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+                   // newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
 
                     openDialog_earncoin.cancel();
                     Intent i1 = new Intent(Intent.ACTION_SEND);
@@ -1833,16 +1741,21 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
             int pos;
             if (date.equals("0")) {
                 pos = 1;
-                newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
+               // newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
             } else {
                 pos = 2;
-                newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
+              //  newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
             }
             helpshare(a);
         }
     }
 
     public void showcase_dismiss() {
+        // Initialize timerHandler if it's null
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
         Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
 
@@ -1850,8 +1763,8 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                 showcase_dismiss();
             } else {
                 sps.putString(Missing_Words.this, "mw_time_start", "yes");
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
+                startChronometerCountdown(countdownDuration); // initial 30 seconds
+
             }
 
         }, 800);
@@ -1969,6 +1882,11 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         TextView yes = openDialog_p.findViewById(R.id.yes);
         TextView no = openDialog_p.findViewById(R.id.no);
 
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+            }
 
         yes.setOnClickListener(v -> {
 
@@ -1977,14 +1895,14 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
 
 
             String date = sps.getString(Missing_Words.this, "date");
-            int pos;
+/*            int pos;
             if (date.equals("0")) {
                 pos = 1;
             } else {
                 pos = 2;
-            }
+            }*/
 
-            newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
+         //   newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
 
             // String date = sps.getString(Missing_Words.this, "date");
             if (date.equals("0")) {
@@ -2012,11 +1930,21 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
             }
             openDialog_p.dismiss();
         });
-        no.setOnClickListener(v -> openDialog_p.dismiss());
+        no.setOnClickListener(v ->{
+            openDialog_p.dismiss();
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        } );
+
+        openDialog_p.setOnDismissListener(dialog -> {
+            // Check if the timer was paused and resume if necessary
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
 
         openDialog_p.show();
-
-
     }
 
     private void soundset() {
@@ -2165,11 +2093,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         close.setOnClickListener(view -> openDialog_odd_man.dismiss());
 
         openDialog_odd_man.setOnCancelListener(dialog -> {
-            // dialog dismiss without button press
-            // load_addcontent2(context,ads_layout);
-
-
-        });
+                   });
         Cursor cs;
         cs = newhelper6.getQry("select * from newgames5 where gameid='" + gameid + "' and questionid='" + question_id + "'");
         cs.moveToFirst();
@@ -2186,10 +2110,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         }
         if (sps.getInt(Missing_Words.this, "purchase_ads") == 1) {
             System.out.println("@@@@@@@@@@@@@@@@@@---Ads purchase done");
-        } else {
-            //  load_addcontent(context, frame_layout2);
         }
-
         openDialog_odd_man.show();
     }
 
@@ -2203,13 +2124,9 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                 if (date.equals("0")) {
                     Cursor c1 = myDbHelper.getQry("select id from maintable order by id DESC");
                     c1.moveToFirst();
-
-
                     System.out.print("Count====" + c1.getCount());
 
-
                     if (c1.getCount() != 0) {
-
 
                         //c1.getString(c1.getColumnIndexOrThrow("id"));
 
@@ -2420,10 +2337,6 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                     int gm1s = gm1 + 1;
                     myDbHelper.executeSql("UPDATE userdata_r SET score='" + gm1s + "' where type ='" + retype + "'and date='" + str_date1 + "'");
                 }
-                ///Reward Share
-
-            } else {
-                //  Toast.makeText(getApplicationContext(), "share and earns", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -2708,7 +2621,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                             public void onAdDismissedFullScreenContent() {
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 setSc();
                                 industrialload();
@@ -2718,7 +2631,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
                                 setSc();
@@ -2743,35 +2656,13 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
                         interstitialAd = null;
-                        handler = null;
+                        timerHandler = null;
                         Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                     }
 
                 });
 
     }
-
-    /*public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game3_Stage_Close_ST") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
-            sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
-            handler = new Handler(Looper.myLooper());
-            my_runnable = () -> {
-                if (interstitialAd == null) setSc();
-                else
-                    interstitialAd.show(this);
-            };
-            handler.postDelayed(my_runnable, 2500);
-        } else {
-            sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", (sps.getInt(getApplicationContext(), "Game3_Stage_Close_ST") + 1));
-            if (sps.getInt(this, "Game3_Stage_Close_ST") > *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
-                sps.putInt(this, "Game3_Stage_Close_ST", 0);
-
-            setSc();
-            //Toast.makeText(this, ""+sps.getInt(this, "Game3_Stage_Close_ST"), Toast.LENGTH_SHORT).show();
-        }
-
-    }*/
 
     private int safeParseInt(String value, int defaultValue) {
         if (value != null && !value.isEmpty()) {
@@ -2820,15 +2711,17 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
 
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (timerHandler != null) {
+            timerHandler.removeCallbacksAndMessages(null);
+            timerHandler = null;
+        }
         if (openDialog_p != null && openDialog_p.isShowing()) {
-            openDialog_p.dismiss();
+            openDialog_p.cancel();
         }
         rewardedAd = null;
         interstitialAd = null;
-        handler = null;
     }
 }

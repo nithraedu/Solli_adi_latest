@@ -159,11 +159,12 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
     TextView coin_value;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
-    Handler handler;
-    Runnable my_runnable;
-   // private MaxRewardedAd rewardedAd;
-    //private MaxInterstitialAd mInterstitialAd;
-   private RewardedAd rewardedAd;
+    private final long countdownDuration = 30000; // 30 seconds in milliseconds
+    private Handler timerHandler;
+    private Runnable timerRunnable;
+    private boolean isTimerRunning = false;
+
+    private RewardedAd rewardedAd;
     private AdManagerInterstitialAd interstitialAd ;
 
 
@@ -191,6 +192,11 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.opposite_word);
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
         exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
@@ -289,8 +295,9 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                         if (position == 1) {
                             sps.putString(Opposite_word.this, "odd_time_start", "yes");
                             sps.putString(Opposite_word.this, "showcase_dismiss_opp", "yes");
-                            focus.setBase(SystemClock.elapsedRealtime());
-                            focus.start();
+                           /* focus.setBase(SystemClock.elapsedRealtime());
+                            focus.start();*/
+                            startChronometerCountdown(countdownDuration);
 
                         }
                     });
@@ -726,6 +733,59 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
     }
 
+    private void startChronometerCountdown(long durationInMillis) {
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Check if timerHandler is null and initialize it if necessary
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        if (timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+        // Create a new Runnable for the countdown
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+                if (remainingMillis <= 0) {
+                    focus.stop();
+                    isTimerRunning = false;
+                    showExtendTimeDialog();  // Show dialog when time is up
+                } else {
+                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                }
+            }
+        };
+
+        // Post the Runnable to start the countdown
+        timerHandler.postDelayed(timerRunnable, 500);
+        isTimerRunning = true;
+    }
+
+    private void showExtendTimeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Opposite_word.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            startChronometerCountdown(countdownDuration); // Restart with another 30s
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+            // handle what happens if user says no (optional)
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
     private void next() {
 
         myFadeInAnimation = AnimationUtils.loadAnimation(Opposite_word.this, R.anim.blink_animation);
@@ -964,8 +1024,9 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                 if (sps.getString(Opposite_word.this, "odd_time_start").equals("")) {
 
                 } else {
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                   /* focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();*/
+                    startChronometerCountdown(countdownDuration);
 
                 }
             }
@@ -1209,10 +1270,16 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                 TextView yes = (TextView) openDialog_p.findViewById(R.id.yes);
                 TextView no = (TextView) openDialog_p.findViewById(R.id.no);
 
+                if (isTimerRunning) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                }
+
                 yes.setOnClickListener(v -> {
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                     focus.stop();
-                    newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                 //   newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
                     newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
                     if (main_act.equals("")) {
                         finish();
@@ -1227,7 +1294,21 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
                     openDialog_p.dismiss();
                 });
-                no.setOnClickListener(v -> openDialog_p.dismiss());
+                no.setOnClickListener(v -> {
+                    openDialog_p.dismiss();
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
+
+                openDialog_p.setOnDismissListener(dialog -> {
+                    // Check if the timer was paused and resume if necessary
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
+
+
                 openDialog_p.show();
 
 
@@ -1238,29 +1319,30 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
     @Override
     protected void onPause() {
         super.onPause();
-        if (handler != null) handler.removeCallbacks(my_runnable);
-        focus.stop();
-        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+        if (timerHandler != null) {
+            if (timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+            }
+        }
         String date = sps.getString(Opposite_word.this, "date");
         System.out.println("######################Timer ttstop" + ttstop);
-        int pos;
         if (date.equals("0")) {
-            pos = 1;
-            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-            newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+           newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
         } else {
-            pos = 2;
-            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-            newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+           newhelper2.executeSql("UPDATE newmaintable2 SET clue='" + random + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
         }
-
-
     }
 
     protected void onResume() {
         super.onResume();
-        if (handler != null) handler.postDelayed(my_runnable, 1000);
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS"));
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
 
         String date = sps.getString(Opposite_word.this, "date");
         int pos;
@@ -1284,16 +1366,14 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                 noofclue = cs.getInt(cs.getColumnIndexOrThrow("clue"));
             }
         }
-
-
-        // Toast.makeText(Odd_man_out.this, "random"+clue, Toast.LENGTH_SHORT).show();
         if (sps.getString(Opposite_word.this, "odd_time_start").equals("")) {
 
             System.out.println("######################Timer not");
         } else {
             System.out.println("######################Timer start" + dscore);
-            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-            focus.start();
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
         }
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Opposite_word.this);
         Bundle params = new Bundle();
@@ -3264,7 +3344,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                             public void onAdDismissedFullScreenContent() {
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 setSc();
                                 industrialload();
@@ -3274,7 +3354,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
                                 setSc();
@@ -3298,7 +3378,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
                         interstitialAd = null;
-                        handler = null;
+                        timerHandler = null;
                         Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                     }
 
@@ -4132,15 +4212,22 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (timerHandler != null) {
+            timerHandler.removeCallbacksAndMessages(null);
+            timerHandler = null;
+        }
         if (openDialog_p != null && openDialog_p.isShowing()) {
-            openDialog_p.dismiss();
+            openDialog_p.cancel();
         }
         rewardedAd = null;
         interstitialAd = null;
-        handler = null;
     }
 
     public void showcase_dismiss() {
+        // Initialize timerHandler if it's null
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
 
@@ -4149,8 +4236,7 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             } else {
                 sps.putString(Opposite_word.this, "odd_time_start", "yes");
                 sps.putString(Opposite_word.this, "opp_intro", "yes");
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
+                startChronometerCountdown(countdownDuration);
 
             }
 

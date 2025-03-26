@@ -181,11 +181,11 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     int randomnod;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
-    //RewardedVideoAd rewardedVideoAd;
-    Handler handler;
-    Runnable my_runnable;
-    //private MaxRewardedAd rewardedAd;
-    //  private MaxInterstitialAd mInterstitialAd;
+
+    private final long countdownDuration = 30000; // 30 seconds in milliseconds
+    private Handler timerHandler;
+    private Runnable timerRunnable;
+    private boolean isTimerRunning = false;
     private RewardedAd rewardedAd;
     private AdManagerInterstitialAd interstitialAd;
 
@@ -209,6 +209,12 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ote_to_tamil_game);
+
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
 
@@ -399,8 +405,8 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                         if (position == 1) {
                             sps.putString(Ote_to_Tamil.this, "ote_sequence example cn3", "yes");
                             sps.putString(Ote_to_Tamil.this, "showcase_dismiss_ote", "yes");
-                            focus.setBase(SystemClock.elapsedRealtime());
-                            focus.start();
+                            startChronometerCountdown(countdownDuration); // initial 30 seconds
+
 
                         }
                     });
@@ -434,6 +440,58 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         });
 
 
+    }
+
+    private void startChronometerCountdown(long durationInMillis) {
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Check if timerHandler is null and initialize it if necessary
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        if (timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+        // Create a new Runnable for the countdown
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+                if (remainingMillis <= 0) {
+                    focus.stop();
+                    isTimerRunning = false;
+                    showExtendTimeDialog();  // Show dialog when time is up
+                } else {
+                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                }
+            }
+        };
+
+        // Post the Runnable to start the countdown
+        timerHandler.postDelayed(timerRunnable, 500);
+        isTimerRunning = true;
+    }
+
+    private void showExtendTimeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Ote_to_Tamil.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            startChronometerCountdown(countdownDuration); // Restart with another 30s
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+            // handle what happens if user says no (optional)
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void rewarded_adnew() {
@@ -567,7 +625,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                             public void onAdDismissedFullScreenContent() {
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 setSc();
                                 industrialload();
@@ -577,7 +635,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
                                 setSc();
@@ -602,7 +660,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
                         interstitialAd = null;
-                        handler = null;
+                        timerHandler = null;
                         Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                     }
 
@@ -2420,16 +2478,10 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             if (playtime == 0) if (sps.getString(Ote_to_Tamil.this, "Ote_time_start").equals(""))
                 sps.putString(Ote_to_Tamil.this, "Ote_time_start", "yes");
             else {
-
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
-
+                startChronometerCountdown(countdownDuration); // initial 30 second
             }
             else {
-
-                focus.setBase(SystemClock.elapsedRealtime() + playtime);
-                focus.start();
-
+                startChronometerCountdown(countdownDuration); // initial 30 seconds
             }
 
             String tfoption = sa;
@@ -2576,26 +2628,16 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                 TextView yes = openDialog_p.findViewById(R.id.yes);
                 TextView no = openDialog_p.findViewById(R.id.no);
 
+                if (isTimerRunning) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                }
+
                 yes.setOnClickListener(v -> {
 
-                    String dates = sps.getString(Ote_to_Tamil.this, "date");
-                    int pos;
-                    if (dates.equals("0")) {
-                        pos = 1;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-
-                        //    newhelper2.executeSql("UPDATE newmaintable2 SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                    } else {
-                        pos = 2;
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
-
-                        //   newhelper2.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-                    }
-
+                    focus.stop();
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
                     String date = sps.getString(Ote_to_Tamil.this, "date");
                     if (date.equals("0")) if (main_act.equals("")) {
@@ -2615,10 +2657,20 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
                     openDialog_p.dismiss();
                 });
-                no.setOnClickListener(v -> openDialog_p.dismiss());
+                no.setOnClickListener(v -> {
+                    openDialog_p.dismiss();
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
+
+                openDialog_p.setOnDismissListener(dialog -> {
+                    // Check if the timer was paused and resume if necessary
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 openDialog_p.show();
-
-
             }
 
 
@@ -3073,7 +3125,10 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
     protected void onResume() {
         super.onResume();
-        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Ote_to_Tamil.this);
         Bundle params = new Bundle();
         params.putString("screen_name", "Other language to tamil");
@@ -3083,22 +3138,10 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
         if (setting_access == 1) {
             setting_access = 0;
-            // if ((ContextCompat.checkSelfPermission(Ote_to_Tamil.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
             downloaddata_daily();
-            /*} else {
-                Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                finish();
-                startActivity(i);
-            }*/
         } else if (setting_access == 2) {
             setting_access = 0;
-            //if ((ContextCompat.checkSelfPermission(Ote_to_Tamil.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
             downloaddata_regular();
-           /* } else {
-                Intent i = new Intent(Ote_to_Tamil.this, New_Main_Activity.class);
-                finish();
-                startActivity(i);
-            }*/
         }
 
 
@@ -3133,8 +3176,9 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             }
             //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
 
-            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-            focus.start();
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
 
         }
     }
@@ -3283,46 +3327,40 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     }
 
     @Override
-    public void onPause() {
+    protected void onPause() {
         super.onPause();
-        if (handler != null) handler.removeCallbacks(my_runnable);
-        focus.stop();
-        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-
-
-        String date = sps.getString(Ote_to_Tamil.this, "date");
-        int pos;
-        if (date.equals("0")) {
-            pos = 1;
-            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-
-//            newhelper2.executeSql("UPDATE newmaintable2 SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
-        } else {
-            pos = 2;
-            newhelper2.executeSql("UPDATE newmaintable2 SET playtime='" + ttstop + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
-
-            //      newhelper2.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
+        if (timerHandler != null) {
+            if (timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+            }
         }
-
-
         try {
             t1.cancel();
             th.cancel();
         } catch (Exception e) {
 
         }
-        //  AppEventsLogger.deactivateApp(this);
-
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (openDialog_p != null && openDialog_p.isShowing()) openDialog_p.dismiss();
+
+        if (timerHandler != null) {
+            timerHandler.removeCallbacksAndMessages(null);
+            timerHandler = null;
+        }
+        if (openDialog_p != null && openDialog_p.isShowing()) {
+            openDialog_p.cancel();
+        }
         if (mProgressDialog != null && mProgressDialog.isShowing()) mProgressDialog.dismiss();
         rewardedAd = null;
         interstitialAd = null;
-        handler = null;
     }
 
     public void nextgamesdialog() {
@@ -4107,6 +4145,10 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
     //*** In ad area **
     public void showcase_dismiss() {
+        // Initialize timerHandler if it's null
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
 
@@ -4114,8 +4156,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                 showcase_dismiss();
             else {
                 sps.putString(Ote_to_Tamil.this, "ote_sequence example cn3", "yes");
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
+                startChronometerCountdown(countdownDuration); // initial 30 seconds
 
             }
 

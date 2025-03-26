@@ -22,7 +22,6 @@
         <LinearLayout
             android:layout_marginTop="@dimen/lrtbp_10"
             android:layout_centerHorizontal="true"
-            android:layout_below="@+id/asd"
             android:orientation="vertical"
             android:layout_marginLeft="@dimen/lrtbp_10"
             android:layout_marginRight="@dimen/lrtbp_10"

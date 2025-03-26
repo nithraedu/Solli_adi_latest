@@ -267,7 +267,7 @@
                                         android:layout_margin="@dimen/lrtbp_5"
                                         android:layout_weight="1"
                                         android:background="@drawable/new_button4"
-                                        android:orientation="horizontal">
+                                        android:orientation="vertical">
 
                                         <nithra.tamil.word.game.solliadi.RippleView
                                             android:id="@+id/g4_padamparthukandupidi"

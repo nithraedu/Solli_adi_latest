@@ -7,15 +7,15 @@ plugins {
 
 android {
     namespace = "nithra.tamil.word.game.solliadi"
-    compileSdk = 34
+    compileSdk = 35
     useLibrary("org.apache.http.legacy")
 
     defaultConfig {
         applicationId = "nithra.tamil.word.game.solliadi"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 72 //71
-        versionName = "6.20" //6.19
+        targetSdk = 35
+        versionCode = 73 //72
+        versionName = "6.21" //6.20
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -231,8 +231,13 @@ public class Picture_Game_Hard extends AppCompatActivity {
     Dialog openDialog;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
-    Handler handler;
-    Runnable my_runnable;
+
+
+    private final long countdownDuration = 30000; // 30 seconds in milliseconds
+    private Handler timerHandler;
+    private Runnable timerRunnable;
+    private boolean isTimerRunning = false;
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -251,6 +256,12 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog_p.findViewById(R.id.yes);
                 TextView no = openDialog_p.findViewById(R.id.no);
 
+                if (isTimerRunning) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                }
+
                 yes.setOnClickListener(v -> {
 
 
@@ -261,13 +272,13 @@ public class Picture_Game_Hard extends AppCompatActivity {
                         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                         focus.stop();
                         pos = 1;
-                        myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
+                       // myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
                         myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
                     } else {
                         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                         focus.stop();
                         pos = 2;
-                        myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
+                       // myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
                         myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
                     }
 
@@ -299,7 +310,19 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     }
 
                 });
-                no.setOnClickListener(v -> openDialog_p.dismiss());
+                no.setOnClickListener(v -> {
+                    openDialog_p.dismiss();
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
+
+                openDialog_p.setOnDismissListener(dialog -> {
+                    // Check if the timer was paused and resume if necessary
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
 
                 openDialog_p.show();
 
@@ -331,6 +354,12 @@ public class Picture_Game_Hard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pic__game);
+
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
 
@@ -527,8 +556,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 if (position == 2) {
                     sps.putString(context, "pic_time_start", "yes");
                     sps.putString(context, "showcase_dismiss_p", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                    startChronometerCountdown(countdownDuration);
                 }
             });
             sps.putString(Picture_Game_Hard.this, "pn_intro", "no");
@@ -584,6 +612,58 @@ public class Picture_Game_Hard extends AppCompatActivity {
         }
 
 
+    }
+
+    private void startChronometerCountdown(long durationInMillis) {
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Check if timerHandler is null and initialize it if necessary
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        if (timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+        // Create a new Runnable for the countdown
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+                if (remainingMillis <= 0) {
+                    focus.stop();
+                    isTimerRunning = false;
+                    showExtendTimeDialog();  // Show dialog when time is up
+                } else {
+                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                }
+            }
+        };
+
+        // Post the Runnable to start the countdown
+        timerHandler.postDelayed(timerRunnable, 500);
+        isTimerRunning = true;
+    }
+
+    private void showExtendTimeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Picture_Game_Hard.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            startChronometerCountdown(countdownDuration); // Restart with another 30s
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+            // handle what happens if user says no (optional)
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public void find() {
@@ -1297,9 +1377,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
             sps.putString(Picture_Game_Hard.this, "pic_time_start", "yes");
 
         } else {
-
-            focus.setBase(SystemClock.elapsedRealtime());
-            focus.start();
+            startChronometerCountdown(countdownDuration);
         }
 
         pic_clue.setVisibility(View.VISIBLE);
@@ -1884,9 +1962,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
             sps.putString(Picture_Game_Hard.this, "pic_time_start", "yes");
 
         } else {
-
-            focus.setBase(SystemClock.elapsedRealtime());
-            focus.start();
+            startChronometerCountdown(countdownDuration);
         }
 
 
@@ -2432,9 +2508,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
             sps.putString(Picture_Game_Hard.this, "pic_time_start", "yes");
 
         } else {
-
-            focus.setBase(SystemClock.elapsedRealtime());
-            focus.start();
+            startChronometerCountdown(countdownDuration);
         }
 
         bt1.setText("");
@@ -3022,170 +3096,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
         }
     }
 
-  /*  public void next() {
-        //reward correcr ans
-        //reward correcr ans
-        if (picdig == 1) {
-            openDialogk.dismiss();
-            picdig = 0;
-        }
-        Calendar calendar3 = Calendar.getInstance();
-        int cur_year1 = calendar3.get(Calendar.YEAR);
-        int cur_month1 = calendar3.get(Calendar.MONTH);
-        int cur_day1 = calendar3.get(Calendar.DAY_OF_MONTH);
-
-        String str_month1 = String.valueOf(cur_month1 + 1);
-        if (str_month1.length() == 1) {
-            str_month1 = "0" + str_month1;
-        }
-
-        String str_day1 = String.valueOf(cur_day1);
-        if (str_day1.length() == 1) {
-            str_day1 = "0" + str_day1;
-        }
-        final String str_date1 = cur_year1 + "-" + str_month1 + "-" + str_day1;
-        //daily bonus
-        f = 0;
-
-        w_head.setVisibility(View.VISIBLE);
-        bt4.setVisibility(View.VISIBLE);
-        bt8.setVisibility(View.VISIBLE);
-        bt12.setVisibility(View.VISIBLE);
-        bt13.setVisibility(View.VISIBLE);
-        bt14.setVisibility(View.VISIBLE);
-        bt15.setVisibility(View.VISIBLE);
-        bt16.setVisibility(View.VISIBLE);
-        u_verify.setEnabled(true);
-        String date = sps.getString(Picture_Game_Hard.this, "date");
-        sps.putString(Picture_Game_Hard.this, "watts_app", "");
-        sps.putString(Picture_Game_Hard.this, "watts_app_s", "");
-        sps.putString(Picture_Game_Hard.this, "gplues", "yes");
-        sps.putString(Picture_Game_Hard.this, "face_share", "");
-        if (date.equals("0")) {
-            Cursor c1 = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "'");
-            if (c1 != null) {
-                c1.moveToFirst();
-
-                Cursor c2 = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "' and isfinish='1'");
-                int count1 = c2.getCount() + 1;
-                String no = String.valueOf(count1);
-                to_no.setText(no*//*+"/"+c1.getCount()*//*);
-            }
-        } else {
-            if (sps.getInt(Picture_Game_Hard.this, "purchase_ads") == 1) {
-
-            } else {
-                sps.putInt(context, "addloded_rect_bck", 0);
-                sps.putInt(context, "addloded_rect_mul", 0);
-
-            }
-
-            String tfoption = date;
-            String[] first = tfoption.split("-");
-            to_no.setText(first[2] + "-" + first[1] + "-" + first[0]);
-            to_no.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-
-        }
-
-        Cursor c;
-
-        if (date.equals("0")) {
-            c = myDbHelper.getQry("select * from maintable where gameid='" + gameid + "' and isfinish='0' order by id limit 1");
-            c.moveToFirst();
-        } else {
-            c = myDbHelper.getQry("select * from dailytest where gameid='" + gameid + "' and isfinish='0' and date='" + date + "'");
-            c.moveToFirst();
-        }
-
-
-        if (c.getCount() != 0) {
-            sa = c.getString(c.getColumnIndexOrThrow("letters"));
-            imid = c.getString(c.getColumnIndexOrThrow("imagename"));
-            wordid = Integer.parseInt(c.getString(c.getColumnIndexOrThrow("levelid")));
-            id = c.getString(c.getColumnIndexOrThrow("id"));
-
-            if (sps.getString(Picture_Game_Hard.this, str_date1).equals("")) {
-                daily_bones();
-                System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeee daily_bones()");
-                sps.putString(Picture_Game_Hard.this, str_date1, "yes");
-            }
-
-            int playtime = 0;
-
-            try {
-                playtime = c.getInt(c.getColumnIndexOrThrow("playtime"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (playtime == 0) {
-                if (sps.getString(Picture_Game_Hard.this, "resume_ptr").equals("")) {
-                    sps.putString(Picture_Game_Hard.this, "resume_ptr", "yes");
-                } else {
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
-                }
-            }
-            String tfoption = sa;
-            String[] first = tfoption.split(",");
-            int w_type = first.length;
-            word_type = w_type;
-
-            String tfoptiona = imid;
-            String[] firsta = tfoptiona.split(",");
-            int i_type = firsta.length;
-            image_type = i_type;
-
-            answer = c.getString(c.getColumnIndexOrThrow("answer"));
-            clue = c.getString(c.getColumnIndexOrThrow("hints"));
-
-            if (date.equals("0")) {
-                isdown = c.getString(c.getColumnIndexOrThrow("isdownload"));
-            } else {
-                isdown = String.valueOf(1);
-            }
-
-
-            Random rn = new Random();
-            random = rn.nextInt(max - min + 1) + min;
-
-            if (random == 1) {
-                simple();
-            } else if (random == 2) {
-                medium();
-            } else if (random == 3) {
-                hard();
-            }
-        } else {
-
-            if (date.equals("0")) {
-
-                if (isNetworkAvailable(this)) downloaddata_regular();
-                else
-                    Toast.makeText(this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
-
-            } else {
-
-
-                // Toast.makeText(Picture_Game_Hard.this, "தினசரி படம் பார்த்து கண்டுபிடி விளையாட்டுகள் முடிந்தது.வழக்கமான படம் பார்த்து கண்டுபிடி விளையாட்டுக்குள் செல்கிறது. ", Toast.LENGTH_LONG).show();
-
-                if (sps.getString(Picture_Game_Hard.this, "Exp_list").equals("on")) {
-                    finish();
-                    Intent i = new Intent(Picture_Game_Hard.this, Expandable_List_View.class);
-                    startActivity(i);
-                } else {
-                    Toast.makeText(Picture_Game_Hard.this, "தினசரி விளையாட்டுகள் முடிந்தது.வழக்கமான படம் பார்த்து கண்டுபிடி விளையாட்டுக்குள் செல்கிறது. ", Toast.LENGTH_LONG).show();
-                    finish();
-                    sps.putString(Picture_Game_Hard.this, "date", "0");
-                    Intent i = new Intent(Picture_Game_Hard.this, Picture_Game_Hard.class);
-                    startActivity(i);
-                }
-
-
-            }
-        }
-    }*/
-
     public void next() {
         // Reward correct answer
         if (picdig == 1) {
@@ -3285,8 +3195,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 if (sps.getString(Picture_Game_Hard.this, "resume_ptr").equals("")) {
                     sps.putString(Picture_Game_Hard.this, "resume_ptr", "yes");
                 } else {
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                    startChronometerCountdown(countdownDuration);
                 }
             }
 
@@ -3387,8 +3296,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
             myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
             sps.putString(context, "daily_bonus_date", date);
             openDialog.dismiss();
-            focus.setBase(SystemClock.elapsedRealtime());
-            focus.start();
+            startChronometerCountdown(countdownDuration);
 
         });
 
@@ -4317,10 +4225,9 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-        if (handler != null) handler.postDelayed(my_runnable, 1000);
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV"));
-
-
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Picture_Game_Hard.this);
         Bundle params = new Bundle();
         params.putString("screen_name", "Picture Game");
@@ -4365,9 +4272,9 @@ public class Picture_Game_Hard extends AppCompatActivity {
             if (noofclue == 1) {
                 f = 1;
             }
-            //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
-            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-            focus.start();
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
             System.out.println("##################################dscore" + dscore);
         }
     }
@@ -4677,27 +4584,24 @@ public class Picture_Game_Hard extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if (handler != null) handler.removeCallbacks(my_runnable);
-        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-        focus.stop();
-
+        if (timerHandler != null) {
+            if (timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+            }
+        }
         String date = sps.getString(Picture_Game_Hard.this, "date");
-        int pos;
         if (date.equals("0")) {
-            pos = 1;
-            myDbHelper.executeSql("UPDATE maintable SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-            myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
+             myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
         } else {
-            pos = 2;
-            myDbHelper.executeSql("UPDATE dailytest SET playtime='" + ttstop + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
-
-            myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
+             myDbHelper.executeSql("UPDATE maintable SET noclue='" + f + "' WHERE levelid='" + wordid + "' and gameid='" + gameid + "'");
         }
         System.out.println("##################################ttstop" + ttstop);
 
-
-        //uiHelper.onPause();
         try {
             t1.cancel();
             th.cancel();
@@ -5357,7 +5261,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                             public void onAdDismissedFullScreenContent() {
                                 Log.e("TAG", "Ad dismissed fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 setSc();
                                 industrialload();
@@ -5367,7 +5271,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
                                 setSc();
@@ -5392,7 +5296,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.e("TAG", loadAdError.toString());
                         interstitialAd = null;
-                        handler = null;
+                        timerHandler = null;
                         Log.e("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                     }
 
@@ -5468,20 +5372,21 @@ public class Picture_Game_Hard extends AppCompatActivity {
         }
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // uiHelper.onDestroy();
+        if (timerHandler != null) {
+            timerHandler.removeCallbacksAndMessages(null);
+            timerHandler = null;
+        }
         if (openDialog_p != null && openDialog_p.isShowing()) {
-            openDialog_p.dismiss();
+            openDialog_p.cancel();
         }
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
         rewardedAd = null;
         interstitialAd = null;
-        handler = null;
     }
 
     public void nextgamesdialog() {
@@ -6508,6 +6413,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
     //*** In Adapter **
 
     public void showcase_dismiss() {
+        // Initialize timerHandler if it's null
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
 
@@ -6515,8 +6424,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 showcase_dismiss();
             } else {
                 sps.putString(context, "pic_time_start", "yes");
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
+                startChronometerCountdown(countdownDuration);
 
             }
 

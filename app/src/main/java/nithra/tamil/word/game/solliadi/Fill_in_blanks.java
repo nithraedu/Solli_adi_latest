@@ -156,16 +156,13 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     int setval_vid;
     int dia_dismiss = 0;
     int coin_anim = 0;
-    Handler handler;
-    Runnable my_runnable;
-    //reward videos***********************//
+    private final long countdownDuration = 30000; // 30 seconds in milliseconds
+    private Handler timerHandler;
+    private Runnable timerRunnable;
+    private boolean isTimerRunning = false;
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
- /*   public boolean onKeyDown(int keyCode, KeyEvent event) {
-        //return super.onKeyDown(keyCode, event);
-
-        if(keyCode==KeyEvent.KEYCODE_BACK) {*/
             sps.putString(Fill_in_blanks.this, "fill_intro_time_start", "yes");
             sps.putString(Fill_in_blanks.this, "game_area", "on");
             sps.putInt(Fill_in_blanks.this, "addlodedd", 0);
@@ -175,6 +172,11 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             TextView yes = openDialog_p.findViewById(R.id.yes);
             TextView no = openDialog_p.findViewById(R.id.no);
 
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+            }
 
             yes.setOnClickListener(v -> {
                 // Logic to stop the timer and update the database
@@ -185,13 +187,13 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 if (dates.equals("0")) {
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                     focus.stop();
-                    newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
+                  //  newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
 
                     //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                 } else {
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                     focus.stop();
-                    newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
+                   // newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
 
                     //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                 }
@@ -223,11 +225,21 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
                 openDialog_p.dismiss();
             });
-            no.setOnClickListener(v -> openDialog_p.dismiss());
+            no.setOnClickListener(v -> {
+                openDialog_p.dismiss();
+                if (ttstop > 0) {
+                    startChronometerCountdown(ttstop);
+                }
+            } );
             openDialog_p.show();
 
 
-            // return super.onKeyDown(keyCode, event);
+            openDialog_p.setOnDismissListener(dialog -> {
+                // Check if the timer was paused and resume if necessary
+                if (ttstop > 0) {
+                    startChronometerCountdown(ttstop);
+                }
+            });
         }
     };
    // private MaxRewardedAd rewardedAd;
@@ -250,6 +262,11 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fill_in_blanks);
+
+        // Ensure that timerHandler is initialized
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
         newhelper = new Newgame_DataBaseHelper(Fill_in_blanks.this);
@@ -364,8 +381,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                     sps.putString(Fill_in_blanks.this, "fill_intro_time_start", "yes");
                     sps.putString(Fill_in_blanks.this, "showcase_dismiss_fill_intro", "yes");
 
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                    startChronometerCountdown(countdownDuration);
 
                 }
             });
@@ -376,6 +392,59 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
         }
 
+    }
+
+    private void startChronometerCountdown(long durationInMillis) {
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Check if timerHandler is null and initialize it if necessary
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        if (timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+
+        // Create a new Runnable for the countdown
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+                if (remainingMillis <= 0) {
+                    focus.stop();
+                    isTimerRunning = false;
+                    showExtendTimeDialog();  // Show dialog when time is up
+                } else {
+                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                }
+            }
+        };
+
+        // Post the Runnable to start the countdown
+        timerHandler.postDelayed(timerRunnable, 500);
+        isTimerRunning = true;
+    }
+
+    private void showExtendTimeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Fill_in_blanks.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            startChronometerCountdown(countdownDuration); // Restart with another 30s
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+            // handle what happens if user says no (optional)
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void click_txt_change() {
@@ -933,9 +1002,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             answers = c.getString(c.getColumnIndexOrThrow("answer"));
             int playtime = c.getInt(c.getColumnIndexOrThrow("playtime"));
             if (sps.getString(Fill_in_blanks.this, "fill_intro_time_start").equals("yes")) {
-
-                focus.setBase(SystemClock.elapsedRealtime() + playtime);
-                focus.start();
+                startChronometerCountdown(countdownDuration);
             }
             // Toast.makeText(this, "answers" + answers, Toast.LENGTH_SHORT).show();
             String tfoption = letters;
@@ -3537,7 +3604,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                             public void onAdDismissedFullScreenContent() {
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 setSc();
                                 industrialload();
@@ -3547,7 +3614,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
                                 setSc();
@@ -3571,7 +3638,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
                         interstitialAd = null;
-                        handler = null;
+                        timerHandler = null;
                         Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                     }
 
@@ -3840,8 +3907,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
     protected void onResume() {
         super.onResume();
-        if (handler != null) handler.postDelayed(my_runnable, 1000);
-
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         if (sps.getString(Fill_in_blanks.this, "riddle_time_start").equals("")) {
             sps.putString(Fill_in_blanks.this, "riddle_time_start", "yes");
         } else {
@@ -3856,10 +3925,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 if (cs.getCount() != 0) {
                     dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                 }
-            } else {
             }
-            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-            focus.start();
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
         }
 
     }
@@ -3867,18 +3936,15 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     @Override
     protected void onPause() {
         super.onPause();
-
-        if (handler != null) handler.removeCallbacks(my_runnable);
-        focus.stop();
-        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-        String date = sps.getString(Fill_in_blanks.this, "date");
-        int pos;
-        if (date.equals("0")) {
-            newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
-            //  myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-        } else {
-            newhelper4.executeSql("UPDATE newgamesdb4 SET playtime='" + ttstop + "' WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
-            //  myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+        if (timerHandler != null) {
+            if (timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+            }
         }
     }
 
@@ -4352,6 +4418,11 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     }
 
     public void showcase_dismiss() {
+        // Initialize timerHandler if it's null
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
         Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
             System.out.println("##########################sps.getString" + sps.getString(Fill_in_blanks.this, "showcase_dismiss_fill_intro"));
@@ -4361,8 +4432,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             } else {
                 System.out.println("######################en_to_intro_time_start");
                 sps.putString(Fill_in_blanks.this, "fill_intro_time_start", "yes");
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
+                startChronometerCountdown(countdownDuration);
             }
         }, 800);
     }
@@ -4776,11 +4846,14 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (timerHandler != null) {
+            timerHandler.removeCallbacksAndMessages(null);
+            timerHandler = null;
+        }
         if (openDialog_p != null && openDialog_p.isShowing()) {
-            openDialog_p.dismiss();
+            openDialog_p.cancel();
         }
         rewardedAd = null;
         interstitialAd = null;
-        handler = null;
     }
 }
