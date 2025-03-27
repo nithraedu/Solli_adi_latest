@@ -1895,16 +1895,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
 
 
             String date = sps.getString(Missing_Words.this, "date");
-/*            int pos;
-            if (date.equals("0")) {
-                pos = 1;
-            } else {
-                pos = 2;
-            }*/
 
-         //   newhelper6.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + question_id + "' and gameid='" + gameid + "'");
-
-            // String date = sps.getString(Missing_Words.this, "date");
             if (date.equals("0")) {
                 if (main_act.equals("")) {
                     finish();

@@ -52,6 +52,7 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
@@ -156,10 +157,11 @@ public class Tirukural extends AppCompatActivity {
     TextView coin_value;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
-    Handler handler;
-    Runnable my_runnable;
-   // private MaxInterstitialAd mInterstitialAd;
-   // private MaxRewardedAd rewardedAd;
+    private final long countdownDuration = 30000; // 30 seconds in milliseconds
+    private Handler timerHandler;
+    private Runnable timerRunnable;
+    private boolean isTimerRunning = false;
+
    private RewardedAd rewardedAd;
    private AdManagerInterstitialAd interstitialAd ;
 
@@ -170,6 +172,12 @@ public class Tirukural extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tirukural);
+
+        // Ensure that timerHandler is initialized in onResume as well
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
 
@@ -337,8 +345,7 @@ public class Tirukural extends AppCompatActivity {
                 if (position == 1) {
                     sps.putString(Tirukural.this, "Tirukural_time_start", "yes");
                     sps.putString(Tirukural.this, "showcase_dismiss_tir", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                    startChronometerCountdown(countdownDuration);
 
                 }
             });
@@ -806,6 +813,57 @@ public class Tirukural extends AppCompatActivity {
 
     }
 
+    private void startChronometerCountdown(long durationInMillis) {
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Check if timerHandler is null and initialize it if necessary
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        if (timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+        // Create a new Runnable for the countdown
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+                if (remainingMillis <= 0) {
+                    focus.stop();
+                    isTimerRunning = false;
+                    showExtendTimeDialog();  // Show dialog when time is up
+                } else {
+                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                }
+            }
+        };
+
+        // Post the Runnable to start the countdown
+        timerHandler.postDelayed(timerRunnable, 500);
+        isTimerRunning = true;
+    }
+
+    private void showExtendTimeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Tirukural.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            startChronometerCountdown(countdownDuration); // Restart with another 30s
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+            // handle what happens if user says no (optional)
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 
     private void setans(String sa) {
 
@@ -1077,15 +1135,11 @@ public class Tirukural extends AppCompatActivity {
             if (playtime == 0) {
 
                 if (sps.getString(Tirukural.this, "Tirukural_time_start").equals("yes")) {
-                    focus.setBase(SystemClock.elapsedRealtime() + playtime);
-                    focus.start();
+                    startChronometerCountdown(countdownDuration);
                 }
 
             } else {
-                focus.setBase(SystemClock.elapsedRealtime() + playtime);
-                focus.start();
-
-
+                startChronometerCountdown(countdownDuration);
             }
 
 
@@ -2033,7 +2087,7 @@ public class Tirukural extends AppCompatActivity {
                             public void onAdDismissedFullScreenContent() {
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 setSc();
                                 industrialload();
@@ -2043,7 +2097,7 @@ public class Tirukural extends AppCompatActivity {
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
                                 setSc();
@@ -2067,7 +2121,7 @@ public class Tirukural extends AppCompatActivity {
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
                         interstitialAd = null;
-                        handler = null;
+                        timerHandler = null;
                         Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                     }
 
@@ -2323,40 +2377,29 @@ public class Tirukural extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (handler != null) handler.removeCallbacks(my_runnable);
 
-        focus.stop();
-        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-
-
-        String date = sps.getString(Tirukural.this, "date");
-        int pos;
-        if (date.equals("0")) {
-            pos = 1;
-            newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-
-            //  myDbHelper.executeSql("UPDATE maintable SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-        } else {
-            pos = 2;
-            newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-
-            //  myDbHelper.executeSql("UPDATE dailytest SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+        if (timerHandler != null) {
+            if (timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+            }
         }
     }
 
     protected void onResume() {
         super.onResume();
-        //Toast.makeText(this, "" + sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV"), Toast.LENGTH_SHORT).show();
-        if (handler != null) handler.postDelayed(my_runnable, 1000);
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV"));
-
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Tirukural.this);
         Bundle params = new Bundle();
         params.putString("screen_name", "Tirukural Gam");
         params.putString("screen_class", "Tirukural");
         mFirebaseAnalytics.logEvent( "screen_view", params);
-        //uiHelper.onResume();
-
 
         if (sps.getString(Tirukural.this, "Tirukural_time_start").equals("")) {
             sps.putString(Tirukural.this, "Tirukural_time_start", "yes");
@@ -2381,8 +2424,9 @@ public class Tirukural extends AppCompatActivity {
                     dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                 }
             }
-            focus.setBase(SystemClock.elapsedRealtime() + dscore);
-            focus.start();
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
         }
 
     }
@@ -2396,27 +2440,16 @@ public class Tirukural extends AppCompatActivity {
             openDialog_p.setContentView(R.layout.back_pess);
             TextView yes = openDialog_p.findViewById(R.id.yes);
             TextView no = openDialog_p.findViewById(R.id.no);
-
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+            }
 
             yes.setOnClickListener(v -> {
 
-                String dates = sps.getString(Tirukural.this, "date");
-                int pos;
-                if (dates.equals("0")) {
-                    pos = 1;
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    focus.stop();
-                    newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-
-                    //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                } else {
-                    pos = 2;
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    focus.stop();
-                    newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-
-                    //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                }
+                focus.stop();
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
                 String date = sps.getString(Tirukural.this, "date");
                 if (date.equals("0")) {
@@ -2451,7 +2484,19 @@ public class Tirukural extends AppCompatActivity {
 
 
             });
-            no.setOnClickListener(v -> openDialog_p.dismiss());
+            no.setOnClickListener(v -> {
+                openDialog_p.dismiss();
+                if (ttstop > 0) {
+                    startChronometerCountdown(ttstop);
+                }
+            });
+
+            openDialog_p.setOnDismissListener(dialog -> {
+                // Check if the timer was paused and resume if necessary
+                if (ttstop > 0) {
+                    startChronometerCountdown(ttstop);
+                }
+            });
             openDialog_p.show();
 
 
@@ -2781,13 +2826,15 @@ public class Tirukural extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // uiHelper.onDestroy();
+        if (timerHandler != null) {
+            timerHandler.removeCallbacksAndMessages(null);
+            timerHandler = null;
+        }
         if (openDialog_p != null && openDialog_p.isShowing()) {
-            openDialog_p.dismiss();
+            openDialog_p.cancel();
         }
         rewardedAd = null;
         interstitialAd = null;
-        handler = null;
     }
 
 
@@ -3265,6 +3312,9 @@ public class Tirukural extends AppCompatActivity {
     }
 
     public void showcase_dismiss() {
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
         Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
 
@@ -3272,8 +3322,7 @@ public class Tirukural extends AppCompatActivity {
                 showcase_dismiss();
             } else {
                 sps.putString(context, "Tirukural_game_intro", "yes");
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
+                startChronometerCountdown(countdownDuration); // initial 30 seconds
 
             }
 
