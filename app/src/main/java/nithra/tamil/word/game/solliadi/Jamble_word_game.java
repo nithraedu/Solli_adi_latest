@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -29,9 +30,11 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
 import android.widget.ImageView;
@@ -68,6 +71,7 @@ import java.util.Random;
 
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
 import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
+import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseSequence;
 import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
@@ -142,6 +146,8 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
     private Handler timerHandler;
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
+    private boolean isGameCompleted = false;
+
     private RewardedAd rewardedAd;
    private AdManagerInterstitialAd interstitialAd ;
 
@@ -221,6 +227,44 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         wd_txt9.setOnDragListener(this);
         wd_txt10.setOnDragListener(this);
         ImageView prize_logo = findViewById(R.id.prize_logo);
+
+        LinearLayout resetLayout = findViewById(R.id.resetLayout);
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+
+        resetLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
+                return;  // Do nothing if the game is completed
+            }
+
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+            showResetDialog();
+        });
+
+
+        skipLayout.setOnClickListener(v -> {
+            System.out.println("enter class");
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Jamble_word_game.this, "date");
+            if (date.equals("0")) {
+                newhelper6.executeSql("UPDATE newgames5 SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+            } else {
+                newhelper6.executeSql("UPDATE newgames5 SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+            }
+            // Load next question
+            next();
+        });
+
         if (sps.getInt(Jamble_word_game.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
@@ -349,6 +393,41 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         });
         earncoin.setOnClickListener(v -> dialog(0));
         next();
+    }
+
+    private void showResetDialog() {
+        Dialog dialog = new Dialog(Jamble_word_game.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            ttstop = countdownDuration;
+            resetvalues();  // Clear existing values and state
+            applyShuffledWords(first, first.length);  // Reapply original word shuffle
+            startChronometerCountdown(countdownDuration);
+            dialog.dismiss();
+        });
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    private void applyShuffledWords(String[] words, int length) {
+        textviews_show(length); // Show only the required fields
+        random_arrange(length, words); // Reapply same shuffle logic
     }
 
     private void startChronometerCountdown(long durationInMillis) {
@@ -942,6 +1021,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 valid_yes();
             }
         }
+
     }
 
     private void valid_yes() {
@@ -952,6 +1032,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         } else {
             newhelper6.executeSql("UPDATE newgames5 SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
         }
+        isGameCompleted = true; // <-- set game completed flag here
         right_indicate();
         // prize_data_update(Jamble_word_game.this, 75);
         price_update();

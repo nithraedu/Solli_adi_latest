@@ -13,6 +13,7 @@
         android:layout_weight="1"
         android:background="@drawable/back_next2">
 
+
         <LinearLayout
             android:id="@+id/time_score_board"
             android:layout_width="match_parent"
@@ -51,38 +52,7 @@
                 </LinearLayout>
 
                 <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_toLeftOf="@+id/c_word_number1"
-                    android:layout_toRightOf="@+id/asd"
-                    android:paddingHorizontal="5dp">
-
-                    <LinearLayout
-                        android:id="@+id/skip_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/wh_2"
-                        android:layout_marginRight="@dimen/lrtbp_5"
-                        android:background="@drawable/time_background"
-                        android:paddingHorizontal="5dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/lrtbp_5"
-                            android:layout_marginRight="@dimen/lrtbp_10"
-                            android:text="Skip"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/txt_18" />
-
-                    </LinearLayout>
-
-
-                </RelativeLayout>
-
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_toLeftOf="@+id/c_word_number1"
                     android:layout_toRightOf="@+id/asd">
@@ -147,7 +117,7 @@
                         android:background="@drawable/time_background"
                         android:paddingLeft="@dimen/lrtbp_5"
                         android:paddingRight="@dimen/lrtbp_5"
-                        android:text="1"
+                        android:text="no"
                         android:textColor="@color/white"
                         android:textSize="@dimen/txt_20"
                         android:textStyle="bold" />
@@ -157,31 +127,15 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_centerInParent="true"
                     android:layout_toLeftOf="@+id/qwt"
                     android:layout_toRightOf="@+id/c_word_number1">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal"
-                        android:paddingHorizontal="20dp">
-
-                        <TextView
-                            android:id="@+id/c_settings"
-                            android:layout_width="@dimen/croll_insbut_height"
-                            android:layout_height="@dimen/croll_insbut_height"
-                            android:background="@drawable/settings" />
-
-                        <ImageView
-                            android:id="@+id/reset_btn"
-                            android:layout_width="@dimen/croll_insbut_height"
-                            android:layout_height="@dimen/croll_insbut_height"
-                            android:layout_gravity="center"
-                            android:src="@drawable/baseline_refresh_24" />
-
-                    </LinearLayout>
-
+                    <TextView
+                        android:id="@+id/c_settings"
+                        android:layout_width="@dimen/croll_insbut_height"
+                        android:layout_height="@dimen/croll_insbut_height"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/settings" />
 
                 </RelativeLayout>
 
@@ -219,11 +173,73 @@
 
         </LinearLayout>
 
+
+        <LinearLayout
+            android:id="@+id/addtional_req"
+            android:layout_width="match_parent"
+            android:layout_height="33dp"
+            android:layout_marginLeft="@dimen/lrtbp_5"
+            android:layout_marginTop="@dimen/lrtbp_30"
+            android:layout_marginRight="@dimen/lrtbp_5"
+            android:gravity="end"
+
+            android:orientation="horizontal">
+
+
+            <LinearLayout
+                android:id="@+id/skipLayout"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/skip_background">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text=" Skip"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/txt_16"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/resetLayout"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:layout_marginRight="@dimen/lrtbp_5"
+                android:background="@drawable/skip_background"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/txt_22"
+                    android:layout_height="@dimen/txt_24"
+                    android:background="@drawable/restore"
+                    android:backgroundTint="@color/black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/lrtbp_5"
+                    android:layout_marginRight="@dimen/lrtbp_5"
+                    android:gravity="center"
+
+                    android:text=" Reset"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/txt_16"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </LinearLayout>
+
         <RelativeLayout
             android:id="@+id/clue_R_layout"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:layout_below="@+id/time_score_board"
+            android:layout_below="@+id/addtional_req"
             android:layout_centerHorizontal="true"
             android:layout_marginLeft="@dimen/lrtbp_20"
             android:layout_marginTop="@dimen/lrtbp_5"
@@ -234,7 +250,6 @@
 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/clue_L_layout2"
                 android:layout_centerInParent="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="@dimen/wh_2"
@@ -592,6 +607,7 @@
 
             </RelativeLayout>
         </ScrollView>
+
         <TextView
             android:id="@+id/c_coins"
             android:layout_width="@dimen/wh_35"

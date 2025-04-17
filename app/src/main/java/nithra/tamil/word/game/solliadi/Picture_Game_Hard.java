@@ -21,6 +21,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.ParseException;
@@ -234,9 +235,12 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
 
     private final long countdownDuration = 30000; // 30 seconds in milliseconds
-    private Handler timerHandler;
+    private Handler timerHandler = new Handler(Looper.getMainLooper());
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
+
+    private boolean isGameCompleted = false;
+
 
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
@@ -397,6 +401,49 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 industrialload();
             }
         }
+
+        LinearLayout resetLayout = findViewById(R.id.resetLayout);
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+
+        resetLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
+                return;  // Do nothing if the game is completed
+            }
+
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+            showResetDialog();
+        });
+
+        skipLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Stop timer
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Picture_Game_Hard.this, "date");
+            if (date.equals("0")) {
+                myDbHelper.executeSql("UPDATE maintable SET isfinish=1 WHERE levelid='" + wordid + "'and gameid='" + gameid + "'");
+            } else {
+                myDbHelper.executeSql("UPDATE dailytest SET isfinish=1 WHERE levelid='" + wordid + "'and gameid='" + gameid + "'");
+            }
+            // Load next question
+            next();
+        });
 
 
         adds = findViewById(R.id.ads_lay);
@@ -614,22 +661,49 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
     }
 
-    private void startChronometerCountdown(long durationInMillis) {
-        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
-        focus.setCountDown(true);
-        focus.start();
+    private void showResetDialog() {
+        Dialog dialog = new Dialog(Picture_Game_Hard.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
 
-        // Check if timerHandler is null and initialize it if necessary
+        btnYes.setOnClickListener(v -> {
+            ttstop = 0;
+            p_edit.setText("");
+            startChronometerCountdown(countdownDuration);
+            dialog.dismiss();
+        });
+
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            dialog.dismiss();
+        });
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    private void startChronometerCountdown(long durationInMillis) {
+        // Ensure timerHandler is always valid
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
 
-        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Remove existing callbacks
         if (timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
 
-        // Create a new Runnable for the countdown
         timerRunnable = new Runnable() {
             @Override
             public void run() {
@@ -637,17 +711,20 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
-                    showExtendTimeDialog();  // Show dialog when time is up
+                    showExtendTimeDialog();
                 } else {
-                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                    if (timerHandler == null) {
+                        timerHandler = new Handler(Looper.getMainLooper()); // 🔐 Safe re-init
+                    }
+                    timerHandler.postDelayed(this, 500);
                 }
             }
         };
 
-        // Post the Runnable to start the countdown
         timerHandler.postDelayed(timerRunnable, 500);
         isTimerRunning = true;
     }
+
 
     private void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Picture_Game_Hard.this);
@@ -1246,6 +1323,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     list4.setVisibility(View.INVISIBLE);
 
                     coinanim();
+                    isGameCompleted=true;
                     p_edit.setText("");
 
 

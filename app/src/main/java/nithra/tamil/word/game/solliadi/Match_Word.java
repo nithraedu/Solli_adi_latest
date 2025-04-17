@@ -18,6 +18,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -163,10 +164,14 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
     int f_sec;
     int dia_dismiss = 0;
     private final long countdownDuration = 30000; // 30 seconds in milliseconds
-    private Handler timerHandler;
+    private Handler timerHandler = new Handler(Looper.getMainLooper());
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
+    private boolean isGameCompleted = false;
+
     private RewardedAd rewardedAd;
+
+
     private AdManagerInterstitialAd interstitialAd;
 
 
@@ -246,6 +251,42 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 industrialload();
             }
         }
+        LinearLayout resetLayout = findViewById(R.id.resetLayout);
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+
+        resetLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
+                return;  // Do nothing if the game is completed
+            }
+
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+            showResetDialog();
+        });
+
+        skipLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Match_Word.this, "date");
+            if (date.equals("0")) {
+                newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE questionid='" + questionid + "'and gameid='" + gameid + "'");
+
+            } else {
+                newhelper.executeSql("UPDATE newmaintable SET daily= '1' WHERE questionid='" + questionid + "'and gameid='" + gameid + "'");
+            }
+            // Load next question
+            next();
+        });
+
         adds = (LinearLayout) findViewById(R.id.ads_lay);
         adsLay1 = (LinearLayout) findViewById(R.id.adsLay1);
         if (sps.getInt(context, "purchase_ads") == 0) {
@@ -358,7 +399,12 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             sps.putString(Match_Word.this, "mtcs_intro", "no");
             sequence.start();
+        } else {
+        // If showcase was already completed, start the timer immediately
+        if (sps.getString(Match_Word.this, "mtc_time_start").equals("yes")) {
+            startChronometerCountdown(countdownDuration);
         }
+    }
 
         if (sps.getInt(Match_Word.this, "reward_coin_txt") == 0) {
             sps.putInt(Match_Word.this, "reward_coin_txt", 20);
@@ -928,22 +974,48 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         });
     }
 
-    private void startChronometerCountdown(long durationInMillis) {
-        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
-        focus.setCountDown(true);
-        focus.start();
+    private void showResetDialog() {
+        Dialog dialog = new Dialog(Match_Word.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
 
-        // Check if timerHandler is null and initialize it if necessary
+        btnYes.setOnClickListener(v -> {
+            ttstop = 0;
+            dialog.dismiss();
+        });
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+
+
+    private void startChronometerCountdown(long durationInMillis) {
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
 
-        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Cancel previous timer if any
         if (timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
 
-        // Create a new Runnable for the countdown
         timerRunnable = new Runnable() {
             @Override
             public void run() {
@@ -951,17 +1023,19 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
-                    showExtendTimeDialog();  // Show dialog when time is up
+                    showExtendTimeDialog();
                 } else {
-                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                    if (timerHandler != null) {
+                        timerHandler.postDelayed(this, 500);  // 💡 Safe now
+                    }
                 }
             }
         };
 
-        // Post the Runnable to start the countdown
         timerHandler.postDelayed(timerRunnable, 500);
         isTimerRunning = true;
     }
+
 
     private void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Match_Word.this);
@@ -3517,9 +3591,11 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                         button16.setBackgroundResource(R.drawable.right_ans);
                         button16.setEnabled(false);
                     }
+
                     coinanim();
                     if (x >= answerlength) {
                         price_update();
+                        isGameCompleted = true; // ✅ Set the completion flag here
                         enablefalse();
                         if (date.equals("0")) {
                             newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE questionid='" + questionid + "'and gameid='" + gameid + "'");

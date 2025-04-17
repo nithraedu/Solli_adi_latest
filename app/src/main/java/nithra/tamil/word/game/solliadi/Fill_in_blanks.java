@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -33,10 +34,12 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
 import android.widget.ImageView;
@@ -160,6 +163,8 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     private Handler timerHandler;
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
+    private boolean isGameCompleted = false;
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -328,6 +333,44 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             /**/
         }
 
+        LinearLayout resetLayout = findViewById(R.id.resetLayout);
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+
+        resetLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
+                return;  // Do nothing if the game is completed
+            }
+
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+            showResetDialog();
+        });
+
+
+        skipLayout.setOnClickListener(v -> {
+            System.out.println("enter class");
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Fill_in_blanks.this, "date");
+            if (date.equals("0")) {
+                newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish=1 WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
+            } else {
+                newhelper4.executeSql("UPDATE newgamesdb4 SET daily=1 WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
+            }
+
+            // Load next question
+            next();
+        });
+
 
         find();
         click();
@@ -394,21 +437,58 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
     }
 
-    private void startChronometerCountdown(long durationInMillis) {
-        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
-        focus.setCountDown(true);
-        focus.start();
+    private void showResetDialog() {
+        Dialog dialog = new Dialog(Fill_in_blanks.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
 
-        // Check if timerHandler is null and initialize it if necessary
+        btnYes.setOnClickListener(v -> {
+            // Clear only if user changed it
+            if (!ed1.getText().toString().equals(ed1.getTag())) ed1.setText("");
+            if (!ed2.getText().toString().equals(ed2.getTag())) ed2.setText("");
+            if (!ed3.getText().toString().equals(ed3.getTag())) ed3.setText("");
+            if (!ed4.getText().toString().equals(ed4.getTag())) ed4.setText("");
+            if (!ed5.getText().toString().equals(ed5.getTag())) ed5.setText("");
+            if (!ed6.getText().toString().equals(ed6.getTag())) ed6.setText("");
+            if (!ed7.getText().toString().equals(ed7.getTag())) ed7.setText("");
+            if (!ed8.getText().toString().equals(ed8.getTag())) ed8.setText("");
+
+            ttstop = 0;
+            startChronometerCountdown(countdownDuration);
+            dialog.dismiss();
+        });
+
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            dialog.dismiss();
+        });
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+
+    private void startChronometerCountdown(long durationInMillis) {
+        // ✅ Ensure timerHandler is always initialized first
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
+
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
 
         // Remove existing callbacks to avoid conflicts with the previous timerRunnable
         if (timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
-
 
         // Create a new Runnable for the countdown
         timerRunnable = new Runnable() {
@@ -425,10 +505,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         };
 
-        // Post the Runnable to start the countdown
         timerHandler.postDelayed(timerRunnable, 500);
         isTimerRunning = true;
     }
+
 
     private void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Fill_in_blanks.this);
@@ -720,6 +800,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             ttstop = focus.getBase() - SystemClock.elapsedRealtime();
             focus.stop();
             if (coin_anim == 0) {
+                isGameCompleted=true;
                 coinanim();
                 price_update();
                 coin_anim = 1;
@@ -1167,9 +1248,17 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                     }
                 }
                 ed1.setText("" + word1);
+                ed1.setTag(word1); // Store the original default letter
+
                 ed2.setText("" + word2);
+                ed2.setTag(word2); // Store the original default letter
+
                 ed3.setText("" + word3);
+                ed3.setTag(word3); // Store the original default letter
+
                 ed4.setText("" + word4);
+                ed4.setTag(word4); // Store the original default letter
+
 
 
             }
@@ -1211,10 +1300,20 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                     }
                 }
                 ed1.setText("" + word1);
+                ed1.setTag(word1); // Store the original default letter
+
                 ed2.setText("" + word2);
+                ed2.setTag(word2); // Store the original default letter
+
                 ed3.setText("" + word3);
+                ed3.setTag(word3); // Store the original default letter
+
                 ed4.setText("" + word4);
+                ed4.setTag(word4); // Store the original default letter
+
                 ed5.setText("" + word5);
+                ed5.setTag(word5); // Store the original default letter
+
 
             }
             if (letter_length == 6) {
@@ -1261,11 +1360,23 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                     }
                 }
                 ed1.setText("" + word1);
+                ed1.setTag(word1); // Store the original default letter
+
                 ed2.setText("" + word2);
+                ed2.setTag(word2); // Store the original default letter
+
                 ed3.setText("" + word3);
+                ed3.setTag(word3); // Store the original default letter
+
                 ed4.setText("" + word4);
+                ed4.setTag(word4); // Store the original default letter
+
                 ed5.setText("" + word5);
+                ed5.setTag(word5); // Store the original default letter
+
                 ed6.setText("" + word6);
+                ed6.setTag(word6); // Store the original default letter
+
             }
             if (letter_length == 7) {
 
@@ -1318,12 +1429,25 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 }
 
                 ed1.setText("" + word1);
+                ed1.setTag(word1); // Store the original default letter
+
                 ed2.setText("" + word2);
+                ed2.setTag(word2); // Store the original default letter
+
                 ed3.setText("" + word3);
+                ed3.setTag(word3); // Store the original default letter
+
                 ed4.setText("" + word4);
+                ed4.setTag(word4); // Store the original default letter
+
                 ed5.setText("" + word5);
+                ed5.setTag(word5);
+
                 ed6.setText("" + word6);
+                ed6.setTag(word6);
+
                 ed7.setText("" + word7);
+                ed7.setTag(word7);
             }
             if (letter_length == 8) {
 
@@ -1381,13 +1505,28 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                     }
                 }
                 ed1.setText("" + word1);
+                ed1.setTag(word1);
+
                 ed2.setText("" + word2);
+                ed2.setTag(word2);
+
                 ed3.setText("" + word3);
+                ed3.setTag(word3);
+
                 ed4.setText("" + word4);
+                ed4.setTag(word4);
+
                 ed5.setText("" + word5);
+                ed5.setTag(word5);
+
                 ed6.setText("" + word6);
+                ed6.setTag(word6);
+
                 ed7.setText("" + word7);
+                ed7.setTag(word7);
+
                 ed8.setText("" + word8);
+                ed8.setTag(word8);
             }
 
             System.out.println("############randomno" + randomno);

@@ -338,6 +338,28 @@ public class Solukul_Sol extends AppCompatActivity {
             }
         }
 
+
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+
+        skipLayout.setOnClickListener(v -> {
+            System.out.println("enter class");
+           /* if (isGameCompleted) {
+                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }*/
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Solukul_Sol.this, "date");
+            if (date.equals("0"))
+                myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid='" + letterid + "' and gameid='" + gameid + "'");
+            else
+                myDbHelper.executeSql("UPDATE dailytest SET isfinish='1' WHERE levelid='" + letterid + "' and gameid='" + gameid + "'");
+
+
+            // Load next question
+            next();
+        });
+
         adds = findViewById(R.id.ads_lay);
         adsLay1 = findViewById(R.id.adsLay1);
         if (sps.getInt(context, "purchase_ads") == 0) {

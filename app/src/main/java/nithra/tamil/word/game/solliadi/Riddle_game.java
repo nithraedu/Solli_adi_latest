@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -34,6 +35,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -155,6 +157,8 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
     private Handler timerHandler;
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
+    private boolean isGameCompleted = false;
+
 
 
     private RewardedAd rewardedAd;
@@ -232,6 +236,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         soundId4 = coin.load(Riddle_game.this, R.raw.coins, 1);
 ///
         ImageView prize_logo = findViewById(R.id.prize_logo);
+
         if (sps.getInt(Riddle_game.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
@@ -262,6 +267,48 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         });
 
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
+
+        LinearLayout resetLayout = findViewById(R.id.resetLayout);
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+
+        resetLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
+                return;  // Do nothing if the game is completed
+            }
+
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+            showResetDialog();
+        });
+
+        skipLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Riddle_game.this, "date");
+            if (date.equals("0")) {
+                newhelper3.executeSql("UPDATE right_order SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+            } else {
+                newhelper3.executeSql("UPDATE right_order SET daily=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+            }
+
+            // Reset fields
+            c_edit.setText("");
+            ans_high.setText("");
+            ans_high.setVisibility(View.INVISIBLE);
+            c_ans.setEnabled(true);
+
+            // Load next question
+            next();
+        });
 
         find();
        // Utills.INSTANCE.initializeAdzz(this);
@@ -719,6 +766,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
                     focus.stop();
                     coinanim();
+                    isGameCompleted=true;
                     price_update();
                 }
             }
@@ -757,23 +805,49 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
     }
 
-    private void startChronometerCountdown(long durationInMillis) {
-        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
-        focus.setCountDown(true);
-        focus.start();
+    private void showResetDialog() {
+        Dialog dialog = new Dialog(Riddle_game.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
 
-        // Check if timerHandler is null and initialize it if necessary
+        btnYes.setOnClickListener(v -> {
+            ttstop = 0;
+            c_edit.setText("");
+            startChronometerCountdown(countdownDuration);
+            dialog.dismiss();
+        });
+
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            dialog.dismiss();
+        });
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+    private void startChronometerCountdown(long durationInMillis) {
+        // Always initialize handler first
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
 
-        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Remove old callbacks
         if (timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
 
-
-        // Create a new Runnable for the countdown
+        // Define runnable
         timerRunnable = new Runnable() {
             @Override
             public void run() {
@@ -781,17 +855,22 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
-                    showExtendTimeDialog();  // Show dialog when time is up
+                    showExtendTimeDialog();
                 } else {
-                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                    if (timerHandler != null) { // ✅ safeguard here
+                        timerHandler.postDelayed(this, 500);
+                    }
                 }
             }
         };
 
-        // Post the Runnable to start the countdown
-        timerHandler.postDelayed(timerRunnable, 500);
-        isTimerRunning = true;
+        // Start runnable only if handler is not null
+        if (timerHandler != null) {
+            timerHandler.postDelayed(timerRunnable, 500);
+            isTimerRunning = true;
+        }
     }
+
 
     private void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Riddle_game.this);

@@ -248,6 +248,40 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             }
         }
 
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+
+        skipLayout.setOnClickListener(v -> {
+           /* if (isGameCompleted) {
+                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Stop timer
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }*/
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Opposite_word.this, "date");
+            if (date.equals("0")) {
+                newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE questionid='" + questionid + "'and gameid=" + gameid + "");
+            } else {
+                newhelper2.executeSql("UPDATE newmaintable2 SET daily='1' WHERE questionid='" + questionid + "'and gameid=" + gameid + "");
+            }
+/*
+            // Reset fields
+            c_edit.setText("");
+            ans_high.setText("");
+            ans_high.setVisibility(View.INVISIBLE);
+            c_ans.setEnabled(true);*/
+
+            // Load next question
+            next();
+        });
+
         find();
 
         Bundle extras;
@@ -734,21 +768,19 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
     }
 
     private void startChronometerCountdown(long durationInMillis) {
-        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
-        focus.setCountDown(true);
-        focus.start();
-
-        // Check if timerHandler is null and initialize it if necessary
+        // ✅ Ensure handler is initialized first
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
 
-        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
         if (timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
 
-        // Create a new Runnable for the countdown
         timerRunnable = new Runnable() {
             @Override
             public void run() {
@@ -756,17 +788,21 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
-                    showExtendTimeDialog();  // Show dialog when time is up
+                    showExtendTimeDialog();
                 } else {
-                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                    if (timerHandler != null) { // ✅ extra safety
+                        timerHandler.postDelayed(this, 500);
+                    }
                 }
             }
         };
 
-        // Post the Runnable to start the countdown
-        timerHandler.postDelayed(timerRunnable, 500);
-        isTimerRunning = true;
+        if (timerHandler != null) {
+            timerHandler.postDelayed(timerRunnable, 500);
+            isTimerRunning = true;
+        }
     }
+
 
     private void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Opposite_word.this);

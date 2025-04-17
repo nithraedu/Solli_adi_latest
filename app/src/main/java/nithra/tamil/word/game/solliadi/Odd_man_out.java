@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -307,8 +308,42 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
             }
         }
 
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+
+        skipLayout.setOnClickListener(v -> {
+           /* if (isGameCompleted) {
+                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Stop timer
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }*/
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Odd_man_out.this, "date");
+            if (date.equals("0")) {
+                newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE questionid='" + questionid + "'and gameid=" + gameid + "");
+            } else {
+                newhelper2.executeSql("UPDATE newmaintable2 SET daily='1' WHERE questionid='" + questionid + "'and gameid=" + gameid + "");
+            }
+/*
+            // Reset fields
+            c_edit.setText("");
+            ans_high.setText("");
+            ans_high.setVisibility(View.INVISIBLE);
+            c_ans.setEnabled(true);*/
+
+            // Load next question
+            next();
+        });
 
         find();
+
 
         Bundle extras;
         extras = getIntent().getExtras();
@@ -388,6 +423,7 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
         }
 
         ImageView prize_logo = (ImageView) findViewById(R.id.prize_logo);
+
         if (sps.getInt(Odd_man_out.this, "remoteConfig_prize") == 1) {
             prize_logo.setVisibility(View.VISIBLE);
         } else {
@@ -787,23 +823,47 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
     }
 
+    private void showResetDialog() {
+        Dialog dialog = new Dialog(Odd_man_out.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            ttstop = 0;
+            startChronometerCountdown(countdownDuration);
+            dialog.dismiss();
+        });
+
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            dialog.dismiss();
+        });
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
     private void startChronometerCountdown(long durationInMillis) {
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());  // Ensure it's always initialized
+        }
+
         focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
         focus.setCountDown(true);
         focus.start();
 
-        // Check if timerHandler is null and initialize it if necessary
-        if (timerHandler == null) {
-            timerHandler = new Handler(Looper.getMainLooper());
-        }
-
-        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
-        if (timerRunnable != null) {
+        // Clear any existing callbacks
+        if (timerRunnable != null && timerHandler != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
 
-
-        // Create a new Runnable for the countdown
         timerRunnable = new Runnable() {
             @Override
             public void run() {
@@ -811,17 +871,21 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
-                    showExtendTimeDialog();  // Show dialog when time is up
+                    showExtendTimeDialog();
                 } else {
-                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                    if (timerHandler != null) {  // ✅ Protect here
+                        timerHandler.postDelayed(this, 500);
+                    }
                 }
             }
         };
 
-        // Post the Runnable to start the countdown
-        timerHandler.postDelayed(timerRunnable, 500);
-        isTimerRunning = true;
+        if (timerHandler != null) {
+            timerHandler.postDelayed(timerRunnable, 500);
+            isTimerRunning = true;
+        }
     }
+
 
     private void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Odd_man_out.this);

@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -34,6 +35,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -159,6 +161,8 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
     private Handler timerHandler;
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
+    private boolean isGameCompleted = false;
+
     private RewardedAd rewardedAd;
     private AdManagerInterstitialAd interstitialAd ;
 
@@ -258,6 +262,58 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
                 Toast.makeText(Makeword_Rightorder.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
             }
         });
+
+        LinearLayout resetLayout = findViewById(R.id.resetLayout);
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+
+        resetLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
+                return;  // Do nothing if the game is completed
+            }
+
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+            showResetDialog();
+        });
+
+        skipLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Stop timer
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Makeword_Rightorder.this, "date");
+
+            if (date.equals("0")) {
+                newhelper3.executeSql("UPDATE right_order SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+            } else {
+                newhelper3.executeSql("UPDATE right_order SET daily=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+            }
+            // Reset fields
+            c_edit.setText("");
+            ans_high.setText("");
+            ans_high.setVisibility(View.INVISIBLE);
+            c_ans.setEnabled(true);
+
+            // Load next question
+            next();
+        });
+
+
 
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
 
@@ -743,6 +799,8 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
                     focus.stop();
                     coinanim();
                     price_update();
+                    // Mark game as completed:
+                    isGameCompleted = true;
                 }
             }
         });
@@ -814,6 +872,35 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         // Post the Runnable to start the countdown
         timerHandler.postDelayed(timerRunnable, 500);
         isTimerRunning = true;
+    }
+
+
+    private void showResetDialog() {
+        Dialog dialog = new Dialog(Makeword_Rightorder.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            // Reset countdown to full duration (30s)
+            ttstop = countdownDuration;
+            c_edit.setText(""); // clear input
+            startChronometerCountdown(countdownDuration);
+            dialog.dismiss();
+        });
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from paused time
+            }
+            dialog.dismiss();
+        });
+        dialog.setCancelable(false);
+        dialog.show();
     }
 
 

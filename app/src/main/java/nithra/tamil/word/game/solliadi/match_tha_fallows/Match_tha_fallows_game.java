@@ -20,6 +20,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -45,6 +46,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
 import android.widget.CompoundButton;
@@ -193,6 +195,10 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
     private Handler timerHandler;
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
+
+    private boolean isGameCompleted = false;
+
+
     private RewardedAd rewardedAd;
     private AdManagerInterstitialAd interstitialAd ;
 
@@ -387,6 +393,45 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         p_watts_app.setOnClickListener(Match_tha_fallows_game.this);
         qwt.setOnClickListener(Match_tha_fallows_game.this);
 
+        LinearLayout resetLayout = findViewById(R.id.resetLayout);
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+
+        resetLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
+                return;  // Do nothing if the game is completed
+            }
+
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+            showResetDialog();
+        });
+
+        skipLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Stop timer
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+
+            newhelper5.executeSql("update newgames5 set isfinish='1' where questionid='" + questionid + "' and gameid='" + gameid + "'");
+
+         // Load next question
+            next();
+        });
+
+
 
         //Utills.INSTANCE.initializeAdzz(this);
         rewarded_adnew();
@@ -511,22 +556,97 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
 
     }
 
-    private void startChronometerCountdown(long durationInMillis) {
-        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
-        focus.setCountDown(true);
-        focus.start();
+    private void showResetDialog() {
+        Dialog dialog = new Dialog(Match_tha_fallows_game.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
 
-        // Check if timerHandler is null and initialize it if necessary
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            resetSelectionOnly(); // <-- Reset selection state only
+            ttstop = countdownDuration;
+            startChronometerCountdown(countdownDuration);
+            dialog.dismiss();
+        });
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    private void resetSelectionOnly() {
+        // Clear selected backgrounds (reset UI state)
+        TextView[] questionViews = {qus_txt1, qus_txt2, qus_txt3, qus_txt4, qus_txt5, qus_txt6, qus_txt7, qus_txt8, qus_txt9, qus_txt10};
+        TextView[] answerViews = {ans_txt1, ans_txt2, ans_txt3, ans_txt4, ans_txt5, ans_txt6, ans_txt7, ans_txt8, ans_txt9, ans_txt10};
+        TextView[] answerNumViews = {ans_num_txt1, ans_num_txt2, ans_num_txt3, ans_num_txt4, ans_num_txt5, ans_num_txt6, ans_num_txt7, ans_num_txt8, ans_num_txt9, ans_num_txt10};
+        TextView[] questionNumViews = {qus_num_txt1, qus_num_txt2, qus_num_txt3, qus_num_txt4, qus_num_txt5, qus_num_txt6, qus_num_txt7, qus_num_txt8, qus_num_txt9, qus_num_txt10};
+
+        for (TextView qusView : questionViews) {
+            qusView.setBackgroundResource(R.drawable.selectun_rect);
+            qusView.clearAnimation();
+        }
+
+        for (TextView ansView : answerViews) {
+            ansView.setBackgroundResource(R.drawable.selectun_rect);
+            ansView.clearAnimation();
+        }
+
+        for (TextView ansNumView : answerNumViews) {
+            ansNumView.setVisibility(View.GONE);
+            ansNumView.setText("");
+        }
+
+       /* for (TextView qusNumView : questionNumViews) {
+            qusNumView.setBackgroundResource(R.drawable.circle_shap);
+            qusNumView.setText("");
+        }*/
+
+        // Clear selection tracking variables
+        FROMVIEW = null;
+        TOVIEW = null;
+        FROM_POS = 0;
+        TO_POS = 0;
+
+        // Clear selection lists (internal tracking)
+        maintain_ans.clear();
+        find_qus_list.clear();
+        find_ans_list.clear();
+
+        // Update DB state if needed:
+        newhelper5.executeSql("UPDATE newgames5 SET my_maintain='0' WHERE questionid='" + questionid + "' AND gameid='" + gameid + "'");
+
+        btn_enable();  // Re-enable all buttons if disabled
+    }
+
+
+
+    private void startChronometerCountdown(long durationInMillis) {
+        // Always reinitialize to avoid null crash
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
 
-        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Remove previous callbacks
         if (timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
 
-        // Create a new Runnable for the countdown
+        // Create and post new timer
         timerRunnable = new Runnable() {
             @Override
             public void run() {
@@ -534,17 +654,17 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
-                    showExtendTimeDialog();  // Show dialog when time is up
+                    showExtendTimeDialog();
                 } else {
-                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                    timerHandler.postDelayed(this, 500);
                 }
             }
         };
 
-        // Post the Runnable to start the countdown
         timerHandler.postDelayed(timerRunnable, 500);
         isTimerRunning = true;
     }
+
 
     private void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Match_tha_fallows_game.this);
@@ -1215,161 +1335,6 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
 
     }
 
-  /*  public void validate() {
-
-        Cursor cf = myDbHelper.getQry("SELECT * FROM score ");
-        cf.moveToFirst();
-        int sk = cf.getInt(cf.getColumnIndexOrThrow("coins"));
-        if (sk > 50) {
-            if (vali_handler != null) {
-                vali_handler.removeCallbacksAndMessages(null);
-            }
-
-            if (FROMVIEW != null && TOVIEW != null) {
-
-                btn_dissable();
-                if (TOVIEW.getText().toString().equals(data_list.get(FROM_POS - 1).get_ans())) {
-
-                    // if (!find_qus_list.contains(FROM_POS)) {
-                    scroll_act = true;
-
-                    arrow_layout.animateArrows(1000, FROMVIEW, TOVIEW, true, true, arrow_move);
-
-                    vali_handler = new Handler(Looper.myLooper());
-                    vali_handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Animation zoom_in_m = AnimationUtils.loadAnimation(Match_tha_fallows_game.this, R.anim.zoom_in_m);
-
-                            System.out.println("-----check FROMVIEW : " + FROMVIEW);
-                            System.out.println("-----check TOVIEW : " + TOVIEW);
-                            if (FROMVIEW != null) {
-                                FROMVIEW.setAnimation(zoom_in_m);
-                            }
-
-                            btn_enable();
-                            TOVIEW.setAnimation(zoom_in_m);
-
-                            arrow_layout.animateArrows(0, FROMVIEW, TOVIEW, true, true, arrow_move);
-
-                            //anim_move(FROMVIEW.getText().toString() + " = " + TOVIEW.getText().toString());
-                            show_ans_num(TO_POS, FROM_POS, "validate");
-
-
-                        }
-                    }, 800);
-
-                    if (!hint_act) {
-                        coinanim();
-
-                    }
-
-
-                    maintain_ans.add(TO_POS + "_" + FROM_POS);
-                    find_qus_list.add(FROM_POS);
-                    find_ans_list.add(TO_POS);
-
-                    String my_maintain = TextUtils.join(", ", maintain_ans);
-
-                    newhelper5.executeSql("update newgames5 set my_maintain='" + my_maintain + "' where questionid='" + questionid + "' and gameid='" + gameid + "'");
-
-                    System.out.println("##########################tts" + sp.getInt(Match_tha_fallows_game.this, "mt_hint_count"));
-
-                    if (maintain_ans.size() == 5) {
-                        System.out.println("##########################tts" + sp.getInt(Match_tha_fallows_game.this, "mt_hint_count"));
-                        if (sp.getInt(Match_tha_fallows_game.this, "mt_hint_count") < 5) {
-                            price_update();
-                        }
-                        newhelper5.executeSql("update newgames5 set isfinish='" + 1 + "' where questionid='" + questionid + "' and gameid='" + gameid + "'");
-                        System.out.println("----gg  update newgames5 set isfinish='" + 1 + "' where questionid='" + questionid + "' and gameid='" + gameid + "'");
-                        vali_handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                //winning_fun();
-                                adShow();
-                            }
-                        }, 2100);
-
-
-                    }
-                    System.out.println("--------hhh my_maintain :" + my_maintain);
-
-                } else {
-
-                    if (!hint_act) {
-                        scroll_act = true;
-                        arrow_layout.animateArrows(1000, FROMVIEW, TOVIEW, true, false, arrow_move);
-
-                        vali_handler = new Handler(Looper.myLooper());
-                        vali_handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                Animation shake = AnimationUtils.loadAnimation(Match_tha_fallows_game.this, R.anim.shake);
-                                FROMVIEW.setAnimation(shake);
-                                TOVIEW.setAnimation(shake);
-
-                                arrow_layout.animateArrows(0, FROMVIEW, TOVIEW, true, false, arrow_move);
-                                btn_enable();
-
-                                custom_toast("தவறான பதில் மீண்டும் முயற்சிக்கவும்", "custom_toast");
-                                sp.putString(Match_tha_fallows_game.this, "all_corret", "all_corret");
-
-                                FROMVIEW.setBackgroundResource(R.drawable.selectun_rect);
-                                TOVIEW.setBackgroundResource(R.drawable.selectun_rect);
-                                FROMVIEW = null;
-                                TOVIEW = null;
-                                FROM_POS = 0;
-                                TO_POS = 0;
-
-                            }
-                        }, 800);
-
-                        coinanim_reds();
-
-
-                    } else {
-                        custom_toast("முதலில் வினா சொல்லை தேர்வு செய்யுங்கள்", "normal");
-                    }
-
-                }
-
-                if (FROMVIEW != null && FROMVIEW.getAnimation() != null) {
-                    FROMVIEW.getAnimation().cancel();
-                    FROMVIEW.clearAnimation();
-                }
-                if (TOVIEW != null && TOVIEW.getAnimation() != null) {
-                    TOVIEW.getAnimation().cancel();
-                    TOVIEW.clearAnimation();
-                }
-
-                // if (QUSNUMVIEW != null && QUSNUMVIEW.getAnimation() != null) {
-                if (QUSNUMVIEW != null) {
-                    QUSNUMVIEW.setText("" + FROM_POS);
-                    QUSNUMVIEW.setBackgroundResource(R.drawable.circle_shap);
-                }
-
-                Handler handler = new Handler(Looper.myLooper());
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        // if (!hint_act) {
-                        arrow_layout.animateArrows(100, ans_txt1, ans_txt1, false, false, arrow_move);
-
-                        // }
-                    }
-                }, 2000);
-
-
-            }
-        } else {
-            dialog(1);
-        }
-
-
-    }*/
-
-
     public void validate() {
         Cursor cf = myDbHelper.getQry("SELECT * FROM score");
 
@@ -1423,7 +1388,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                             }
 
                             newhelper5.executeSql("update newgames5 set isfinish='1' where questionid='" + questionid + "' and gameid='" + gameid + "'");
-
+                            isGameCompleted = true; // <-- set game completed flag here
                             vali_handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -2998,9 +2963,9 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         String date = sps.getString(Match_tha_fallows_game.this, "date");
         int pos;
         if (date.equals("0")) {
-            newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+          //  newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
         } else {
-            newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+          //  newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
         }
         helpshare(a);
     }
@@ -3123,9 +3088,9 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                         String date = sps.getString(Match_tha_fallows_game.this, "date");
                         int pos;
                         if (date.equals("0")) {
-                            newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                          //  newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
                         } else {
-                            newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                          //  newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
                         }
                         reward_progressBar.dismiss();
                         show_reward();
@@ -3196,7 +3161,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                         } else {
                             pos = 2;
                         }
-                        newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+                      //  newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
 
                         openDialog_earncoin.cancel();
                         Intent i = new Intent(Intent.ACTION_SEND);

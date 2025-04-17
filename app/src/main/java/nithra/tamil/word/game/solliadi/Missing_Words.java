@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -30,9 +31,11 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
 import android.widget.ImageView;
@@ -120,6 +123,9 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
     private Handler timerHandler;
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
+    private boolean isGameCompleted = false;
+
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -174,6 +180,45 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         ch_watts_app = findViewById(R.id.ch_watts_app);
         ch_facebook = findViewById(R.id.ch_facebook);
         qwt = findViewById(R.id.qwt);
+        LinearLayout resetLayout = findViewById(R.id.resetLayout);
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+
+
+        resetLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
+                return;  // Do nothing if the game is completed
+            }
+
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+            showResetDialog();
+        });
+
+
+
+        skipLayout.setOnClickListener(v -> {
+            System.out.println("enter class");
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Missing_Words.this, "date");
+            if (date.equals("0")) {
+                newhelper6.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid='" + question_id + "'and gameid=" + gameid + "");
+            } else {
+                newhelper6.executeSql("UPDATE newgames5 SET daily='1' WHERE questionid='" + question_id + "'and gameid=" + gameid + "");
+            }
+
+            // Load next question
+            next();
+        });
 
 
         //Sound Pool Sounds
@@ -248,9 +293,6 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         c_word_number = findViewById(R.id.c_word_number);
         c_ans = findViewById(R.id.c_ans);
         focus = findViewById(R.id.c_time_edit);
-/*
-        focus.setBase(SystemClock.elapsedRealtime() - 30000);  // 30 seconds
-        focus.start();  // Start the Chronometer*/
 
         c_button1.setOnClickListener(v -> validate("" + c_button1.getText().toString(), "b1"));
         c_button2.setOnClickListener(v -> validate("" + c_button2.getText().toString(), "b2"));
@@ -306,7 +348,34 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
     }
 
 
-    private void startChronometerCountdown(long durationInMillis) {
+    private void showResetDialog() {
+        Dialog dialog = new Dialog(Missing_Words.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            // Restart 30-second timer
+            ttstop = 0;
+            startChronometerCountdown(countdownDuration);
+            dialog.dismiss();
+        });
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            dialog.dismiss();
+        });
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+
+        private void startChronometerCountdown(long durationInMillis) {
         focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
         focus.setCountDown(true);
         focus.start();
@@ -413,6 +482,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                 c_ans.setEnabled(false);
                 answers = "yes";
                 coinanim();
+                isGameCompleted = true;
 
                 Handler handler = new Handler(Looper.myLooper());
                 handler.postDelayed(() -> adShow(), 2300);

@@ -172,6 +172,63 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="33dp"
+            android:layout_marginLeft="@dimen/lrtbp_5"
+            android:layout_marginTop="@dimen/lrtbp_30"
+            android:layout_marginRight="@dimen/lrtbp_5"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/skipLayout"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/skip_background">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text=" Skip"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/txt_16"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/resetLayout"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:gravity="center"
+                android:layout_marginRight="@dimen/lrtbp_5"
+                android:background="@drawable/skip_background">
+
+                <ImageView
+                    android:layout_width="@dimen/txt_22"
+                    android:layout_height="@dimen/txt_24"
+                    android:background="@drawable/restore"
+                    android:backgroundTint="@color/black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_marginLeft="@dimen/lrtbp_5"
+                    android:layout_marginRight="@dimen/lrtbp_5"
+                    android:text=" Reset"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/txt_16"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </LinearLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

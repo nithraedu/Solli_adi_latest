@@ -165,10 +165,71 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/addtional_req"
+            android:layout_width="match_parent"
+            android:layout_height="33dp"
+            android:layout_marginLeft="@dimen/lrtbp_5"
+            android:layout_marginTop="@dimen/lrtbp_30"
+            android:layout_marginRight="@dimen/lrtbp_5"
+            android:gravity="end"
+
+            android:orientation="horizontal">
+
+
+            <LinearLayout
+                android:id="@+id/skipLayout"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/skip_background">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text=" Skip"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/txt_16"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/resetLayout"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:layout_marginRight="@dimen/lrtbp_5"
+                android:background="@drawable/skip_background"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/txt_22"
+                    android:layout_height="@dimen/txt_24"
+                    android:background="@drawable/restore"
+                    android:backgroundTint="@color/black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/lrtbp_5"
+                    android:layout_marginRight="@dimen/lrtbp_5"
+                    android:gravity="center"
+
+                    android:text=" Reset"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/txt_16"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </LinearLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/time_score_board">
+            android:layout_below="@+id/addtional_req">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -448,25 +509,25 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-   <!-- <LinearLayout
+    <!-- <LinearLayout
 
-        android:id="@+id/ads_lay"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center_horizontal"
-        android:background="@color/white"
-        android:minHeight="@dimen/wh_50"
-        android:orientation="horizontal">
+         android:id="@+id/ads_lay"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_alignParentBottom="true"
+         android:gravity="center_horizontal"
+         android:background="@color/white"
+         android:minHeight="@dimen/wh_50"
+         android:orientation="horizontal">
 
-    </LinearLayout>-->
+     </LinearLayout>-->
 
     <LinearLayout
         android:id="@+id/adsLay1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         android:layout_alignParentBottom="true"
+        android:background="@color/white"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="visible">
@@ -475,14 +536,15 @@
             android:id="@+id/adstext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
             android:text="Advertisement"
-            android:textSize="15sp"
-            android:layout_marginBottom="1dp"/>
+            android:textSize="15sp" />
+
         <LinearLayout
             android:id="@+id/ads_lay"
             android:layout_width="match_parent"
-            android:gravity="center"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:minHeight="@dimen/wh_50"
             android:orientation="horizontal" />
     </LinearLayout>

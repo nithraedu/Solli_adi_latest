@@ -307,6 +307,32 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
 
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+
+        skipLayout.setOnClickListener(v -> {
+           /* if (isGameCompleted) {
+                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }*/
+
+            // Stop timer
+          /*  if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }*/
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Find_difference_between_pictures.this, "date");
+            if (date.equals("0")) {
+                newhelper6.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid='" + question_id + "'and gameid='" + gameid + "'");
+            } else {
+                myDbHelper.executeSql("UPDATE dailytest SET isfinish='1' WHERE levelid='" + question_id + "'and gameid='" + gameid + "'");
+            }
+            // Load next question
+            next();
+        });
 
         soundset();
         find();

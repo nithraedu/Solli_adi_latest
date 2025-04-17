@@ -195,6 +195,32 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         ads_layout = openDialog_s.findViewById(R.id.fl_adplaceholder);
         ads_lay = findViewById(R.id.ads_lay);
         adsLay1 = findViewById(R.id.adsLay1);
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+
+        skipLayout.setOnClickListener(v -> {
+           /* if (isGameCompleted) {
+                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }*/
+
+            // Stop timer
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Quiz_Game.this, "date");
+            if (date.equals("0")) {
+                newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid='" + question_id + "'and gameid=" + gameid + "");
+            } else {
+                newhelper5.executeSql("UPDATE newgames5 SET daily='1' WHERE questionid='" + question_id + "'and gameid=" + gameid + "");
+            }
+            // Load next question
+            next();
+        });
 
 
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");

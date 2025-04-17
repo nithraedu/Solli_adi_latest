@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -186,6 +187,8 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     private Handler timerHandler;
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
+    private boolean isGameCompleted = false;
+
     private RewardedAd rewardedAd;
     private AdManagerInterstitialAd interstitialAd;
 
@@ -290,6 +293,59 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             else
                 Toast.makeText(Ote_to_Tamil.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
         });
+
+        LinearLayout resetLayout = findViewById(R.id.resetLayout);
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+
+        resetLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
+                return;  // Do nothing if the game is completed
+            }
+
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+            showResetDialog();
+        });
+
+        skipLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Stop timer
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Ote_to_Tamil.this, "date");
+            if (date.equals("0")) {
+                newhelper2.executeSql("UPDATE newmaintable2 SET isfinish=1 WHERE questionid='" + w_id + "' and gameid='" + gameid + "'");
+            } else {
+                newhelper2.executeSql("UPDATE newmaintable2 SET daily=1 WHERE questionid='" + w_id + "' and gameid='" + gameid + "' and daily='0'");
+            }
+
+            // Reset fields
+            c_edit.setText("");
+            ans_high.setText("");
+            ans_high.setVisibility(View.INVISIBLE);
+            c_ans.setEnabled(true);
+
+            // Load next question
+            next();
+        });
+
+
+
 
         openDialog_s = new Dialog(Ote_to_Tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
@@ -441,6 +497,58 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
 
     }
+
+    private void showResetDialog() {
+        Dialog dialog = new Dialog(Ote_to_Tamil.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            resetGame(); // Clear and restart
+            dialog.dismiss();
+        });
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // Resume from paused position
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    private void resetGame() {
+        // Reset EditText fields
+        c_edit.setText("");
+        ans_high.setText("");
+        ans_high.setVisibility(View.INVISIBLE);
+
+        // Reset Timer
+        ttstop = 0;
+        isTimerRunning = false;
+        focus.stop();
+        timerHandler.removeCallbacks(timerRunnable);
+        startChronometerCountdown(countdownDuration); // restart timer from 30 seconds
+
+        // Reset UI Buttons & answers state
+        c_ans.setEnabled(true);
+
+        Cursor cfq = myDbHelper.getQry("SELECT * FROM score ");
+        cfq.moveToFirst();
+        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
+        score.setText(String.valueOf(skq));
+
+        // Reload Question data if needed
+        next();  // Call your next() method again to refresh the question
+    }
+
 
     private void startChronometerCountdown(long durationInMillis) {
         focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
@@ -1134,6 +1242,9 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
                     price_update();
                     coinanim();
+
+                    // Mark game as completed:
+                    isGameCompleted = true;
 
                 }
             }

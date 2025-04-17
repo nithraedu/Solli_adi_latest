@@ -258,6 +258,38 @@ public class Tirukural extends AppCompatActivity {
         }
 
         find();
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+        skipLayout.setOnClickListener(v -> {
+           /* if (isGameCompleted) {
+                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }*/
+
+            // Stop timer
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Tirukural.this, "date");
+            if (date.equals("0")) {
+                newhelper3.executeSql("UPDATE right_order SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+            } else {
+                newhelper3.executeSql("UPDATE right_order SET daily=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+            }
+
+            // Reset fields
+            c_edit.setText("");
+            ans_high.setText("");
+            ans_high.setVisibility(View.INVISIBLE);
+            c_ans.setEnabled(true);
+
+            // Load next question
+            next();
+        });
 
        // Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
         if (sps.getInt(Tirukural.this, "purchase_ads") == 0) {

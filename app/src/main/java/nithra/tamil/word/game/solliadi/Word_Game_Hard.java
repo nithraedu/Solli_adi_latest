@@ -615,6 +615,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         vl14 = findViewById(R.id.ans14);
 
 
+
         Bundle extras;
         extras = getIntent().getExtras();
         if (extras != null) {
@@ -844,6 +845,20 @@ public class Word_Game_Hard extends AppCompatActivity {
 
             return true;
         });
+
+        LinearLayout skipLayout = findViewById(R.id.skipLayout);
+
+        skipLayout.setOnClickListener(v -> {
+            focus.stop();
+            String date = sps.getString(Word_Game_Hard.this, "date");
+            if (date.equals("0")) {
+                myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid='" + letterid + "' and gameid='" + gameid + "'");
+                next();
+            } else Toast.makeText(Word_Game_Hard.this, "Not Available", Toast.LENGTH_SHORT).show();
+
+        });
+
+
 
         skip.setOnClickListener(v -> {
             focus.stop();

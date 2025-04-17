@@ -5,11 +5,11 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
-        android:layout_above="@+id/ads_lay"
         android:id="@+id/head"
-        android:background="@drawable/back_next2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ads_lay"
+        android:background="@drawable/back_next2">
 
         <RelativeLayout
             android:id="@+id/time_score_board"
@@ -180,34 +180,95 @@
 
         </RelativeLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="33dp"
+            android:layout_marginLeft="@dimen/lrtbp_5"
+            android:layout_marginTop="@dimen/lrtbp_30"
+            android:layout_marginRight="@dimen/lrtbp_5"
+            android:gravity="end"
+
+            android:orientation="horizontal">
+
+
+            <LinearLayout
+                android:id="@+id/skipLayout"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/skip_background">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text=" Skip"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/txt_16"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/resetLayout"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="@dimen/lrtbp_10"
+                android:layout_marginRight="@dimen/lrtbp_5"
+                android:background="@drawable/skip_background"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/txt_22"
+                    android:layout_height="@dimen/txt_24"
+                    android:background="@drawable/restore"
+                    android:backgroundTint="@color/black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/lrtbp_5"
+                    android:layout_marginRight="@dimen/lrtbp_5"
+                    android:gravity="center"
+
+                    android:text=" Reset"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/txt_16"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </LinearLayout>
+
         <RelativeLayout
             android:id="@+id/tool_lay"
             android:layout_width="match_parent"
             android:layout_height="@dimen/wh_40"
             android:layout_below="@+id/time_score_board"
-         >
+            android:layout_marginTop="@dimen/lrtbp_30">
+
             <TextView
 
-                android:layout_alignParentLeft="true"
                 android:id="@+id/p_facebook"
                 android:layout_width="@dimen/wh_35"
                 android:layout_height="@dimen/wh_35"
+                android:layout_alignParentLeft="true"
                 android:layout_marginRight="@dimen/lrtbp_5"
                 android:background="@drawable/fb" />
 
             <ImageView
-                android:layout_centerInParent="true"
                 android:id="@+id/show_all_ans_img"
                 android:layout_width="@dimen/wh_40"
                 android:layout_height="@dimen/wh_40"
+                android:layout_centerInParent="true"
                 android:layout_centerVertical="true"
                 android:background="@drawable/all_ans_icon" />
 
             <TextView
                 android:id="@+id/p_watts_app"
-                android:layout_alignParentRight="true"
                 android:layout_width="@dimen/wh_35"
                 android:layout_height="@dimen/wh_35"
+                android:layout_alignParentRight="true"
                 android:layout_marginRight="@dimen/lrtbp_5"
                 android:background="@drawable/watsapp" />
 
@@ -221,15 +282,15 @@
             android:layout_centerHorizontal="true"
             android:background="@drawable/coin"
             android:visibility="invisible" />
+
         <TextView
-            android:layout_alignParentRight="true"
             android:id="@+id/p_coins_2"
             android:layout_width="@dimen/wh_35"
             android:layout_height="@dimen/wh_35"
+            android:layout_alignParentRight="true"
             android:layout_centerHorizontal="true"
             android:background="@drawable/coin"
             android:visibility="invisible" />
-
 
 
         <nithra.tamil.word.game.solliadi.match_tha_fallows.ArrowLayout
@@ -894,12 +955,13 @@
         android:textSize="20dp"
         android:textStyle="bold"
         android:visibility="gone" />
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/myCoordinatorLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:foregroundGravity="center">
 
@@ -926,14 +988,15 @@
         android:layout_marginRight="@dimen/lrtbp_15"
         android:background="@drawable/coin"
         android:visibility="invisible" />
+
     <TextView
-        android:visibility="invisible"
-        android:layout_centerInParent="true"
         android:id="@+id/c_coins"
         android:layout_width="@dimen/wh_35"
         android:layout_height="@dimen/wh_35"
         android:layout_below="@+id/clue_R_layout"
+        android:layout_centerInParent="true"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/coin" />
+        android:background="@drawable/coin"
+        android:visibility="invisible" />
 
 </RelativeLayout>
