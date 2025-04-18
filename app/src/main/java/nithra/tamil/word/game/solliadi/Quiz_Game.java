@@ -126,6 +126,8 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
 
+    private boolean isTimeExpired = false;
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -304,12 +306,16 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
+                    isTimeExpired = true; // mark time as expired
                     showExtendTimeDialog();
                 } else {
+                    isTimeExpired = false;
                     timerHandler.postDelayed(this, 500);
+
                 }
             }
         };
+
 
         // Double-check before posting
         if (timerHandler != null) {
@@ -488,6 +494,11 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
 
     @Override
     public void onClick(View v) {
+        if (isTimeExpired) {
+            showExtendTimeDialog();
+            return;
+        }
+
         switch (v.getId()) {
             case R.id.c_button1: {
                 verify(c_button1.getText().toString(), "b1");
@@ -2389,84 +2400,6 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         }
     }
 
-
-    /* public void rewarded_adnew() {
-         rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-         rewardedAd.setListener(new MaxRewardedAdListener() {
-             @Override
-             public void onRewardedVideoStarted(MaxAd ad) {
-
-             }
-
-             @Override
-             public void onRewardedVideoCompleted(MaxAd ad) {
-                 reward_status = 1;
-             }
-
-             @Override
-             public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-             }
-
-             @Override
-             public void onAdLoaded(MaxAd ad) {
-                 fb_reward = 1;
-             }
-
-             @Override
-             public void onAdDisplayed(MaxAd ad) {
-             }
-
-             @Override
-             public void onAdHidden(MaxAd ad) {
-                 rewarded_adnew();
-                 if (reward_status == 1) {
-                     if (extra_coin_s == 0) {
-                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                         cfx.moveToFirst();
-                         int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                         int spx = skx + mCoinCount;
-                         String aStringx = Integer.toString(spx);
-                         myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                     }
-                     Handler handler = new Handler();
-                     handler.postDelayed(new Runnable() {
-                         @Override
-                         public void run() {
-                             if (rvo == 2) {
-                                 share_earn2(mCoinCount);
-                             } else {
-                                 vidcoinearn();
-                             }
-                         }
-                     }, 500);
-                 } else {
-                     Toast.makeText(Quiz_Game.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                 }
-
-                 fb_reward = 0;
-
-
-             }
-
-             @Override
-             public void onAdClicked(MaxAd ad) {
-
-             }
-
-             @Override
-             public void onAdLoadFailed(String adUnitId, MaxError error) {
-                 rewardedAd = null;
-             }
-
-             @Override
-             public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                 rewardedAd.loadAd();
-             }
-         });
-         rewardedAd.loadAd();
-     }*/
     private void rewarded_adnew() {
 
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
@@ -2557,15 +2490,6 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                     }
                 });
     }
-
-    /* public void show_reward() {
-         if (rewardedAd != null && rewardedAd.isReady()) {
-             rewardedAd.showAd();
-             reward_status = 1;
-         } else {
-             Log.d("TAG", "The rewarded ad wasn't ready yet.");
-         }
-     }*/
     public void show_reward() {
         if (rewardedAd != null) {
             rewardedAd.show(Quiz_Game.this, new OnUserEarnedRewardListener() {

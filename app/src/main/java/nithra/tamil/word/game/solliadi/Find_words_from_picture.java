@@ -21,6 +21,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -37,6 +38,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -165,7 +167,12 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
     private Handler timerHandler;
     private Runnable timerRunnable;
-    private boolean isTimerRunning = false;
+   // private boolean isTimerRunning = false;
+   private boolean isTimeExpired = false;
+    private boolean isGameCompleted = false;
+
+    public static boolean isAnswerSelectionEnabled = true;
+
 
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
@@ -223,7 +230,8 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
         mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.xml.hexkbd);
-        mCustomKeyboard.registerEditText(R.id.ans_editer);
+            mCustomKeyboard.registerEditText(R.id.ans_editer);
+
         newhelper5 = new Newgame_DataBaseHelper5(this);
         myDbHelper = new DataBaseHelper(this);
 
@@ -305,6 +313,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
 
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
+        LinearLayout resetLayout = findViewById(R.id.resetLayout);
         skipLayout.setOnClickListener(v -> {
            /* if (isGameCompleted) {
                 Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
@@ -329,6 +338,28 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                         // Load next question
             next();
         });
+
+
+        resetLayout.setOnClickListener(v -> {
+            if (isGameCompleted) {
+                Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
+                return;  // Do nothing if the game is completed
+            }
+
+            if (isTimeExpired) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+
+                // ✅ Add null check
+                if (timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                }
+
+                isTimeExpired = false;
+            }
+            showResetDialog();
+        });
+
 
         soundset();
         find();
@@ -392,6 +423,56 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
     }
 
+    private void showResetDialog() {
+        Dialog dialog = new Dialog(Find_words_from_picture.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            reset(); // clear UI
+            // ✅ Reset DB
+            myDbHelper.executeSql("UPDATE answertable SET isfinish = 0, useranswer = NULL WHERE gameid = '" + gameid + "' AND levelid = '" + question_id + "' AND rd = '" + rdvalu + "'");
+
+            // ✅ Reload image
+            if (isdown.equals("0")) {
+                int im1 = getResources().getIdentifier(question.replace(".webp", ""), "drawable", getPackageName());
+                image_1.setVisibility(View.VISIBLE);
+                image_1.setImageResource(im1);
+            } else {
+                String fullPath = getFilesDir() + "/Nithra/solliadi/";
+                File file = new File(fullPath + question);
+                if (file.exists()) {
+                    Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + question);
+                    image_1.setImageDrawable(new BitmapDrawable(getResources(), bitimg1));
+                } else {
+                    missingimage();
+                }
+            }
+
+            // ✅ Restart Timer
+            int emptyLines = getEmptyAnswerCount();
+            long countdownTimeMillis = emptyLines * 30 * 1000L;
+            startChronometerCountdown(countdownTimeMillis);
+
+            dialog.dismiss();
+        });
+
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            dialog.dismiss();
+        });
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
     private void startChronometerCountdown(long durationInMillis) {
         if (focus == null) return;
 
@@ -408,20 +489,22 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         timerRunnable = new Runnable() {
             @Override
             public void run() {
-                if (timerHandler == null) return;  // Fix for crash
+                if (timerHandler == null) return;
 
                 long remainingMillis = endTime - SystemClock.elapsedRealtime();
 
                 if (remainingMillis <= 0) {
                     focus.setText("00:00");
-                    isTimerRunning = false;
+                    isTimeExpired = true;  // ✅ Only mark as expired here!
                     showExtendTimeDialog();
                 } else {
                     int seconds = (int) (remainingMillis / 1000) % 60;
                     int minutes = (int) ((remainingMillis / (1000 * 60)) % 60);
                     String timeStr = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
                     focus.setText(timeStr);
-                    timerHandler.postDelayed(this, 1000);  // Will not crash now
+
+                    isTimeExpired = false;  // ✅ Still running
+                    timerHandler.postDelayed(this, 1000);
                 }
             }
         };
@@ -429,7 +512,11 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         if (timerHandler != null) {
             timerHandler.post(timerRunnable);
         }
-        isTimerRunning = true;
+
+    }
+
+    public boolean isTimeExpired() {
+        return isTimeExpired;
     }
 
     private int getEmptyAnswerCount() {
@@ -447,16 +534,18 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         return emptyCount;
     }
 
-    private void showExtendTimeDialog() {
+    void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Find_words_from_picture.this);
         builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
         builder.setCancelable(false);
         builder.setPositiveButton("Yes", (dialog, which) -> {
             int emptyLines = getEmptyAnswerCount();
             long countdownTimeMillis = emptyLines * 30 * 1000L;
-            startChronometerCountdown(countdownTimeMillis); // Restart with another 30s
+            startChronometerCountdown(countdownTimeMillis);
+            isTimeExpired = false; // ✅ reset flag
             dialog.dismiss();
         });
+
         builder.setNegativeButton("No", (dialog, which) -> {
             dialog.dismiss();
             // handle what happens if user says no (optional)
@@ -621,7 +710,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         if (timerHandler != null && timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
-        isTimerRunning = false;
+        isTimeExpired = false;
         focus.setText("00:00"); // reset display
     }
     private void next() {
@@ -870,6 +959,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             downloaddata_regular();
 
         }
+        isGameCompleted = false;
     }
 
     private void view_ans(int i) {
@@ -946,60 +1036,63 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         }
     }
 
-    private void reset() {
-        ans_count = 0;
-        value_ans1.setVisibility(View.GONE);
-        value_ans2.setVisibility(View.GONE);
-        value_ans3.setVisibility(View.GONE);
-        value_ans4.setVisibility(View.GONE);
-        value_ans5.setVisibility(View.GONE);
-        value_ans6.setVisibility(View.GONE);
-        value_ans7.setVisibility(View.GONE);
+  private void reset() {
+      ans_count = 0;
 
-        value_ans1.setBackgroundResource(R.drawable.yellow_question);
-        value_ans2.setBackgroundResource(R.drawable.yellow_question);
-        value_ans3.setBackgroundResource(R.drawable.yellow_question);
-        value_ans4.setBackgroundResource(R.drawable.yellow_question);
-        value_ans5.setBackgroundResource(R.drawable.yellow_question);
-        value_ans6.setBackgroundResource(R.drawable.yellow_question);
-        value_ans7.setBackgroundResource(R.drawable.yellow_question);
+      // Hide only icons (question marks), NOT the answer fields
+      value_ans1.setVisibility(View.GONE);
+      value_ans2.setVisibility(View.GONE);
+      value_ans3.setVisibility(View.GONE);
+      value_ans4.setVisibility(View.GONE);
+      value_ans5.setVisibility(View.GONE);
+      value_ans6.setVisibility(View.GONE);
+      value_ans7.setVisibility(View.GONE);
 
-        ans1.setVisibility(View.GONE);
-        ans2.setVisibility(View.GONE);
-        ans3.setVisibility(View.GONE);
-        ans4.setVisibility(View.GONE);
-        ans5.setVisibility(View.GONE);
-        ans6.setVisibility(View.GONE);
-        ans7.setVisibility(View.GONE);
-        anslist2.setVisibility(View.GONE);
-        list2_pic.setVisibility(View.GONE);
+      // Reset icons to default background
+      value_ans1.setBackgroundResource(R.drawable.yellow_question);
+      value_ans2.setBackgroundResource(R.drawable.yellow_question);
+      value_ans3.setBackgroundResource(R.drawable.yellow_question);
+      value_ans4.setBackgroundResource(R.drawable.yellow_question);
+      value_ans5.setBackgroundResource(R.drawable.yellow_question);
+      value_ans6.setBackgroundResource(R.drawable.yellow_question);
+      value_ans7.setBackgroundResource(R.drawable.yellow_question);
 
-        ans1.setTextColor(getResources().getColor(R.color.white));
-        ans2.setTextColor(getResources().getColor(R.color.white));
-        ans3.setTextColor(getResources().getColor(R.color.white));
-        ans4.setTextColor(getResources().getColor(R.color.white));
-        ans5.setTextColor(getResources().getColor(R.color.white));
-        ans6.setTextColor(getResources().getColor(R.color.white));
-        ans7.setTextColor(getResources().getColor(R.color.white));
+      // ❌ Don't hide the answer lines
+      // ✅ Instead, just clear and style them
+      ans1.setText(""); ans1.setTextColor(getResources().getColor(R.color.white));
+      ans2.setText(""); ans2.setTextColor(getResources().getColor(R.color.white));
+      ans3.setText(""); ans3.setTextColor(getResources().getColor(R.color.white));
+      ans4.setText(""); ans4.setTextColor(getResources().getColor(R.color.white));
+      ans5.setText(""); ans5.setTextColor(getResources().getColor(R.color.white));
+      ans6.setText(""); ans6.setTextColor(getResources().getColor(R.color.white));
+      ans7.setText(""); ans7.setTextColor(getResources().getColor(R.color.white));
 
-        value_ans1.setClickable(true);
-        value_ans2.setClickable(true);
-        value_ans3.setClickable(true);
-        value_ans4.setClickable(true);
-        value_ans5.setClickable(true);
-        value_ans6.setClickable(true);
-        value_ans7.setClickable(true);
-        ans1.setText("");
-        ans2.setText("");
-        ans3.setText("");
-        ans4.setText("");
-        ans5.setText("");
-        ans6.setText("");
-        ans7.setText("");
-        verify.setVisibility(View.VISIBLE);
+      // Keep them visible
+      ans1.setVisibility(View.VISIBLE);
+      ans2.setVisibility(View.VISIBLE);
+      ans3.setVisibility(View.VISIBLE);
+      ans4.setVisibility(View.VISIBLE);
+      ans5.setVisibility(View.VISIBLE);
+      ans6.setVisibility(View.VISIBLE);
+      ans7.setVisibility(View.VISIBLE);
 
+      // Keep containers visible
+      anslist2.setVisibility(View.VISIBLE);
+      list2_pic.setVisibility(View.VISIBLE);
 
-    }
+      // Enable click on icons
+      value_ans1.setClickable(true);
+      value_ans2.setClickable(true);
+      value_ans3.setClickable(true);
+      value_ans4.setClickable(true);
+      value_ans5.setClickable(true);
+      value_ans6.setClickable(true);
+      value_ans7.setClickable(true);
+
+      // Show the verify button
+      verify.setVisibility(View.VISIBLE);
+  }
+
 
     public void set_val(int val) {
         // Toast.makeText(this, "set_val"+val, Toast.LENGTH_SHORT).show();
@@ -1287,15 +1380,24 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
 
         ans_editer.setOnClickListener(v -> {
-            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(verify.getWindowToken(), 0);
+            if (focus.getText().toString().equals("00:00")) {
+                showExtendTimeDialog();  // ✅ Show dialog only when actual text shows 00:00
+            }
         });
+
         ans_editer.setOnTouchListener((v, event) -> {
             InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(verify.getWindowToken(), 0);
 
-            return true;
+            if (focus.getText().toString().equals("00:00")) {
+                showExtendTimeDialog();  // ✅ Show dialog only when timer is exactly 00:00
+                return true; // Prevent keyboard from opening
+            }
+
+            return false; // Allow keyboard input if timer not at 00:00
         });
+
+
     }
 
     private void verify_data() {
@@ -2426,7 +2528,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         TextView yes = openDialog_p.findViewById(R.id.yes);
         TextView no = openDialog_p.findViewById(R.id.no);
 
-        if (isTimerRunning && timerHandler != null) {
+        if (isTimeExpired && timerHandler != null) {
             timerHandler.removeCallbacks(timerRunnable);
             ttstop = focus.getBase() - SystemClock.elapsedRealtime();
             focus.stop();

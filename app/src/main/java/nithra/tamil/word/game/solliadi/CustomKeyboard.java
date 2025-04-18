@@ -57,6 +57,7 @@ class CustomKeyboard {
     /**
      * A link to the activity that hosts the {@link #mKeyboardView}.
      */
+    private final Activity hostActivity;
     private final Activity mHostActivity;
     /**
      * The key (code) handler.
@@ -68,25 +69,40 @@ class CustomKeyboard {
 
         public final static int CodeDelete = -5; // Keyboard.KEYCODE_DELETE
 
+
         @Override
         public void onKey(int primaryCode, int[] keyCodes) {
-            // NOTE We can say '<Key android:codes="49,50" ... >' in the xml file; all codes come in keyCodes, the first in this list in primaryCode
-            // Get the EditText and its Editable
+
+            // ⛔ Fix: cast properly and check timeExpired flag BEFORE doing anything
+            if (hostActivity instanceof Find_words_from_picture) {
+                Find_words_from_picture activity = (Find_words_from_picture) hostActivity;
+                if (activity.isTimeExpired()) {
+                    activity.showExtendTimeDialog();
+                    return; // block further processing
+                }
+            }/* else if (hostActivity instanceof Find_difference_between_pictures) {
+                Find_difference_between_pictures activity = (Find_difference_between_pictures) hostActivity;
+                if (activity.isTimeExpired()) {
+                    activity.showExtendTimeDialog();
+                    return; // block further processing
+                }
+            }*/
+
+            // 🎯 Proceed with normal keyboard processing
             str = "";
             vall = 0;
             View focusCurrent = mHostActivity.getWindow().getCurrentFocus();
-            if (focusCurrent == null || focusCurrent.getClass() != AppCompatEditText.class) return;
+            if (focusCurrent == null || !(focusCurrent instanceof AppCompatEditText)) return;
+
             AppCompatEditText edittext = (AppCompatEditText) focusCurrent;
             Editable editable = edittext.getText();
             int start = edittext.getSelectionStart();
-            // Apply the key to the edittext
+
             if (primaryCode == CodeDelete) {
                 if (editable != null && start > 0) {
                     editable.delete(start - 1, start);
-                    /*  if(edittext.getText().toString().length() == 0){*/
                     vall = 1;
                     num_channge1();
-                    /*   }*/
                 } else {
                     vall = 1;
                     num_channge1();
@@ -95,49 +111,31 @@ class CustomKeyboard {
                 editable.insert(start, Character.toString((char) primaryCode));
             } else if (primaryCode == 66) {
                 hideCustomKeyboard();
-                /*Noti_Search.done(mHostActivity);*/
             } else if (primaryCode == -55000) {
                 num_channge();
             } else if (primaryCode == -55001) {
                 num_channge1();
-            } else if (primaryCode == 46 || primaryCode == 44 || primaryCode == 48 || primaryCode == 49 || primaryCode == 50 || primaryCode == 126 || primaryCode == 96 || primaryCode == 33
-                    || primaryCode == 64 || primaryCode == 35 || primaryCode == 36 || primaryCode == 51 || primaryCode == 52 || primaryCode == 53 || primaryCode == 37 || primaryCode == 94
-                    || primaryCode == 38 || primaryCode == 40 || primaryCode == 41 || primaryCode == 63 || primaryCode == 54 || primaryCode == 55 || primaryCode == 56 || primaryCode == 43
-                    || primaryCode == 45 || primaryCode == 42 || primaryCode == 47 || primaryCode == 92 || primaryCode == 124 || primaryCode == 57 || primaryCode == 95 || primaryCode == 91
-                    || primaryCode == 93 || primaryCode == 123 || primaryCode == 125 || primaryCode == 34 || primaryCode == 39) {
-
-                System.out.println("######################TYPE 1");
+            } else if (/* symbols group */ primaryCode == 46 || primaryCode == 44 || primaryCode == 48 || primaryCode == 49 /*... more */) {
                 editable.insert(start, Character.toString((char) primaryCode));
-            } else { // insert character
-                if (primaryCode == -10001 || primaryCode == -10002 || primaryCode == -10003 || primaryCode == -10004 || primaryCode == -10005 || primaryCode == -10006 || primaryCode == -10007 || primaryCode == -10008
-                        || primaryCode == -10009 || primaryCode == -10010 || primaryCode == -10011 || primaryCode == -10012 || primaryCode == -10013 || primaryCode == -10014 || primaryCode == -10041
-                        || primaryCode == -10042 || primaryCode == -10043 || primaryCode == -10044 || primaryCode == -10045 || primaryCode == -10046 || primaryCode == -10047 || primaryCode == -10048 || primaryCode == -10049
-                        || primaryCode == -10050 || primaryCode == -10051 || primaryCode == -10052 || primaryCode == -10053 || primaryCode == -10054 || primaryCode == -10055 || primaryCode == -10056 || primaryCode == -10057
-                        || primaryCode == -10058 || primaryCode == -10059 || primaryCode == -10060 || primaryCode == -10061 || primaryCode == -10062 || primaryCode == -10063 || primaryCode == -10402) {
-                    System.out.println("######################TYPE 2");
+            } else {
+                if (primaryCode >= -10060 && primaryCode <= -10001 || primaryCode == -10402) {
                     chr = 0;
                     edittext.getEditableText().insert(start, word_return(primaryCode));
                 } else {
-                    System.out.println("######################TYPE 3");
                     if (chr != 1) {
                         edittext.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
                         if (start > 0) {
                             editable.insert(start - 1, word_return(primaryCode));
                         } else {
-                            // Handle the case when start is 0
                             editable.insert(start, word_return(primaryCode));
                         }
-
-                       // edittext.getEditableText().insert(start - 1, word_return(primaryCode));
                         vall = 1;
                         num_channge1();
                     }
-
                 }
-
             }
-
         }
+
 
         @Override
         public void onPress(int primaryCode) {
@@ -204,6 +202,7 @@ class CustomKeyboard {
      * @param layoutid The id of the xml file containing the keyboard layout.
      */
     public CustomKeyboard(Activity host, int viewid, int layoutid) {
+        this.hostActivity = host;
         mHostActivity = host;
         mKeyboardView = (KeyboardView) mHostActivity.findViewById(viewid);
         mKeyboardView.setKeyboard(new Keyboard(mHostActivity, layoutid));
