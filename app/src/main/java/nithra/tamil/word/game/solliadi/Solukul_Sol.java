@@ -103,6 +103,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Timer;
@@ -219,8 +220,12 @@ public class Solukul_Sol extends AppCompatActivity {
     int randomnod;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
-    Handler handler;
-    Runnable my_runnable;
+    // Handler handler;
+    //  Runnable my_runnable;
+
+    private Handler timerHandler;
+    private Runnable timerRunnable;
+    private boolean isTimerRunning = false;
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -236,7 +241,11 @@ public class Solukul_Sol extends AppCompatActivity {
                 TextView yes = openDialog_p.findViewById(R.id.yes);
                 TextView no = openDialog_p.findViewById(R.id.no);
 
-
+                if (isTimerRunning && timerHandler != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                }
                 yes.setOnClickListener(v -> {
                     int sco = Integer.parseInt(s_score.getText().toString());
                     myDbHelper.executeSql("UPDATE score SET coins='" + sco + "'");
@@ -249,7 +258,7 @@ public class Solukul_Sol extends AppCompatActivity {
                     else pos = 2;
 
 
-                    myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+                    //   myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
 
                     // String date = sps.getString(Solukul_Sol.this, "date");
                     if (date.equals("0")) if (main_act.equals("")) {
@@ -269,7 +278,19 @@ public class Solukul_Sol extends AppCompatActivity {
 
                     openDialog_p.dismiss();
                 });
-                no.setOnClickListener(v -> openDialog_p.dismiss());
+                no.setOnClickListener(v -> {
+                    openDialog_p.dismiss();
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
+
+                openDialog_p.setOnDismissListener(dialog -> {
+                    // Check if the timer was paused and resume if necessary
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 openDialog_p.show();
 
 
@@ -277,8 +298,6 @@ public class Solukul_Sol extends AppCompatActivity {
 
         }
     };
-    // private MaxRewardedAd rewardedAd;
-    //  private MaxInterstitialAd mInterstitialAd;1
     private RewardedAd rewardedAd;
     private AdManagerInterstitialAd interstitialAd;
 
@@ -363,19 +382,19 @@ public class Solukul_Sol extends AppCompatActivity {
         adds = findViewById(R.id.ads_lay);
         adsLay1 = findViewById(R.id.adsLay1);
         if (sps.getInt(context, "purchase_ads") == 0) {
-        if (Utils.isNetworkAvailable(context)) {
-            if (!sps.getString(context, "BannerId").equals("") || sps.getString(context, "BannerId") != null) {
+            if (Utils.isNetworkAvailable(context)) {
+                if (!sps.getString(context, "BannerId").equals("") || sps.getString(context, "BannerId") != null) {
+                    System.out.println(
+                            "Ads Should be not empty : " + sps.getString(context, "BannerId")
+                    );
+                    Utils.load_add_banner(context, sps.getString(context, "BannerId"), adds);
+                }
+            } else {
                 System.out.println(
-                        "Ads Should be not empty : " + sps.getString(context, "BannerId")
+                        "Ads Should be -- empty : " + sps.getString(context, "BannerId")
                 );
-                Utils.load_add_banner(context, sps.getString(context, "BannerId"), adds);
-            }
-        } else {
-            System.out.println(
-                    "Ads Should be -- empty : " + sps.getString(context, "BannerId")
-            );
-            adsLay1.setVisibility(View.GONE);
-        }}else adsLay1.setVisibility(View.GONE);
+                adsLay1.setVisibility(View.GONE);
+            }}else adsLay1.setVisibility(View.GONE);
         // Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
 
 
@@ -530,8 +549,11 @@ public class Solukul_Sol extends AppCompatActivity {
                 if (position == 4) {
                     sps.putString(Solukul_Sol.this, "sol_time_start", "yes");
                     sps.putString(Solukul_Sol.this, "showcase_dismiss_sos", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                    /*focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();*/
+                    int emptyLines = getEmptyAnswerCount();
+                    long countdownTimeMillis = emptyLines * 30 * 1000L;
+                    startChronometerCountdown(countdownTimeMillis);
 
                 }
             });
@@ -544,8 +566,21 @@ public class Solukul_Sol extends AppCompatActivity {
 
         if (sps.getInt(Solukul_Sol.this, "reward_coin_txt") == 0)
             sps.putInt(Solukul_Sol.this, "reward_coin_txt", 20);
+        focus = findViewById(R.id.s_time_edit);
+        find(); // ← very important, this must be called first
 
-        find();
+// Delay to ensure data is populated if needed
+        new Handler().postDelayed(() -> {
+            int emptyLines = getEmptyAnswerCount();
+            long countdownTimeMillis = emptyLines * 30 * 1000L;
+
+            // Set a minimum duration if needed
+            if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000;
+
+            startChronometerCountdown(countdownTimeMillis);
+        }, 200); // 200ms delay ensures fields are filled if async
+
+
         click();
         Bundle extras;
         extras = getIntent().getExtras();
@@ -586,6 +621,80 @@ public class Solukul_Sol extends AppCompatActivity {
             sps.putString(Solukul_Sol.this, "date", "0");
             next();
         }
+    }
+
+    private void startChronometerCountdown(long durationInMillis) {
+        if (focus == null) return;
+
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+        if (timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+        long endTime = SystemClock.elapsedRealtime() + durationInMillis;
+
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (timerHandler == null) return;  // Fix for crash
+
+                long remainingMillis = endTime - SystemClock.elapsedRealtime();
+
+                if (remainingMillis <= 0) {
+                    focus.setText("00:00");
+                    isTimerRunning = false;
+                    showExtendTimeDialog();
+                } else {
+                    int seconds = (int) (remainingMillis / 1000) % 60;
+                    int minutes = (int) ((remainingMillis / (1000 * 60)) % 60);
+                    String timeStr = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+                    focus.setText(timeStr);
+                    timerHandler.postDelayed(this, 1000);  // Will not crash now
+                }
+            }
+        };
+
+        if (timerHandler != null) {
+            timerHandler.post(timerRunnable);
+        }
+        isTimerRunning = true;
+    }
+
+    private int getEmptyAnswerCount() {
+        int emptyCount = 0;
+
+        if (vl1.getVisibility() == View.VISIBLE && vl1.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl2.getVisibility() == View.VISIBLE && vl2.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl3.getVisibility() == View.VISIBLE && vl3.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl4.getVisibility() == View.VISIBLE && vl4.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl5.getVisibility() == View.VISIBLE && vl5.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl6.getVisibility() == View.VISIBLE && vl6.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl7.getVisibility() == View.VISIBLE && vl7.getText().toString().trim().isEmpty()) emptyCount++;
+
+        System.out.println("Empty & Visible count: " + emptyCount);
+        return emptyCount;
+    }
+
+    private void showExtendTimeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Solukul_Sol.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            int emptyLines = getEmptyAnswerCount();
+            long countdownTimeMillis = emptyLines * 30 * 1000L;
+            startChronometerCountdown(countdownTimeMillis); // Restart with another 30s
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+            // handle what happens if user says no (optional)
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public void find() {
@@ -629,7 +738,7 @@ public class Solukul_Sol extends AppCompatActivity {
 
         s_verify = findViewById(R.id.s_verify);
         s_clear = findViewById(R.id.s_clear);
-        focus = findViewById(R.id.s_time_edit);
+
         s_wordno = findViewById(R.id.s_word_number);
         s_score = findViewById(R.id.s_score_edit);
         qwt = findViewById(R.id.qwt);
@@ -2411,7 +2520,16 @@ public class Solukul_Sol extends AppCompatActivity {
 
     }
 
+    private void stopAndResetTimer() {
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+        isTimerRunning = false;
+        focus.setText("00:00"); // reset display
+    }
+
     public void next() {
+        stopAndResetTimer();
         ans_edit.setText("");
         Calendar calendar3 = Calendar.getInstance();
         int cur_year1 = calendar3.get(Calendar.YEAR);
@@ -2716,8 +2834,14 @@ public class Solukul_Sol extends AppCompatActivity {
                 sps.putString(Solukul_Sol.this, "sol_time_start", "yes");
             else {
 
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
+               /* focus.setBase(SystemClock.elapsedRealtime());
+                focus.start();*/
+                new Handler().postDelayed(() -> {  // ✅ step 2
+                    int emptyLines = getEmptyAnswerCount();
+                    long countdownTimeMillis = emptyLines * 30 * 1000L;
+                    if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000;
+                    startChronometerCountdown(countdownTimeMillis);
+                }, 300);
             }
 
 
@@ -3563,7 +3687,7 @@ public class Solukul_Sol extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        if (timerHandler != null) timerHandler.postDelayed(timerRunnable, 1000);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Solukul_Sol.this);
         Bundle params = new Bundle();
         params.putString("screen_name", "Solukul Sol Game");
@@ -3615,8 +3739,11 @@ public class Solukul_Sol extends AppCompatActivity {
 
             }
             //  long wt=sps.getInt(Word_Game_Hard.this,"old_time_start");
-            focus.setBase(SystemClock.elapsedRealtime() + dtimee);
-            focus.start();
+            /*focus.setBase(SystemClock.elapsedRealtime() + dtimee);
+            focus.start();*/
+            int emptyLines = getEmptyAnswerCount();
+            long countdownTimeMillis = emptyLines * 30 * 1000L;
+            startChronometerCountdown(countdownTimeMillis);
         }
     }
 
@@ -3841,7 +3968,7 @@ public class Solukul_Sol extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if (handler != null) handler.removeCallbacks(my_runnable);
+        if (timerHandler != null) timerHandler.removeCallbacks(timerRunnable);
         focus.stop();
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
         String date = sps.getString(Solukul_Sol.this, "date");
@@ -3869,7 +3996,7 @@ public class Solukul_Sol extends AppCompatActivity {
         if (mProgressDialog != null && mProgressDialog.isShowing()) mProgressDialog.dismiss();
         rewardedAd = null;
         interstitialAd = null;
-        handler = null;
+        timerHandler = null;
     }
 
     public void send_extraword(String feedback) throws UnsupportedEncodingException {
@@ -3932,46 +4059,6 @@ public class Solukul_Sol extends AppCompatActivity {
 
 
     }
-
-  /*  public void send_extrawordnew(String feedback) {
-        PackageInfo pInfo = null;
-        try {
-            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        HttpClient client = new DefaultHttpClient();
-        HttpPost post = new HttpPost("https://nithra.mobi/solliadi/extrawords.php");
-        try {
-            // i=i+5;
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
-            // Get the deviceID
-
-            //String email = sps.getString(Solukul_Sol.this, "email");
-            email = Utils.android_id(context);
-            // String letter= URLDecoder.decode(feedback,"UTF-8");
-            String finalString = URLEncoder.encode(feedback, "UTF-8");
-            nameValuePairs.add(new BasicNameValuePair("gameid", "3"));
-            nameValuePairs.add(new BasicNameValuePair("rowid", "" + letterid));
-            nameValuePairs.add(new BasicNameValuePair("extraword", finalString));
-            nameValuePairs.add(new BasicNameValuePair("tableid", "" + u_id));
-            String date = sps.getString(Solukul_Sol.this, "date");
-            if (date.equals("0")) nameValuePairs.add(new BasicNameValuePair("mode", "regular"));
-            else nameValuePairs.add(new BasicNameValuePair("mode", "daily"));
-
-            post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            HttpResponse response = client.execute(post);
-            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-
-            String line = "";
-            while ((line = rd.readLine()) != null) Log.e("HttpResponse", line);
-
-        } catch (IOException e) {
-
-        }
-
-    }*/
 
     private void dialogkey() {
         KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL);
@@ -4115,154 +4202,6 @@ public class Solukul_Sol extends AppCompatActivity {
         });
 
     }
-
-   /* public void downloadchecknew(final String lastid, final String daily) {
-
-        w_head.setVisibility(View.INVISIBLE);
-        Utils.mProgress(Solukul_Sol.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", false).show();
-        Utils.mProgress.setCancelable(false);
-        new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected Void doInBackground(Void... params) {
-
-
-                String result = null;
-
-                InputStream is = null;
-                StringBuilder sb = null;
-
-                ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-                nameValuePairs.add(new BasicNameValuePair("lastid", lastid));
-
-                if (daily.equals("ord"))
-                    nameValuePairs.add(new BasicNameValuePair("mode", "regular"));
-                else nameValuePairs.add(new BasicNameValuePair("mode", "daily"));
-                nameValuePairs.add(new BasicNameValuePair("email", email));
-                //nameValuePairs.add(new BasicNameValuePair("type", "a2z"));
-                try {
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost(New_Main_Activity.data_check);
-                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                    HttpResponse response = httpclient.execute(httppost);
-                    HttpEntity entity = response.getEntity();
-                    is = entity.getContent();
-                } catch (Exception e) {
-                    Log.e("log_tag", "Error in https connection" + e.toString());
-                }
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
-                    sb = new StringBuilder();
-                    sb.append(reader.readLine() + "\n");
-                    String line = "0";
-                    while ((line = reader.readLine()) != null) sb.append(line + "\n");
-                    is.close();
-                    result = sb.toString();
-
-                    System.out.print("Result============" + result);
-
-                } catch (Exception e) {
-                }
-
-                try {
-
-                    if (result != null) {
-                        JSONArray jArray = new JSONArray(result);
-                        System.err.println("Update===" + result);
-                        System.out.println("===  " + jArray.length());
-                        JSONObject json_data = null;
-                        //isvalid=""+jArray.length();
-                        downok = "" + jArray.length();
-                        System.out.print("insert daily ============" + downok);
-                        if (jArray.length() > 0) {
-                            json_data = jArray.getJSONObject(0);
-                            if (json_data.getString("NoData").equals("NoData"))
-                                downnodata = "NoData";
-                            else {
-                                downnodata = "YesData";
-                                for (int i = 0; i < jArray.length(); i++) {
-                                    json_data = jArray.getJSONObject(i);
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("id", json_data.getString("id"));
-                                    cv.put("gameid", json_data.getString("gameid"));
-                                    cv.put("levelid", json_data.getString("levelid"));
-                                    cv.put("letters", json_data.getString("letters"));
-
-                                    String newName = json_data.getString("answer").replaceAll(" ", "");
-                                    cv.put("answer", newName);
-
-                                    cv.put("hints", json_data.getString("hints"));
-                                    cv.put("imagename", json_data.getString("imagename"));
-                                    cv.put("isfinish", "0");
-
-                                    if (daily.equals("ord")) {
-                                        cv.put("isdownload", "1");
-                                        myDbHelper.insert_data("maintable", null, cv);
-
-                                    } else {
-
-                                        cv.put("date", json_data.getString("date"));
-                                        myDbHelper.insert_data("dailytest", null, cv);
-
-
-                                    }
-
-
-                                }
-                            }
-                        }
-                    }
-
-                } catch (JSONException e1) {
-                } catch (ParseException e1) {
-                }
-
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                System.out.print("down ok!!!============" + downok + "===");
-
-                if (downnodata.equals("NoData")) {
-                    Utils.mProgress.dismiss();
-                    w_head.setVisibility(View.INVISIBLE);
-                    nextgamesdialog();
-
-                }
-                else {
-                    downok = "";
-                    downnodata = "";
-                    if (exists("https://nithra.mobi/solliadi/" + email + "-filename.zip"))
-                        checkmemory();
-                    else {
-                        Utils.mProgress.dismiss();
-
-                        String date = sps.getString(Solukul_Sol.this, "date");
-                        if (date.equals("0")) {
-                            Cursor c;
-                            c = myDbHelper.getQry("select * from maintable where gameid='3' and isfinish='0' order by id limit 1");
-                            c.moveToFirst();
-                            if (c.getCount() != 0) next();
-                            else nextgamesdialog();
-                        } else {
-                            Cursor c;
-                            c = myDbHelper.getQry("select * from dailytest where gameid='" + gameid + "' and isfinish='0' and date='" + date + "'");
-                            c.moveToFirst();
-                            if (c.getCount() != 0) next();
-                            else nextgamesdialog();
-                        }
-
-
-                    }
-
-                }
-
-            }
-        }.execute();
-    }*/
 
     public void checkmemory() {
 
@@ -4415,59 +4354,6 @@ public class Solukul_Sol extends AppCompatActivity {
 
     }
 
-   /* public void newdownnew() {
-
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-
-                String result = null;
-
-                InputStream is = null;
-                StringBuilder sb = null;
-
-                ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-
-                nameValuePairs.add(new BasicNameValuePair("filename", email + "-filename.zip"));
-                //nameValuePairs.add(new BasicNameValuePair("type", "a2z"));
-                try {
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost("https://nithra.mobi/solliadi/solliadi1.php");
-                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                    HttpResponse response = httpclient.execute(httppost);
-                    HttpEntity entity = response.getEntity();
-                    is = entity.getContent();
-                } catch (Exception e) {
-                    Log.e("log_tag", "Error in https connection" + e.toString());
-                }
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
-                    sb = new StringBuilder();
-                    sb.append(reader.readLine() + "\n");
-                    String line = "0";
-                    while ((line = reader.readLine()) != null) sb.append(line + "\n");
-                    is.close();
-                    result = sb.toString();
-
-                    System.out.print("Result============123" + result);
-
-                } catch (Exception e) {
-                }
-
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-
-            }
-
-        }.execute();
-
-    }*/
-
     public void unpackZip(String ZIP_FILE_NAME) throws IOException {
         File destDir = new File(getFilesDir() + "/Nithra/solliadi/");
         if (!destDir.exists()) destDir.mkdir();
@@ -4498,69 +4384,6 @@ public class Solukul_Sol extends AppCompatActivity {
         bos.close();
     }
 
-    /*private void industrialload() {
-        //AppLovinSdk.getInstance( this ).showMediationDebugger();
-        AppLovinSdk.getInstance(this).setMediationProvider("max");
-        AppLovinSdk.initializeSdk(this, new AppLovinSdk.SdkInitializationListener() {
-            @Override
-            public void onSdkInitialized(AppLovinSdkConfiguration config) {
-                // AppLovin SDK is initialized, start loading ads
-                if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
-                System.out.println("ad shown  showAdWithDelay initialize done ");
-                mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Senthamil_Thedal_Ins), Solukul_Sol.this);
-                mInterstitialAd.setListener(new MaxAdListener() {
-                    @Override
-                    public void onAdLoaded(MaxAd ad) {
-                        System.out.println("ad shown loaded : " + ad.getWaterfall());
-                    }
-
-                    @Override
-                    public void onAdDisplayed(MaxAd ad) {
-                        handler = null;
-                    }
-
-                    @Override
-                    public void onAdHidden(MaxAd ad) {
-                        Log.d("TAG", "Ad dismissed fullscreen content.");
-                        mInterstitialAd = null;
-                        handler = null;
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        setSc();
-                        industrialload();
-                    }
-
-                    @Override
-                    public void onAdClicked(MaxAd ad) {
-
-                    }
-
-                    @Override
-                    public void onAdLoadFailed(String adUnitId, MaxError error) {
-                        Log.d("TAG", error.toString());
-                        mInterstitialAd = null;
-                        handler = null;
-                        Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
-                    }
-
-                    @Override
-                    public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                        Log.e("TAG", "Ad failed to show fullscreen content.");
-                        mInterstitialAd = null;
-                        handler = null;
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
-                        setSc();
-                    }
-                });
-
-                // Load the first ad
-                mInterstitialAd.loadAd();
-
-            }
-        });
-
-    }*/
-
     public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
         AdManagerInterstitialAd.load(this, sps.getString(this, "InterstitialId"), adRequest,
@@ -4579,7 +4402,7 @@ public class Solukul_Sol extends AppCompatActivity {
                             public void onAdDismissedFullScreenContent() {
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 setSc();
                                 industrialload();
@@ -4589,7 +4412,7 @@ public class Solukul_Sol extends AppCompatActivity {
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
                                 setSc();
@@ -4614,35 +4437,13 @@ public class Solukul_Sol extends AppCompatActivity {
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
                         interstitialAd = null;
-                        handler = null;
+                        timerHandler = null;
                         Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                     }
 
                 });
 
     }
-
-   /* public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game3_Stage_Close_ST") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
-            sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
-            handler = new Handler(Looper.myLooper());
-            my_runnable = () -> {
-                if (interstitialAd == null) setSc();
-                else
-                    interstitialAd.show(this);
-            };
-            handler.postDelayed(my_runnable, 2500);
-        } else {
-            sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", (sps.getInt(getApplicationContext(), "Game3_Stage_Close_ST") + 1));
-            if (sps.getInt(context, "Game3_Stage_Close_ST") > *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
-                sps.putInt(context, "Game3_Stage_Close_ST", 0);
-
-            setSc();
-            //Toast.makeText(this, ""+sps.getInt(this, "Game3_Stage_Close_ST"), Toast.LENGTH_SHORT).show();
-        }
-
-    }*/
 
     public void adShow() {
         int showCount = getIntFromPrefs("showCountOther", 0);
@@ -5210,12 +5011,6 @@ public class Solukul_Sol extends AppCompatActivity {
 
     }
 
-    private void addCoins(int coins) {
-        mCoinCount = coins;
-        sps.putInt(Solukul_Sol.this, "reward_coin_txt", coins);
-        //mCoinCountText.setText("Coins: " + mCoinCount);
-    }
-
     public void vidcoinearn() {
         if (extra_coin_s == 1) {
             extra_coin_s = 0;
@@ -5251,8 +5046,6 @@ public class Solukul_Sol extends AppCompatActivity {
 
     }
 
-    //*********************reward videos process 3***********************
-
     public void share_earn(int a) {
         final Dialog openDialog = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.share_dialog2);
@@ -5275,9 +5068,6 @@ public class Solukul_Sol extends AppCompatActivity {
 
         if (!isFinishing()) openDialog.show();
     }
-
-
-    //reward videos***********************//
 
     public void share_earn2(int a) {
         final Dialog openDialog = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -5660,10 +5450,6 @@ public class Solukul_Sol extends AppCompatActivity {
         return app_installed;
     }
 
-
-    //*** In Adapter **
-
-    //*** In ad area **
     public void showcase_dismiss() {
         Handler handler30 = new Handler(Looper.myLooper());
         handler30.postDelayed(() -> {
@@ -5672,8 +5458,11 @@ public class Solukul_Sol extends AppCompatActivity {
                 showcase_dismiss();
             else {
                 sps.putString(context, "sol_time_start", "yes");
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
+               /* focus.setBase(SystemClock.elapsedRealtime());
+                focus.start();*/
+                int emptyLines = getEmptyAnswerCount();
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                startChronometerCountdown(countdownTimeMillis);
 
             }
 
@@ -5789,7 +5578,6 @@ public class Solukul_Sol extends AppCompatActivity {
 
     }
 
-    //*** In ad area **
 
     private void backexitnet() {
         if (main_act.equals("")) {
@@ -5835,84 +5623,6 @@ public class Solukul_Sol extends AppCompatActivity {
             alertDialog.show();
         }
     }
-
-  /*  public void rewarded_adnew() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_adnew();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
-    }*/
 
     private void rewarded_adnew() {
 
@@ -6002,14 +5712,6 @@ public class Solukul_Sol extends AppCompatActivity {
                 });
     }
 
-    /*  public void show_reward() {
-          if (rewardedAd != null && rewardedAd.isReady()) {
-              rewardedAd.showAd();
-              reward_status = 1;
-          } else {
-              Log.d("TAG", "The rewarded ad wasn't ready yet.");
-          }
-      }*/
     public void show_reward() {
         if (rewardedAd != null) {
             rewardedAd.show(Solukul_Sol.this, new OnUserEarnedRewardListener() {

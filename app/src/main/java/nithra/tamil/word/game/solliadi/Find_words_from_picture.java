@@ -88,6 +88,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -139,14 +140,9 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     int reward_play_count = 0;
     int ea = 0;
     int setval_vid;
-    Dialog openDialog;
     TextView coin_value;
-    int minmumd = 1;
-    int maximumd = 4;
-    int randomnod;
     int case2 = 0, tot2 = 30, tt_case2, tt_tot2;
     int y;
-    int answer_types = 0;
     Typeface tyr;
     int dia_dismiss = 0;
     int spxdr = 0;
@@ -167,16 +163,16 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     int e2;
     int setting_access = 0;
 
-    Handler handler;
-    Runnable my_runnable;
+    private Handler timerHandler;
+    private Runnable timerRunnable;
+    private boolean isTimerRunning = false;
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
             back();
         }
     };
-    // private MaxRewardedAd rewardedAd;
-    //private MaxInterstitialAd mInterstitialAd;
     private RewardedAd rewardedAd;
     private AdManagerInterstitialAd interstitialAd;
 
@@ -336,6 +332,16 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
         soundset();
         find();
+        new Handler().postDelayed(() -> {
+            int emptyLines = getEmptyAnswerCount();
+            long countdownTimeMillis = emptyLines * 30 * 1000L;
+
+            // Set a minimum duration if needed
+            if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000;
+
+            startChronometerCountdown(countdownTimeMillis);
+        }, 200);
+
         click();
         try {
             next();
@@ -371,8 +377,11 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 if (position == 2) {
                     sps.putString(Find_words_from_picture.this, "time_start_fn", "yes");
                     sps.putString(Find_words_from_picture.this, "showcase_dismiss_fn_intro", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                    /*focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();*/
+                    int emptyLines = getEmptyAnswerCount();
+                    long countdownTimeMillis = emptyLines * 30 * 1000L;
+                    startChronometerCountdown(countdownTimeMillis);
 
                 }
             });
@@ -381,6 +390,80 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
         }
 
+    }
+
+    private void startChronometerCountdown(long durationInMillis) {
+        if (focus == null) return;
+
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+        if (timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+        long endTime = SystemClock.elapsedRealtime() + durationInMillis;
+
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (timerHandler == null) return;  // Fix for crash
+
+                long remainingMillis = endTime - SystemClock.elapsedRealtime();
+
+                if (remainingMillis <= 0) {
+                    focus.setText("00:00");
+                    isTimerRunning = false;
+                    showExtendTimeDialog();
+                } else {
+                    int seconds = (int) (remainingMillis / 1000) % 60;
+                    int minutes = (int) ((remainingMillis / (1000 * 60)) % 60);
+                    String timeStr = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+                    focus.setText(timeStr);
+                    timerHandler.postDelayed(this, 1000);  // Will not crash now
+                }
+            }
+        };
+
+        if (timerHandler != null) {
+            timerHandler.post(timerRunnable);
+        }
+        isTimerRunning = true;
+    }
+
+    private int getEmptyAnswerCount() {
+        int emptyCount = 0;
+
+        if (ans1.getVisibility() == View.VISIBLE && ans1.getText().toString().trim().isEmpty()) emptyCount++;
+        if (ans2.getVisibility() == View.VISIBLE && ans2.getText().toString().trim().isEmpty()) emptyCount++;
+        if (ans3.getVisibility() == View.VISIBLE && ans3.getText().toString().trim().isEmpty()) emptyCount++;
+        if (ans4.getVisibility() == View.VISIBLE && ans4.getText().toString().trim().isEmpty()) emptyCount++;
+        if (ans5.getVisibility() == View.VISIBLE && ans5.getText().toString().trim().isEmpty()) emptyCount++;
+        if (ans6.getVisibility() == View.VISIBLE && ans6.getText().toString().trim().isEmpty()) emptyCount++;
+        if (ans7.getVisibility() == View.VISIBLE && ans7.getText().toString().trim().isEmpty()) emptyCount++;
+
+        System.out.println("Empty & Visible count FWFP: " + emptyCount);
+        return emptyCount;
+    }
+
+    private void showExtendTimeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Find_words_from_picture.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            int emptyLines = getEmptyAnswerCount();
+            long countdownTimeMillis = emptyLines * 30 * 1000L;
+            startChronometerCountdown(countdownTimeMillis); // Restart with another 30s
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+            // handle what happens if user says no (optional)
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public void industrialload() {
@@ -401,7 +484,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                             public void onAdDismissedFullScreenContent() {
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 setSc();
                                 industrialload();
@@ -411,7 +494,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
                                 setSc();
@@ -436,34 +519,13 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
                         interstitialAd = null;
-                        handler = null;
+                        timerHandler = null;
                         Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                     }
 
                 });
 
     }
-
-   /* public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
-            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
-            handler = new Handler(Looper.myLooper());
-            my_runnable = () -> {
-                if (interstitialAd == null) setSc();
-                else interstitialAd.show(this);
-            };
-            handler.postDelayed(my_runnable, 2500);
-        } else {
-            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
-            if (sps.getInt(this, "Game1_Stage_Close_VV") > *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
-                sps.putInt(this, "Game1_Stage_Close_VV", 0);
-
-            setSc();
-            //Toast.makeText(this, ""+sps.getInt(this, "Game1_Stage_Close_VV"), Toast.LENGTH_SHORT).show();
-        }
-
-    }*/
 
     private int safeParseInt(String value, int defaultValue) {
         if (value != null && !value.isEmpty()) {
@@ -513,14 +575,12 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
     }
 
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         rewardedAd = null;
         interstitialAd = null;
-        handler = null;
+        timerHandler = null;
     }
 
     public void showcase_dismiss() {
@@ -531,8 +591,12 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 showcase_dismiss();
             } else {
                 sps.putString(Find_words_from_picture.this, "time_start_fn", "yes");
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
+               /* focus.setBase(SystemClock.elapsedRealtime());
+                focus.start();*/
+
+                int emptyLines = getEmptyAnswerCount();
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                startChronometerCountdown(countdownTimeMillis);
 
             }
 
@@ -553,7 +617,15 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         }
     }
 
+    private void stopAndResetTimer() {
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+        isTimerRunning = false;
+        focus.setText("00:00"); // reset display
+    }
     private void next() {
+        stopAndResetTimer();
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
         cfx.moveToFirst();
         int skx = 0;
@@ -771,8 +843,14 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                     sps.putString(Find_words_from_picture.this, "time_start_fn", "yes");
 
                 } else {
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                   /* focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();*/
+                    new Handler().postDelayed(() -> {  // ✅ step 2
+                        int emptyLines = getEmptyAnswerCount();
+                        long countdownTimeMillis = emptyLines * 30 * 1000L;
+                        if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000;
+                        startChronometerCountdown(countdownTimeMillis);
+                    }, 300);
                 }
             }
             Cursor cs = myDbHelper.getQry("select * from answertable where gameid='" + gameid + "' and levelid='" + question_id + "' and rd='" + rdvalu + "' and isfinish='1'");
@@ -2090,7 +2168,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         }
     }
 
-    //reward videos***********************//
     public void share_earn2(int a) {
         int skx = 0;
         final Dialog openDialog = new Dialog(Find_words_from_picture.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -2195,7 +2272,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     protected void onResume() {
         super.onResume();
 
-        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        if (timerHandler != null) timerHandler.postDelayed(timerRunnable, 1000);
         System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ON Resume  " + sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV"));
 
 
@@ -2217,8 +2294,11 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 if (cs.getCount() != 0) {
                     dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                 }
-                focus.setBase(SystemClock.elapsedRealtime() + dscore);
-                focus.start();
+               /* focus.setBase(SystemClock.elapsedRealtime() + dscore);
+                focus.start();*/
+                int emptyLines = getEmptyAnswerCount();
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                startChronometerCountdown(countdownTimeMillis);
             } catch (Exception e) {
 
             }
@@ -2235,7 +2315,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     @Override
     protected void onPause() {
         super.onPause();
-        if (handler != null) handler.removeCallbacks(my_runnable);
+        if (timerHandler != null) timerHandler.removeCallbacks(timerRunnable);
         focus.stop();
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
@@ -2346,6 +2426,12 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         TextView yes = openDialog_p.findViewById(R.id.yes);
         TextView no = openDialog_p.findViewById(R.id.no);
 
+        if (isTimerRunning && timerHandler != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+        }
+
         yes.setOnClickListener(v -> {
             sps.putString(Find_words_from_picture.this, "game_area", "on");
 
@@ -2362,7 +2448,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 pos = 2;
             }
 
-            myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+          //  myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
             myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
             //String date = sps.getString(Find_words_from_picture.this, "date");
             if (date.equals("0")) {
@@ -2396,7 +2482,19 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
 
         });
-        no.setOnClickListener(v -> openDialog_p.dismiss());
+        no.setOnClickListener(v -> {
+            openDialog_p.dismiss();
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
+
+        openDialog_p.setOnDismissListener(dialog -> {
+            // Check if the timer was paused and resume if necessary
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
         openDialog_p.show();
 
 

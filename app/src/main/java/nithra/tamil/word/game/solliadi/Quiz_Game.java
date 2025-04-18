@@ -279,39 +279,45 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
     }
 
     private void startChronometerCountdown(long durationInMillis) {
-        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
-        focus.setCountDown(true);
-        focus.start();
+        if (focus == null) return;
 
-        // Check if timerHandler is null and initialize it if necessary
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
 
-        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
-        if (timerRunnable != null) {
+        if (timerRunnable != null && timerHandler != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
 
-        // Create a new Runnable for the countdown
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        long endTime = SystemClock.elapsedRealtime() + durationInMillis;
+
         timerRunnable = new Runnable() {
             @Override
             public void run() {
-                long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+                if (timerHandler == null || focus == null) return;
+
+                long remainingMillis = endTime - SystemClock.elapsedRealtime();
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
-                    showExtendTimeDialog();  // Show dialog when time is up
+                    showExtendTimeDialog();
                 } else {
-                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                    timerHandler.postDelayed(this, 500);
                 }
             }
         };
 
-        // Post the Runnable to start the countdown
-        timerHandler.postDelayed(timerRunnable, 500);
-        isTimerRunning = true;
+        // Double-check before posting
+        if (timerHandler != null) {
+            timerHandler.postDelayed(timerRunnable, 500);
+            isTimerRunning = true;
+        }
     }
+
 
     private void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Quiz_Game.this);

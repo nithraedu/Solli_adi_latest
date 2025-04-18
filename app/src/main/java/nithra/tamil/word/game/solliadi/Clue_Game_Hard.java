@@ -238,7 +238,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog_p.findViewById(R.id.yes);
                 TextView no = openDialog_p.findViewById(R.id.no);
 
-                if (isTimerRunning) {
+                if (isTimerRunning && timerHandler != null) {
                     timerHandler.removeCallbacks(timerRunnable);
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                     focus.stop();

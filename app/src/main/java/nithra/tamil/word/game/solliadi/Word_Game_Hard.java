@@ -105,6 +105,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Timer;
@@ -244,8 +245,9 @@ public class Word_Game_Hard extends AppCompatActivity {
     int randomno;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
-    Handler handler;
-    Runnable my_runnable;
+    private Handler timerHandler;
+    private Runnable timerRunnable;
+    private boolean isTimerRunning = false;
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -259,6 +261,11 @@ public class Word_Game_Hard extends AppCompatActivity {
                 openDialog_p.setContentView(R.layout.back_pess);
                 TextView yes = openDialog_p.findViewById(R.id.yes);
                 TextView no = openDialog_p.findViewById(R.id.no);
+                if (isTimerRunning && timerHandler != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                }
 
                 yes.setOnClickListener(v -> {
 
@@ -276,7 +283,7 @@ public class Word_Game_Hard extends AppCompatActivity {
                     if (date.equals("0")) pos = 1;
                     else pos = 2;
 
-                    myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+                  //  myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
                     myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
 
                     // String date = sps.getString(Word_Game_Hard.this, "date");
@@ -297,7 +304,19 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                     openDialog_p.dismiss();
                 });
-                no.setOnClickListener(v -> openDialog_p.dismiss());
+                no.setOnClickListener(v -> {
+                    openDialog_p.dismiss();
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
+
+                openDialog_p.setOnDismissListener(dialog -> {
+                    // Check if the timer was paused and resume if necessary
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 openDialog_p.show();
 
 
@@ -552,6 +571,15 @@ public class Word_Game_Hard extends AppCompatActivity {
         score = findViewById(R.id.word_score_edit);
         feedback = findViewById(R.id.feedback);
         focus = findViewById(R.id.word_time_edit);
+        new Handler().postDelayed(() -> {
+            int emptyLines = getEmptyAnswerCount();
+            long countdownTimeMillis = emptyLines * 30 * 1000L;
+
+            // Set a minimum duration if needed
+            if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000;
+
+            startChronometerCountdown(countdownTimeMillis);
+        }, 200);
 
         w_head = findViewById(R.id.w_head);
         h_gplues = findViewById(R.id.h_gplues);
@@ -586,8 +614,11 @@ public class Word_Game_Hard extends AppCompatActivity {
                 if (position == 4) {
                     sps.putString(Word_Game_Hard.this, "time_start", "yes");
                     sps.putString(Word_Game_Hard.this, "showcase_dismiss_wd", "yes");
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                    /*focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();*/
+                    int emptyLines = getEmptyAnswerCount();
+                    long countdownTimeMillis = emptyLines * 30 * 1000L;
+                    startChronometerCountdown(countdownTimeMillis);
 
                 }
             });
@@ -2918,6 +2949,87 @@ public class Word_Game_Hard extends AppCompatActivity {
         });
     }
 
+    private void startChronometerCountdown(long durationInMillis) {
+        if (focus == null) return;
+
+        if (timerHandler == null) {
+            timerHandler = new Handler(Looper.getMainLooper());
+        }
+
+        if (timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+        long endTime = SystemClock.elapsedRealtime() + durationInMillis;
+
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (timerHandler == null) return;  // Fix for crash
+
+                long remainingMillis = endTime - SystemClock.elapsedRealtime();
+
+                if (remainingMillis <= 0) {
+                    focus.setText("00:00");
+                    isTimerRunning = false;
+                    showExtendTimeDialog();
+                } else {
+                    int seconds = (int) (remainingMillis / 1000) % 60;
+                    int minutes = (int) ((remainingMillis / (1000 * 60)) % 60);
+                    String timeStr = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+                    focus.setText(timeStr);
+                    timerHandler.postDelayed(this, 1000);  // Will not crash now
+                }
+            }
+        };
+
+        if (timerHandler != null) {
+            timerHandler.post(timerRunnable);
+        }
+        isTimerRunning = true;
+    }
+
+    private int getEmptyAnswerCount() {
+        int emptyCount = 0;
+
+        if (vl1.getVisibility() == View.VISIBLE && vl1.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl2.getVisibility() == View.VISIBLE && vl2.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl3.getVisibility() == View.VISIBLE && vl3.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl4.getVisibility() == View.VISIBLE && vl4.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl5.getVisibility() == View.VISIBLE && vl5.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl6.getVisibility() == View.VISIBLE && vl6.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl7.getVisibility() == View.VISIBLE && vl7.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl8.getVisibility() == View.VISIBLE && vl8.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl9.getVisibility() == View.VISIBLE && vl9.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl10.getVisibility() == View.VISIBLE && vl10.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl11.getVisibility() == View.VISIBLE && vl11.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl12.getVisibility() == View.VISIBLE && vl12.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl13.getVisibility() == View.VISIBLE && vl13.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl14.getVisibility() == View.VISIBLE && vl14.getText().toString().trim().isEmpty()) emptyCount++;
+
+        System.out.println("Empty & Visible count Word game Hard: " + emptyCount);
+        return emptyCount;
+    }
+
+    private void showExtendTimeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Word_Game_Hard.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            int emptyLines = getEmptyAnswerCount();
+            long countdownTimeMillis = emptyLines * 30 * 1000L;
+            startChronometerCountdown(countdownTimeMillis); // Restart with another 30s
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+            // handle what happens if user says no (optional)
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private void pluesanim() {
 
         bs_points.setVisibility(View.VISIBLE);
@@ -3461,8 +3573,16 @@ public class Word_Game_Hard extends AppCompatActivity {
         focus.setTypeface(typ);
     }
 
-    public void next() {
+    private void stopAndResetTimer() {
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+        isTimerRunning = false;
+        focus.setText("00:00"); // reset display
+    }
 
+    public void next() {
+        stopAndResetTimer();
 
         Calendar calendar3 = Calendar.getInstance();
         int cur_year1 = calendar3.get(Calendar.YEAR);
@@ -3930,8 +4050,14 @@ public class Word_Game_Hard extends AppCompatActivity {
                 if (sps.getString(Word_Game_Hard.this, "time_start").equals(""))
                     sps.putString(Word_Game_Hard.this, "time_start", "yes");
                 else {
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                   /* focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();*/
+                    new Handler().postDelayed(() -> {  // ✅ step 2
+                        int emptyLines = getEmptyAnswerCount();
+                        long countdownTimeMillis = emptyLines * 30 * 1000L;
+                        if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000;
+                        startChronometerCountdown(countdownTimeMillis);
+                    }, 300);
                 }
 
 
@@ -4782,8 +4908,12 @@ public class Word_Game_Hard extends AppCompatActivity {
                     c_total = 0;
 
 
-                    focus.setBase(SystemClock.elapsedRealtime());
+                   /* focus.setBase(SystemClock.elapsedRealtime());
                     focus.start();
+*/
+                    int emptyLines = getEmptyAnswerCount();
+                    long countdownTimeMillis = emptyLines * 30 * 1000L;
+                    startChronometerCountdown(countdownTimeMillis);
 
                     dia_dismiss = 1;
                     openDialog.dismiss();
@@ -4998,8 +5128,11 @@ public class Word_Game_Hard extends AppCompatActivity {
                     c_total = 0;
 
 
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                   /* focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();*/
+                    int emptyLines = getEmptyAnswerCount();
+                    long countdownTimeMillis = emptyLines * 30 * 1000L;
+                    startChronometerCountdown(countdownTimeMillis);
 
                     dia_dismiss = 1;
                     openDialog.dismiss();
@@ -5050,8 +5183,11 @@ public class Word_Game_Hard extends AppCompatActivity {
                     c_total = 0;
 
 
-                    focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();
+                    /*focus.setBase(SystemClock.elapsedRealtime());
+                    focus.start();*/
+                    int emptyLines = getEmptyAnswerCount();
+                    long countdownTimeMillis = emptyLines * 30 * 1000L;
+                    startChronometerCountdown(countdownTimeMillis);
 
                     dia_dismiss = 1;
                     openDialog.dismiss();
@@ -5151,7 +5287,7 @@ public class Word_Game_Hard extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-        if (handler != null) handler.postDelayed(my_runnable, 1000);
+        if (timerHandler != null) timerHandler.postDelayed(timerRunnable, 1000);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(Word_Game_Hard.this);
         Bundle params = new Bundle();
         params.putString("screen_name", "Sol Game");
@@ -5195,8 +5331,11 @@ public class Word_Game_Hard extends AppCompatActivity {
                     if (cs.getCount() != 0) {
                         dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                     }
-                    focus.setBase(SystemClock.elapsedRealtime() + dscore);
-                    focus.start();
+                   /* focus.setBase(SystemClock.elapsedRealtime() + dscore);
+                    focus.start();*/
+                    int emptyLines = getEmptyAnswerCount();
+                    long countdownTimeMillis = emptyLines * 30 * 1000L;
+                    startChronometerCountdown(countdownTimeMillis);
                 }
                 cs.close();
             } else {
@@ -5438,7 +5577,7 @@ public class Word_Game_Hard extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if (handler != null) handler.removeCallbacks(my_runnable);
+        if (timerHandler != null) timerHandler.removeCallbacks(timerRunnable);
         focus.stop();
         ttstop = focus.getBase() - SystemClock.elapsedRealtime();
         String date = sps.getString(Word_Game_Hard.this, "date");
@@ -5475,7 +5614,7 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         rewardedAd = null;
         interstitialAd = null;
-        handler = null;
+        timerHandler = null;
     }
 
 
@@ -6424,7 +6563,7 @@ if(downok.equals("")){
                             public void onAdDismissedFullScreenContent() {
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 setSc();
                                 industrialload();
@@ -6434,7 +6573,7 @@ if(downok.equals("")){
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
                                 interstitialAd = null;
-                                handler = null;
+                                timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
                                 setSc();
@@ -6459,7 +6598,7 @@ if(downok.equals("")){
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
                         interstitialAd = null;
-                        handler = null;
+                        timerHandler = null;
                         Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                     }
 
@@ -7517,8 +7656,11 @@ if(downok.equals("")){
                 showcase_dismiss();
             else {
                 sps.putString(Word_Game_Hard.this, "time_start", "yes");
-                focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();
+                /*focus.setBase(SystemClock.elapsedRealtime());
+                focus.start();*/
+                int emptyLines = getEmptyAnswerCount();
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                startChronometerCountdown(countdownTimeMillis);
 
             }
 
