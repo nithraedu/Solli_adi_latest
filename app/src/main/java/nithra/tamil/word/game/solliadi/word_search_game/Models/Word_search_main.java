@@ -29,6 +29,7 @@ import nithra.tamil.word.game.solliadi.word_search_game.Models.helpclass.my_dial
 
 public class Word_search_main extends AppCompatActivity {
     static String dialog_show_now = "";
+
     final SharedPreference sp = new SharedPreference();
     final my_dialog myDialog_class = new my_dialog();
     TextView general_play, category_play, challenge_play;

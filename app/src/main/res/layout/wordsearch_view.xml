@@ -142,7 +142,7 @@
 
 
             <LinearLayout
-
+                android:id="@+id/skipLayout"
                 android:layout_width="80dp"
                 android:layout_height="match_parent"
                 android:background="@drawable/skip_background">
@@ -160,6 +160,7 @@
 
 
             <LinearLayout
+                android:id="@+id/resetLayout"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"

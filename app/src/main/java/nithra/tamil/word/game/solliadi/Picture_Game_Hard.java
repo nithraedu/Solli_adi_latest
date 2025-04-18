@@ -127,19 +127,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
     public static final String TAG = "SavedGames";
     public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
-    //*********************reward videos process 1***********************
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
     static final SharedPreference sp = new SharedPreference();
     static final SharedPreference spd = new SharedPreference();
-    // The AppState slot we are editing.  For simplicity this sample only manipulates a single
-    // Cloud Save slot and a corresponding Snapshot entry,  This could be changed to any integer
-    // 0-3 without changing functionality (Cloud Save has four slots, numbered 0-3).
-    private static final int APP_STATE_KEY = 1;
-    // Request code used to invoke sign-in UI.
-    private static final int RC_SIGN_IN = 9001;
     static int f;
     static int vs = 0;
-    // Facebook variable starts
     static int mCoinCount = 20;
     static int rvo = 0;
     final SharedPreference sps = new SharedPreference();
@@ -151,14 +142,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
     final int maximumd = 4;
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     private final PendingAction pendingAction = PendingAction.NONE;
-    private final boolean mIsResolving = false;
-    // True immediately after the user clicks the sign-in button/
-    private final boolean mSignInClicked = false;
-    // True if we want to automatically attempt to sign in the user at application start.
-    private final boolean mAutoStartSignIn = true;
     int fb_reward = 0, reward_status = 0;
-    // facebook variable ends
-    String btn_str = "";
     DataBaseHelper myDbHelper;
     Typeface tyr;
     Chronometer focus;
@@ -176,7 +160,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
     TextView u_verify;
     String imid;
     int f_sec;
-    //MediaPlayer r1, play1;
     TextView p_coin;
     int e2;
     LinearLayout adds, adsLay1, list4;
@@ -193,7 +176,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
     String email = "";
     TextView earncoin;
     Timer t1, th;
-    int t, t2;
     LinearLayout qtw;
     int random;
     TextView next_continue;
@@ -207,7 +189,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
     int soundId1, soundId2, soundId3, soundId4;
     int sv = 0;
     String retype = "s";
-    //
     int setting_access = 0;
     int picdig = 0;
     Dialog openDialogk;
@@ -219,10 +200,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
     RelativeLayout adsicon, adsicon2;
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
-    /////////Native_BackPress_Advanced////////////
     Newgame_DataBaseHelper3 newhelper3;
     Newgame_DataBaseHelper4 newhelper4;
-    /////////native advance////////////
     int extra_coin_s = 0;
     int reward_play_count = 0;
     int ea = 0;
@@ -232,15 +211,11 @@ public class Picture_Game_Hard extends AppCompatActivity {
     Dialog openDialog;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
-
-
     private final long countdownDuration = 30000; // 30 seconds in milliseconds
     private Handler timerHandler = new Handler(Looper.getMainLooper());
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
-
     private boolean isGameCompleted = false;
-
 
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
@@ -334,8 +309,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
             }
         }
     };
-    //private MaxRewardedAd rewardedAd;
-    // private MaxInterstitialAd mInterstitialAd;
     private RewardedAd rewardedAd;
     private AdManagerInterstitialAd interstitialAd;
 
@@ -358,8 +331,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pic__game);
-
-        // Ensure that timerHandler is initialized in onResume as well
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
@@ -372,15 +343,12 @@ public class Picture_Game_Hard extends AppCompatActivity {
             StrictMode.setThreadPolicy(policy);
         }
 
-
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
-
 
         exdb = this.openOrCreateDatabase("Solli_Adi", MODE_PRIVATE, null);
         dbs = this.openOrCreateDatabase("Newgames.db", MODE_PRIVATE, null);
         dbn = this.openOrCreateDatabase("Newgames2.db", MODE_PRIVATE, null);
         dbn2 = this.openOrCreateDatabase("Newgames3.db", MODE_PRIVATE, null);
-
 
         if (!spd.getString(Picture_Game_Hard.this, "new_user_db").equals("")) {
             if (spd.getString(Picture_Game_Hard.this, "new_user_db").equals("on")) {
@@ -393,7 +361,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
         }
 
-        //Utills.INSTANCE.initializeAdzz(this);
         rewarded_adnew();
         if (sps.getInt(context, "purchase_ads") == 0) {
             // industrialload();
@@ -434,7 +401,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 isTimerRunning = false;
             }
 
-            // Mark current question as finished in the DB
             String date = sps.getString(Picture_Game_Hard.this, "date");
             if (date.equals("0")) {
                 myDbHelper.executeSql("UPDATE maintable SET isfinish=1 WHERE levelid='" + wordid + "'and gameid='" + gameid + "'");
@@ -465,21 +431,15 @@ public class Picture_Game_Hard extends AppCompatActivity {
             }
         } else adsLay1.setVisibility(View.GONE);
 
-        //  Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
-
         newhelper = new Newgame_DataBaseHelper(context);
         newhelper2 = new Newgame_DataBaseHelper2(context);
         newhelper3 = new Newgame_DataBaseHelper3(context);
         myDbHelper = new DataBaseHelper(context);
         newhelper4 = new Newgame_DataBaseHelper4(context);
 
-
         email = sps.getString(Picture_Game_Hard.this, "email");
 
         System.out.println("mail======pic==" + email);
-        //uiHelper = new UiLifecycleHelper(this, callback);
-
-
         ImageView prize_logo = findViewById(R.id.prize_logo);
 
         if (sp.getInt(Picture_Game_Hard.this, "remoteConfig_prize") == 1) {
@@ -539,11 +499,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
         if (!Utills.INSTANCE.isColumnExists(this, "dailytest", "noclue"))
             myDbHelper.executeSql("alter table dailytest add column noclue integer DEFAULT 0");
 
-
-//sounds for game
-
-
-        //Sound Pool Sounds
         spz1 = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
         soundId1 = spz1.load(Picture_Game_Hard.this, R.raw.click, 1);
         spz2 = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
@@ -657,8 +612,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
             sps.putString(Picture_Game_Hard.this, "date", "0");
             next();
         }
-
-
     }
 
     private void showResetDialog() {
@@ -724,7 +677,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
         timerHandler.postDelayed(timerRunnable, 500);
         isTimerRunning = true;
     }
-
 
     private void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Picture_Game_Hard.this);
@@ -1082,7 +1034,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
         qtw.setOnClickListener(v -> dialog(0));
 
-        //User Verifing Answer
         u_verify.setOnClickListener(v -> {
 
 
@@ -1108,8 +1059,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                         sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
 
                     }
-                    //Toast.makeText(Picture_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
-                    //Score Adding
                     Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                     cfx.moveToFirst();
                     int skx = 0;
@@ -1133,12 +1082,11 @@ public class Picture_Game_Hard extends AppCompatActivity {
                     u_verify.setEnabled(false);
 
                     sps.putInt(getApplicationContext(), "ach6_a1", 0);
-                    //
+
                     Animation w_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button1and3_animation);
                     ans_show.startAnimation(w_game);
                     ans_show.setVisibility(View.VISIBLE);
                     ans_show.setText(sa);
-                    //Update QST
 
                     if (date.equals("0")) {
                         myDbHelper.executeSql("UPDATE maintable SET isfinish=1 WHERE levelid='" + wordid + "'and gameid='" + gameid + "'");
@@ -1147,10 +1095,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
                         myDbHelper.executeSql("UPDATE dailytest SET isfinish=1 WHERE levelid='" + wordid + "'and gameid='" + gameid + "'");
 
                     }
-                    //Next Function
                     r = 1;
-
-
                     pic_clue.clearAnimation();
                     pic_clue.setVisibility(View.INVISIBLE);
                     list4.setVisibility(View.INVISIBLE);
@@ -1199,8 +1144,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                         if (cd.getCount() != 0) {
                             sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
                         }
-                        //Toast.makeText(Picture_Game_Hard.this, "" + sa, Toast.LENGTH_SHORT).show();
-                        //Score Adding
                         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
                         cfx.moveToFirst();
                         if (cfx.getCount() != 0) {
@@ -1221,12 +1164,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
                         u_verify.setEnabled(false);
 
                         sps.putInt(getApplicationContext(), "ach6_a1", 0);
-                        //
                         Animation w_game = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.button1and3_animation);
                         ans_show.startAnimation(w_game);
                         ans_show.setVisibility(View.VISIBLE);
                         ans_show.setText(sa);
-                        //Update QST
 
                         if (date.equals("0")) {
                             myDbHelper.executeSql("UPDATE maintable SET isfinish=1 WHERE levelid='" + wordid + "'and gameid='" + gameid + "'");
@@ -1235,7 +1176,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                             myDbHelper.executeSql("UPDATE dailytest SET isfinish=1 WHERE levelid='" + wordid + "'and gameid='" + gameid + "'");
 
                         }
-                        //Next Function
                         r = 1;
                         openDialog.dismiss();
 
@@ -3328,7 +3268,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
         }
     }
 
-
     private void daily_bones() {
         System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeee daily_bones_openDialog");
         openDialog = new Dialog(Picture_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -3944,7 +3883,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
     }
 
     public void coinanim() {
-////
+
         completegame();
 
         if (f == 0) {
@@ -4658,7 +4597,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
         }
     }
 
-
     @Override
     public void onPause() {
         super.onPause();
@@ -4845,173 +4783,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
     }
 
-  /*  public void downloadchecknew(final String lastid, final String daily) {
-
-        w_head.setVisibility(View.INVISIBLE);
-        Utils.mProgress(Picture_Game_Hard.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", true).show();
-        Utils.mProgress.setCancelable(false);
-        new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected Void doInBackground(Void... params) {
-
-
-                String result = null;
-
-                InputStream is = null;
-                StringBuilder sb = null;
-
-                ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-                nameValuePairs.add(new BasicNameValuePair("lastid", lastid));
-
-                if (daily.equals("ord")) {
-                    nameValuePairs.add(new BasicNameValuePair("mode", "regular"));
-                } else {
-                    nameValuePairs.add(new BasicNameValuePair("mode", "daily"));
-                }
-                nameValuePairs.add(new BasicNameValuePair("email", email));
-                //nameValuePairs.add(new BasicNameValuePair("type", "a2z"));
-                try {
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost(New_Main_Activity.data_check);
-                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                    HttpResponse response = httpclient.execute(httppost);
-                    HttpEntity entity = response.getEntity();
-                    is = entity.getContent();
-                } catch (Exception e) {
-                    Log.e("log_tag", "Error in https connection" + e.toString());
-                }
-                try {
-
-
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
-                    sb = new StringBuilder();
-                    sb.append(reader.readLine() + "\n");
-                    String line = null;
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
-                    is.close();
-                    result = sb.toString();
-                    System.out.print("Result============" + result);
-
-
-                } catch (Exception e) {
-                }
-
-                try {
-                    if (result != null) {
-                        JSONArray jArray = new JSONArray(result);
-                        System.err.println("Update===" + result);
-                        System.out.println("===  " + jArray.length());
-                        JSONObject json_data = null;
-                        //isvalid=""+jArray.length();
-                        downok = String.valueOf(jArray.length());
-                        System.out.print("insert daily ============" + downok);
-                        if (jArray.length() > 0) {
-                            json_data = jArray.getJSONObject(0);
-                            if (json_data.getString("NoData").equals("NoData")) {
-                                downnodata = "NoData";
-                            } else {
-                                downnodata = "YesData";
-
-                                for (int i = 0; i < jArray.length(); i++) {
-                                    json_data = jArray.getJSONObject(i);
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("id", json_data.getString("id"));
-                                    cv.put("gameid", json_data.getString("gameid"));
-                                    cv.put("levelid", json_data.getString("levelid"));
-                                    cv.put("letters", json_data.getString("letters"));
-
-                                    String newName = json_data.getString("answer").replaceAll(" ", "");
-                                    cv.put("answer", newName);
-
-                                    cv.put("hints", json_data.getString("hints"));
-                                    cv.put("imagename", json_data.getString("imagename"));
-                                    cv.put("isfinish", "0");
-
-                                    if (daily.equals("ord")) {
-                                        cv.put("isdownload", "1");
-                                        myDbHelper.insert_data("maintable", null, cv);
-
-                                    } else {
-
-                                        cv.put("date", json_data.getString("date"));
-                                        myDbHelper.insert_data("dailytest", null, cv);
-
-
-                                    }
-
-
-                                }
-                            }
-                        }
-                    }
-
-                } catch (JSONException e1) {
-                } catch (ParseException e1) {
-                }
-
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                System.out.print("down ok!!!============" + downok + "===");
-
-
-                if (downnodata.equals("NoData")) {
-                    Utils.mProgress.dismiss();
-
-                    w_head.setVisibility(View.INVISIBLE);
-                    nextgamesdialog();
-                }
-                else {
-                    downok = "";
-                    downnodata = "";
-                    System.out.print("========###" + email);
-
-                    if (exists("https://nithra.mobi/solliadi/" + email + "-filename.zip")) {
-                        System.out.print("========zip ok");
-                        checkmemory();
-                    } else {
-                        System.out.print("========not  ok");
-
-                        Utils.mProgress.dismiss();
-                        String date = sps.getString(Picture_Game_Hard.this, "date");
-                        if (date.equals("0")) {
-                            Cursor c;
-                            c = myDbHelper.getQry("select * from maintable where gameid='1' and isfinish='0' order by id limit 1");
-                            c.moveToFirst();
-                            if (c.getCount() != 0) {
-                                next();
-                            } else {
-                                nextgamesdialog();
-                            }
-                        } else {
-                            Cursor c;
-                            c = myDbHelper.getQry("select * from dailytest where gameid='" + gameid + "' and isfinish='0' and date='" + date + "'");
-                            c.moveToFirst();
-                            if (c.getCount() != 0) {
-                                next();
-                            } else {
-                                nextgamesdialog();
-                            }
-
-
-                        }
-
-
-                    }
-
-                }
-
-            }
-        }.execute();
-    }*/
-
     public void checkmemory() {
         String url = "";
         url = "https://nithra.mobi/solliadi/" + email + "-filename.zip";
@@ -5122,62 +4893,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
     }
 
-
-   /* public void newdownnew() {
-
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-
-                String result = null;
-
-                InputStream is = null;
-                StringBuilder sb = null;
-
-                ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-
-                nameValuePairs.add(new BasicNameValuePair("filename", email + "-filename.zip"));
-                //nameValuePairs.add(new BasicNameValuePair("type", "a2z"));
-                try {
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost("https://nithra.mobi/solliadi/solliadi1.php");
-                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                    HttpResponse response = httpclient.execute(httppost);
-                    HttpEntity entity = response.getEntity();
-                    is = entity.getContent();
-                } catch (Exception e) {
-                    Log.e("log_tag", "Error in https connection" + e.toString());
-                }
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
-                    sb = new StringBuilder();
-                    sb.append(reader.readLine() + "\n");
-                    String line = "0";
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
-                    is.close();
-                    result = sb.toString();
-
-                    System.out.print("Result============123" + result);
-
-                } catch (Exception e) {
-                }
-
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-
-            }
-
-        }.execute();
-
-    }*/
-
     public void goappmanager() {
         AlertDialog.Builder builder1 = new AlertDialog.Builder(getBaseContext(), android.R.style.Theme_Dialog);
         builder1.setMessage("No free space clean your storage");
@@ -5260,66 +4975,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
         bos.close();
     }
 
-  /*  private void industrialload() {
-        //AppLovinSdk.getInstance( this ).showMediationDebugger();
-        AppLovinSdk.getInstance(this).setMediationProvider("max");
-        AppLovinSdk.initializeSdk(this, config -> {
-            // AppLovin SDK is initialized, start loading ads
-            if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
-            System.out.println("ad shown  showAdWithDelay initialize done ");
-            mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Viliyodu_Vilaiyadu_Ins), Picture_Game_Hard.this);
-            mInterstitialAd.setListener(new MaxAdListener() {
-                @Override
-                public void onAdLoaded(MaxAd ad) {
-                    System.out.println("ad shown loaded : " + ad.getWaterfall());
-                }
-
-                @Override
-                public void onAdDisplayed(MaxAd ad) {
-                    handler = null;
-                }
-
-                @Override
-                public void onAdHidden(MaxAd ad) {
-                    Log.d("TAG", "Ad dismissed fullscreen content.");
-                    mInterstitialAd = null;
-                    handler = null;
-                    Utills.INSTANCE.Loading_Dialog_dismiss();
-                    setSc();
-                    industrialload();
-                }
-
-                @Override
-                public void onAdClicked(MaxAd ad) {
-
-                }
-
-                @Override
-                public void onAdLoadFailed(String adUnitId, MaxError error) {
-                    Log.d("TAG", error.toString());
-                    mInterstitialAd = null;
-                    handler = null;
-                    Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
-                }
-
-                @Override
-                public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                    Log.e("TAG", "Ad failed to show fullscreen content.");
-                    mInterstitialAd = null;
-                    handler = null;
-                    Utills.INSTANCE.Loading_Dialog_dismiss();
-                    sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
-                    setSc();
-                }
-            });
-
-            // Load the first ad
-            mInterstitialAd.loadAd();
-
-        });
-
-    }*/
-
     public void industrialload() {
         System.out.println("servercalling=============");
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
@@ -5382,28 +5037,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
     }
 
-
-    /*   public void adShow() {
-           if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") ==*//* Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
-            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
-            handler = new Handler(Looper.myLooper());
-            my_runnable = () -> {
-//                Toast.makeText(this, "Called", Toast.LENGTH_SHORT).show();
-                if (interstitialAd == null) setSc();
-                else
-                    interstitialAd.show(Picture_Game_Hard.this);
-            };
-            handler.postDelayed(my_runnable, 2500);
-        } else {
-            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
-            if (sps.getInt(this, "Game1_Stage_Close_VV") >*//* Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
-                sps.putInt(this, "Game1_Stage_Close_VV", 0);
-            setSc();
-            //Toast.makeText(this, ""+sps.getInt(this, "Game1_Stage_Close_VV"), Toast.LENGTH_SHORT).show();
-        }
-
-    }*/
     public void adShow() {
         String showCountOther = sps.getString(this, "showCountOther");
         System.out.println("showCountOther : " + showCountOther);
@@ -6250,12 +5883,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
     }
 
-    private void addCoins(int coins) {
-        mCoinCount = coins;
-        sps.putInt(Picture_Game_Hard.this, "reward_coin_txt", coins);
-        //mCoinCountText.setText("Coins: " + mCoinCount);
-    }
-
     public void vidcoinearn() {
         if (extra_coin_s == 1) {
             extra_coin_s = 0;
@@ -6291,7 +5918,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
     }
 
-    //*********************reward videos process 3***********************
 
     public void share_earn(int a) {
         final Dialog openDialog = new Dialog(Picture_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -6315,9 +5941,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
         if (!isFinishing()) openDialog.show();
     }
-
-
-    //reward videos***********************//
 
     public void share_earn2(int a) {
         final Dialog openDialog = new Dialog(Picture_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -6487,9 +6110,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
         helpshare(a);
     }
 
-
-    //*** In Adapter **
-
     public void showcase_dismiss() {
         // Initialize timerHandler if it's null
         if (timerHandler == null) {
@@ -6658,87 +6278,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 });
     }
 
-
-
-   /* public void rewarded_adnew() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_adnew();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
-    }*/
-
-
     public void show_reward() {
         if (rewardedAd != null) {
             Activity activityContext = Picture_Game_Hard.this;
@@ -6903,7 +6442,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
             mProgressDialog.setProgress(Integer.parseInt(progress[0]));
         }
     }
-
 
 }
 
