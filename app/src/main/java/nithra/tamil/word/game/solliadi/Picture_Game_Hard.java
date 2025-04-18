@@ -216,6 +216,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
     private boolean isGameCompleted = false;
+    public static boolean isAnswerSelectionEnabled = true;
+
 
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
@@ -586,7 +588,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 e.printStackTrace();
                 message = "no";
             }
-            /*Utils.toast_center(Picture_Game_Hard.this,message);*/
             if (message.length() > 6) {
                 sps.putString(Picture_Game_Hard.this, "date", message);
                 Cursor c = myDbHelper.getQry("select * from dailytest where gameid='" + gameid + "' and isfinish='0' and date='" + message + "'");
@@ -653,9 +654,11 @@ public class Picture_Game_Hard extends AppCompatActivity {
         focus.start();
 
         // Remove existing callbacks
-        if (timerRunnable != null) {
+        if (timerHandler != null&& timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
+
+
 
         timerRunnable = new Runnable() {
             @Override
@@ -664,11 +667,13 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
+                    isAnswerSelectionEnabled = false;
                     showExtendTimeDialog();
                 } else {
                     if (timerHandler == null) {
                         timerHandler = new Handler(Looper.getMainLooper()); // 🔐 Safe re-init
                     }
+                    isAnswerSelectionEnabled = true;
                     timerHandler.postDelayed(this, 500);
                 }
             }
@@ -679,19 +684,34 @@ public class Picture_Game_Hard extends AppCompatActivity {
     }
 
     private void showExtendTimeDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(Picture_Game_Hard.this);
-        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+      /*  if (isExtendDialogVisible|| isGameCompleted) {
+            return; // Prevent multiple dialogs
+        }
+
+        isExtendDialogVisible = true;*/
+
+        AlertDialog.Builder builder = new AlertDialog.Builder((Picture_Game_Hard.this));
+        builder.setMessage("Time's up! Do you want to extend the time based on remaining answers?");
         builder.setCancelable(false);
+
         builder.setPositiveButton("Yes", (dialog, which) -> {
-            startChronometerCountdown(countdownDuration); // Restart with another 30s
             dialog.dismiss();
+           // isExtendDialogVisible = false;
+
+            new Handler(Looper.getMainLooper()).post(() -> {
+                isAnswerSelectionEnabled = true;
+                startChronometerCountdown(countdownDuration); // Restart with another 30s
+            });
         });
+
         builder.setNegativeButton("No", (dialog, which) -> {
             dialog.dismiss();
-            // handle what happens if user says no (optional)
+          //  isExtendDialogVisible = false;
+            // Optional: Game over logic here
         });
 
         AlertDialog dialog = builder.create();
+       // dialog.setOnDismissListener(d -> isExtendDialogVisible = false); // Safe reset in case of cancel/other dismiss
         dialog.show();
     }
 
@@ -766,6 +786,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
     }
 
     public void click1() {
+
         img1.setOnClickListener(view -> {
             try {
                 pic_show(1);
@@ -832,6 +853,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
             permission(a);
         });
         bt1.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             //   c1.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -840,6 +865,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
             p_edit.append(ts);
         });
         bt2.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             //  c2.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -848,6 +877,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
             p_edit.append(ts);
         });
         bt3.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             // c3.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -856,6 +889,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
             p_edit.append(ts);
         });
         bt5.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             // c4.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -864,6 +901,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
             p_edit.append(ts);
         });
         bt6.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             // c5.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -871,7 +912,11 @@ public class Picture_Game_Hard extends AppCompatActivity {
             String ts = bt6.getText().toString();
             p_edit.append(ts);
         });
-        bt7.setOnClickListener(v -> {
+        bt7.setOnClickListener(v -> { if (!isAnswerSelectionEnabled) {
+            showExtendTimeDialog();
+            return;
+        }
+
             // c6.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -880,6 +925,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
             p_edit.append(ts);
         });
         bt9.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             //c7.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -888,6 +937,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
             p_edit.append(ts);
         });
         bt10.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             //c8.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -897,6 +950,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
         });
         bt11.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             //c9.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -906,6 +963,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
         });
 
         bt4.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             //c10.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -915,6 +976,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
         });
 
         bt8.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             //c11.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -923,6 +988,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
             p_edit.append(ts);
         });
         bt12.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             //c12.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -932,6 +1001,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
         });
         bt13.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             //c13.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -941,6 +1014,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
         });
 
         bt14.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             //c14.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -949,6 +1026,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
             p_edit.append(ts);
         });
         bt15.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             //c15.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -958,6 +1039,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
         });
         bt16.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             //c16.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Picture_Game_Hard.this, R.anim.button_shake);
@@ -981,6 +1066,12 @@ public class Picture_Game_Hard extends AppCompatActivity {
         pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
         adsicon2.startAnimation(pendulam);
         edit_buttons_layout.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                // Toast.makeText(getContext(), "காலாவதி ஆனதால் விளையாட்டை தொடர முடியாது", Toast.LENGTH_SHORT).show();
+                showExtendTimeDialog();
+                return;
+            }
+
             if (popupWindow.isShowing()) {
                 popupWindow.dismiss();
             }
@@ -3115,6 +3206,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
     }
 
     public void next() {
+        isAnswerSelectionEnabled = true;
         // Reward correct answer
         if (picdig == 1) {
             openDialogk.dismiss();
@@ -3266,6 +3358,8 @@ public class Picture_Game_Hard extends AppCompatActivity {
                 }
             }
         }
+
+        isGameCompleted = false;
     }
 
     private void daily_bones() {
@@ -3391,14 +3485,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
             }
         });
-                     /*   b_close.setOnClickListener(new View.OnClickListener() {
 
-                       /* b_close.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                openDialog.dismiss();
-                            }
-                        });*/
         if (!isFinishing()) openDialog.show();
     }
 
@@ -4654,12 +4741,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<HashMap<String, String>>> call, Response<List<HashMap<String, String>>> response) {
                 if (response.isSuccessful()) {
-                    /*String date = sps.getString(New_Main_Activity.this, "date");
-                    BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-
-                    String line = "";
-                    while ((line = rd.readLine()) != null) Log.e("HttpResponse", line);*/
-
                     Gson gson = new Gson();
                     String result = gson.toJson(response.body());
 
@@ -4866,12 +4947,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<HashMap<String, String>>> call, Response<List<HashMap<String, String>>> response) {
                 if (response.isSuccessful()) {
-                    /*String date = sps.getString(New_Main_Activity.this, "date");
-                    BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-
-                    String line = "";
-                    while ((line = rd.readLine()) != null) Log.e("HttpResponse", line);*/
-
                     Gson gson = new Gson();
                     String result = gson.toJson(response.body());
 
@@ -5545,12 +5620,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<HashMap<String, String>>> call, Response<List<HashMap<String, String>>> response) {
                 if (response.isSuccessful()) {
-                    /*String date = sps.getString(New_Main_Activity.this, "date");
-                    BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-
-                    String line = "";
-                    while ((line = rd.readLine()) != null) Log.e("HttpResponse", line);*/
-
                     Gson gson = new Gson();
                     String result = gson.toJson(response.body());
 
@@ -6444,41 +6513,3 @@ public class Picture_Game_Hard extends AppCompatActivity {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
