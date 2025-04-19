@@ -671,24 +671,22 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         builder.setMessage("Time is up! Do you want to extend time?")
                 .setCancelable(false)
                 .setPositiveButton("Yes", (dialog, id) -> {
-                    // Existing positive button logic
                     if (isTimerRunning) {
                         timerHandler.removeCallbacks(timerRunnable);
                     }
                     startChronometerCountdown(countdownDuration);
                 })
                 .setNegativeButton("No", (dialog, id) -> {
-                    // Stop timer completely and don't add any time
                     if (isTimerRunning) {
                         timerHandler.removeCallbacks(timerRunnable);
                         isTimerRunning = false;
                     }
-                    // Handle game over or other logic here
                     dialog.dismiss();
                 });
         AlertDialog alert = builder.create();
         alert.show();
     }
+
 
     public Animation zoomAnim() {
 
@@ -977,6 +975,11 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
 
     @Override
     public void onClick(View v) {
+        if (!isTimerRunning && focus.getBase() - SystemClock.elapsedRealtime() <= 0) {
+            showExtendTimeDialog();  // Show extend time dialog
+            return;
+        }
+
         scroll_act = false;
         switch (v.getId()) {
             case R.id.show_all_ans_img: {

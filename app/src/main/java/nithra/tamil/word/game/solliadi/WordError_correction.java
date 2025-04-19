@@ -423,6 +423,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         }
 
         bt1.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             //c1.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(WordError_correction.this, R.anim.button_shake);
@@ -431,6 +436,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             c_edit.append(ts);
         });
         bt2.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             // c2.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(WordError_correction.this, R.anim.button_shake);
@@ -439,6 +449,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             c_edit.append(ts);
         });
         bt3.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             // c3.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(WordError_correction.this, R.anim.button_shake);
@@ -447,6 +462,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             c_edit.append(ts);
         });
         bt5.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             //  c4.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(WordError_correction.this, R.anim.button_shake);
@@ -455,6 +475,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             c_edit.append(ts);
         });
         bt6.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             // c5.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
 
@@ -464,6 +489,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             c_edit.append(ts);
         });
         bt7.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             // c6.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(WordError_correction.this, R.anim.button_shake);
@@ -472,6 +502,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             c_edit.append(ts);
         });
         bt9.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             // c7.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(WordError_correction.this, R.anim.button_shake);
@@ -480,6 +515,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             c_edit.append(ts);
         });
         bt10.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             // c8.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(WordError_correction.this, R.anim.button_shake);
@@ -488,6 +528,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             c_edit.append(ts);
         });
         bt11.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             //  c9.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(WordError_correction.this, R.anim.button_shake);
@@ -497,6 +542,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         });
 
         bt4.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             // c10.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(WordError_correction.this, R.anim.button_shake);
@@ -506,6 +556,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         });
 
         bt8.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             // c11.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(WordError_correction.this, R.anim.button_shake);
@@ -514,6 +569,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             c_edit.append(ts);
         });
         bt12.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             // c12.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(WordError_correction.this, R.anim.button_shake);
@@ -523,6 +583,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
         });
         bt13.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             // c13.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(WordError_correction.this, R.anim.button_shake);
@@ -532,6 +597,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         });
 
         bt14.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             // c14.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(WordError_correction.this, R.anim.button_shake);
@@ -540,6 +610,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             c_edit.append(ts);
         });
         bt15.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             // c15.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(WordError_correction.this, R.anim.button_shake);
@@ -549,6 +624,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
         });
         bt16.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             //c16.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(WordError_correction.this, R.anim.button_shake);
@@ -573,6 +653,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         });
 
         c_ans.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -767,12 +852,22 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             }
         });
         c_clear.setOnClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             //c17.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             pressKey();
         });
 
         c_clear.setOnLongClickListener(v -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return true;
+            }
             c_edit.setText("");
             return false;
         });
@@ -787,11 +882,21 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             permission(a);
         });
         h_watts_app.setOnClickListener(view -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             share_name = 2;
             String a = "com.whatsapp";
             permission(a);
         });
         h_facebook.setOnClickListener(view -> {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (!isTimerRunning || remainingMillis <= 0) {
+                showExtendTimeDialog(); // Show time extension dialog if time is up
+                return;
+            }
             share_name = 1;
             final String a = "com.facebook.katana";
             permission(a);
