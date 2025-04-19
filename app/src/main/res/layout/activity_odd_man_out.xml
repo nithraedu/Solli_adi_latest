@@ -169,6 +169,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/newbuttons"
             android:layout_width="match_parent"
             android:layout_height="33dp"
             android:layout_marginLeft="@dimen/lrtbp_5"
@@ -237,7 +238,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/hint"
-            android:layout_below="@+id/time_score_board"
+            android:layout_below="@+id/newbuttons"
             android:layout_marginLeft="@dimen/lrtbp_5"
             android:layout_marginRight="@dimen/lrtbp_5">
 

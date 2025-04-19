@@ -429,7 +429,12 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
 
         bt1.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
+
+
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -450,7 +455,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
         });
         bt2.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -469,7 +477,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
             return true;
         });
         bt3.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -490,7 +501,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
         });
         bt4.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -511,7 +525,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
         });
         bt5.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -532,7 +549,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
         });
         bt6.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -553,7 +573,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
         });
         bts1.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -574,7 +597,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
         });
         bts2.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -595,7 +621,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
         });
         bts3.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -616,7 +645,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
         });
         bts4.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -668,6 +700,10 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
 
 
         hint.setOnClickListener(view -> {
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return ;
+            }
 
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
@@ -753,12 +789,20 @@ public class Opposite_word extends AppCompatActivity implements Download_complet
         });
 
         p_watts_app.setOnClickListener(view -> {
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return ;
+            }
             share_name = 2;
             String a = "com.whatsapp";
             permission(a);
         });
 
         p_facebook.setOnClickListener(view -> {
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return ;
+            }
             share_name = 1;
             final String a = "com.facebook.katana";
             permission(a);

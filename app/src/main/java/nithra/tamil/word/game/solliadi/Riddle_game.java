@@ -637,6 +637,11 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         });
 
         c_ans.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
+
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -837,12 +842,20 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             }
         });
         c_clear.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             //c17.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             pressKey();
         });
 
         c_clear.setOnLongClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return true;
+            }
             c_edit.setText("");
             return false;
         });
@@ -857,11 +870,19 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             permission(a);
         });
         h_watts_app.setOnClickListener(view -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 2;
             String a = "com.whatsapp";
             permission(a);
         });
         h_facebook.setOnClickListener(view -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 1;
             final String a = "com.facebook.katana";
             permission(a);
@@ -1091,7 +1112,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             }
         }
 
-        isGameCompleted = true;
+        isGameCompleted = false;
     }
 
     private void daily_bones() {
@@ -3293,7 +3314,6 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             String tr = String.valueOf(skq);
             score.setText(tr);
         }
-
 
     }
 

@@ -210,11 +210,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
     int setval_vid;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
-
-   /* Handler handler;
-    Runnable my_runnable;*/
-
-
     private final long countdownDuration = 30000; // 30 seconds in milliseconds
     private Handler timerHandler;
     private Runnable timerRunnable;
@@ -344,8 +339,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
         isTimerRunning = true;
     }
 
-
-
     private void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Clue_Game_Hard.this);
         builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
@@ -363,9 +356,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
         dialog.show();
     }
 
-
-  //  private MaxRewardedAd rewardedAd;
-  //  private MaxInterstitialAd mInterstitialAd;
   private RewardedAd rewardedAd;
   private AdManagerInterstitialAd interstitialAd ;
 
@@ -437,6 +427,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 industrialload();
             }
         }
+
+        //finding and next
+        find();
+        clicklistner();
 
         LinearLayout resetLayout = findViewById(R.id.resetLayout);
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
@@ -642,12 +636,16 @@ public class Clue_Game_Hard extends AppCompatActivity {
             sps.putString(Clue_Game_Hard.this, "cn_intro", "no");
             sequence.start();
 
-        }
+        }/*else {
+            // If intro already shown, start timer manually
+            sps.putString(Clue_Game_Hard.this, "clue_time_start", "yes");
+            if (!isTimerRunning) {
+                startChronometerCountdown(countdownDuration);
+            }
+        }*/
 
 
-        //finding and next
-        find();
-        clicklistner();
+
 
 
         Bundle extras;
@@ -708,7 +706,11 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
         btnYes.setOnClickListener(v -> {
             ttstop = 0;
-            c_edit.setText("");
+            if (c_edit != null) c_edit.setText("");
+            if (clue2 != null) clue2.setText("");
+            if (clue3 != null) clue3.setText("");
+            if (clue2_txt != null) clue2_txt.setText("");
+            if (clue3_txt != null) clue3_txt.setText("");
             startChronometerCountdown(countdownDuration);
             dialog.dismiss();
         });
@@ -723,8 +725,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
         dialog.setCancelable(false);
         dialog.show();
     }
-
-
 
     public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
@@ -786,29 +786,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
     }
 
-    /*public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") ==*//* Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null)
-        {
-            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
-            handler = new Handler(Looper.myLooper());
-            my_runnable = () -> {
-                if (interstitialAd == null) setSc();
-                else
-                    interstitialAd.show(this);
-            };
-            handler.postDelayed(my_runnable, 2500);
-        } else {
-            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") + 1));
-            if (sps.getInt(this, "Game2_Stage_Close_PS") > *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
-                sps.putInt(this, "Game2_Stage_Close_PS", 0);
-            setSc();
-            //Toast.makeText(this, "" + sps.getInt(this, "Game2_Stage_Close_PS"), Toast.LENGTH_SHORT).show();
-
-        }
-
-    }*/
-
     private int safeParseInt(String value, int defaultValue) {
         if (value != null && !value.isEmpty()) {
             try {
@@ -856,8 +833,8 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
     }
 
-
     public void clicklistner() {
+
         c_settings.setOnClickListener(v -> {
             c_settings.setBackgroundResource(R.drawable.sound_off);
             String snd = sps.getString(Clue_Game_Hard.this, "snd");
@@ -888,17 +865,29 @@ public class Clue_Game_Hard extends AppCompatActivity {
             permission(a);
         });
         h_watts_app.setOnClickListener(view -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 2;
             String a = "com.whatsapp";
             permission(a);
         });
         h_facebook.setOnClickListener(view -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 1;
             final String a = "com.facebook.katana";
             permission(a);
         });
 
         bt1.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             //c1.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
@@ -907,6 +896,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
             c_edit.append(ts);
         });
         bt2.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             // c2.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
@@ -915,6 +908,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
             c_edit.append(ts);
         });
         bt3.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             // c3.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
@@ -923,6 +920,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
             c_edit.append(ts);
         });
         bt5.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             //  c4.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
@@ -931,6 +932,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
             c_edit.append(ts);
         });
         bt6.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             // c5.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
 
@@ -940,6 +945,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
             c_edit.append(ts);
         });
         bt7.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             // c6.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
@@ -948,6 +957,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
             c_edit.append(ts);
         });
         bt9.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             // c7.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
@@ -956,6 +969,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
             c_edit.append(ts);
         });
         bt10.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             // c8.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
@@ -964,6 +981,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
             c_edit.append(ts);
         });
         bt11.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             //  c9.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
@@ -973,6 +994,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
         });
 
         bt4.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             // c10.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
@@ -982,6 +1007,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
         });
 
         bt8.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             // c11.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
@@ -990,6 +1019,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
             c_edit.append(ts);
         });
         bt12.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             // c12.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
@@ -999,6 +1032,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
         });
         bt13.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             // c13.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
@@ -1008,6 +1045,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
         });
 
         bt14.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             // c14.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
@@ -1016,6 +1057,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
             c_edit.append(ts);
         });
         bt15.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             // c15.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
@@ -1025,6 +1070,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
         });
         bt16.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             //c16.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Clue_Game_Hard.this, R.anim.button_shake);
@@ -1037,12 +1086,20 @@ public class Clue_Game_Hard extends AppCompatActivity {
         qtw.setOnClickListener(v -> dialog(0));
 
         c_clear.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             //c17.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             pressKey();
         });
 
         c_clear.setOnLongClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return true;
+            }
             c_edit.setText("");
             return false;
         });
@@ -1103,6 +1160,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
         pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
         adsicon2.startAnimation(pendulam);
         c_clue.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             clue();
             // tim=0;
             sps.putInt(getApplicationContext(), "cluetime", 0);
@@ -1116,6 +1177,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
         });
 //User Verifing Answer
         c_ans.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             if (cfw.getCount() != 0) {
@@ -1446,7 +1511,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
         c_edit.onKeyDown(KeyEvent.KEYCODE_DEL, event);
     }
 
-    //find view
     public void find() {
         c_edit = findViewById(R.id.clue_ans_editer);
         c_clear = findViewById(R.id.clue_clear);
@@ -1454,7 +1518,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
         edit_buttons_layout = findViewById(R.id.edit_buttons_layout);
         adsicon2 = findViewById(R.id.adsicon2);
         // c_verify = (Button) findViewById(R.id.clue_verify);
-        c_clear = findViewById(R.id.clue_clear);
+       // c_clear = findViewById(R.id.clue_clear);
         c_ans = findViewById(R.id.c_ans);
         clue1 = findViewById(R.id.clue1_ans);
         clue2 = findViewById(R.id.clue2_ans);
@@ -1516,7 +1580,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
     }
 
-    //
     public void simple() {
         String a = "ட,ம்,எ,ன்,கை,மே,சை,மா,நா,டு,போ,க்,கு,வ,ர";
         bt4.setVisibility(View.GONE);
@@ -2869,6 +2932,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
             }
         }
+        isGameCompleted = false;
     }
 
     public void setSc() {
@@ -3165,8 +3229,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
         }
         return app_installed;
     }
-
-
 
     public void coinanim() {
 ////
@@ -3850,7 +3912,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
         }
     }
 
-
     @Override
     public void onPause() {
         super.onPause();
@@ -4224,62 +4285,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
             bos.write(bytesIn, 0, read);
         }
         bos.close();
-    }
-
-    /**
-     * Update the Snapshot in the Saved Games service with new data.  Metadata is not affected,
-     * however for your own application you will likely want to update metadata such as cover image,
-     * played time, and description with each Snapshot update.  After update, the UI will
-     * be cleared.
-     */
-
-    /**
-     * Get the data from the EditText.
-     *
-     * @return the String in the EditText, or "" if empty.
-     */
-    private String getData() {
-
-
-        Cursor g2 = myDbHelper.getQry("select * from maintable where gameid='1' and isfinish='1' order by id desc limit 1");
-        Cursor g3 = myDbHelper.getQry("select * from maintable where gameid='3' and isfinish='1' order by id desc limit 1");
-        Cursor g4 = myDbHelper.getQry("select * from maintable where gameid='4' and isfinish='1' order by id desc limit 1");
-        g2.moveToFirst();
-        g3.moveToFirst();
-        g4.moveToFirst();
-
-        Cursor c1 = myDbHelper.getQry("select * from score");
-        c1.moveToFirst();
-
-        // int a2,a3,a4;
-        String b2, b3, b4;
-        if (g2.getCount() == 0) {
-            //a2=00;
-            b2 = "no";
-        } else {
-            // a2 = g2.getInt(g2.getColumnIndexOrThrow("levelid"));
-            b2 = String.valueOf(g2.getInt(g2.getColumnIndexOrThrow("levelid")));
-        }
-        if (g3.getCount() == 0) {
-            //  a3=00;
-            b3 = "no";
-        } else {
-            //  a3 = g3.getInt(g3.getColumnIndexOrThrow("levelid"));
-            b3 = String.valueOf(g3.getInt(g3.getColumnIndexOrThrow("levelid")));
-        }
-        if (g4.getCount() == 0) {
-            // a4=00;
-            b4 = "no";
-        } else {
-            // a4 = g4.getInt(g4.getColumnIndexOrThrow("levelid"));
-            b4 = String.valueOf(g4.getInt(g4.getColumnIndexOrThrow("levelid")));
-        }
-
-
-        String upload = b2 + "#" + w_id + "#" + b3 + "#" + b4 + "#" + c1.getInt(c1.getColumnIndexOrThrow("coins")) + "#" + c1.getInt(c1.getColumnIndexOrThrow("l_points"));
-
-
-        return upload;
     }
 
     public void nextgamesdialog() {
@@ -4884,12 +4889,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
         }
     }
 
-    private void addCoins(int coins) {
-        //mCoinCount = coins;
-        sps.putInt(Clue_Game_Hard.this, "reward_coin_txt", coins);
-        //mCoinCountText.setText("Coins: " + mCoinCount);
-    }
-
     public void vidcoinearn() {
         if (extra_coin_s == 1) {
             extra_coin_s = 0;
@@ -4925,9 +4924,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
     }
 
-
-    //*********************reward videos process 3***********************
-
     public void share_earn(int a) {
         final Dialog openDialog = new Dialog(Clue_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.share_dialog2);
@@ -4950,8 +4946,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
         if (!isFinishing()) openDialog.show();
     }
-
-    //reward videos***********************//
 
     public void share_earn2(int a) {
         final Dialog openDialog = new Dialog(Clue_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -5347,9 +5341,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
         }
         return app_installed;
     }
-
-
-//*** In Adapter **
 
     //*** In ad area **
     public void showcase_dismiss() {

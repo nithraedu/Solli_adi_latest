@@ -414,7 +414,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -440,7 +443,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -466,7 +472,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -492,7 +501,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -519,7 +531,11 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
+
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -547,7 +563,11 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
+
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -574,7 +594,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -601,7 +624,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -628,7 +654,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -655,7 +684,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -681,7 +713,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -707,7 +742,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -734,7 +772,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -761,7 +802,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -788,7 +832,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -814,7 +861,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return true;
+                }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
 
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -947,6 +997,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         p_watts_app.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return ;
+                }
                 share_name = 2;
                 String a = "com.whatsapp";
                 permission(a);
@@ -955,6 +1009,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         p_facebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!isTimerRunning /*&& ttstop <= 0*/) {
+                    showExtendTimeDialog();  // Show only time extension dialog
+                    return ;
+                }
                 share_name = 1;
                 final String a = "com.facebook.katana";
                 permission(a);
@@ -984,8 +1042,73 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
 
-        btnYes.setOnClickListener(v -> {
+      /*  btnYes.setOnClickListener(v -> {
             ttstop = 0;
+            dialog.dismiss();
+        });
+*/
+        btnYes.setOnClickListener(v -> {
+            // Stop timer if running
+            if (isTimerRunning) {
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+
+            // Reset UI: clear all answer TextViews and tick icons
+            ans1.setText("");
+            ans2.setText("");
+            ans3.setText("");
+            ans4.setText("");
+            ans5.setText("");
+            ans6.setText("");
+            ans7.setText("");
+            ans8.setText("");
+            ans9.setText("");
+            ans10.setText("");
+
+            value_ans1.setBackgroundResource(R.drawable.yellow_question);
+            value_ans2.setBackgroundResource(R.drawable.yellow_question);
+            value_ans3.setBackgroundResource(R.drawable.yellow_question);
+            value_ans4.setBackgroundResource(R.drawable.yellow_question);
+            value_ans5.setBackgroundResource(R.drawable.yellow_question);
+            value_ans6.setBackgroundResource(R.drawable.yellow_question);
+            value_ans7.setBackgroundResource(R.drawable.yellow_question);
+            value_ans8.setBackgroundResource(R.drawable.yellow_question);
+            value_ans9.setBackgroundResource(R.drawable.yellow_question);
+            value_ans10.setBackgroundResource(R.drawable.yellow_question);
+
+            value_ans1.setClickable(true);
+            value_ans2.setClickable(true);
+            value_ans3.setClickable(true);
+            value_ans4.setClickable(true);
+            value_ans5.setClickable(true);
+            value_ans6.setClickable(true);
+            value_ans7.setClickable(true);
+            value_ans8.setClickable(true);
+            value_ans9.setClickable(true);
+            value_ans10.setClickable(true);
+
+            value_ans2.setVisibility(View.GONE);
+            value_ans3.setVisibility(View.GONE);
+            value_ans4.setVisibility(View.GONE);
+            value_ans5.setVisibility(View.GONE);
+            value_ans6.setVisibility(View.GONE);
+            value_ans7.setVisibility(View.GONE);
+            value_ans8.setVisibility(View.GONE);
+            value_ans9.setVisibility(View.GONE);
+            value_ans10.setVisibility(View.GONE);
+
+            // Reset database entries
+            myDbHelper.executeSql("DELETE FROM answertable WHERE levelid='" + questionid + "' AND gameid='" + gameid + "' AND rd='" + rdvalu + "'");
+
+            // Reset answer input tracking
+            x = 0;
+
+            // Reload same question
+            reset();  // clear button text
+            next();   // re-initialize everything (calls setanswer again)
+
             dialog.dismiss();
         });
 
@@ -1055,6 +1178,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
     }
 
     private void user_ask() {
+        if (!isTimerRunning /*&& ttstop <= 0*/) {
+            showExtendTimeDialog();  // Show only time extension dialog
+            return;
+        }
 
         Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
         cfw.moveToFirst();
@@ -1745,6 +1872,8 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             downloaddata_regular();
             //  nextgamesdialog();
         }
+
+        isGameCompleted = false;
     }
 
     private void daily_bones() {
@@ -4767,26 +4896,6 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
 
     }
 
-  /*  public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") ==*//* Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
-            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
-            handler = new Handler(Looper.myLooper());
-            my_runnable = () -> {
-                if (interstitialAd == null) setSc();
-                else
-                    interstitialAd.show(this);
-            };
-            handler.postDelayed(my_runnable, 2500);
-        } else {
-            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") + 1));
-            if (sps.getInt(this, "Game2_Stage_Close_PS") > *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
-                sps.putInt(this, "Game2_Stage_Close_PS", 0);
-            setSc();
-            //Toast.makeText(context, "" + sps.getInt(this, "Game2_Stage_Close_PS"), Toast.LENGTH_SHORT).show();
-        }
-
-    }*/
 
     private int safeParseInt(String value, int defaultValue) {
         if (value != null && !value.isEmpty()) {

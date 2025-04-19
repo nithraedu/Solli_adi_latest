@@ -327,9 +327,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
             // Mark current question as finished in the DB
             String date = sps.getString(Odd_man_out.this, "date");
             if (date.equals("0")) {
-                newhelper2.executeSql("UPDATE newmaintable2 SET isfinish='1' WHERE questionid='" + questionid + "'and gameid=" + gameid + "");
+                newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE questionid='" + questionid + "'and gameid=" + gameid + "");
             } else {
-                newhelper2.executeSql("UPDATE newmaintable2 SET daily='1' WHERE questionid='" + questionid + "'and gameid=" + gameid + "");
+                newhelper.executeSql("UPDATE newmaintable SET daily='1' WHERE questionid='" + questionid + "'and gameid=" + gameid + "");
             }
 /*
             // Reset fields
@@ -483,7 +483,10 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
         }
 
         bt1.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -504,7 +507,10 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
         });
         bt2.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -525,7 +531,10 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
         });
         bt3.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -546,7 +555,10 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
         });
         bt4.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -567,7 +579,10 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
         });
         bt5.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -588,7 +603,10 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
         });
         bt6.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -609,7 +627,10 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
         });
         bts1.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -631,7 +652,10 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
         });
 
         bts2.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -653,7 +677,10 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
         });
 
         bts3.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -675,7 +702,10 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
         });
 
         bts4.setOnTouchListener((v, event) -> {
-            // TODO Auto-generated method stub
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return true;
+            }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -727,7 +757,10 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
 
         hint.setOnClickListener(view -> {
-
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -810,11 +843,19 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
             permission(a);
         });
         p_watts_app.setOnClickListener(view -> {
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return ;
+            }
             share_name = 2;
             String a = "com.whatsapp";
             permission(a);
         });
         p_facebook.setOnClickListener(view -> {
+            if (!isTimerRunning && ttstop <= 0) {
+                showExtendTimeDialog();  // Show only time extension dialog
+                return ;
+            }
             share_name = 1;
             final String a = "com.facebook.katana";
             permission(a);
