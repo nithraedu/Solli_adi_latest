@@ -1095,6 +1095,11 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
 
     public void set_val(int val) {
+        if (focus.getText().toString().equals("00:00")) {
+            showExtendTimeDialog();  // ✅ Show dialog only when timer is exactly 00:00
+            return; // Prevent keyboard from opening
+        }
+
         // Toast.makeText(this, "set_val"+val, Toast.LENGTH_SHORT).show();
         Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
         cfw.moveToFirst();
@@ -1332,12 +1337,20 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
     private void click() {
         clear.setOnClickListener(v -> {
+            if (focus.getText().toString().equals("00:00")) {
+                showExtendTimeDialog();  // ✅ Show dialog only when timer is exactly 00:00
+                return ; // Prevent keyboard from opening
+            }
             chr = 1;
             mCustomKeyboard.letter_del_change("1");
             mCustomKeyboard.letter_del_change("1");
             pressKey();
         });
         clear.setOnLongClickListener(v -> {
+            if (focus.getText().toString().equals("00:00")) {
+                showExtendTimeDialog();  // ✅ Show dialog only when timer is exactly 00:00
+                return true; // Prevent keyboard from opening
+            }
             chr = 1;
             mCustomKeyboard.letter_del_change("1");
             ans_editer.setText("");
@@ -1367,11 +1380,19 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         image_1.setOnClickListener(v -> pic_show(1));
 
         p_facebook.setOnClickListener(v -> {
+            if (focus.getText().toString().equals("00:00")) {
+                showExtendTimeDialog();  // ✅ Show dialog only when timer is exactly 00:00
+                return ; // Prevent keyboard from opening
+            }
             share_name = 1;
             final String a = "com.facebook.katana";
             permission(a);
         });
         p_watts_app.setOnClickListener(v -> {
+            if (focus.getText().toString().equals("00:00")) {
+                showExtendTimeDialog();  // ✅ Show dialog only when timer is exactly 00:00
+                return; // Prevent keyboard from opening
+            }
             share_name = 2;
             String a = "com.whatsapp";
             permission(a);
@@ -1401,6 +1422,11 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     }
 
     private void verify_data() {
+        if (focus.getText().toString().equals("00:00")) {
+            showExtendTimeDialog();  // ✅ Show dialog only when timer is exactly 00:00
+            return ; // Prevent keyboard from opening
+        }
+
         chr = 1;
         mCustomKeyboard.letter_del_change("1");
         mCustomKeyboard.letter_del_change("1");

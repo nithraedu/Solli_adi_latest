@@ -80,13 +80,13 @@ class CustomKeyboard {
                     activity.showExtendTimeDialog();
                     return; // block further processing
                 }
-            }/* else if (hostActivity instanceof Find_difference_between_pictures) {
+            } else if (hostActivity instanceof Find_difference_between_pictures) {
                 Find_difference_between_pictures activity = (Find_difference_between_pictures) hostActivity;
                 if (activity.isTimeExpired()) {
                     activity.showExtendTimeDialog();
                     return; // block further processing
                 }
-            }*/
+            }
 
             // 🎯 Proceed with normal keyboard processing
             str = "";

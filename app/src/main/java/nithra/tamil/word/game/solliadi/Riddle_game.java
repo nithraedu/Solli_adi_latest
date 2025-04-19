@@ -57,6 +57,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
+
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
@@ -130,7 +131,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
     Typeface typ, tyr;
     String retype = "s";
     long ttstop;
-    LinearLayout adds, list4,adsLay1;
+    LinearLayout adds, list4, adsLay1;
     LinearLayout qtw;
     Dialog openDialog_p;
     int s = 0;
@@ -159,11 +160,11 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
     private boolean isTimerRunning = false;
     private boolean isGameCompleted = false;
 
+    private boolean isTimeExpired = false;
 
 
     private RewardedAd rewardedAd;
-    private AdManagerInterstitialAd interstitialAd ;
-
+    private AdManagerInterstitialAd interstitialAd;
 
 
     @Override
@@ -311,11 +312,11 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         });
 
         find();
-       // Utills.INSTANCE.initializeAdzz(this);
+        // Utills.INSTANCE.initializeAdzz(this);
         rewarded_adnew();
         if (sps.getInt(context, "purchase_ads") == 0) {
-         //   industrialload();
-            if (!sps.getString(this, "InterstitialId").equals("")|| sps.getString(this, "InterstitialId") != null) {
+            //   industrialload();
+            if (!sps.getString(this, "InterstitialId").equals("") || sps.getString(this, "InterstitialId") != null) {
                 industrialload();
             }
         }
@@ -337,7 +338,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                 );
                 adsLay1.setVisibility(View.GONE);
             }
-        }else adsLay1.setVisibility(View.GONE);
+        } else adsLay1.setVisibility(View.GONE);
 
         openDialog_s = new Dialog(Riddle_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
@@ -422,6 +423,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         }
 
         bt1.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             //c1.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Riddle_game.this, R.anim.button_shake);
@@ -430,6 +435,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             c_edit.append(ts);
         });
         bt2.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             // c2.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Riddle_game.this, R.anim.button_shake);
@@ -438,6 +447,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             c_edit.append(ts);
         });
         bt3.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             // c3.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Riddle_game.this, R.anim.button_shake);
@@ -446,6 +459,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             c_edit.append(ts);
         });
         bt5.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             //  c4.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Riddle_game.this, R.anim.button_shake);
@@ -454,6 +471,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             c_edit.append(ts);
         });
         bt6.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             // c5.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
 
@@ -463,6 +484,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             c_edit.append(ts);
         });
         bt7.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             // c6.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Riddle_game.this, R.anim.button_shake);
@@ -471,6 +496,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             c_edit.append(ts);
         });
         bt9.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             // c7.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Riddle_game.this, R.anim.button_shake);
@@ -479,6 +508,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             c_edit.append(ts);
         });
         bt10.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             // c8.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Riddle_game.this, R.anim.button_shake);
@@ -487,6 +520,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             c_edit.append(ts);
         });
         bt11.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             //  c9.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Riddle_game.this, R.anim.button_shake);
@@ -496,6 +533,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         });
 
         bt4.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             // c10.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Riddle_game.this, R.anim.button_shake);
@@ -505,6 +546,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         });
 
         bt8.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             // c11.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Riddle_game.this, R.anim.button_shake);
@@ -513,6 +558,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             c_edit.append(ts);
         });
         bt12.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             // c12.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Riddle_game.this, R.anim.button_shake);
@@ -522,6 +571,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
         });
         bt13.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             // c13.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Riddle_game.this, R.anim.button_shake);
@@ -531,6 +584,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         });
 
         bt14.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             // c14.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Riddle_game.this, R.anim.button_shake);
@@ -539,6 +596,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             c_edit.append(ts);
         });
         bt15.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             // c15.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Riddle_game.this, R.anim.button_shake);
@@ -548,6 +609,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
         });
         bt16.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             //c16.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Riddle_game.this, R.anim.button_shake);
@@ -766,7 +831,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
                     focus.stop();
                     coinanim();
-                    isGameCompleted=true;
+                    isGameCompleted = true;
                     price_update();
                 }
             }
@@ -832,6 +897,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         dialog.setCancelable(false);
         dialog.show();
     }
+
     private void startChronometerCountdown(long durationInMillis) {
         // Always initialize handler first
         if (timerHandler == null) {
@@ -851,12 +917,15 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         timerRunnable = new Runnable() {
             @Override
             public void run() {
+                if (timerHandler == null || focus == null) return;
                 long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
+                    isTimeExpired = true; // mark time as expired
                     showExtendTimeDialog();
                 } else {
+                    isTimeExpired = false;
                     if (timerHandler != null) { // ✅ safeguard here
                         timerHandler.postDelayed(this, 500);
                     }
@@ -867,7 +936,6 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         // Start runnable only if handler is not null
         if (timerHandler != null) {
             timerHandler.postDelayed(timerRunnable, 500);
-            isTimerRunning = true;
         }
     }
 
@@ -1023,7 +1091,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             }
         }
 
-
+        isGameCompleted = true;
     }
 
     private void daily_bones() {
@@ -3239,15 +3307,15 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
         //score intial
 
-        try(  Cursor cfq = myDbHelper.getQry("SELECT * FROM score ")){
+        try (Cursor cfq = myDbHelper.getQry("SELECT * FROM score ")) {
             if (cfq != null && cfq.moveToFirst()) {
-        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
-        String tr = String.valueOf(skq);
-        score.setText(tr);
-        //
-        e2 = skq;
+                int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
+                String tr = String.valueOf(skq);
+                score.setText(tr);
+                //
+                e2 = skq;
             }
-        }catch (Exception ignored){
+        } catch (Exception ignored) {
 
         }
 
@@ -3661,7 +3729,6 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
     }
 
 
-
     public void ins_app(final Context context, View view1, int vall) {
         TextView titt = view1.findViewById(R.id.txtlist);
         ImageView logo = view1.findViewById(R.id.imageview);
@@ -4033,6 +4100,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         });
         openDialog_earncoin.show();
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -4058,7 +4126,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         Bundle params = new Bundle();
         params.putString("screen_name", "Riddle Game");
         params.putString("screen_class", "Riddle_game");
-        mFirebaseAnalytics.logEvent( "screen_view", params);
+        mFirebaseAnalytics.logEvent("screen_view", params);
 
         if (sps.getString(Riddle_game.this, "riddle_time_start").equals("")) {
             sps.putString(Riddle_game.this, "riddle_time_start", "yes");
@@ -4089,6 +4157,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         }
 
     }
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -4159,7 +4228,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                 openDialog_p.dismiss();
 
             });
-            no.setOnClickListener(v ->{
+            no.setOnClickListener(v -> {
                 openDialog_p.dismiss();
                 if (ttstop > 0) {
                     startChronometerCountdown(ttstop);
@@ -4558,6 +4627,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
         if (!isFinishing()) openDialog.show();
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -5152,12 +5222,12 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
     public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
-        AdManagerInterstitialAd.load(this,sps.getString(this, "InterstitialId"), adRequest,
+        AdManagerInterstitialAd.load(this, sps.getString(this, "InterstitialId"), adRequest,
                 new AdManagerInterstitialAdLoadCallback() {
                     @Override
                     public void onAdLoaded(@NonNull AdManagerInterstitialAd interstitial) {
                         interstitialAd = interstitial;
-                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
+                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
                             public void onAdClicked() {
                                 // Called when a click is recorded for an ad.
@@ -5167,7 +5237,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                             @Override
                             public void onAdDismissedFullScreenContent() {
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
-                               interstitialAd = null;
+                                interstitialAd = null;
                                 timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 setSc();
@@ -5177,7 +5247,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                             @Override
                             public void onAdFailedToShowFullScreenContent(AdError adError) {
                                 Log.e("TAG", "Ad failed to show fullscreen content.");
-                               interstitialAd = null;
+                                interstitialAd = null;
                                 timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
@@ -5198,10 +5268,11 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                         });
 
                     }
+
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.d("TAG", loadAdError.toString());
-                       interstitialAd = null;
+                        interstitialAd = null;
                         timerHandler = null;
                         Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
                     }
@@ -5211,8 +5282,8 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
     }
 
 
-   /* public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
+    /* public void adShow() {
+         if (sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
             sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
             Utills.INSTANCE.Loading_Dialog(this);
             handler = new Handler(Looper.myLooper());
@@ -5232,16 +5303,16 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
     }
 */
-   private int safeParseInt(String value, int defaultValue) {
-       if (value != null && !value.isEmpty()) {
-           try {
-               return Integer.parseInt(value);
-           } catch (NumberFormatException e) {
-               return defaultValue; // Return the default value if parsing fails
-           }
-       }
-       return defaultValue; // Also return default if the input is null or empty
-   }
+    private int safeParseInt(String value, int defaultValue) {
+        if (value != null && !value.isEmpty()) {
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                return defaultValue; // Return the default value if parsing fails
+            }
+        }
+        return defaultValue; // Also return default if the input is null or empty
+    }
 
     public void adShow() {
         int showCountOther = safeParseInt(sps.getString(this, "showCountOther"), 0);
@@ -5268,7 +5339,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                 }
                 setSc();
             }
-        }else {
+        } else {
             currentStageClosePS++;
             sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", currentStageClosePS);
             if (currentStageClosePS > showCountOther) {
@@ -5369,7 +5440,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                         // Handle the error.
                         Log.e("LoadAdError=========", loadAdError.toString());
                         rewardedAd = null;
-                        reward_status=0;
+                        reward_status = 0;
                         //isfaild = 2;
 
                     }
@@ -5379,7 +5450,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
-                        reward_status=0;
+                        reward_status = 0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
@@ -5427,7 +5498,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                                 // Called when ad fails to show.
                                 Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                 rewardedAd = null;
-                                reward_status=0;
+                                reward_status = 0;
                             }
 
                             @Override

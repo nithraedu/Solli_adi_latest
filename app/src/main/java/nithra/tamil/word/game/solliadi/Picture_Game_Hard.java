@@ -843,11 +843,19 @@ public class Picture_Game_Hard extends AppCompatActivity {
             permission(a);
         });
         h_watts_app.setOnClickListener(view -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 2;
             String a = "com.whatsapp";
             permission(a);
         });
         h_facebook.setOnClickListener(view -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 1;
             final String a = "com.facebook.katana";
             permission(a);
@@ -1052,15 +1060,23 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
         });
         p_clear.setOnClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             //c17.start();
             spz1.play(soundId1, sv, sv, 0, 0, sv);
             pressKey();
         });
-
         p_clear.setOnLongClickListener(v -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return true; // Return true to indicate the event was handled
+            }
             p_edit.setText("");
-            return false;
+            return false; // Return false to indicate the event was not fully handled
         });
+
 
         final Animation pendulam;
         pendulam = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.sake);
@@ -1077,6 +1093,11 @@ public class Picture_Game_Hard extends AppCompatActivity {
             }
         });
         pic_clue.setOnClickListener(view -> {
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
+
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -1127,7 +1148,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
         u_verify.setOnClickListener(v -> {
 
-
+            if (!isAnswerSelectionEnabled) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));

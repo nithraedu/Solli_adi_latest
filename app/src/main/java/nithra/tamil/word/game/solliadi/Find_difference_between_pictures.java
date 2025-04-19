@@ -176,12 +176,14 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
     TextView p_coins;
     int e2;
     int setting_access = 0;
-   // Handler handler;
-   // Runnable my_runnable;
+    // Handler handler;
+    // Runnable my_runnable;
 
     private Handler timerHandler;
     private Runnable timerRunnable;
-    private boolean isTimerRunning = false;
+   // private boolean isTimerRunning = false;
+
+    private boolean isTimeExpired = false;
 
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
@@ -313,7 +315,11 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
         tyr = Typeface.createFromAsset(getAssets(), "TAMHN0BT.TTF");
 
+
+        soundset();
+        find();
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
+        LinearLayout resetLayout = findViewById(R.id.resetLayout);
 
         skipLayout.setOnClickListener(v -> {
            /* if (isGameCompleted) {
@@ -340,8 +346,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             next();
         });
 
-        soundset();
-        find();
+        resetLayout.setOnClickListener(v -> resetGame());
         new Handler().postDelayed(() -> {
             int emptyLines = getEmptyAnswerCount();
             long countdownTimeMillis = emptyLines * 30 * 1000L;
@@ -402,6 +407,43 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
     }
 
+    private void resetGame() {
+        // Stop current timer
+        stopAndResetTimer();
+
+        // Reset UI state
+        reset();
+
+        // Restart same question
+        Cursor c = newhelper6.getQry("SELECT * FROM newgames5 WHERE questionid='" + question_id + "' AND gameid='" + gameid + "'");
+        c.moveToFirst();
+        if (c.getCount() > 0) {
+            myDbHelper.executeSql("UPDATE answertable SET isfinish='0', useranswer=NULL WHERE levelid='" + question_id + "' AND gameid='" + gameid + "' AND rd='" + rdvalu + "'");
+        }
+
+        // Restart countdown
+        new Handler().postDelayed(() -> {
+            int emptyLines = getEmptyAnswerCount();
+            long countdownTimeMillis = emptyLines * 30 * 1000L;
+            if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000L;
+            startChronometerCountdown(countdownTimeMillis);
+        }, 300);
+
+        // Update visuals with existing question
+        Cursor answ = myDbHelper.getQry("SELECT * FROM answertable WHERE gameid='" + gameid + "' AND levelid='" + question_id + "' AND rd='" + rdvalu + "'");
+        answ.moveToFirst();
+        if (answ.getCount() > 0) {
+            if (answerlength == 1) view_ans(1);
+            else if (answerlength == 2) view_ans(2);
+            else if (answerlength == 3) view_ans(3);
+            else if (answerlength == 4) view_ans(4);
+            else if (answerlength == 5) view_ans(5);
+            else if (answerlength == 6) view_ans(6);
+            else view_ans(7);
+        }
+    }
+
+
     private void startChronometerCountdown(long durationInMillis) {
         if (focus == null) return;
 
@@ -413,51 +455,59 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             timerHandler.removeCallbacks(timerRunnable);
         }
 
+        isTimeExpired = false; // reset flag before starting
+
         long endTime = SystemClock.elapsedRealtime() + durationInMillis;
 
         timerRunnable = new Runnable() {
             @Override
             public void run() {
-                if (timerHandler == null) return;  // Fix for crash
+                if (timerHandler == null) return;
 
                 long remainingMillis = endTime - SystemClock.elapsedRealtime();
 
                 if (remainingMillis <= 0) {
                     focus.setText("00:00");
-                    isTimerRunning = false;
+                    isTimeExpired = true;  // timer truly expired
                     showExtendTimeDialog();
                 } else {
+                    isTimeExpired = false;
                     int seconds = (int) (remainingMillis / 1000) % 60;
                     int minutes = (int) ((remainingMillis / (1000 * 60)) % 60);
                     String timeStr = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
                     focus.setText(timeStr);
-                    timerHandler.postDelayed(this, 1000);  // Will not crash now
+                    timerHandler.postDelayed(this, 1000);
                 }
             }
         };
 
-        if (timerHandler != null) {
-            timerHandler.post(timerRunnable);
-        }
-        isTimerRunning = true;
+        timerHandler.post(timerRunnable);
     }
+
 
     private int getEmptyAnswerCount() {
         int emptyCount = 0;
 
-        if (ans1.getVisibility() == View.VISIBLE && ans1.getText().toString().trim().isEmpty()) emptyCount++;
-        if (ans2.getVisibility() == View.VISIBLE && ans2.getText().toString().trim().isEmpty()) emptyCount++;
-        if (ans3.getVisibility() == View.VISIBLE && ans3.getText().toString().trim().isEmpty()) emptyCount++;
-        if (ans4.getVisibility() == View.VISIBLE && ans4.getText().toString().trim().isEmpty()) emptyCount++;
-        if (ans5.getVisibility() == View.VISIBLE && ans5.getText().toString().trim().isEmpty()) emptyCount++;
-        if (ans6.getVisibility() == View.VISIBLE && ans6.getText().toString().trim().isEmpty()) emptyCount++;
-        if (ans7.getVisibility() == View.VISIBLE && ans7.getText().toString().trim().isEmpty()) emptyCount++;
+        if (ans1.getVisibility() == View.VISIBLE && ans1.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (ans2.getVisibility() == View.VISIBLE && ans2.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (ans3.getVisibility() == View.VISIBLE && ans3.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (ans4.getVisibility() == View.VISIBLE && ans4.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (ans5.getVisibility() == View.VISIBLE && ans5.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (ans6.getVisibility() == View.VISIBLE && ans6.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (ans7.getVisibility() == View.VISIBLE && ans7.getText().toString().trim().isEmpty())
+            emptyCount++;
 
         System.out.println("Empty & Visible count FWFP: " + emptyCount);
         return emptyCount;
     }
 
-    private void showExtendTimeDialog() {
+    public void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Find_difference_between_pictures.this);
         builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
         builder.setCancelable(false);
@@ -474,6 +524,10 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    public boolean isTimeExpired() {
+        return isTimeExpired;
     }
 
     public void showcase_dismiss() {
@@ -514,9 +568,11 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         if (timerHandler != null && timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
-        isTimerRunning = false;
-        focus.setText("00:00"); // reset display
+        isTimeExpired = false; // reset
+        focus.setText("00:00");
     }
+
+
     private void next() {
         stopAndResetTimer();
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
@@ -786,6 +842,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
     }
 
     private void view_ans(int i) {
+
         final_ans_count = i;
         if (i == 1) {
             value_ans1.setVisibility(View.VISIBLE);
@@ -915,6 +972,10 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
     }
 
     public void set_val(int val) {
+        if (isTimeExpired) {
+            showExtendTimeDialog();  // only when expired
+            return;
+        }
         // Toast.makeText(this, "set_val"+val, Toast.LENGTH_SHORT).show();
         Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
         cfw.moveToFirst();
@@ -1152,12 +1213,20 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
     private void click() {
         clear.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();  // only when expired
+                return;
+            }
             chr = 1;
             mCustomKeyboard.letter_del_change("1");
             mCustomKeyboard.letter_del_change("1");
             pressKey();
         });
         clear.setOnLongClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();  // only when expired
+                return true;
+            }
             chr = 1;
             mCustomKeyboard.letter_del_change("1");
             ans_editer.setText("");
@@ -1188,11 +1257,19 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         image_2.setOnClickListener(v -> pic_show(1, qs1, qs2));
 
         p_facebook.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();  // only when expired
+                return;
+            }
             share_name = 1;
             final String a = "com.facebook.katana";
             permission(a);
         });
         p_watts_app.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();  // only when expired
+                return;
+            }
             share_name = 2;
             String a = "com.whatsapp";
             permission(a);
@@ -1201,18 +1278,33 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
 
         ans_editer.setOnClickListener(v -> {
-            InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(verify.getWindowToken(), 0);
+            if (isTimeExpired) {
+                showExtendTimeDialog();  // show only if truly expired
+            }
         });
+
+
         ans_editer.setOnTouchListener((v, event) -> {
             InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(verify.getWindowToken(), 0);
 
-            return true;
+            if (isTimeExpired) {
+                showExtendTimeDialog();  // only when expired
+                return true;
+            }
+
+            return false;
         });
+
+
+
     }
 
     private void verify_data() {
+        if (isTimeExpired) {
+            showExtendTimeDialog();  // only when expired
+            return;
+        }
         chr = 1;
         mCustomKeyboard.letter_del_change("1");
         mCustomKeyboard.letter_del_change("1");
@@ -2336,37 +2428,16 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
     }
 
-  /*  public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
-            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
-            handler = new Handler(Looper.myLooper());
-            my_runnable = () -> {
-                if (interstitialAd == null) setSc();
-                else interstitialAd.show(this);
-            };
-            handler.postDelayed(my_runnable, 2500);
-        } else {
-            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
-            if (sps.getInt(this, "Game1_Stage_Close_VV") > *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
-                sps.putInt(this, "Game1_Stage_Close_VV", 0);
-            setSc();
-            //Toast.makeText(this, ""+sps.getInt(this, "Game1_Stage_Close_VV"), Toast.LENGTH_SHORT).show();
-
+    private int safeParseInt(String value, int defaultValue) {
+        if (value != null && !value.isEmpty()) {
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                return defaultValue; // Return default value if parsing fails
+            }
         }
-
+        return defaultValue; // Return default value if the input is null or empty
     }
-*/
-  private int safeParseInt(String value, int defaultValue) {
-      if (value != null && !value.isEmpty()) {
-          try {
-              return Integer.parseInt(value);
-          } catch (NumberFormatException e) {
-              return defaultValue; // Return default value if parsing fails
-          }
-      }
-      return defaultValue; // Return default value if the input is null or empty
-  }
 
     public void adShow() {
         int showCountOther = safeParseInt(sps.getString(this, "showCountOther"), 0);
@@ -2393,7 +2464,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                 }
                 setSc();
             }
-        }else{
+        } else {
             currentStageCloseVV++;
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", currentStageCloseVV);
             if (currentStageCloseVV > showCountOther) {
@@ -2670,7 +2741,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         TextView yes = openDialog_p.findViewById(R.id.yes);
         TextView no = openDialog_p.findViewById(R.id.no);
 
-        if (isTimerRunning && timerHandler != null) {
+        if (isTimeExpired && timerHandler != null) {
             timerHandler.removeCallbacks(timerRunnable);
             ttstop = focus.getBase() - SystemClock.elapsedRealtime();
             focus.stop();
@@ -2690,7 +2761,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                 pos = 2;
             }
 
-           // myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+            // myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
             myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
 
             // String date = sps.getString(Find_words_from_picture.this, "date");
@@ -3340,7 +3411,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
                     System.out.print("Result============123" + result);
                 } else {
-                    System.out.print("Result responce goto else parrt ========== " );
+                    System.out.print("Result responce goto else parrt ========== ");
                 }
             }
 
@@ -3499,13 +3570,15 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 ////
 
         //score intial
-         try (Cursor cfq = myDbHelper.getQry("SELECT * FROM score ")){
-             if (cfq.moveToFirst()) {
-        int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
-        String tr = String.valueOf(skq);
-        score.setText(tr);
-        //
-        e2 = skq;}}
+        try (Cursor cfq = myDbHelper.getQry("SELECT * FROM score ")) {
+            if (cfq.moveToFirst()) {
+                int skq = cfq.getInt(cfq.getColumnIndexOrThrow("coins"));
+                String tr = String.valueOf(skq);
+                score.setText(tr);
+                //
+                e2 = skq;
+            }
+        }
         //play1.start();
         spz4.play(soundId4, sv, sv, 0, 0, sv);
         p_coins.setVisibility(View.VISIBLE);
@@ -3578,7 +3651,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                         // Handle the error.
                         Log.e("LoadAdError=========", loadAdError.toString());
                         rewardedAd = null;
-                        reward_status=0;
+                        reward_status = 0;
                         //isfaild = 2;
 
                     }
@@ -3588,7 +3661,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
-                        reward_status=0;
+                        reward_status = 0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
@@ -3637,7 +3710,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                                 // Called when ad fails to show.
                                 Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                 rewardedAd = null;
-                                reward_status=0;
+                                reward_status = 0;
                             }
 
                             @Override

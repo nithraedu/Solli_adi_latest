@@ -166,8 +166,6 @@ public class Tirukural extends AppCompatActivity {
    private AdManagerInterstitialAd interstitialAd ;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -259,6 +257,7 @@ public class Tirukural extends AppCompatActivity {
 
         find();
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
+        LinearLayout resetLayout = findViewById(R.id.resetLayout);
         skipLayout.setOnClickListener(v -> {
            /* if (isGameCompleted) {
                 Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
@@ -291,7 +290,57 @@ public class Tirukural extends AppCompatActivity {
             next();
         });
 
-       // Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
+        resetLayout.setOnClickListener(v -> {
+            // Stop the timer if running
+            if (isTimerRunning && focus != null) {
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+
+            // Reset timer with original duration
+            startChronometerCountdown(countdownDuration);
+
+            // Reset all input fields
+            word1.setText("");
+            word2.setText("");
+            word3.setText("");
+            word4.setText("");
+            word5.setText("");
+            word6.setText("");
+            word7.setText("");
+
+            // Reset button texts (if needed)
+            c_button1.setText("");
+            c_button2.setText("");
+            c_button3.setText("");
+            c_button4.setText("");
+            c_button5.setText("");
+            c_button6.setText("");
+            c_button7.setText("");
+            c_button8.setText("");
+            c_button9.setText("");
+            c_button10.setText("");
+            c_button11.setText("");
+            c_button12.setText("");
+
+            // Enable all word views
+            clearnew();
+
+            // Reset answer highlight
+            ans_high.setText("");
+            ans_high.setVisibility(View.INVISIBLE);
+
+            // Enable answer button
+            c_ans.setEnabled(true);
+            c_ans.setBackgroundResource(R.drawable.yellow_question);
+
+            // Optionally reload the same question setup again if needed
+            set_question(randomno);
+        });
+
+
+        // Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
         if (sps.getInt(Tirukural.this, "purchase_ads") == 0) {
             if (Utils.isNetworkAvailable(context)) {
                 if (!sps.getString(context, "BannerId").equals("") || sps.getString(context, "BannerId") != null) {
@@ -404,6 +453,10 @@ public class Tirukural extends AppCompatActivity {
             }
         });
         c_button1.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             String data1 = word1.getText().toString();
             String data2 = word2.getText().toString();
@@ -422,6 +475,10 @@ public class Tirukural extends AppCompatActivity {
             }
         });
         c_button2.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             String data1 = word1.getText().toString();
             String data2 = word2.getText().toString();
@@ -441,6 +498,10 @@ public class Tirukural extends AppCompatActivity {
         });
 
         c_button3.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             String data1 = word1.getText().toString();
             String data2 = word2.getText().toString();
@@ -459,6 +520,10 @@ public class Tirukural extends AppCompatActivity {
             }
         });
         c_button4.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             String data1 = word1.getText().toString();
             String data2 = word2.getText().toString();
@@ -477,6 +542,10 @@ public class Tirukural extends AppCompatActivity {
             }
         });
         c_button5.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             String data1 = word1.getText().toString();
             String data2 = word2.getText().toString();
@@ -495,6 +564,10 @@ public class Tirukural extends AppCompatActivity {
             }
         });
         c_button6.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             String data1 = word1.getText().toString();
             String data2 = word2.getText().toString();
@@ -513,6 +586,10 @@ public class Tirukural extends AppCompatActivity {
             }
         });
         c_button7.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             String data1 = word1.getText().toString();
             String data2 = word2.getText().toString();
@@ -531,6 +608,10 @@ public class Tirukural extends AppCompatActivity {
             }
         });
         c_button8.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             String data1 = word1.getText().toString();
             String data2 = word2.getText().toString();
@@ -549,6 +630,10 @@ public class Tirukural extends AppCompatActivity {
             }
         });
         c_button9.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             String data1 = word1.getText().toString();
             String data2 = word2.getText().toString();
@@ -567,6 +652,10 @@ public class Tirukural extends AppCompatActivity {
             }
         });
         c_button10.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             String data1 = word1.getText().toString();
             String data2 = word2.getText().toString();
@@ -585,6 +674,10 @@ public class Tirukural extends AppCompatActivity {
             }
         });
         c_button11.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             String data1 = word1.getText().toString();
             String data2 = word2.getText().toString();
@@ -603,6 +696,10 @@ public class Tirukural extends AppCompatActivity {
             }
         });
         c_button12.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             String data1 = word1.getText().toString();
             String data2 = word2.getText().toString();
@@ -680,18 +777,30 @@ public class Tirukural extends AppCompatActivity {
             permission(a);
         });
         h_watts_app.setOnClickListener(view -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 2;
             String a = "com.whatsapp";
             permission(a);
 
         });
         h_facebook.setOnClickListener(view -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 1;
             final String a = "com.facebook.katana";
             permission(a);
         });
 
         c_ans.setOnClickListener(v -> {
+            if (!isTimerRunning) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -1789,9 +1898,6 @@ public class Tirukural extends AppCompatActivity {
         return app_installed;
     }
 
-
-    //reward videos***********************//
-
     private boolean appInstalledOrNot(Context context, String uri) {
         PackageManager pm = context.getPackageManager();
         boolean app_installed = false;
@@ -1803,7 +1909,6 @@ public class Tirukural extends AppCompatActivity {
         }
         return app_installed;
     }
-
 
     public void ins_app(final Context context, View view1, int vall) {
         TextView titt = view1.findViewById(R.id.txtlist);
@@ -2038,69 +2143,6 @@ public class Tirukural extends AppCompatActivity {
         });
     }
 
-/*    private void industrialload() {
-        //AppLovinSdk.getInstance( this ).showMediationDebugger();
-        AppLovinSdk.getInstance(this).setMediationProvider("max");
-        AppLovinSdk.initializeSdk(this, new AppLovinSdk.SdkInitializationListener() {
-            @Override
-            public void onSdkInitialized(AppLovinSdkConfiguration config) {
-                // AppLovin SDK is initialized, start loading ads
-                if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
-                System.out.println("ad shown  showAdWithDelay initialize done ");
-                mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Viliyodu_Vilaiyadu_Ins), Tirukural.this);
-                mInterstitialAd.setListener(new MaxAdListener() {
-                    @Override
-                    public void onAdLoaded(MaxAd ad) {
-                        System.out.println("ad shown loaded : " + ad.getWaterfall());
-                    }
-
-                    @Override
-                    public void onAdDisplayed(MaxAd ad) {
-                        handler = null;
-                    }
-
-                    @Override
-                    public void onAdHidden(MaxAd ad) {
-                        Log.d("TAG", "Ad dismissed fullscreen content.");
-                        mInterstitialAd = null;
-                        handler = null;
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        setSc();
-                        industrialload();
-                    }
-
-                    @Override
-                    public void onAdClicked(MaxAd ad) {
-
-                    }
-
-                    @Override
-                    public void onAdLoadFailed(String adUnitId, MaxError error) {
-                        Log.d("TAG", error.toString());
-                        mInterstitialAd = null;
-                        handler = null;
-                        Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
-                    }
-
-                    @Override
-                    public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                        Log.e("TAG", "Ad failed to show fullscreen content.");
-                        mInterstitialAd = null;
-                        handler = null;
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
-                        setSc();
-                    }
-                });
-
-                // Load the first ad
-                mInterstitialAd.loadAd();
-
-            }
-        });
-
-    }*/
-
     public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
         AdManagerInterstitialAd.load(this,sps.getString(this, "InterstitialId"), adRequest,
@@ -2160,29 +2202,6 @@ public class Tirukural extends AppCompatActivity {
                 });
 
     }
-
-    /*public void adShow(String c) {
-        //Toast.makeText(this, "$"+c, Toast.LENGTH_SHORT).show();
-        if (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") ==*//* Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
-            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
-            handler = new Handler(Looper.myLooper());
-            my_runnable = () -> {
-                if (interstitialAd == null) setSc();
-                else
-                    interstitialAd.show(this);
-            };
-            handler.postDelayed(my_runnable, 2500);
-        } else {
-            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", (sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV") + 1));
-            if (sps.getInt(this, "Game1_Stage_Close_VV") > *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
-                sps.putInt(this, "Game1_Stage_Close_VV", 0);
-            setSc();
-            //Toast.makeText(this, ""+sps.getInt(this, "Game1_Stage_Close_VV"), Toast.LENGTH_SHORT).show();
-
-        }
-
-    }*/
 
     private int safeParseInt(String value, int defaultValue) {
         if (value != null && !value.isEmpty()) {
@@ -3393,87 +3412,6 @@ public class Tirukural extends AppCompatActivity {
         }
         ////////////////Prize//////////////////
     }
-
-
-/*    public void rewarded_adnew() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
-            @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                fb_reward = 1;
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_adnew();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
-                fb_reward = 0;
-
-
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
-            }
-        });
-        rewardedAd.loadAd();
-    }*/
-
     private void rewarded_adnew() {
 
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
@@ -3564,15 +3502,6 @@ public class Tirukural extends AppCompatActivity {
                     }
                 });
     }
-   /* public void show_reward() {
-        if (rewardedAd != null && rewardedAd.isReady()) {
-            rewardedAd.showAd();
-            reward_status = 1;
-        } else {
-            Log.d("TAG", "The rewarded ad wasn't ready yet.");
-        }
-    }*/
-
 
     public void show_reward() {
         if (rewardedAd != null) {
