@@ -300,11 +300,21 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         c_button4.setOnClickListener(v -> validate("" + c_button4.getText().toString(), "b4"));
         c_ans.setOnClickListener(v -> user_verify());
         ch_watts_app.setOnClickListener(v -> {
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 2;
             final String a = "com.whatsapp";
             permission(a);
         });
         ch_facebook.setOnClickListener(v -> {
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 1;
             final String a = "com.facebook.katana";
             permission(a);
@@ -429,6 +439,11 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
 
 
     public void validate(String ans, String dtn_name) {
+        long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+        if (remaining <= 0) {
+            showExtendTimeDialog();
+            return;
+        }
         Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
         cfw.moveToFirst();
         int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -1841,6 +1856,11 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
     }
 
     private void user_verify() {
+        long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+        if (remaining <= 0) {
+            showExtendTimeDialog();
+            return;
+        }
         Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
         cfw.moveToFirst();
         int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));

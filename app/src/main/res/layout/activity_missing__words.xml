@@ -206,6 +206,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginLeft="@dimen/lrtbp_10"
                 android:gravity="center"
+                android:visibility="gone"
                 android:layout_marginRight="@dimen/lrtbp_5"
                 android:background="@drawable/skip_background">
 

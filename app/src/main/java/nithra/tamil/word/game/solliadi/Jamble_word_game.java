@@ -132,7 +132,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
     long ttstop;
     int setting_access = 0;
     FirebaseAnalytics mFirebaseAnalytics;
-    LinearLayout adds,adsLay1;
+    LinearLayout adds, adsLay1;
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
     Newgame_DataBaseHelper3 newhelper3;
@@ -149,7 +149,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
     private boolean isGameCompleted = false;
 
     private RewardedAd rewardedAd;
-   private AdManagerInterstitialAd interstitialAd ;
+    private AdManagerInterstitialAd interstitialAd;
 
 
     @Override
@@ -293,11 +293,11 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         });
         //reward(Jamble_word_game.this);
 
-       // Utills.INSTANCE.initializeAdzz(this);
+        // Utills.INSTANCE.initializeAdzz(this);
         rewarded_adnew();
         if (sps.getInt(Jamble_word_game.this, "purchase_ads") == 0) {
             //industrialload();
-            if (!sps.getString(Jamble_word_game.this, "InterstitialId").equals("")|| sps.getString(Jamble_word_game.this, "InterstitialId") != null) {
+            if (!sps.getString(Jamble_word_game.this, "InterstitialId").equals("") || sps.getString(Jamble_word_game.this, "InterstitialId") != null) {
                 industrialload();
             }
         }
@@ -317,7 +317,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 );
                 adsLay1.setVisibility(View.GONE);
             }
-        }else adsLay1.setVisibility(View.GONE);
+        } else adsLay1.setVisibility(View.GONE);
 
         if (sps.getString(Jamble_word_game.this, "jam_intro").equals("")) {
             showcase_dismiss();
@@ -382,11 +382,21 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
             }
         });
         ch_watts_app.setOnClickListener(v -> {
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 2;
             String a = "com.whatsapp";
             permission(a);
         });
         ch_facebook.setOnClickListener(v -> {
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 1;
             final String a = "com.facebook.katana";
             permission(a);
@@ -483,6 +493,11 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
     }
 
     private void answer_show() {
+        long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+        if (remaining <= 0) {
+            showExtendTimeDialog();
+            return;
+        }
         Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
         cfw.moveToFirst();
         if (cfw.getCount() != 0) {
@@ -563,6 +578,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
             //  nextgamesdialog();
         }
 
+        isGameCompleted = false;
     }
 
     private void resetvalues() {
@@ -966,6 +982,11 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
 
     @Override
     public boolean onDrag(View v, DragEvent event) {
+        long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+        if (remainingMillis <= 0) {
+            showExtendTimeDialog();
+            return true;
+        }
         if (event.getAction() == DragEvent.ACTION_DROP) {
             //handle the dragged view being dropped over a target view
             TextView dropped = (TextView) event.getLocalState();
@@ -1071,6 +1092,12 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+        if (remainingMillis <= 0) {
+            showExtendTimeDialog();
+            return true; // consume the touch, no drag allowed
+        }
+
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
             v.startDrag(null, shadowBuilder, v, 0);
@@ -1431,12 +1458,12 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
 
     public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
-        AdManagerInterstitialAd.load(this,sps.getString(this, "InterstitialId"), adRequest,
+        AdManagerInterstitialAd.load(this, sps.getString(this, "InterstitialId"), adRequest,
                 new AdManagerInterstitialAdLoadCallback() {
                     @Override
                     public void onAdLoaded(@NonNull AdManagerInterstitialAd interstitial) {
                         interstitialAd = interstitial;
-                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
+                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
                             public void onAdClicked() {
                                 // Called when a click is recorded for an ad.
@@ -1479,6 +1506,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                         });
 
                     }
+
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         // Handle the error
@@ -1549,7 +1577,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 }
                 setSc();
             }
-        }else{
+        } else {
             currentStageCloseST++;
             sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", currentStageCloseST);
             if (currentStageCloseST > showCountOther) {
@@ -1680,7 +1708,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         Bundle params = new Bundle();
         params.putString("screen_name", "Jamble_words");
         params.putString("screen_class", "Jamble_word_game");
-        mFirebaseAnalytics.logEvent( "screen_view", params);
+        mFirebaseAnalytics.logEvent("screen_view", params);
         System.out.println("addloded" + sps.getInt(Jamble_word_game.this, "addloded"));
 
         if (setting_access == 1) {
@@ -2620,6 +2648,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
 
         openDialog_earncoin.show();
     }
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -2655,12 +2684,12 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
 
                 openDialog_p.dismiss();
             });
-            no.setOnClickListener(v ->{
+            no.setOnClickListener(v -> {
                 openDialog_p.dismiss();
                 if (ttstop > 0) {
                     startChronometerCountdown(ttstop);
                 }
-            } );
+            });
 
             openDialog_p.setOnDismissListener(dialog -> {
                 // Check if the timer was paused and resume if necessary
@@ -2927,7 +2956,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                         // Handle the error.
                         Log.e("LoadAdError=========", loadAdError.toString());
                         rewardedAd = null;
-                        reward_status=0;
+                        reward_status = 0;
                         //isfaild = 2;
 
                     }
@@ -2937,7 +2966,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                         rewardedAd = ad;
                         //  isfaild = 1;
                         fb_reward = 1;
-                        reward_status=0;
+                        reward_status = 0;
                         Log.e(TAG, "Ad was Called.=========");
                         rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
@@ -2985,7 +3014,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                                 // Called when ad fails to show.
                                 Log.e(TAG, "Ad failed to show fullscreen content.=========");
                                 rewardedAd = null;
-                                reward_status=0;
+                                reward_status = 0;
                             }
 
                             @Override

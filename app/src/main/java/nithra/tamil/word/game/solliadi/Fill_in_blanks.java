@@ -86,10 +86,6 @@ import nithra.tamil.word.game.solliadi.showcase.MaterialShowcaseView;
 import nithra.tamil.word.game.solliadi.showcase.ShowcaseConfig;
 
 public class Fill_in_blanks extends AppCompatActivity implements Download_completed {
-
-    //*********************reward videos process 1***********************
-    //private final String AD_UNIT_ID = getString(R.string.rewarded);
-
     static int ry;
     static int rvo = 0;
     static int mCoinCount = 20;
@@ -164,6 +160,9 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
     private boolean isGameCompleted = false;
+
+    private boolean isTimeExpired = false;
+
 
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
@@ -337,11 +336,15 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
 
         resetLayout.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
+
             if (isGameCompleted) {
                 Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
                 return;  // Do nothing if the game is completed
             }
-
             if (isTimerRunning) {
                 ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                 focus.stop();
@@ -356,6 +359,11 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             System.out.println("enter class");
             if (isGameCompleted) {
                 Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (isTimeExpired) {
+                showExtendTimeDialog();
                 return;
             }
 
@@ -474,9 +482,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         dialog.show();
     }
 
-
     private void startChronometerCountdown(long durationInMillis) {
-        // ✅ Ensure timerHandler is always initialized first
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
@@ -485,12 +491,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         focus.setCountDown(true);
         focus.start();
 
-        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
         if (timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
 
-        // Create a new Runnable for the countdown
         timerRunnable = new Runnable() {
             @Override
             public void run() {
@@ -498,9 +502,11 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
-                    showExtendTimeDialog();  // Show dialog when time is up
+                    isTimeExpired = true; // ✅ Ensure this is always set
+                    Log.d("TIMER", "Timer expired, flag set to true");
+                    showExtendTimeDialog();
                 } else {
-                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                    timerHandler.postDelayed(this, 500);
                 }
             }
         };
@@ -509,20 +515,19 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         isTimerRunning = true;
     }
 
-
+    // ✅ Ensure this is included in `showExtendTimeDialog()`
     private void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Fill_in_blanks.this);
         builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
         builder.setCancelable(false);
         builder.setPositiveButton("Yes", (dialog, which) -> {
-            startChronometerCountdown(countdownDuration); // Restart with another 30s
+            isTimeExpired = false; // ✅ Reset when user extends time
+            startChronometerCountdown(countdownDuration);
             dialog.dismiss();
         });
         builder.setNegativeButton("No", (dialog, which) -> {
             dialog.dismiss();
-            // handle what happens if user says no (optional)
         });
-
         AlertDialog dialog = builder.create();
         dialog.show();
     }
@@ -1024,7 +1029,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     }
 
     private void next() {
-
+        isTimeExpired = false; // Reset time expiry flag
         coin_anim = 0;
         Random rns = new Random();
         randomno_set = rns.nextInt(maximum_s - minmum_s + 1) + minmum_s;
@@ -1620,7 +1625,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     private void click() {
         qwt.setOnClickListener(v -> dialog(0));
         c_ans.setOnClickListener(v -> {
-
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -1793,16 +1801,28 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             permission(a);
         });
         h_watts_app.setOnClickListener(view -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 2;
             String a = "com.whatsapp";
             permission(a);
         });
         h_facebook.setOnClickListener(view -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 1;
             final String a = "com.facebook.katana";
             permission(a);
         });
         clear_value.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             clear_data = 0;
             System.out.println("==================Collections old" + mylist);
@@ -1896,6 +1916,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         });
         c_button1.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button1.getText().toString());
@@ -1916,6 +1940,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         });
         c_button2.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button2.getText().toString());
@@ -1937,6 +1965,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         });
 
         c_button3.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button3.getText().toString());
@@ -1957,6 +1989,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         });
         c_button4.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button4.getText().toString());
@@ -1977,6 +2013,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         });
         c_button5.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button5.getText().toString());
@@ -1997,6 +2037,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         });
         c_button6.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button6.getText().toString());
@@ -2017,6 +2061,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         });
         c_button7.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button7.getText().toString());
@@ -2037,6 +2085,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         });
         c_button8.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button8.getText().toString());
@@ -2057,6 +2109,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         });
         c_button9.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button9.getText().toString());
@@ -2077,6 +2133,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         });
         c_button10.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button10.getText().toString());
@@ -2097,6 +2157,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         });
         c_button11.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button11.getText().toString());
@@ -2117,6 +2181,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         });
         c_button12.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button12.getText().toString());
@@ -2137,6 +2205,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         });
         c_button13.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button13.getText().toString());
@@ -2157,6 +2229,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         });
         c_button14.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button14.getText().toString());
@@ -2177,6 +2253,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         });
         c_button15.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button15.getText().toString());
@@ -2197,6 +2277,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             }
         });
         c_button16.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             if (ed1.getText().toString().equals("")) {
                 ed1.setText("" + c_button16.getText().toString());

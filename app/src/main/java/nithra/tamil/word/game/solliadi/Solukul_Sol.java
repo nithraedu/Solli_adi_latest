@@ -226,6 +226,8 @@ public class Solukul_Sol extends AppCompatActivity {
     private Handler timerHandler;
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
+
+    private boolean isTimeExpired = false;
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -347,6 +349,7 @@ public class Solukul_Sol extends AppCompatActivity {
         newhelper4 = new Newgame_DataBaseHelper4(context);
 
         email = sps.getString(Solukul_Sol.this, "email");
+        find();
 
         // Utills.INSTANCE.initializeAdzz(this);
         rewarded_adnew();
@@ -359,6 +362,7 @@ public class Solukul_Sol extends AppCompatActivity {
 
 
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
+        LinearLayout resetLayout = findViewById(R.id.resetLayout);
 
         skipLayout.setOnClickListener(v -> {
             System.out.println("enter class");
@@ -378,6 +382,45 @@ public class Solukul_Sol extends AppCompatActivity {
             // Load next question
             next();
         });
+
+        resetLayout.setOnClickListener(v -> {
+            // Clear only the text in answer fields, do not change visibility
+            TextView[] answerFields = {vl1, vl2, vl3, vl4, vl5, vl6, vl7};
+            ImageView[] tickImages = {im1, im2, im3, im4, im5, im6, im7};
+
+            for (int i = 0; i < answer_type; i++) {
+                answerFields[i].setText("");
+                answerFields[i].setTextColor(getResources().getColor(R.color.black)); // Reset to default color if needed
+                tickImages[i].setBackgroundResource(R.drawable.yellow_question); // Reset tick background
+                tickImages[i].setClickable(true); // Enable the button again
+            }
+
+            // Hide next image buttons after the first one
+            if (answer_type > 1) im2.setVisibility(View.INVISIBLE);
+            if (answer_type > 2) im3.setVisibility(View.INVISIBLE);
+            if (answer_type > 3) im4.setVisibility(View.INVISIBLE);
+            if (answer_type > 4) im5.setVisibility(View.INVISIBLE);
+            if (answer_type > 5) im6.setVisibility(View.INVISIBLE);
+            if (answer_type > 6) im7.setVisibility(View.INVISIBLE);
+
+            // Reset x and y counters
+            x = 1;
+            y = 0;
+
+            // Reset timer
+            int emptyLines = getEmptyAnswerCount();
+            long countdownTimeMillis = emptyLines * 30 * 1000L;
+            startChronometerCountdown(countdownTimeMillis);
+
+            // Reset DB: mark all answers for this level as not finished
+            myDbHelper.executeSql("UPDATE answertable SET isfinish=0, useranswer=null WHERE levelid='" + letterid + "' AND gameid='" + gameid + "' AND rd='" + rdvalu + "'");
+
+            // Also re-enable the verify button
+            s_verify.setVisibility(View.VISIBLE);
+        });
+
+
+
 
         adds = findViewById(R.id.ads_lay);
         adsLay1 = findViewById(R.id.adsLay1);
@@ -567,7 +610,7 @@ public class Solukul_Sol extends AppCompatActivity {
         if (sps.getInt(Solukul_Sol.this, "reward_coin_txt") == 0)
             sps.putInt(Solukul_Sol.this, "reward_coin_txt", 20);
         focus = findViewById(R.id.s_time_edit);
-        find(); // ← very important, this must be called first
+       // ← very important, this must be called first
 
 // Delay to ensure data is populated if needed
         new Handler().postDelayed(() -> {
@@ -646,8 +689,10 @@ public class Solukul_Sol extends AppCompatActivity {
                 if (remainingMillis <= 0) {
                     focus.setText("00:00");
                     isTimerRunning = false;
+                    isTimeExpired = true; // ✅ Set time expired
                     showExtendTimeDialog();
-                } else {
+                }
+                else {
                     int seconds = (int) (remainingMillis / 1000) % 60;
                     int minutes = (int) ((remainingMillis / (1000 * 60)) % 60);
                     String timeStr = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
@@ -787,17 +832,29 @@ public class Solukul_Sol extends AppCompatActivity {
             permission(a);
         });
         h_watts_app.setOnClickListener(view -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 2;
             String a = "com.whatsapp";
             permission(a);
         });
         h_facebook.setOnClickListener(view -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 1;
             final String a = "com.facebook.katana";
             permission(a);
         });
 
         sb1.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Solukul_Sol.this, R.anim.button_shake);
             sb1.startAnimation(shake);
@@ -805,6 +862,10 @@ public class Solukul_Sol extends AppCompatActivity {
             ans_edit.append(ts);
         });
         sb2.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Solukul_Sol.this, R.anim.button_shake);
             sb2.startAnimation(shake);
@@ -812,6 +873,11 @@ public class Solukul_Sol extends AppCompatActivity {
             ans_edit.append(ts);
         });
         sb3.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
+
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Solukul_Sol.this, R.anim.button_shake);
             sb3.startAnimation(shake);
@@ -819,6 +885,11 @@ public class Solukul_Sol extends AppCompatActivity {
             ans_edit.append(ts);
         });
         sb4.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
+
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Solukul_Sol.this, R.anim.button_shake);
             sb4.startAnimation(shake);
@@ -826,6 +897,11 @@ public class Solukul_Sol extends AppCompatActivity {
             ans_edit.append(ts);
         });
         sb5.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
+
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Solukul_Sol.this, R.anim.button_shake);
             sb5.startAnimation(shake);
@@ -833,6 +909,11 @@ public class Solukul_Sol extends AppCompatActivity {
             ans_edit.append(ts);
         });
         sb6.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
+
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Solukul_Sol.this, R.anim.button_shake);
             sb6.startAnimation(shake);
@@ -840,6 +921,11 @@ public class Solukul_Sol extends AppCompatActivity {
             ans_edit.append(ts);
         });
         sb7.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
+
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Solukul_Sol.this, R.anim.button_shake);
             sb7.startAnimation(shake);
@@ -847,6 +933,11 @@ public class Solukul_Sol extends AppCompatActivity {
             ans_edit.append(ts);
         });
         sb8.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
+
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Solukul_Sol.this, R.anim.button_shake);
             sb8.startAnimation(shake);
@@ -856,6 +947,10 @@ public class Solukul_Sol extends AppCompatActivity {
 
         s_clear.setOnClickListener(v -> pressKey());
         s_clear.setOnLongClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return true;
+            }
             ans_edit.setText("");
             return false;
         });
@@ -879,7 +974,10 @@ public class Solukul_Sol extends AppCompatActivity {
         adsicon2.startAnimation(pendulam);
 
         im1.setOnClickListener(v -> {
-
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -1014,7 +1112,10 @@ public class Solukul_Sol extends AppCompatActivity {
         });
 
         im2.setOnClickListener(v -> {
-
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -1150,7 +1251,10 @@ public class Solukul_Sol extends AppCompatActivity {
         });
 
         im3.setOnClickListener(v -> {
-
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -1281,7 +1385,10 @@ public class Solukul_Sol extends AppCompatActivity {
 
         });
         im4.setOnClickListener(v -> {
-
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -1414,6 +1521,10 @@ public class Solukul_Sol extends AppCompatActivity {
             //  bones_dialog();
         });
         im5.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
 
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
@@ -1546,7 +1657,10 @@ public class Solukul_Sol extends AppCompatActivity {
             //  bones_dialog();
         });
         im6.setOnClickListener(v -> {
-
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -1679,6 +1793,10 @@ public class Solukul_Sol extends AppCompatActivity {
             else dialog(1);
         });
         im7.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
 
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
@@ -1803,6 +1921,10 @@ public class Solukul_Sol extends AppCompatActivity {
             else dialog(1);
         });
         s_verify.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
             String ans = ans_edit.getText().toString();
             if (ans.length() != 0) {
                 Cursor cs = myDbHelper.getQry("select * from answertable where answer LIKE'" + ans + "'and isfinish='1'and levelid=" + letterid + " and gameid=" + gameid + " and rd='" + rdvalu + "'");
@@ -1953,6 +2075,11 @@ public class Solukul_Sol extends AppCompatActivity {
 
 
         ex_bones.setOnClickListener(v -> {
+            if (isTimeExpired) {
+                showExtendTimeDialog();
+                return;
+            }
+
 
             if (sps.getInt(Solukul_Sol.this, "bones_prog_s") != 0) {
                 sps.putInt(getApplicationContext(), "bones_prog_s", sps.getInt(Solukul_Sol.this, "bones_prog_s") - 1);
@@ -2102,7 +2229,10 @@ public class Solukul_Sol extends AppCompatActivity {
     }
 
     private void feedbackdialog() {
-
+        if (isTimeExpired) {
+            showExtendTimeDialog();
+            return;
+        }
 
         final Dialog openDialog = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.userfeedback2);
@@ -3049,6 +3179,10 @@ public class Solukul_Sol extends AppCompatActivity {
     }
 
     private void pressKey() {
+        if (isTimeExpired) {
+            showExtendTimeDialog();
+            return;
+        }
         KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL);
         ans_edit.onKeyDown(KeyEvent.KEYCODE_DEL, event);
     }
