@@ -76,4 +76,7 @@ dependencies {
     implementation(libs.lottie)
     implementation(libs.play.services.ads)
     implementation(libs.androidx.legacy.support.v4)
+
+    //Unity Ad
+    implementation(libs.unity.ads)
 }

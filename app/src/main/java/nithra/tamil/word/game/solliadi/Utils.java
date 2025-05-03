@@ -26,6 +26,9 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.admanager.AdManagerAdRequest;
 import com.google.android.gms.ads.admanager.AdManagerAdView;
+import com.unity3d.services.banners.BannerErrorInfo;
+import com.unity3d.services.banners.BannerView;
+import com.unity3d.services.banners.UnityBannerSize;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -255,6 +258,7 @@ public class Utils {
 
 
 
+/*
     public static void load_add_banner(Context ctx, String ad_id, LinearLayout linearLayout) {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
         AdManagerAdView adView = new AdManagerAdView(ctx);
@@ -303,6 +307,41 @@ public class Utils {
         });
 
 
+    }
+*/
+
+    public static void loadUnityBannerAd(Activity activity, String placementId, LinearLayout adContainer) {
+        BannerView bannerView = new BannerView(activity, placementId, new UnityBannerSize(320, 50));
+        bannerView.setListener(new BannerView.IListener() {
+            @Override
+            public void onBannerLoaded(BannerView bannerAdView) {
+                adContainer.removeAllViews();
+                adContainer.addView(bannerAdView);
+            }
+
+            @Override
+            public void onBannerClick(BannerView bannerAdView) {
+                // Optional: handle ad click
+            }
+
+            @Override
+            public void onBannerFailedToLoad(BannerView bannerAdView, BannerErrorInfo errorInfo) {
+                System.out.println("Unity Banner Load Failed: " + errorInfo.errorMessage);
+            }
+
+            @Override
+            public void onBannerLeftApplication(BannerView bannerAdView) {
+                // Optional
+            }
+
+            @Override
+            public void onBannerShown(BannerView bannerAdView) {
+                // Optional: handle when banner is shown
+                System.out.println("Unity Banner Shown");
+            }
+        });
+
+        bannerView.load();
     }
 
 }

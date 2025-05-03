@@ -15,7 +15,7 @@
       </SelectionState>
       <SelectionState runConfigName="SolliAdi_New.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-04-19T11:45:45.159146600Z">
+        <DropdownSelection timestamp="2025-05-03T11:46:52.188989900Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="PhysicalDevice" identifier="serial=61d6ed0a" />

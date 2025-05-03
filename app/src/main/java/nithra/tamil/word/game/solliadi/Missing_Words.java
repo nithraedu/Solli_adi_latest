@@ -63,6 +63,8 @@ import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
+import com.unity3d.ads.IUnityAdsInitializationListener;
+import com.unity3d.ads.UnityAds;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -125,6 +127,9 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
     private boolean isTimerRunning = false;
     private boolean isGameCompleted = false;
 
+    private static final String UNITY_GAME_ID = "5819977";  // your Game ID
+    private static final boolean TEST_MODE = true;
+
 
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
@@ -148,6 +153,17 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
+
+        UnityAds.initialize(this, UNITY_GAME_ID, TEST_MODE, new IUnityAdsInitializationListener() {
+            @Override
+            public void onInitializationComplete() {
+                System.out.println("Unity Ads Initialization Complete");
+            }
+            @Override
+            public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
+                System.out.println("Unity Ads Initialization Failed: " + message);
+            }
+        });
 
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
@@ -253,10 +269,11 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         adsLay1 = findViewById(R.id.adsLay1);
         if (sps.getInt(Missing_Words.this, "purchase_ads") == 0) {
             if (Utils.isNetworkAvailable(this)) {
-                if (!sps.getString(this, "BannerId").equals("") || sps.getString(this, "BannerId") != null) {
+              /*  if (!sps.getString(this, "BannerId").equals("") || sps.getString(this, "BannerId") != null) {
                     System.out.println("Ads Should be not empty : " + sps.getString(this, "BannerId"));
                     Utils.load_add_banner(this, sps.getString(this, "BannerId"), ads_lay);
-                }
+                }*/
+                Utils.loadUnityBannerAd(this, "Banner_Android", ads_lay);
             } else {
                 System.out.println("Ads Should be -- empty : " + sps.getString(this, "BannerId"));
                 adsLay1.setVisibility(View.GONE);

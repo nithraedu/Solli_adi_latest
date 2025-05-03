@@ -80,6 +80,8 @@ import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+import com.unity3d.ads.IUnityAdsInitializationListener;
+import com.unity3d.ads.UnityAds;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -219,6 +221,9 @@ public class Picture_Game_Hard extends AppCompatActivity {
     public static boolean isAnswerSelectionEnabled = true;
 
 
+    private static final String UNITY_GAME_ID = "5819977";  // your Game ID
+    private static final boolean TEST_MODE = true;
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -336,6 +341,16 @@ public class Picture_Game_Hard extends AppCompatActivity {
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
+        UnityAds.initialize(this, UNITY_GAME_ID, TEST_MODE, new IUnityAdsInitializationListener() {
+            @Override
+            public void onInitializationComplete() {
+                System.out.println("Unity Ads Initialization Complete");
+            }
+            @Override
+            public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
+                System.out.println("Unity Ads Initialization Failed: " + message);
+            }
+        });
 
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
@@ -419,12 +434,13 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
         if (sps.getInt(context, "purchase_ads") == 0) {
             if (Utils.isNetworkAvailable(context)) {
-                if (!sp.getString(context, "BannerId").equals("") || sp.getString(context, "BannerId") != null) {
+               /* if (!sp.getString(context, "BannerId").equals("") || sp.getString(context, "BannerId") != null) {
                     System.out.println(
                             "Ads Should be not empty : " + sp.getString(context, "BannerId")
                     );
-                    Utils.load_add_banner(context, sp.getString(context, "BannerId"), adds);
-                }
+                 //   Utils.load_add_banner(context, sp.getString(context, "BannerId"), adds);
+                }*/
+                Utils.loadUnityBannerAd(this, "Banner_Android", adds);
             } else {
                 System.out.println(
                         "Ads Should be -- empty : " + sp.getString(context, "BannerId")

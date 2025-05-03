@@ -32,6 +32,8 @@ import com.google.android.gms.ads.admanager.AdManagerAdRequest;
 import com.google.android.gms.ads.admanager.AdManagerInterstitialAd;
 import com.google.android.gms.ads.admanager.AdManagerInterstitialAdLoadCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.unity3d.ads.IUnityAdsInitializationListener;
+import com.unity3d.ads.UnityAds;
 
 import nit_app.CodetoTamilUtil;
 
@@ -61,6 +63,9 @@ public class ST_Activity extends AppCompatActivity {
 
  //   private MaxInterstitialAd mInterstitialAd;
  private AdManagerInterstitialAd interstitialAd ;
+
+    private static final String UNITY_GAME_ID = "5819977";  // your Game ID
+    private static final boolean TEST_MODE = true;
 
 
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
@@ -109,6 +114,17 @@ public class ST_Activity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.st_lay);
+        UnityAds.initialize(this, UNITY_GAME_ID, TEST_MODE, new IUnityAdsInitializationListener() {
+            @Override
+            public void onInitializationComplete() {
+                System.out.println("Unity Ads Initialization Complete");
+            }
+            @Override
+            public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
+                System.out.println("Unity Ads Initialization Failed: " + message);
+            }
+        });
+
         System.out.println("#######St Activity");
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
@@ -155,12 +171,13 @@ public class ST_Activity extends AppCompatActivity {
            // Utills.INSTANCE.load_add_AppLovin(this, ads_lay, getResources().getString(R.string.Noti_Banner));
 
             if (Utils.isNetworkAvailable(context)) {
-                if (!sharedPreference.getString(context, "BannerId").equals("") || sharedPreference .getString(context, "BannerId") != null) {
+               /* if (!sharedPreference.getString(context, "BannerId").equals("") || sharedPreference .getString(context, "BannerId") != null) {
                     System.out.println(
                             "Ads Should be not empty : " + sharedPreference.getString(context, "BannerId")
                     );
                     Utils.load_add_banner(context, sharedPreference.getString(context, "BannerId"), ads_lay);
-                }
+                }*/
+                Utils.loadUnityBannerAd(this, "Banner_Android", ads_lay);
             } else {
                 System.out.println(
                         "Ads Should be -- empty : " + sharedPreference.getString(context, "BannerId")

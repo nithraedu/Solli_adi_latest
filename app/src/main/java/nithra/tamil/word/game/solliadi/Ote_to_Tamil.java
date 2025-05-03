@@ -70,6 +70,8 @@ import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.unity3d.ads.IUnityAdsInitializationListener;
+import com.unity3d.ads.UnityAds;
 
 import org.json.JSONArray;
 
@@ -192,6 +194,9 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     private RewardedAd rewardedAd;
     private AdManagerInterstitialAd interstitialAd;
 
+    private static final String UNITY_GAME_ID = "5819977";  // your Game ID
+    private static final boolean TEST_MODE = true;
+
 
     @Override
     public void download_completed(String status) {
@@ -217,6 +222,17 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
+
+        UnityAds.initialize(this, UNITY_GAME_ID, TEST_MODE, new IUnityAdsInitializationListener() {
+            @Override
+            public void onInitializationComplete() {
+                System.out.println("Unity Ads Initialization Complete");
+            }
+            @Override
+            public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
+                System.out.println("Unity Ads Initialization Failed: " + message);
+            }
+        });
 
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
@@ -394,12 +410,13 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         //  Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
         if (sps.getInt(context, "purchase_ads") == 0) {
             if (Utils.isNetworkAvailable(context)) {
-                if (!sps.getString(context, "BannerId").equals("") || sps.getString(context, "BannerId") != null) {
+               /* if (!sps.getString(context, "BannerId").equals("") || sps.getString(context, "BannerId") != null) {
                     System.out.println(
                             "Ads Should be not empty : " + sps.getString(context, "BannerId")
                     );
                     Utils.load_add_banner(context, sps.getString(context, "BannerId"), adds);
-                }
+                }*/
+                Utils.loadUnityBannerAd(this, "Banner_Android", adds);
             } else {
                 System.out.println(
                         "Ads Should be -- empty : " + sps.getString(context, "BannerId")

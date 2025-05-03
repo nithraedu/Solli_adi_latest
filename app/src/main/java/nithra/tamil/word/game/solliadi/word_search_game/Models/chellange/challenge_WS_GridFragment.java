@@ -58,6 +58,8 @@ import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.unity3d.ads.IUnityAdsInitializationListener;
+import com.unity3d.ads.UnityAds;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -129,7 +131,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     Cursor cursor = null, coin_cursor;
     ImageView icon_ad_img;
     LinearLayout n_icon_ad;
-    LinearLayout normal_baner;
+    LinearLayout normal_baner,adsLay1;
     String share_content = "";
     String btn_str = "";
     Dialog Winning_dialog;
@@ -158,6 +160,9 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     //private MaxInterstitialAd mInterstitialAd;
     private RewardedAd rewardedAd;
     private AdManagerInterstitialAd interstitialAd ;
+
+    private static final String UNITY_GAME_ID = "5819977";  // your Game ID
+    private static final boolean TEST_MODE = true;
 
 
     public void showcase_dismiss() {
@@ -332,6 +337,17 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
         view = inflater.inflate(R.layout.challenge_view, null);
         System.out.println("-----hh Dailytest_ok : " + Dailytest_ok);
 
+        UnityAds.initialize(context, UNITY_GAME_ID, TEST_MODE, new IUnityAdsInitializationListener() {
+            @Override
+            public void onInitializationComplete() {
+                System.out.println("Unity Ads Initialization Complete");
+            }
+            @Override
+            public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
+                System.out.println("Unity Ads Initialization Failed: " + message);
+            }
+        });
+
         progress_lay = view.findViewById(R.id.progress_lay);
 
         if (Dailytest_ok.equals("")) {
@@ -400,22 +416,25 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
             rewarded_adnew();
         }
         normal_baner = view.findViewById(R.id.normal_baner);
+        adsLay1 = view.findViewById(R.id.adsLay1);
       //  Utills.INSTANCE.load_add_AppLovin(getActivity(), normal_baner, getResources().getString(R.string.Bottom_Banner));
         if (sp.getInt(context, "purchase_ads") == 0) {
             if (Utils.isNetworkAvailable(context)) {
-                if (!sp.getString(context, "BannerId").equals("") || sp.getString(context, "BannerId") != null) {
+               /* if (!sp.getString(context, "BannerId").equals("") || sp.getString(context, "BannerId") != null) {
                     System.out.println(
                             "Ads Should be not empty : " + sp.getString(context, "BannerId")
                     );
                     Utils.load_add_banner(context, sp.getString(context, "BannerId"), normal_baner);
-                }
+                }*/
+                Utils.loadUnityBannerAd(getActivity(), "Banner_Android", normal_baner);
+
             } else {
                 System.out.println(
                         "Ads Should be -- empty : " + sp.getString(context, "BannerId")
                 );
-                normal_baner.setVisibility(View.GONE);
+                adsLay1.setVisibility(View.GONE);
             }
-        }else normal_baner.setVisibility(View.GONE);
+        }else adsLay1.setVisibility(View.GONE);
 
         coin_lay = view.findViewById(R.id.coin_lay);
         coin_txt = view.findViewById(R.id.coin_txt);
