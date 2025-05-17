@@ -37,24 +37,21 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.admanager.AdManagerAdRequest;
-import com.google.android.gms.ads.rewarded.RewardItem;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.unity3d.ads.IUnityAdsLoadListener;
+import com.unity3d.ads.IUnityAdsShowListener;
+import com.unity3d.ads.UnityAds;
 
 import java.io.File;
 import java.util.ArrayList;
 
 import nithra.tamil.word.game.solliadi.DataBaseHelper;
+import nithra.tamil.word.game.solliadi.Jamble_word_game;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper2;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper3;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
+import nithra.tamil.word.game.solliadi.Utills;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.Word_search_main;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.helpclass.my_dialog;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.like_button.LikeButton;
@@ -104,9 +101,6 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
     Newgame_DataBaseHelper3 newhelper3;
     DataBaseHelper myDbHelper;
     //reward videos process 1***********************
-    SQLiteDatabase dbs, dbn, dbn2;
-    private RewardedAd rewardedAd;
-   // private MaxRewardedAd rewardedAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -565,7 +559,8 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
         openDialog_earncoin.show();
     }
 
-    private void rewarded_adnew() {
+ //old
+    /*   private void rewarded_adnew() {
 
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
 
@@ -649,8 +644,6 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
                     }
                 });
     }
-
-
     public void show_reward() {
         if (rewardedAd != null) {
             rewardedAd.show(game_level_page.this, new OnUserEarnedRewardListener() {
@@ -672,6 +665,88 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
             Log.d(TAG, "The rewarded ad wasn't ready yet.");
         }
 
+    }*/
+
+    //new
+    private void rewarded_adnew() {
+        String placementId = "Rewarded_Android";
+        UnityAds.load(placementId, new IUnityAdsLoadListener() {
+            @Override
+            public void onUnityAdsAdLoaded(String placementId) {
+                Log.d(TAG, "Unity rewarded ad loaded successfully");
+                fb_reward = 1;
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading after ad is loaded
+            }
+
+            @Override
+            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+                Log.e(TAG, "Unity rewarded ad failed to load: " + message);
+                fb_reward = 0;
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
+                Toast.makeText(game_level_page.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public void show_reward() {
+        String placementId = "Rewarded_Android";
+        if (UnityAds.isInitialized()) {
+            Utills.INSTANCE.Loading_Dialog(game_level_page.this);
+            UnityAds.show(game_level_page.this, placementId, new IUnityAdsShowListener() {
+                @Override
+                public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                    Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on show failure
+                    reward_status = 0;
+                    rewarded_adnew();
+                }
+
+                @Override
+                public void onUnityAdsShowStart(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad started showing");
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading when ad starts showing
+                }
+
+                @Override
+                public void onUnityAdsShowClick(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad was clicked");
+                }
+
+                @Override
+                public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                    Log.d(TAG, "Unity rewarded ad completed");
+                    if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                        reward_status = 1;
+                        if (extra_coin_s == 0) {
+                            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                            cfx.moveToFirst();
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                            int spx = skx + mCoinCount;
+                            String aStringx = Integer.toString(spx);
+                            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                        }
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                vidcoinearn();
+                            }
+                        }, 500);
+                    } else {
+                        Toast.makeText(game_level_page.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                    }
+                    fb_reward = 0;
+                    rewarded_adnew();
+                }
+            });
+        } else {
+            Log.d(TAG, "Unity Ads is not initialized.");
+            Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading if Unity not initialized
+            reward_status = 0;
+            rewarded_adnew();
+        }
     }
 
     public void vidcoinearn() {

@@ -21,6 +21,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -37,6 +38,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -59,18 +61,12 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.admanager.AdManagerAdRequest;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAd;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAdLoadCallback;
-import com.google.android.gms.ads.rewarded.RewardItem;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
+import com.unity3d.ads.IUnityAdsInitializationListener;
+import com.unity3d.ads.IUnityAdsLoadListener;
+import com.unity3d.ads.IUnityAdsShowListener;
+import com.unity3d.ads.UnityAds;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -140,7 +136,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
     int ans_count = 0, final_ans_count = 0;
     String isdown = "0";
     TextView p_setting;
-    Long ttstop;
+    long ttstop;
     int b_score = 0;
     Dialog openDialog_s;
     TextView next_continue;
@@ -185,17 +181,15 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
     private boolean isTimeExpired = false;
 
+    private static final String UNITY_GAME_ID = "5819977";  // your Game ID
+    private static final boolean TEST_MODE = true;
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
             back();
         }
     };
-    //  private MaxInterstitialAd mInterstitialAd;
-    //  private MaxRewardedAd rewardedAd;
-    private RewardedAd rewardedAd;
-    private AdManagerInterstitialAd interstitialAd;
-
 
     public static boolean exists(String URLName) {
         try {
@@ -240,6 +234,17 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_difference_between_pictures);
+
+        UnityAds.initialize(this, UNITY_GAME_ID, TEST_MODE, new IUnityAdsInitializationListener() {
+            @Override
+            public void onInitializationComplete() {
+                System.out.println("Unity Ads Initialization Complete");
+            }
+            @Override
+            public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
+                System.out.println("Unity Ads Initialization Failed: " + message);
+            }
+        });
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
         mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.xml.hexkbd);
@@ -346,7 +351,8 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             next();
         });
 
-        resetLayout.setOnClickListener(v -> resetGame());
+        resetLayout.setOnClickListener(v ->   showResetDialog());
+
         new Handler().postDelayed(() -> {
             int emptyLines = getEmptyAnswerCount();
             long countdownTimeMillis = emptyLines * 30 * 1000L;
@@ -367,10 +373,10 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         // Utills.INSTANCE.initializeAdzz(this);
         rewarded_adnew();
         if (sps.getInt(Find_difference_between_pictures.this, "purchase_ads") == 0) {
-            //  industrialload();
-            if (!sps.getString(Find_difference_between_pictures.this, "InterstitialId").equals("") || sps.getString(Find_difference_between_pictures.this, "InterstitialId") != null) {
+             industrialload();
+          /*  if (!sps.getString(Find_difference_between_pictures.this, "InterstitialId").equals("") || sps.getString(Find_difference_between_pictures.this, "InterstitialId") != null) {
                 industrialload();
-            }
+            }*/
         }
 
         if (sps.getString(Find_difference_between_pictures.this, "6f_intro").equals("")) {
@@ -405,6 +411,85 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
         }
 
+    }
+
+    private void showResetDialog() {
+        Dialog dialog = new Dialog(Find_difference_between_pictures.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        // ✅ Pause timer here
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
+        btnYes.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Find_difference_between_pictures.this);
+                UnityAds.show(Find_difference_between_pictures.this, "Rewarded_Android", new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        reward_status = 0;
+                        rewarded_adnew();
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            // ✅ Step 1: Stop current timer
+                            if (timerHandler != null && timerRunnable != null) {
+                                timerHandler.removeCallbacks(timerRunnable);
+                            }
+                            //  isTimerRunning = false;
+                            resetGame();
+
+                            Toast.makeText(Find_difference_between_pictures.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
+
+                        }else {
+                            Toast.makeText(Find_difference_between_pictures.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew();
+                    }
+                });
+            } else {
+                if (ttstop > 0) {
+                    startChronometerCountdown(ttstop); // resume from where paused
+                }
+                dialog.dismiss();
+            }
+        });
+
+        btnNo.setOnClickListener(v -> {
+            // ✅ Resume previous timer
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
     }
 
     private void resetGame() {
@@ -507,7 +592,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         return emptyCount;
     }
 
-    public void showExtendTimeDialog() {
+ /*   public void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Find_difference_between_pictures.this);
         builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
         builder.setCancelable(false);
@@ -523,6 +608,86 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         });
 
         AlertDialog dialog = builder.create();
+        dialog.show();
+    }*/
+
+    void showExtendTimeDialog() {
+
+        // ✅ Pause and capture remaining time
+        if (/*isTimerRunning &&*/ timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            //  isTimerRunning = false;
+
+            // Save remaining time
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog dialog = new Dialog(Find_difference_between_pictures.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        TextView message = dialog.findViewById(R.id.tvMessage);
+        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            dialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Find_difference_between_pictures.this);
+                UnityAds.show(Find_difference_between_pictures.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here too, just in case
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            int emptyLines = getEmptyAnswerCount();
+                            long countdownTimeMillis = emptyLines * 30 * 1000L;
+                            startChronometerCountdown(countdownTimeMillis); // Restart with another 30s
+                            isTimeExpired = false; // ✅ reset flag
+
+                        } else {
+                            Toast.makeText(Find_difference_between_pictures.this, "முழு காணொளியையும் பார்த்து 30 விநாடிகள் பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+            }
+        });
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setCancelable(false);
         dialog.show();
     }
 
@@ -2367,7 +2532,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         if (!isFinishing()) openDialog.show();
     }
 
-    public void industrialload() {
+ /*   public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
         AdManagerInterstitialAd.load(this, sps.getString(this, "InterstitialId"), adRequest,
                 new AdManagerInterstitialAdLoadCallback() {
@@ -2472,7 +2637,86 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             }
             setSc();
         }
+    }*/
 
+    public void industrialload() {
+        System.out.println("servercalling=============");
+        String placementId = "Interstitial_Android";
+        UnityAds.load(placementId, new IUnityAdsLoadListener() {
+            @Override
+            public void onUnityAdsAdLoaded(String placementId) {
+                Log.d(TAG, "Unity interstitial ad loaded successfully");
+            }
+
+            @Override
+            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+                Log.e(TAG, "Unity interstitial ad failed to load: " + message);
+                timerHandler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                setSc();
+            }
+        });
+    }
+    public void adShow() {
+        int currentStageCloseVV = sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV");
+        int showCountOther = 0; // Set this to your desired show count
+
+        if (currentStageCloseVV == showCountOther) {
+            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+            Utills.INSTANCE.Loading_Dialog(this);
+
+            new Handler(Looper.myLooper()).postDelayed(() -> {
+                String placementId = "Interstitial_Android";
+
+                if (UnityAds.isInitialized()) {
+                    UnityAds.show(Find_difference_between_pictures.this, placementId, new IUnityAdsShowListener() {
+                        @Override
+                        public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                            Log.e(TAG, "Unity interstitial ad failed to show: " + message);
+                            timerHandler = null;
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
+                            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                            setSc();
+                        }
+
+                        @Override
+                        public void onUnityAdsShowStart(String placementId) {
+                            Log.d(TAG, "Unity interstitial ad started showing");
+                        }
+
+                        @Override
+                        public void onUnityAdsShowClick(String placementId) {
+                            Log.d(TAG, "Unity interstitial ad was clicked");
+                        }
+
+                        @Override
+                        public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                            Log.d(TAG, "Unity interstitial ad completed");
+                            timerHandler = null;
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
+                            setSc();
+                            industrialload(); // If you need to call this
+                        }
+                    });
+                } else {
+                    Log.d(TAG, "Unity Ads is not initialized.");
+                    timerHandler = null;
+                    Utills.INSTANCE.Loading_Dialog_dismiss();
+                    sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                    setSc();
+                }
+            }, 2500);
+        } else {
+            currentStageCloseVV++;
+            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", currentStageCloseVV);
+
+            if (currentStageCloseVV > showCountOther) {
+                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+            }
+
+            setSc();
+        }
 
     }
 
@@ -2485,8 +2729,6 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
-        rewardedAd = null;
-        interstitialAd = null;
         timerHandler = null;
     }
 
@@ -3640,7 +3882,8 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
     }
 
-    private void rewarded_adnew() {
+    //old
+ /*   private void rewarded_adnew() {
 
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
 
@@ -3751,6 +3994,92 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             Log.d(TAG, "The rewarded ad wasn't ready yet.");
         }
 
+    }*/
+
+    //new
+    private void rewarded_adnew() {
+        String placementId = "Rewarded_Android";
+        UnityAds.load(placementId, new IUnityAdsLoadListener() {
+            @Override
+            public void onUnityAdsAdLoaded(String placementId) {
+                Log.d(TAG, "Unity rewarded ad loaded successfully");
+                fb_reward = 1;
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading after ad is loaded
+            }
+
+            @Override
+            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+                Log.e(TAG, "Unity rewarded ad failed to load: " + message);
+                fb_reward = 0;
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
+                Toast.makeText(Find_difference_between_pictures.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public void show_reward() {
+        String placementId = "Rewarded_Android";
+        if (UnityAds.isInitialized()) {
+            Utills.INSTANCE.Loading_Dialog(Find_difference_between_pictures.this);
+            UnityAds.show(Find_difference_between_pictures.this, placementId, new IUnityAdsShowListener() {
+                @Override
+                public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                    Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on show failure
+                    reward_status = 0;
+                    rewarded_adnew();
+                }
+
+                @Override
+                public void onUnityAdsShowStart(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad started showing");
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading when ad starts showing
+                }
+
+                @Override
+                public void onUnityAdsShowClick(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad was clicked");
+                }
+
+                @Override
+                public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                    Log.d(TAG, "Unity rewarded ad completed");
+                    if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                        reward_status = 1;
+                        if (extra_coin_s == 0) {
+                            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                            cfx.moveToFirst();
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                            int spx = skx + mCoinCount;
+                            String aStringx = Integer.toString(spx);
+                            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                        }
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (rvo == 2) {
+                                    share_earn2(mCoinCount);
+                                } else {
+                                    vidcoinearn();
+                                }
+                            }
+                        }, 500);
+                    } else {
+                        Toast.makeText(Find_difference_between_pictures.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                    }
+                    fb_reward = 0;
+                    rewarded_adnew();
+                }
+            });
+        } else {
+            Log.d(TAG, "Unity Ads is not initialized.");
+            Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading if Unity not initialized
+            reward_status = 0;
+            rewarded_adnew();
+        }
     }
 
     class DownloadFileAsync extends AsyncTask<String, String, String> {

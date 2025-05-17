@@ -74,7 +74,6 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.lottie)
-    implementation(libs.play.services.ads)
     implementation(libs.androidx.legacy.support.v4)
 
     //Unity Ad

@@ -1,5 +1,6 @@
 package nithra.tamil.word.game.solliadi;
 
+import static nithra.tamil.word.game.solliadi.New_Main_Activity.TAG;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
 import static nithra.tamil.word.game.solliadi.Utils.isNetworkAvailable;
@@ -64,20 +65,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.admanager.AdManagerAdRequest;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAd;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAdLoadCallback;
-import com.google.android.gms.ads.rewarded.RewardItem;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.unity3d.ads.IUnityAdsInitializationListener;
+import com.unity3d.ads.IUnityAdsLoadListener;
+import com.unity3d.ads.IUnityAdsShowListener;
 import com.unity3d.ads.UnityAds;
 
 import org.json.JSONArray;
@@ -344,7 +337,8 @@ public class Clue_Game_Hard extends AppCompatActivity {
         isTimerRunning = true;
     }
 
-    private void showExtendTimeDialog() {
+    //old
+/*    private void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Clue_Game_Hard.this);
         builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
         builder.setCancelable(false);
@@ -359,11 +353,85 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }*/
+
+    //new
+    void showExtendTimeDialog() {
+
+        // ✅ Pause and capture remaining time
+        if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            //  isTimerRunning = false;
+
+            // Save remaining time
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog dialog = new Dialog(Clue_Game_Hard.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        TextView message = dialog.findViewById(R.id.tvMessage);
+        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            dialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Clue_Game_Hard.this);
+                UnityAds.show(Clue_Game_Hard.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here too, just in case
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            startChronometerCountdown(countdownDuration);
+
+                        } else {
+                            Toast.makeText(Clue_Game_Hard.this, "முழு காணொளியையும் பார்த்து 30 விநாடிகள் பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+            }
+        });
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
     }
-
-  private RewardedAd rewardedAd;
-  private AdManagerInterstitialAd interstitialAd ;
-
 
     public static boolean exists(String URLName) {
         try {
@@ -439,9 +507,9 @@ public class Clue_Game_Hard extends AppCompatActivity {
         rewarded_adnew();
         if (sps.getInt(context, "purchase_ads") == 0) {
           //  industrialload();
-            if (!sps.getString(this, "InterstitialId").equals("")|| sps.getString(this, "InterstitialId") != null) {
+            //if (!sps.getString(this, "InterstitialId").equals("")|| sps.getString(this, "InterstitialId") != null) {
                 industrialload();
-            }
+            //}
         }
 
         //finding and next
@@ -452,11 +520,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
 
         resetLayout.setOnClickListener(v -> {
-            if (isGameCompleted) {
-                Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
-                return;  // Do nothing if the game is completed
-            }
-
             if (isTimerRunning) {
                 ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                 focus.stop();
@@ -723,14 +786,55 @@ public class Clue_Game_Hard extends AppCompatActivity {
         Button btnNo = dialog.findViewById(R.id.btnNo);
 
         btnYes.setOnClickListener(v -> {
-            ttstop = 0;
-            if (c_edit != null) c_edit.setText("");
-            if (clue2 != null) clue2.setText("");
-            if (clue3 != null) clue3.setText("");
-            if (clue2_txt != null) clue2_txt.setText("");
-            if (clue3_txt != null) clue3_txt.setText("");
-            startChronometerCountdown(countdownDuration);
             dialog.dismiss();
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Clue_Game_Hard.this);
+                UnityAds.show(Clue_Game_Hard.this, "Rewarded_Android", new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        reward_status = 0;
+                        rewarded_adnew();
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            ttstop = 0;
+                            if (c_edit != null) c_edit.setText("");
+                            if (clue2 != null) clue2.setText("");
+                            if (clue3 != null) clue3.setText("");
+                            if (clue2_txt != null) clue2_txt.setText("");
+                            if (clue3_txt != null) clue3_txt.setText("");
+                            startChronometerCountdown(countdownDuration);
+
+                            Toast.makeText(Clue_Game_Hard.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
+
+                        }else {
+                            Toast.makeText(Clue_Game_Hard.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew();
+                    }
+                });
+            } else {
+                if (ttstop > 0) {
+                    startChronometerCountdown(ttstop); // resume from where paused
+                }
+                dialog.dismiss();
+            }
         });
 
 
@@ -744,7 +848,9 @@ public class Clue_Game_Hard extends AppCompatActivity {
         dialog.show();
     }
 
-    public void industrialload() {
+    //old
+
+/*    public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
         AdManagerInterstitialAd.load(this,sps.getString(this, "InterstitialId"), adRequest,
                 new AdManagerInterstitialAdLoadCallback() {
@@ -846,6 +952,87 @@ public class Clue_Game_Hard extends AppCompatActivity {
             if (currentStageClosePS > showCountOther) {
                 sps.putInt(this, "Game2_Stage_Close_PS", 0);
             }
+            setSc();
+        }
+
+    }*/
+
+    public void industrialload() {
+        System.out.println("servercalling=============");
+        String placementId = "Interstitial_Android";
+        UnityAds.load(placementId, new IUnityAdsLoadListener() {
+            @Override
+            public void onUnityAdsAdLoaded(String placementId) {
+                Log.d(TAG, "Unity interstitial ad loaded successfully");
+            }
+
+            @Override
+            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+                Log.e(TAG, "Unity interstitial ad failed to load: " + message);
+                timerHandler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
+                setSc();
+            }
+        });
+    }
+    public void adShow() {
+        int currentStageCloseVV = sps.getInt(getApplicationContext(), "Game2_Stage_Close_PS");
+        int showCountOther = 0; // Set this to your desired show count
+
+        if (currentStageCloseVV == showCountOther) {
+            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
+            Utills.INSTANCE.Loading_Dialog(this);
+
+            new Handler(Looper.myLooper()).postDelayed(() -> {
+                String placementId = "Interstitial_Android";
+
+                if (UnityAds.isInitialized()) {
+                    UnityAds.show(Clue_Game_Hard.this, placementId, new IUnityAdsShowListener() {
+                        @Override
+                        public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                            Log.e(TAG, "Unity interstitial ad failed to show: " + message);
+                            timerHandler = null;
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
+                            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
+                            setSc();
+                        }
+
+                        @Override
+                        public void onUnityAdsShowStart(String placementId) {
+                            Log.d(TAG, "Unity interstitial ad started showing");
+                        }
+
+                        @Override
+                        public void onUnityAdsShowClick(String placementId) {
+                            Log.d(TAG, "Unity interstitial ad was clicked");
+                        }
+
+                        @Override
+                        public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                            Log.d(TAG, "Unity interstitial ad completed");
+                            timerHandler = null;
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
+                            setSc();
+                            industrialload(); // If you need to call this
+                        }
+                    });
+                } else {
+                    Log.d(TAG, "Unity Ads is not initialized.");
+                    timerHandler = null;
+                    Utills.INSTANCE.Loading_Dialog_dismiss();
+                    sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
+                    setSc();
+                }
+            }, 2500);
+        } else {
+            currentStageCloseVV++;
+            sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", currentStageCloseVV);
+
+            if (currentStageCloseVV > showCountOther) {
+                sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
+            }
+
             setSc();
         }
 
@@ -3974,8 +4161,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
-        rewardedAd = null;
-        interstitialAd = null;
     }
 
 
@@ -5465,7 +5650,8 @@ public class Clue_Game_Hard extends AppCompatActivity {
         }
     }
 
-
+//old
+/*
     private void rewarded_adnew() {
 
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
@@ -5554,7 +5740,6 @@ public class Clue_Game_Hard extends AppCompatActivity {
                     }
                 });
     }
-
     public void show_reward() {
         if (rewardedAd != null) {
             rewardedAd.show(Clue_Game_Hard.this, new OnUserEarnedRewardListener() {
@@ -5577,7 +5762,93 @@ public class Clue_Game_Hard extends AppCompatActivity {
         }
 
     }
+*/
 
+    //new
+    private void rewarded_adnew() {
+        String placementId = "Rewarded_Android";
+        UnityAds.load(placementId, new IUnityAdsLoadListener() {
+            @Override
+            public void onUnityAdsAdLoaded(String placementId) {
+                Log.d(TAG, "Unity rewarded ad loaded successfully");
+                fb_reward = 1;
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading after ad is loaded
+            }
+
+            @Override
+            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+                Log.e(TAG, "Unity rewarded ad failed to load: " + message);
+                fb_reward = 0;
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
+                Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public void show_reward() {
+        String placementId = "Rewarded_Android";
+        if (UnityAds.isInitialized()) {
+            Utills.INSTANCE.Loading_Dialog(Clue_Game_Hard.this);
+            UnityAds.show(Clue_Game_Hard.this, placementId, new IUnityAdsShowListener() {
+                @Override
+                public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                    Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on show failure
+                    reward_status = 0;
+                    rewarded_adnew();
+                }
+
+                @Override
+                public void onUnityAdsShowStart(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad started showing");
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading when ad starts showing
+                }
+
+                @Override
+                public void onUnityAdsShowClick(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad was clicked");
+                }
+
+                @Override
+                public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                    Log.d(TAG, "Unity rewarded ad completed");
+                    if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                        reward_status = 1;
+                        if (extra_coin_s == 0) {
+                            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                            cfx.moveToFirst();
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                            int spx = skx + mCoinCount;
+                            String aStringx = Integer.toString(spx);
+                            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                        }
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (rvo == 2) {
+                                    share_earn2(mCoinCount);
+                                } else {
+                                    vidcoinearn();
+                                }
+                            }
+                        }, 500);
+                    } else {
+                        Toast.makeText(Clue_Game_Hard.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                    }
+                    fb_reward = 0;
+                    rewarded_adnew();
+                }
+            });
+        } else {
+            Log.d(TAG, "Unity Ads is not initialized.");
+            Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading if Unity not initialized
+            reward_status = 0;
+            rewarded_adnew();
+        }
+    }
     private enum PendingAction {
         NONE, POST_PHOTO, POST_STATUS_UPDATE
     }

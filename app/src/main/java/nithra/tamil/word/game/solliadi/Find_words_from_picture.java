@@ -60,19 +60,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
-
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.admanager.AdManagerAdRequest;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAd;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAdLoadCallback;
-import com.google.android.gms.ads.rewarded.RewardItem;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
+import com.unity3d.ads.IUnityAdsInitializationListener;
+import com.unity3d.ads.IUnityAdsLoadListener;
+import com.unity3d.ads.IUnityAdsShowListener;
+import com.unity3d.ads.UnityAds;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -131,7 +124,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     int ans_count = 0, final_ans_count = 0;
     String isdown = "0";
     TextView p_setting;
-    Long ttstop;
+    long ttstop;
     int b_score = 0;
     Dialog openDialog_s;
     TextView next_continue;
@@ -167,9 +160,13 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
     private Handler timerHandler;
     private Runnable timerRunnable;
-   // private boolean isTimerRunning = false;
+    private long remainingMillis = 0; // ⏱️ Used to pause/resume manual timer
+
+    // private boolean isTimerRunning = false;
    private boolean isTimeExpired = false;
     private boolean isGameCompleted = false;
+    private static final String UNITY_GAME_ID = "5819977";  // your Game ID
+    private static final boolean TEST_MODE = true;
 
     public static boolean isAnswerSelectionEnabled = true;
 
@@ -180,8 +177,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             back();
         }
     };
-    private RewardedAd rewardedAd;
-    private AdManagerInterstitialAd interstitialAd;
 
     public static boolean exists(String URLName) {
         try {
@@ -227,6 +222,16 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_words_from_picture);
+        UnityAds.initialize(this, UNITY_GAME_ID, TEST_MODE, new IUnityAdsInitializationListener() {
+            @Override
+            public void onInitializationComplete() {
+                System.out.println("Unity Ads Initialization Complete");
+            }
+            @Override
+            public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
+                System.out.println("Unity Ads Initialization Failed: " + message);
+            }
+        });
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
         mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.xml.hexkbd);
@@ -258,10 +263,10 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         rewarded_adnew();
         if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 0) {
             // Make sure to set the mediation provider value to "max" to ensure proper functionality
-            //  industrialload();
-            if (!sps.getString(Find_words_from_picture.this, "InterstitialId").equals("") || sps.getString(Find_words_from_picture.this, "InterstitialId") != null) {
+            industrialload();
+          /*  if (!sps.getString(Find_words_from_picture.this, "InterstitialId").equals("") || sps.getString(Find_words_from_picture.this, "InterstitialId") != null) {
                 industrialload();
-            }
+            }*/
 
         }
 
@@ -341,10 +346,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
 
         resetLayout.setOnClickListener(v -> {
-            if (isGameCompleted) {
-                Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
-                return;  // Do nothing if the game is completed
-            }
 
             if (isTimeExpired) {
                 ttstop = focus.getBase() - SystemClock.elapsedRealtime();
@@ -420,7 +421,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             sps.putString(Find_words_from_picture.this, "fn_intro", "no");
 
         }
-
     }
 
     private void showResetDialog() {
@@ -430,51 +430,111 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
+
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
 
+        // ✅ Pause timer here
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+
         btnYes.setOnClickListener(v -> {
-            reset(); // clear UI
-            // ✅ Reset DB
-            myDbHelper.executeSql("UPDATE answertable SET isfinish = 0, useranswer = NULL WHERE gameid = '" + gameid + "' AND levelid = '" + question_id + "' AND rd = '" + rdvalu + "'");
-
-            // ✅ Reload image
-            if (isdown.equals("0")) {
-                int im1 = getResources().getIdentifier(question.replace(".webp", ""), "drawable", getPackageName());
-                image_1.setVisibility(View.VISIBLE);
-                image_1.setImageResource(im1);
-            } else {
-                String fullPath = getFilesDir() + "/Nithra/solliadi/";
-                File file = new File(fullPath + question);
-                if (file.exists()) {
-                    Bitmap bitimg1 = BitmapFactory.decodeFile(fullPath + question);
-                    image_1.setImageDrawable(new BitmapDrawable(getResources(), bitimg1));
-                } else {
-                    missingimage();
-                }
-            }
-
-            // ✅ Restart Timer
-            int emptyLines = getEmptyAnswerCount();
-            long countdownTimeMillis = emptyLines * 30 * 1000L;
-            startChronometerCountdown(countdownTimeMillis);
-
             dialog.dismiss();
-        });
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Find_words_from_picture.this);
+                UnityAds.show(Find_words_from_picture.this, "Rewarded_Android", new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        reward_status = 0;
+                        rewarded_adnew();
+                        dialog.dismiss();
+                    }
 
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            // ✅ Step 1: Stop current timer
+                            if (timerHandler != null && timerRunnable != null) {
+                                timerHandler.removeCallbacks(timerRunnable);
+                            }
+                          //  isTimerRunning = false;
+                            focus.setText("00:00"); // reset view text
+
+                            // ✅ Step 2: Reset game state
+                          //  x = 0;
+                            b_score = 0;
+                            ans_editer.setText("");
+
+                            // ✅ Step 3: Clear UI
+                            TextView[] answerViews = {ans1, ans2, ans3, ans4, ans5, ans6, ans7};
+                            ImageView[] imageViews = {value_ans1, value_ans2, value_ans3, value_ans4, value_ans5, value_ans6, value_ans7};
+
+                            for (int i = 0; i < answerViews.length; i++) {
+                                answerViews[i].setText("");
+                                imageViews[i].setImageResource(R.drawable.yellow_question);
+                                imageViews[i].setClickable(true);
+                                imageViews[i].setVisibility(i == 0 ? View.VISIBLE : View.GONE); // Only q1 visible
+                            }
+
+                            // ✅ Step 4: Reset DB
+                            String date = sps.getString(Find_words_from_picture.this, "date");
+                            int pos = date.equals("0") ? 1 : 2;
+                            myDbHelper.executeSql("UPDATE answertable SET isfinish = 0, useranswer = NULL WHERE gameid = '" + gameid + "' AND levelid = '" + question_id + "' AND rd = '" + rdvalu + "'");
+
+                            // ✅ Step 5: Restart timer with fresh duration
+                            int emptyLines = getEmptyAnswerCount();  // use original logic if needed
+                            long countdownTimeMillis = emptyLines * 30 * 1000L;
+                            if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000L;
+
+                            startChronometerCountdown(countdownTimeMillis);
+
+                            Toast.makeText(Find_words_from_picture.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
+
+                        }else {
+                            Toast.makeText(Find_words_from_picture.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew();
+                    }
+                });
+            } else {
+                if (ttstop > 0) {
+                    startChronometerCountdown(ttstop); // resume from where paused
+                }
+                dialog.dismiss();
+            }
+        });
 
         btnNo.setOnClickListener(v -> {
-            if (ttstop > 0) {
-                startChronometerCountdown(ttstop); // resume from where paused
+            // ✅ Resume previous timer
+            if (remainingMillis > 0) {
+                startChronometerCountdown(remainingMillis);
             }
             dialog.dismiss();
         });
+
         dialog.setCancelable(false);
         dialog.show();
     }
 
+
     private void startChronometerCountdown(long durationInMillis) {
         if (focus == null) return;
+
+        remainingMillis = durationInMillis;
 
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
@@ -491,29 +551,26 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             public void run() {
                 if (timerHandler == null) return;
 
-                long remainingMillis = endTime - SystemClock.elapsedRealtime();
+                remainingMillis = endTime - SystemClock.elapsedRealtime();
 
                 if (remainingMillis <= 0) {
                     focus.setText("00:00");
-                    isTimeExpired = true;  // ✅ Only mark as expired here!
+                    isTimeExpired = true;
                     showExtendTimeDialog();
                 } else {
                     int seconds = (int) (remainingMillis / 1000) % 60;
                     int minutes = (int) ((remainingMillis / (1000 * 60)) % 60);
                     String timeStr = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
                     focus.setText(timeStr);
-
-                    isTimeExpired = false;  // ✅ Still running
+                    isTimeExpired = false;
                     timerHandler.postDelayed(this, 1000);
                 }
             }
         };
 
-        if (timerHandler != null) {
-            timerHandler.post(timerRunnable);
-        }
-
+        timerHandler.post(timerRunnable);
     }
+
 
     public boolean isTimeExpired() {
         return isTimeExpired;
@@ -534,7 +591,8 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         return emptyCount;
     }
 
-    void showExtendTimeDialog() {
+    //old
+/*    void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Find_words_from_picture.this);
         builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
         builder.setCancelable(false);
@@ -553,67 +611,108 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }*/
+
+     void showExtendTimeDialog() {
+
+        // ✅ Pause and capture remaining time
+        if (/*isTimerRunning &&*/ timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+          //  isTimerRunning = false;
+
+            // Save remaining time
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog dialog = new Dialog(Find_words_from_picture.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        TextView message = dialog.findViewById(R.id.tvMessage);
+        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            dialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Find_words_from_picture.this);
+                UnityAds.show(Find_words_from_picture.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here too, just in case
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            int emptyLines = getEmptyAnswerCount();
+                            long countdownTimeMillis = emptyLines * 30 * 1000L;
+                            startChronometerCountdown(countdownTimeMillis);
+                            isTimeExpired = false; // ✅ reset flag
+
+                        } else {
+                            Toast.makeText(Find_words_from_picture.this, "முழு காணொளியையும் பார்த்து 30 விநாடிகள் பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+            }
+        });
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
     }
 
     public void industrialload() {
-        AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
-        AdManagerInterstitialAd.load(this, sps.getString(Find_words_from_picture.this, "InterstitialId"), adRequest,
-                new AdManagerInterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(@NonNull AdManagerInterstitialAd interstitial) {
-                        interstitialAd = interstitial;
-                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.d(TAG, "Ad was clicked.");
-                            }
+        System.out.println("servercalling=============");
+        String placementId = "Interstitial_Android";
+        UnityAds.load(placementId, new IUnityAdsLoadListener() {
+            @Override
+            public void onUnityAdsAdLoaded(String placementId) {
+                Log.d(TAG, "Unity interstitial ad loaded successfully");
+            }
 
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                Log.d("TAG", "Ad dismissed fullscreen content.");
-                                interstitialAd = null;
-                                timerHandler = null;
-                                Utills.INSTANCE.Loading_Dialog_dismiss();
-                                setSc();
-                                industrialload();
-                            }
+            @Override
+            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+                Log.e(TAG, "Unity interstitial ad failed to load: " + message);
+                timerHandler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                setSc();
 
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                Log.e("TAG", "Ad failed to show fullscreen content.");
-                                interstitialAd = null;
-                                timerHandler = null;
-                                Utills.INSTANCE.Loading_Dialog_dismiss();
-                                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
-                                setSc();
-                            }
+            }
 
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.d(TAG, "Ad recorded an impression.");
-                            }
-
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.d(TAG, "Ad showed fullscreen content.");
-                            }
-                        });
-
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        Log.d("TAG", loadAdError.toString());
-                        interstitialAd = null;
-                        timerHandler = null;
-                        Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
-                    }
-
-                });
-
+        });
     }
 
     private int safeParseInt(String value, int defaultValue) {
@@ -628,47 +727,70 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     }
 
     public void adShow() {
-        int showCountOther = safeParseInt(sps.getString(this, "showCountOther"), 0);
         int currentStageCloseVV = sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV");
+        int showCountOther = 0; // Set this to your desired show count
 
-        if (!sps.getString(this, "showCountOther").equals("0")) {
-            if (currentStageCloseVV == showCountOther && interstitialAd != null) {
-                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
-                Utills.INSTANCE.Loading_Dialog(this);
-                Handler handler = new Handler(Looper.myLooper());
-                Runnable my_runnable = () -> {
-                    if (interstitialAd == null) {
-                        setSc();
-                    } else {
-                        interstitialAd.show(this);
-                    }
-                };
-                handler.postDelayed(my_runnable, 2500);
-            } else {
-                currentStageCloseVV++;
-                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", currentStageCloseVV);
-                if (currentStageCloseVV > showCountOther) {
-                    sps.putInt(this, "Game1_Stage_Close_VV", 0);
+        if (currentStageCloseVV == showCountOther) {
+            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+            Utills.INSTANCE.Loading_Dialog(this);
+
+            new Handler(Looper.myLooper()).postDelayed(() -> {
+                String placementId = "Interstitial_Android";
+
+                if (UnityAds.isInitialized()) {
+                    UnityAds.show(Find_words_from_picture.this, placementId, new IUnityAdsShowListener() {
+                        @Override
+                        public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                            Log.e(TAG, "Unity interstitial ad failed to show: " + message);
+                            timerHandler = null;
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
+                            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                            setSc();
+                        }
+
+                        @Override
+                        public void onUnityAdsShowStart(String placementId) {
+                            Log.d(TAG, "Unity interstitial ad started showing");
+                        }
+
+                        @Override
+                        public void onUnityAdsShowClick(String placementId) {
+                            Log.d(TAG, "Unity interstitial ad was clicked");
+                        }
+
+                        @Override
+                        public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                            Log.d(TAG, "Unity interstitial ad completed");
+                            timerHandler = null;
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
+                            setSc();
+                            industrialload(); // If you need to call this
+                        }
+                    });
+                } else {
+                    Log.d(TAG, "Unity Ads is not initialized.");
+                    timerHandler = null;
+                    Utills.INSTANCE.Loading_Dialog_dismiss();
+                    sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                    setSc();
                 }
-                setSc();
-            }
-        }else{
+            }, 2500);
+        } else {
             currentStageCloseVV++;
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", currentStageCloseVV);
+
             if (currentStageCloseVV > showCountOther) {
-                sps.putInt(this, "Game1_Stage_Close_VV", 0);
+                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
             }
+
             setSc();
         }
-
 
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        rewardedAd = null;
-        interstitialAd = null;
         timerHandler = null;
     }
 
@@ -3495,7 +3617,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         }
     }
 
-    private void rewarded_adnew() {
+/*    private void rewarded_adnew() {
 
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
 
@@ -3608,6 +3730,93 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             Log.d(TAG, "The rewarded ad wasn't ready yet.");
         }
 
+    }*/
+
+    //new
+
+    private void rewarded_adnew() {
+        String placementId = "Rewarded_Android";
+        UnityAds.load(placementId, new IUnityAdsLoadListener() {
+            @Override
+            public void onUnityAdsAdLoaded(String placementId) {
+                Log.d(TAG, "Unity rewarded ad loaded successfully");
+                fb_reward = 1;
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading after ad is loaded
+            }
+
+            @Override
+            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+                Log.e(TAG, "Unity rewarded ad failed to load: " + message);
+                fb_reward = 0;
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
+                Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public void show_reward() {
+        String placementId = "Rewarded_Android";
+        if (UnityAds.isInitialized()) {
+            Utills.INSTANCE.Loading_Dialog(Find_words_from_picture.this);
+            UnityAds.show(Find_words_from_picture.this, placementId, new IUnityAdsShowListener() {
+                @Override
+                public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                    Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on show failure
+                    reward_status = 0;
+                    rewarded_adnew();
+                }
+
+                @Override
+                public void onUnityAdsShowStart(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad started showing");
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading when ad starts showing
+                }
+
+                @Override
+                public void onUnityAdsShowClick(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad was clicked");
+                }
+
+                @Override
+                public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                    Log.d(TAG, "Unity rewarded ad completed");
+                    if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                        reward_status = 1;
+                        if (extra_coin_s == 0) {
+                            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                            cfx.moveToFirst();
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                            int spx = skx + mCoinCount;
+                            String aStringx = Integer.toString(spx);
+                            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                        }
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (rvo == 2) {
+                                    share_earn2(mCoinCount);
+                                } else {
+                                    vidcoinearn();
+                                }
+                            }
+                        }, 500);
+                    } else {
+                        Toast.makeText(Find_words_from_picture.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                    }
+                    fb_reward = 0;
+                    rewarded_adnew();
+                }
+            });
+        } else {
+            Log.d(TAG, "Unity Ads is not initialized.");
+            Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading if Unity not initialized
+            reward_status = 0;
+            rewarded_adnew();
+        }
     }
 
     class DownloadFileAsync extends AsyncTask<String, String, String> {

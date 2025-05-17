@@ -3,7 +3,6 @@ package nithra.tamil.word.game.solliadi;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.main_act;
 import static nithra.tamil.word.game.solliadi.New_Main_Activity.prize_data_update;
 import static nithra.tamil.word.game.solliadi.Utils.isNetworkAvailable;
-
 import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -60,21 +59,13 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 import androidx.cardview.widget.CardView;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.admanager.AdManagerAdRequest;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAd;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAdLoadCallback;
-import com.google.android.gms.ads.rewarded.RewardItem;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.unity3d.ads.IUnityAdsInitializationListener;
+import com.unity3d.ads.IUnityAdsLoadListener;
+import com.unity3d.ads.IUnityAdsShowListener;
 import com.unity3d.ads.UnityAds;
 
 import java.io.File;
@@ -140,6 +131,8 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
     Typeface typ, tyr;
     String retype = "s";
     long ttstop;
+    private long endTime = 0;
+
     LinearLayout adds, list4, adsLay1;
     LinearLayout qtw;
     Dialog openDialog_p;
@@ -162,12 +155,6 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
     int setval_vid;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
-    //RewardedVideoAd rewardedVideoAd;
-
-/*    Handler handler;
-    Runnable my_runnable;*/
-    // private MaxRewardedAd rewardedAd;
-    //private MaxInterstitialAd mInterstitialAd;
 
     private final long countdownDuration = 30000; // 30 seconds in milliseconds
     private Handler timerHandler;
@@ -175,13 +162,10 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
     private boolean isTimerRunning = false;
 
     private boolean isGameCompleted = false;
-    private RewardedAd rewardedAd;
-    private AdManagerInterstitialAd interstitialAd;
-
     private static final String UNITY_GAME_ID = "5819977";  // your Game ID
     private static final boolean TEST_MODE = true;
 
- //   LinearLayout skip_btn;
+    //   LinearLayout skip_btn;
 
 
     @Override
@@ -208,6 +192,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
+        timerHandler = new Handler(Looper.getMainLooper());
 
         UnityAds.initialize(this, UNITY_GAME_ID, TEST_MODE, new IUnityAdsInitializationListener() {
             @Override
@@ -283,12 +268,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
 
         resetLayout.setOnClickListener(v -> {
-            if (isGameCompleted) {
-                Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
-                return;  // Do nothing if the game is completed
-            }
-
-            if (isTimerRunning) {
+              if (isTimerRunning) {
                 ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                 focus.stop();
                 timerHandler.removeCallbacks(timerRunnable);
@@ -951,11 +931,44 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         Button btnNo = dialog.findViewById(R.id.btnNo);
 
         btnYes.setOnClickListener(v -> {
-            // Reset countdown to full duration (30s)
-            ttstop = countdownDuration;
-            c_edit.setText(""); // clear input
-            startChronometerCountdown(countdownDuration);
-            dialog.dismiss();
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(WordError_correction.this);
+                UnityAds.show(WordError_correction.this, "Rewarded_Android", new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        reward_status = 0;
+                        rewarded_adnew();
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            ttstop = countdownDuration;
+                            c_edit.setText(""); // clear input
+                            startChronometerCountdown(countdownDuration);
+                        }
+                        dialog.dismiss();
+                    }
+                });
+            } else {
+                ttstop = countdownDuration;
+                startChronometerCountdown(countdownDuration);
+                dialog.dismiss();
+            }
         });
 
         btnNo.setOnClickListener(v -> {
@@ -1004,20 +1017,87 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         isTimerRunning = true;
     }
 
+
     private void showExtendTimeDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(WordError_correction.this);
-        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
-        builder.setCancelable(false);
-        builder.setPositiveButton("Yes", (dialog, which) -> {
-            startChronometerCountdown(countdownDuration); // Restart with another 30s
+
+        // ✅ Pause and capture remaining time
+        if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+
+            // Save remaining time
+            ttstop = endTime - SystemClock.elapsedRealtime();
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog dialog = new Dialog(WordError_correction.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        TextView message = dialog.findViewById(R.id.tvMessage);
+        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            // Show Unity rewarded ad
             dialog.dismiss();
-        });
-        builder.setNegativeButton("No", (dialog, which) -> {
-            dialog.dismiss();
-            // handle what happens if user says no (optional)
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(WordError_correction.this);
+                UnityAds.show(WordError_correction.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            if (isTimerRunning) {
+                                timerHandler.removeCallbacks(timerRunnable);
+                            }
+                            startChronometerCountdown(countdownDuration);
+
+                        } else {
+                            Toast.makeText(WordError_correction.this, "முழு காணொளியையும் பார்த்து 30 விநாடிகள் பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+            }
         });
 
-        AlertDialog dialog = builder.create();
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setCancelable(false);
         dialog.show();
     }
 
@@ -2259,12 +2339,12 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             bt4.setText(letter3);
             bt5.setText(word5);
             bt6.setText(word9);
-            bt7.setText(word10);
+            bt7.setText(letter3);
             bt8.setText(word4);
-            bt9.setText(word2);
+            bt9.setText(word7);
             bt10.setText(word3);
             bt11.setText(word8);
-            bt12.setText(word7);
+            bt12.setText(word2);
 
         } else if (type == 11) {
 
@@ -2838,6 +2918,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
         }
 
+
     }
 
     public void medium2() {
@@ -3093,16 +3174,16 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             String letter15 = tokenizer.nextToken().trim();
             bt1.setText(word5);
             bt2.setText(letter8);
-            bt3.setText(word7);
+            bt3.setText(letter4);
             bt4.setText(letter11);
-            bt5.setText(letter4);
+            bt5.setText(word7);
             bt6.setText(word2);
-            bt7.setText(letter10);
+            bt7.setText(word4);
             bt8.setText(word3);
-            bt9.setText(word4);
+            bt9.setText(letter10);
             bt10.setText(word1);
-            bt11.setText(word6);
-            bt12.setText(letter12);
+            bt11.setText(letter12);
+            bt12.setText(word6);
 
 
         } else if (type == 8) {
@@ -4018,15 +4099,12 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.whatsapp");
                 if (appinstalled) {
-                    Intent i = new Intent(Intent.ACTION_SEND);
-                    i.setType("text/plain");
-                    i.setPackage("com.whatsapp");
-
-                    String msg = ("நான் சொல்லிஅடி செயலியில் குறிப்புகள் மூலம் கண்டுபிடி நிலை" + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                    i.putExtra(Intent.EXTRA_TEXT, msg);
-                    i.putExtra(Intent.EXTRA_TEXT, msg);
-                    startActivity(Intent.createChooser(i, "Share via"));
-                    startActivityForResult(Intent.createChooser(i, "Share via"), 21);
+                    Intent i12 = new Intent(Intent.ACTION_SEND);
+                    i12.setType("text/plain");
+                    i12.setPackage("com.whatsapp");
+                    String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                    i12.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i12, "Share via"), 12);
 
 
                 } else
@@ -4043,14 +4121,13 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
                 if (appinstalled) {
-                    Intent i = new Intent(Intent.ACTION_SEND);
-                    i.setType("text/plain");
-                    i.setPackage("com.google.android.apps.plus");
+                    Intent i1 = new Intent(Intent.ACTION_SEND);
+                    i1.setType("text/plain");
+                    i1.setPackage("com.google.android.apps.plus");
+                    String msg = ("நான் சொல்லிஅடி செயலியை விளையாடுகிறேன் நீங்களும் \n" + "விளையாட இங்கே கிளிக் செய்யவும் https://goo.gl/EUGjDh");
+                    i1.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i1, "Share via"), 15);
 
-                    String msg = ("நான் சொல்லிஅடி செயலியில் குறிப்புகள் மூலம் கண்டுபிடி நிலை" + to_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                    i.putExtra(Intent.EXTRA_TEXT, msg);
-                    i.putExtra(Intent.EXTRA_TEXT, msg);
-                    startActivityForResult(Intent.createChooser(i, "Share via"), 16);
 
                 } else
                     Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
@@ -4408,145 +4485,128 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
     }
 
     private void rewarded_adnew() {
+        String placementId = "Rewarded_Android";
+        UnityAds.load(placementId, new IUnityAdsLoadListener() {
+            @Override
+            public void onUnityAdsAdLoaded(String placementId) {
+                Log.d(TAG, "Unity rewarded ad loaded successfully");
+                fb_reward = 1;
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading after ad is loaded
+            }
 
-        AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
-
-        RewardedAd.load(this, sps.getString(WordError_correction.this, "RewardedId"),
-                adRequest, new RewardedAdLoadCallback() {
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        // Handle the error.
-                        Log.e("LoadAdError=========", loadAdError.toString());
-                        rewardedAd = null;
-                        reward_status = 0;
-                        //isfaild = 2;
-
-                    }
-
-                    @Override
-                    public void onAdLoaded(@NonNull RewardedAd ad) {
-                        rewardedAd = ad;
-                        //  isfaild = 1;
-                        fb_reward = 1;
-                        reward_status = 0;
-                        Log.e(TAG, "Ad was Called.=========");
-                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.e(TAG, "Ad was clicked.=========");
-                            }
-
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                rewarded_adnew();
-                                if (reward_status == 1) {
-                                    if (extra_coin_s == 0) {
-                                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                        cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                        int spx = skx + mCoinCount;
-                                        String aStringx = Integer.toString(spx);
-                                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                    }
-                                    Handler handler = new Handler();
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            if (rvo == 2) {
-                                                share_earn2(mCoinCount);
-                                            } else {
-                                                vidcoinearn();
-                                            }
-                                        }
-                                    }, 500);
-                                } else {
-                                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                                }
-
-                                fb_reward = 0;
-                                // Set the ad reference to null so you don't show the ad a second time.
-                                Log.e(TAG, "Ad dismissed fullscreen content.=========");
-
-                            }
-
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                // Called when ad fails to show.
-                                Log.e(TAG, "Ad failed to show fullscreen content.=========");
-                                rewardedAd = null;
-                                reward_status = 0;
-                            }
-
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.e(TAG, "Ad recorded an impression.=========");
-                            }
-
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.e(TAG, "Ad showed fullscreen content.=========");
-                            }
-                        });
-
-                    }
-                });
+            @Override
+            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+                Log.e(TAG, "Unity rewarded ad failed to load: " + message);
+                fb_reward = 0;
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
+                Toast.makeText(WordError_correction.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
+
     public void show_reward() {
-        if (rewardedAd != null) {
-            rewardedAd.show(WordError_correction.this, new OnUserEarnedRewardListener() {
-
+        String placementId = "Rewarded_Android";
+        if (UnityAds.isInitialized()) {
+            Utills.INSTANCE.Loading_Dialog(WordError_correction.this);
+            UnityAds.show(WordError_correction.this, placementId, new IUnityAdsShowListener() {
                 @Override
-                public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
-                    // Handle the reward.
-                    Log.d(TAG, "The user earned the reward.");
-
-                    rewardedAd = null;
-                    reward_status = 1;
-                    int rewardAmount = rewardItem.getAmount();
-                    String rewardType = rewardItem.getType();
+                public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                    Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on show failure
+                    reward_status = 0;
+                    rewarded_adnew();
                 }
 
+                @Override
+                public void onUnityAdsShowStart(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad started showing");
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading when ad starts showing
+                }
+
+                @Override
+                public void onUnityAdsShowClick(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad was clicked");
+                }
+
+                @Override
+                public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                    Log.d(TAG, "Unity rewarded ad completed");
+                    if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                        reward_status = 1;
+                        if (extra_coin_s == 0) {
+                            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                            cfx.moveToFirst();
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                            int spx = skx + mCoinCount;
+                            String aStringx = Integer.toString(spx);
+                            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                        }
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (rvo == 2) {
+                                    share_earn2(mCoinCount);
+                                } else {
+                                    vidcoinearn();
+                                }
+                            }
+                        }, 500);
+                    } else {
+                        Toast.makeText(WordError_correction.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                    }
+                    fb_reward = 0;
+                    rewarded_adnew();
+                }
             });
-
         } else {
-            Log.d(TAG, "The rewarded ad wasn't ready yet.");
+            Log.d(TAG, "Unity Ads is not initialized.");
+            Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading if Unity not initialized
+            reward_status = 0;
+            rewarded_adnew();
         }
-
     }
 
     public void industrialload() {
-        AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
-        AdManagerInterstitialAd.load(this, sps.getString(this, "InterstitialId"), adRequest,
-                new AdManagerInterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(@NonNull AdManagerInterstitialAd interstitial) {
-                        interstitialAd = interstitial;
-                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.d(TAG, "Ad was clicked.");
-                            }
+        System.out.println("servercalling=============");
+        String placementId = "Interstitial_Android";
+        UnityAds.load(placementId, new IUnityAdsLoadListener() {
+            @Override
+            public void onUnityAdsAdLoaded(String placementId) {
+                Log.d(TAG, "Unity interstitial ad loaded successfully");
+            }
 
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                Log.d("TAG", "Ad dismissed fullscreen content.");
-                                interstitialAd = null;
-                                timerHandler = null;
-                                Utills.INSTANCE.Loading_Dialog_dismiss();
-                                setSc();
-                                industrialload();
-                            }
+            @Override
+            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+                Log.e(TAG, "Unity interstitial ad failed to load: " + message);
+                timerHandler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                setSc();
+            }
+        });
+    }
 
+    public void adShow() {
+        int showCountOther = 0;
+        int currentStageCloseRS = sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS");
+
+        if (!sps.getString(this, "showCountOther").equals("0")) {
+            if (currentStageCloseRS == showCountOther) {
+                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                Utills.INSTANCE.Loading_Dialog(this);
+                Handler handler = new Handler(Looper.myLooper());
+                Runnable my_runnable = () -> {
+                    String placementId = "Interstitial_Android";
+                    if (UnityAds.isInitialized()) {
+                        UnityAds.show(WordError_correction.this, placementId, new IUnityAdsShowListener() {
                             @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                Log.e("TAG", "Ad failed to show fullscreen content.");
-                                interstitialAd = null;
+                            public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                                Log.e(TAG, "Unity interstitial ad failed to show: " + message);
                                 timerHandler = null;
                                 Utills.INSTANCE.Loading_Dialog_dismiss();
                                 sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
@@ -4554,58 +4614,29 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                             }
 
                             @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.d(TAG, "Ad recorded an impression.");
+                            public void onUnityAdsShowStart(String placementId) {
+                                Log.d(TAG, "Unity interstitial ad started showing");
                             }
 
                             @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.d(TAG, "Ad showed fullscreen content.");
+                            public void onUnityAdsShowClick(String placementId) {
+                                Log.d(TAG, "Unity interstitial ad was clicked");
+                            }
+
+                            @Override
+                            public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                                Log.d(TAG, "Unity interstitial ad completed");
+                                timerHandler = null;
+                                Utills.INSTANCE.Loading_Dialog_dismiss();
+                                setSc();
+                                industrialload();
                             }
                         });
-
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        Log.d("TAG", loadAdError.toString());
-                        interstitialAd = null;
-                        timerHandler = null;
-                        Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
-                    }
-
-                });
-
-    }
-
-    private int safeParseInt(String value, int defaultValue) {
-        if (value != null && !value.isEmpty()) {
-            try {
-                return Integer.parseInt(value);
-            } catch (NumberFormatException e) {
-                return defaultValue; // Return the default value if parsing fails
-            }
-        }
-        return defaultValue; // Return default value if the input is null or empty
-    }
-
-
-    public void adShow() {
-        int showCountOther = safeParseInt(sps.getString(this, "showCountOther"), 0);
-        int currentStageCloseRS = sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS");
-
-        if (!sps.getString(this, "showCountOther").equals("0")) {
-            if (currentStageCloseRS == showCountOther && interstitialAd != null) {
-                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
-                Utills.INSTANCE.Loading_Dialog(this);
-                Handler handler = new Handler(Looper.myLooper());
-                Runnable my_runnable = () -> {
-                    if (interstitialAd == null) {
-                        setSc();
                     } else {
-                        interstitialAd.show(this);
+                        Log.d(TAG, "Unity Ads is not initialized.");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                        setSc();
                     }
                 };
                 handler.postDelayed(my_runnable, 2500);
@@ -4625,7 +4656,6 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             }
             setSc();
         }
-
     }
 
     public void vidcoinearn() {
@@ -4667,6 +4697,14 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         final Dialog openDialog_earncoin = new Dialog(WordError_correction.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_earncoin.setContentView(R.layout.earncoin);
 
+        // Pause timer when dialog shows
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+            // Always save current time state, even if negative
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+        }
 
         RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
         RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
@@ -4678,6 +4716,15 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
         ss.setOnClickListener(v -> openDialog_earncoin.cancel());
         cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
+        openDialog_earncoin.setOnDismissListener(dialog -> {
+            if (!isTimerRunning) {
+                // Resume from saved time state, even if negative
+                focus.setBase(SystemClock.elapsedRealtime() + ttstop);
+                focus.start();
+                isTimerRunning = true;
+                timerHandler.postDelayed(timerRunnable, 1000);
+            }
+        });
         TextView wpro = openDialog_earncoin.findViewById(R.id.wpro);
         if (i == 1) {
             cancel.setVisibility(View.INVISIBLE);
@@ -4692,18 +4739,6 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
                 if (fb_reward == 1) {
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                   /* String date = sps.getString(WordError_correction.this, "date");
-                    int pos;
-                    if (date.equals("0")) {
-                        pos = 1;
-                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-                        // myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    } else {
-                        pos = 2;
-                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
-                        // myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    }*/
-
                     reward_progressBar.dismiss();
                     show_reward();
                     openDialog_earncoin.cancel();
@@ -4812,7 +4847,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             timerHandler = new Handler(Looper.getMainLooper());
         }
 
-       // if (handler != null) handler.postDelayed(my_runnable, 1000);
+        // if (handler != null) handler.postDelayed(my_runnable, 1000);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(WordError_correction.this);
         Bundle params = new Bundle();
         params.putString("screen_name", "Word Error Correction Game");
@@ -4875,7 +4910,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                     pos = 1;
                     ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                     focus.stop();
-                  //  newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                    //  newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
 
                     //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
                 } else {
@@ -4909,7 +4944,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             no.setOnClickListener(v ->{
                 openDialog_p.dismiss();
                 if (ttstop > 0) {
-                startChronometerCountdown(ttstop);}
+                    startChronometerCountdown(ttstop);}
             } );
 
             openDialog_p.setOnDismissListener(dialog -> {
@@ -5249,8 +5284,6 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         if (openDialog_p != null && openDialog_p.isShowing()) {
             openDialog_p.cancel();
         }
-        rewardedAd = null;
-        interstitialAd = null;
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

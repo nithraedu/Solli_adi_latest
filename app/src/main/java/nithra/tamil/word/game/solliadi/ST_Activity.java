@@ -25,12 +25,6 @@ import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.admanager.AdManagerAdRequest;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAd;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAdLoadCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.unity3d.ads.IUnityAdsInitializationListener;
 import com.unity3d.ads.UnityAds;
@@ -60,40 +54,21 @@ public class ST_Activity extends AppCompatActivity {
     Handler handler;
     LinearLayout banner_adParent;
     Runnable my_runnable;
-
- //   private MaxInterstitialAd mInterstitialAd;
- private AdManagerInterstitialAd interstitialAd ;
-
     private static final String UNITY_GAME_ID = "5819977";  // your Game ID
     private static final boolean TEST_MODE = true;
 
+    private static final String UNITY_INTERSTITIAL_PLACEMENT_ID = "Interstitial_Android"; // Use your actual placement ID
+    private boolean isUnityInterstitialLoaded = false;
 
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
             Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
             if (spa.getInt(context, "purchase_ads") == 0)
-                if (interstitialAd != null /*&& interstitialAd.show(this)*/) back_press();
-                else {
-                    sharedPreference.putInt(getApplicationContext(), "Noti_Content_Close", (sharedPreference.getInt(getApplicationContext(), "Noti_Content_Close") + 1));
-                   /* if (sharedPreference.getInt(context, "Noti_Content_Close") > *//*Utills.notiInterstitialadCount*//* Integer.parseInt( sharedPreference.getString(getApplicationContext(), "showCountNoti")))
-                        sharedPreference.putInt(context, "Noti_Content_Close", 1);*/
-                    if (!sharedPreference.getString(getApplicationContext(), "showCountNoti").isEmpty()) {
-                        int showCountNoti = Integer.parseInt(sharedPreference.getString(getApplicationContext(), "showCountNoti"));
-                        if (sharedPreference.getInt(context, "Noti_Content_Close") > showCountNoti)
-                            sharedPreference.putInt(context, "Noti_Content_Close", 1);
-                    }
-
-                    if (show_ads == 1) {
-                        finish();
-                        startActivity(i);
-                    } else finish();
-                }
+               back_press();
             else {
                 System.out.println("hnrdfd "+sharedPreference.getString(getApplicationContext(), "showCountNoti"));
                 sharedPreference.putInt(getApplicationContext(), "Noti_Content_Close", (sharedPreference.getInt(getApplicationContext(), "Noti_Content_Close") + 1));
-              /*  if (sharedPreference.getInt(context, "Noti_Content_Close") > *//*Utills.notiInterstitialadCount*//*  Integer.parseInt( sharedPreference.getString(getApplicationContext(), "showCountNoti")))
-                    sharedPreference.putInt(context, "Noti_Content_Close", 1);*/
                 if (!sharedPreference.getString(getApplicationContext(), "showCountNoti").isEmpty()) {
                     int showCountNoti = Integer.parseInt(sharedPreference.getString(getApplicationContext(), "showCountNoti"));
                     if (sharedPreference.getInt(context, "Noti_Content_Close") > showCountNoti)
@@ -138,7 +113,6 @@ public class ST_Activity extends AppCompatActivity {
         //ImageView backdrop=(ImageView) home_about_dialog.findViewById(R.id.backdrop);
         noti_cancel = findViewById(R.id.noti_cancel);
         ads_lay = findViewById(R.id.ads_lay);
-        /*getSupportActionBar().hide();*/
         sharedPreference = new SharedPreference();
         myDB = openOrCreateDatabase("myDB", 0, null);
 
@@ -161,22 +135,9 @@ public class ST_Activity extends AppCompatActivity {
                     e.printStackTrace(); // Or log the error
                 }
             }
-           // Utills.INSTANCE.initializeAdzz(this);
-            //if (sharedPreference.getInt(context, "Noti_Content_Close") == 0 || sharedPreference.getInt(context, "Noti_Content_Close") == /*Utills.notiInterstitialadCount*/   Integer.parseInt( sharedPreference.getString(getApplicationContext(), "showCountNoti")))
             if (sharedPreference.getInt(context, "Noti_Content_Close") == 0 || sharedPreference.getInt(context, "Noti_Content_Close") == showCountNotiValue)
-                //industrialload();
-                if (!sharedPreference.getString(this, "InterstitialId").equals("")|| sharedPreference.getString(this, "InterstitialId") != null) {
-                    industrialload();
-                }
-           // Utills.INSTANCE.load_add_AppLovin(this, ads_lay, getResources().getString(R.string.Noti_Banner));
-
+              industrialload();
             if (Utils.isNetworkAvailable(context)) {
-               /* if (!sharedPreference.getString(context, "BannerId").equals("") || sharedPreference .getString(context, "BannerId") != null) {
-                    System.out.println(
-                            "Ads Should be not empty : " + sharedPreference.getString(context, "BannerId")
-                    );
-                    Utils.load_add_banner(context, sharedPreference.getString(context, "BannerId"), ads_lay);
-                }*/
                 Utils.loadUnityBannerAd(this, "Banner_Android", ads_lay);
             } else {
                 System.out.println(
@@ -286,116 +247,68 @@ public class ST_Activity extends AppCompatActivity {
     }
 
     public void industrialload() {
-        AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
-        AdManagerInterstitialAd.load(this,sharedPreference.getString(this, "InterstitialId"), adRequest,
-                new AdManagerInterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(@NonNull AdManagerInterstitialAd interstitial) {
-                        interstitialAd = interstitial;
-                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.d(TAG, "Ad was clicked.");
-                            }
+        UnityAds.load(UNITY_INTERSTITIAL_PLACEMENT_ID, new com.unity3d.ads.IUnityAdsLoadListener() {
+            @Override
+            public void onUnityAdsAdLoaded(String placementId) {
+                isUnityInterstitialLoaded = true;
+                Log.d("UnityAds", "Interstitial loaded: " + placementId);
+            }
 
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                Log.d("TAG", "Ad dismissed fullscreen content.");
-                               interstitialAd = null;
-                                if (show_ads == 1) {
-                                    finish();
-                                    Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
-                                    startActivity(i);
-                                } else finish();
-                            }
-
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                Log.e("TAG", "Ad failed to show fullscreen content.");
-                               interstitialAd = null;
-                                handler = null;
-                                Utills.INSTANCE.Loading_Dialog_dismiss();
-                            }
-
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.d(TAG, "Ad recorded an impression.");
-                            }
-
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.d(TAG, "Ad showed fullscreen content.");
-                            }
-                        });
-
-                    }
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        Log.d("TAG", loadAdError.toString());
-                       interstitialAd = null;
-                        handler = null;
-                        Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
-                    }
-
-                });
-
+            @Override
+            public void onUnityAdsFailedToLoad(String placementId, com.unity3d.ads.UnityAds.UnityAdsLoadError error, String message) {
+                isUnityInterstitialLoaded = false;
+                Log.e("UnityAds", "Failed to load interstitial: " + placementId + " - " + message);
+            }
+        });
     }
-
     public void adShow() {
+        if (isUnityInterstitialLoaded) {
+            Utills.INSTANCE.Loading_Dialog(this);
+            handler = new Handler(Looper.myLooper());
+            my_runnable = () -> {
+                UnityAds.show(ST_Activity.this, UNITY_INTERSTITIAL_PLACEMENT_ID, new com.unity3d.ads.IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        // Ad started showing
+                    }
 
-        System.out.println(" result "+ sharedPreference.getString(this, "showCountNoti"));
-        if (!sharedPreference.getString(getApplicationContext(), "showCountNoti").isEmpty()) {
-            if (interstitialAd != null) {
-                if (sharedPreference.getInt(context, "Noti_Content_Close") == 0)
-                    sharedPreference.putInt(getApplicationContext(), "Noti_Content_Close", (sharedPreference.getInt(getApplicationContext(), "Noti_Content_Close") + 1));
-                else
-                    sharedPreference.putInt(getApplicationContext(), "Noti_Content_Close", 1);
-                Utills.INSTANCE.Loading_Dialog(this);
-                handler = new Handler(Looper.myLooper());
-                my_runnable = () -> {
-                    if (interstitialAd == null) if (show_ads == 1) {
-                        finish();
-                        Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
-                        startActivity(i);
-                    } else finish();
-                    else
-                        interstitialAd.show(this);
-                };
-                handler.postDelayed(my_runnable, 2500);
-            }
-            else {
-                sharedPreference.putInt(getApplicationContext(), "Noti_Content_Close", (sharedPreference.getInt(getApplicationContext(), "Noti_Content_Close") + 1));
-                /*if (sharedPreference.getInt(context, "Noti_Content_Close") > *//*Utills.notiInterstitialadCount*//*  Integer.parseInt( sharedPreference.getString(getApplicationContext(), "showCountNoti")))
-                sharedPreference.putInt(context, "Noti_Content_Close", 1);*/
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        // Ad clicked
+                    }
 
-                if (!sharedPreference.getString(getApplicationContext(), "showCountNoti").isEmpty()) {
-                    int showCountNoti = Integer.parseInt(sharedPreference.getString(getApplicationContext(), "showCountNoti"));
-                    if (sharedPreference.getInt(context, "Noti_Content_Close") > showCountNoti)
-                        sharedPreference.putInt(context, "Noti_Content_Close", 1);
-                }
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, com.unity3d.ads.UnityAds.UnityAdsShowCompletionState state) {
+                        isUnityInterstitialLoaded = false;
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        if (show_ads == 1) {
+                            finish();
+                            Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
+                            startActivity(i);
+                        } else finish();
+                    }
 
-
-                //Toast.makeText(this, "" + sharedPreference.getInt(this, "Noti_Content_Close"), Toast.LENGTH_SHORT).show();
-                if (show_ads == 1) {
-                    finish();
-                    Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
-                    startActivity(i);
-                } else finish();
-            }
-        }else{
-                       //Toast.makeText(this, "" + sharedPreference.getInt(this, "Noti_Content_Close"), Toast.LENGTH_SHORT).show();
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, com.unity3d.ads.UnityAds.UnityAdsShowError error, String message) {
+                        isUnityInterstitialLoaded = false;
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        if (show_ads == 1) {
+                            finish();
+                            Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
+                            startActivity(i);
+                        } else finish();
+                    }
+                });
+            };
+            handler.postDelayed(my_runnable, 2500);
+        } else {
+            // Fallback if ad not loaded
             if (show_ads == 1) {
                 finish();
                 Intent i = new Intent(ST_Activity.this, New_Main_Activity.class);
                 startActivity(i);
             } else finish();
         }
-
-
-
     }
 
     protected void onResume() {
@@ -408,7 +321,6 @@ public class ST_Activity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         Utills.INSTANCE.Loading_Dialog_dismiss();
-        interstitialAd = null;
         handler = null;
     }
 

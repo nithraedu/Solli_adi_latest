@@ -58,19 +58,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.admanager.AdManagerAdRequest;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAd;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAdLoadCallback;
-import com.google.android.gms.ads.rewarded.RewardItem;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.unity3d.ads.IUnityAdsInitializationListener;
+import com.unity3d.ads.IUnityAdsLoadListener;
+import com.unity3d.ads.IUnityAdsShowListener;
 import com.unity3d.ads.UnityAds;
 
 import org.json.JSONArray;
@@ -158,6 +150,8 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     TextView ttscores;
     int tim = 0;
     long ttstop;
+    private long endTime = 0;
+
     int noclue = 0;
     String retype = "s";
     RelativeLayout edit_buttons_layout;
@@ -191,8 +185,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     private boolean isTimerRunning = false;
     private boolean isGameCompleted = false;
 
-    private RewardedAd rewardedAd;
-    private AdManagerInterstitialAd interstitialAd;
 
     private static final String UNITY_GAME_ID = "5819977";  // your Game ID
     private static final boolean TEST_MODE = true;
@@ -218,10 +210,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ote_to_tamil_game);
 
-        // Ensure that timerHandler is initialized in onResume as well
-        if (timerHandler == null) {
-            timerHandler = new Handler(Looper.getMainLooper());
-        }
+        timerHandler = new Handler(Looper.getMainLooper());
 
         UnityAds.initialize(this, UNITY_GAME_ID, TEST_MODE, new IUnityAdsInitializationListener() {
             @Override
@@ -271,10 +260,10 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         //Utills.INSTANCE.initializeAdzz(this);
         rewarded_adnew();
         if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 0) {
-            //industrialload();
-            if (!sps.getString(Ote_to_Tamil.this, "InterstitialId").equals("") || sps.getString(Ote_to_Tamil.this, "InterstitialId") != null) {
+            industrialload();
+           /* if (!sps.getString(Ote_to_Tamil.this, "InterstitialId").equals("") || sps.getString(Ote_to_Tamil.this, "InterstitialId") != null) {
                 industrialload();
-            }
+            }*/
         }
 
 
@@ -314,11 +303,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
 
         resetLayout.setOnClickListener(v -> {
-            if (isGameCompleted) {
-                Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
-                return;  // Do nothing if the game is completed
-            }
-
             if (isTimerRunning) {
                 ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                 focus.stop();
@@ -536,8 +520,42 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         Button btnNo = dialog.findViewById(R.id.btnNo);
 
         btnYes.setOnClickListener(v -> {
-            resetGame(); // Clear and restart
-            dialog.dismiss();
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Ote_to_Tamil.this);
+                UnityAds.show(Ote_to_Tamil.this, "Rewarded_Android", new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        reward_status = 0;
+                        rewarded_adnew();
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            resetGame();
+                        }
+                        dialog.dismiss();
+                    }
+                });
+            } else {
+                ttstop = countdownDuration;
+                startChronometerCountdown(countdownDuration);
+                dialog.dismiss();
+            }
         });
 
         btnNo.setOnClickListener(v -> {
@@ -578,41 +596,136 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
 
     private void startChronometerCountdown(long durationInMillis) {
-        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
-        focus.setCountDown(true);
-        focus.start();
-
-        // Check if timerHandler is null and initialize it if necessary
+        // Ensure handler is always initialized
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
 
-        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
-        if (timerRunnable != null) {
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // Cancel any previous callbacks
+        if (timerRunnable != null && timerHandler != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
 
-        // Create a new Runnable for the countdown
+        // Safe runnable
         timerRunnable = new Runnable() {
             @Override
             public void run() {
+                // Defensive null check
+                if (timerHandler == null) {
+                    timerHandler = new Handler(Looper.getMainLooper());
+                }
+
                 long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
                     showExtendTimeDialog();  // Show dialog when time is up
                 } else {
-                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                    if (timerHandler != null) {
+                        timerHandler.postDelayed(this, 500);  // Repeat countdown
+                    }
                 }
             }
         };
 
-        // Post the Runnable to start the countdown
-        timerHandler.postDelayed(timerRunnable, 500);
+        // Start timer safely
+        if (timerHandler != null) {
+            timerHandler.postDelayed(timerRunnable, 500);
+        }
         isTimerRunning = true;
     }
 
+
     private void showExtendTimeDialog() {
+
+        // ✅ Pause and capture remaining time
+        if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+
+            // Save remaining time
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog dialog = new Dialog(Ote_to_Tamil.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        TextView message = dialog.findViewById(R.id.tvMessage);
+        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            dialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Ote_to_Tamil.this);
+                UnityAds.show(Ote_to_Tamil.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here too, just in case
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            if (isTimerRunning) {
+                                timerHandler.removeCallbacks(timerRunnable);
+                            }
+                            startChronometerCountdown(countdownDuration);
+
+                        } else {
+                            Toast.makeText(Ote_to_Tamil.this, "முழு காணொளியையும் பார்த்து 30 விநாடிகள் பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+            }
+        });
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    //old
+/*    private void showExtendTimeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Ote_to_Tamil.this);
         builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
         builder.setCancelable(false);
@@ -627,9 +740,10 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
         AlertDialog dialog = builder.create();
         dialog.show();
-    }
+    }*/
 
-    private void rewarded_adnew() {
+    //old
+/*    private void rewarded_adnew() {
 
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
 
@@ -740,9 +854,95 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             Log.d(TAG, "The rewarded ad wasn't ready yet.");
         }
 
+    }*/
+
+    private void rewarded_adnew() {
+        String placementId = "Rewarded_Android";
+        UnityAds.load(placementId, new IUnityAdsLoadListener() {
+            @Override
+            public void onUnityAdsAdLoaded(String placementId) {
+                Log.d(TAG, "Unity rewarded ad loaded successfully");
+                fb_reward = 1;
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading after ad is loaded
+            }
+
+            @Override
+            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+                Log.e(TAG, "Unity rewarded ad failed to load: " + message);
+                fb_reward = 0;
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
+                Toast.makeText(Ote_to_Tamil.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public void show_reward() {
+        String placementId = "Rewarded_Android";
+        if (UnityAds.isInitialized()) {
+            Utills.INSTANCE.Loading_Dialog(Ote_to_Tamil.this);
+            UnityAds.show(Ote_to_Tamil.this, placementId, new IUnityAdsShowListener() {
+                @Override
+                public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                    Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on show failure
+                    reward_status = 0;
+                    rewarded_adnew();
+                }
+
+                @Override
+                public void onUnityAdsShowStart(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad started showing");
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading when ad starts showing
+                }
+
+                @Override
+                public void onUnityAdsShowClick(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad was clicked");
+                }
+
+                @Override
+                public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                    Log.d(TAG, "Unity rewarded ad completed");
+                    if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                        reward_status = 1;
+                        if (extra_coin_s == 0) {
+                            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                            cfx.moveToFirst();
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                            int spx = skx + mCoinCount;
+                            String aStringx = Integer.toString(spx);
+                            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                        }
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (rvo == 2) {
+                                    share_earn2(mCoinCount);
+                                } else {
+                                    vidcoinearn();
+                                }
+                            }
+                        }, 500);
+                    } else {
+                        Toast.makeText(Ote_to_Tamil.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                    }
+                    fb_reward = 0;
+                    rewarded_adnew();
+                }
+            });
+        } else {
+            Log.d(TAG, "Unity Ads is not initialized.");
+            Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading if Unity not initialized
+            reward_status = 0;
+            rewarded_adnew();
+        }
     }
 
-    public void industrialload() {
+    //old
+ /*   public void industrialload() {
         AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
         AdManagerInterstitialAd.load(this, sps.getString(this, "InterstitialId"), adRequest,
                 new AdManagerInterstitialAdLoadCallback() {
@@ -802,30 +1002,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                 });
 
     }
-
-   /* public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
-            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
-            handler = new Handler(Looper.myLooper());
-            my_runnable = () -> {
-                if (interstitialAd == null) setSc();
-                else
-                    interstitialAd.show(this);
-            };
-            handler.postDelayed(my_runnable, 2500);
-        } else {
-            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") + 1));
-            if (sps.getInt(context, "Game4_Stage_Close_RS") > *//*Utills.interstitialadCount*//*Integer.parseInt( sps.getString(this, "showCountOther")))
-                sps.putInt(context, "Game4_Stage_Close_RS", 0);
-
-            setSc();
-            //Toast.makeText(this, ""+sps.getInt(this, "Game4_Stage_Close_RS"), Toast.LENGTH_SHORT).show();
-        }
-
-    }
-*/
-
     private int safeParseInt(String value, int defaultValue) {
         if (value != null && !value.isEmpty()) {
             try {
@@ -872,6 +1048,96 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             setSc();
         }
 
+    }*/
+
+
+    //new
+
+    public void industrialload() {
+        System.out.println("servercalling=============");
+        String placementId = "Interstitial_Android";
+        UnityAds.load(placementId, new IUnityAdsLoadListener() {
+            @Override
+            public void onUnityAdsAdLoaded(String placementId) {
+                Log.d(TAG, "Unity interstitial ad loaded successfully");
+            }
+
+            @Override
+            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+                Log.e(TAG, "Unity interstitial ad failed to load: " + message);
+                timerHandler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                setSc();
+            }
+        });
+    }
+
+    public void adShow() {
+        int showCountOther = 0;
+        int currentStageCloseRS = sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS");
+
+        if (!sps.getString(this, "showCountOther").equals("0")) {
+            if (currentStageCloseRS == showCountOther) {
+                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                Utills.INSTANCE.Loading_Dialog(this);
+                Handler handler = new Handler(Looper.myLooper());
+                Runnable my_runnable = () -> {
+                    String placementId = "Interstitial_Android";
+                    if (UnityAds.isInitialized()) {
+                        UnityAds.show(Ote_to_Tamil.this, placementId, new IUnityAdsShowListener() {
+                            @Override
+                            public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                                Log.e(TAG, "Unity interstitial ad failed to show: " + message);
+                                timerHandler = null;
+                                Utills.INSTANCE.Loading_Dialog_dismiss();
+                                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                                setSc();
+                            }
+
+                            @Override
+                            public void onUnityAdsShowStart(String placementId) {
+                                Log.d(TAG, "Unity interstitial ad started showing");
+                            }
+
+                            @Override
+                            public void onUnityAdsShowClick(String placementId) {
+                                Log.d(TAG, "Unity interstitial ad was clicked");
+                            }
+
+                            @Override
+                            public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                                Log.d(TAG, "Unity interstitial ad completed");
+                                timerHandler = null;
+                                Utills.INSTANCE.Loading_Dialog_dismiss();
+                                setSc();
+                                industrialload();
+                            }
+                        });
+                    } else {
+                        Log.d(TAG, "Unity Ads is not initialized.");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                        setSc();
+                    }
+                };
+                handler.postDelayed(my_runnable, 2500);
+            } else {
+                currentStageCloseRS++;
+                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", currentStageCloseRS);
+                if (currentStageCloseRS > showCountOther) {
+                    sps.putInt(context, "Game4_Stage_Close_RS", 0);
+                }
+                setSc();
+            }
+        } else {
+            currentStageCloseRS++;
+            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", currentStageCloseRS);
+            if (currentStageCloseRS > showCountOther) {
+                sps.putInt(context, "Game4_Stage_Close_RS", 0);
+            }
+            setSc();
+        }
     }
 
     public void clicklistner() {
@@ -2186,8 +2452,8 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             String letter15 = tokenizer.nextToken().trim();
             bt1.setText(word6);
             bt2.setText(word1);
-            bt3.setText(word8);
-            bt4.setText(letter3);
+            bt3.setText(letter2);
+            bt4.setText(letter13);
             bt5.setText(word5);
             bt6.setText(word9);
             bt7.setText(letter6);
@@ -3227,7 +3493,14 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
     public void dialog(int i) {
         final Dialog openDialog_earncoin = new Dialog(Ote_to_Tamil.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_earncoin.setContentView(R.layout.earncoin);
-
+        // Pause timer when dialog shows
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+            // Always save current time state, even if negative
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+        }
 
         RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
         RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
@@ -3240,6 +3513,18 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
         ss.setOnClickListener(v -> openDialog_earncoin.cancel());
         cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
+
+
+        // Add dialog dismiss listener to resume timer
+        openDialog_earncoin.setOnDismissListener(dialog -> {
+            if (!isTimerRunning) {
+                // Resume from saved time state, even if negative
+                focus.setBase(SystemClock.elapsedRealtime() + ttstop);
+                focus.start();
+                isTimerRunning = true;
+                timerHandler.postDelayed(timerRunnable, 1000);
+            }
+        });
 
         TextView wpro = openDialog_earncoin.findViewById(R.id.wpro);
         if (i == 1) {
@@ -3583,6 +3868,11 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
 
     @Override
     public void onDestroy() {
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+        timerRunnable = null;
+        timerHandler = null;
         super.onDestroy();
 
         if (timerHandler != null) {
@@ -3593,8 +3883,6 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
             openDialog_p.cancel();
         }
         if (mProgressDialog != null && mProgressDialog.isShowing()) mProgressDialog.dismiss();
-        rewardedAd = null;
-        interstitialAd = null;
     }
 
     public void nextgamesdialog() {

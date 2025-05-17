@@ -67,17 +67,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.admanager.AdManagerAdRequest;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAd;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAdLoadCallback;
-import com.google.android.gms.ads.rewarded.RewardItem;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
+import com.unity3d.ads.IUnityAdsInitializationListener;
+import com.unity3d.ads.IUnityAdsLoadListener;
+import com.unity3d.ads.IUnityAdsShowListener;
+import com.unity3d.ads.UnityAds;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -178,7 +172,8 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
     int ea = 0;
     int setval_vid;
     TextView coin_value;
-    Long ttstop;
+    long ttstop;
+    private long endTime = 0;
     Dialog openDialog_p;
     int share_name = 0;
     RelativeLayout head;
@@ -198,9 +193,10 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
 
     private boolean isGameCompleted = false;
 
-
-    private RewardedAd rewardedAd;
-    private AdManagerInterstitialAd interstitialAd ;
+    private static final String UNITY_GAME_ID = "5819977";  // your Game ID
+    private static final boolean TEST_MODE = true;
+    private static final String INTERSTITIAL_PLACEMENT_ID = "Interstitial_Android";
+    private boolean isInterstitialReady = false;
 
 
     private void backexitnet() {
@@ -259,12 +255,28 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.match_the_fallows);
+        
+        // Initialize vali_handler
+        vali_handler = new Handler(Looper.getMainLooper());
+        timerHandler = new Handler(Looper.getMainLooper());
+
         ttstop = 0L; // Initialize ttstop
 
         // Ensure that timerHandler is initialized in onResume as well
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
+
+        UnityAds.initialize(this, UNITY_GAME_ID, TEST_MODE, new IUnityAdsInitializationListener() {
+            @Override
+            public void onInitializationComplete() {
+                System.out.println("Unity Ads Initialization Complete");
+            }
+            @Override
+            public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
+                System.out.println("Unity Ads Initialization Failed: " + message);
+            }
+        });
 
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
@@ -397,12 +409,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
 
         resetLayout.setOnClickListener(v -> {
-            if (isGameCompleted) {
-                Toast.makeText(this, "Game completed! Reset not allowed.", Toast.LENGTH_SHORT).show();
-                return;  // Do nothing if the game is completed
-            }
-
-            if (isTimerRunning) {
+              if (isTimerRunning) {
                 ttstop = focus.getBase() - SystemClock.elapsedRealtime();
                 focus.stop();
                 timerHandler.removeCallbacks(timerRunnable);
@@ -436,10 +443,10 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         //Utills.INSTANCE.initializeAdzz(this);
         rewarded_adnew();
         if (sps.getInt(Match_tha_fallows_game.this, "purchase_ads") == 0) {
-            //industrialload();
-            if (!sps.getString(Match_tha_fallows_game.this, "InterstitialId").equals("")|| sps.getString(Match_tha_fallows_game.this, "InterstitialId") != null) {
+            industrialload();
+           // if (!sps.getString(Match_tha_fallows_game.this, "InterstitialId").equals("")|| sps.getString(Match_tha_fallows_game.this, "InterstitialId") != null) {
                 industrialload();
-            }
+          //  }
         }
 
         ImageView prize_logo = findViewById(R.id.prize_logo);
@@ -568,17 +575,58 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         Button btnNo = dialog.findViewById(R.id.btnNo);
 
         btnYes.setOnClickListener(v -> {
-            resetSelectionOnly(); // <-- Reset selection state only
-            ttstop = countdownDuration;
-            startChronometerCountdown(countdownDuration);
-            dialog.dismiss();
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Match_tha_fallows_game.this);
+                UnityAds.show(Match_tha_fallows_game.this, "Rewarded_Android", new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        reward_status = 0;
+                        rewarded_adnew();
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            // User watched the ad completely, now reset the game
+                            resetSelectionOnly();
+                            ttstop = countdownDuration;
+                            startChronometerCountdown(countdownDuration);
+                        }
+                        dialog.dismiss();
+                    }
+                });
+            } else {
+                // If Unity Ads not initialized, just reset without showing ad
+                resetSelectionOnly();
+                ttstop = countdownDuration;
+                startChronometerCountdown(countdownDuration);
+                dialog.dismiss();
+            }
         });
 
         btnNo.setOnClickListener(v -> {
-            if (ttstop > 0) {
-                startChronometerCountdown(ttstop);
-            }
+            // Just dismiss the dialog without modifying timer state
             dialog.dismiss();
+            // End the game or show game over dialog
+            if (isGameCompleted) {
+                return;
+            }
+            isGameCompleted = true;
+            winning_fun();
         });
 
         dialog.setCancelable(false);
@@ -641,50 +689,120 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         focus.setCountDown(true);
         focus.start();
 
-        // Remove previous callbacks
-        if (timerRunnable != null) {
+        // Remove previous callbacks if any
+        if (timerRunnable != null && timerHandler != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
 
-        // Create and post new timer
         timerRunnable = new Runnable() {
             @Override
             public void run() {
+                if (timerHandler == null) {
+                    timerHandler = new Handler(Looper.getMainLooper()); // ensure it's initialized here too
+                }
+
                 long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
                     showExtendTimeDialog();
                 } else {
-                    timerHandler.postDelayed(this, 500);
+                    if (timerHandler != null) {
+                        timerHandler.postDelayed(this, 500);
+                    }
                 }
             }
         };
 
-        timerHandler.postDelayed(timerRunnable, 500);
+        if (timerHandler != null) {
+            timerHandler.postDelayed(timerRunnable, 500);
+        }
         isTimerRunning = true;
     }
 
 
+
     private void showExtendTimeDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(Match_tha_fallows_game.this);
-        builder.setMessage("Time is up! Do you want to extend time?")
-                .setCancelable(false)
-                .setPositiveButton("Yes", (dialog, id) -> {
-                    if (isTimerRunning) {
-                        timerHandler.removeCallbacks(timerRunnable);
+
+        // ✅ Pause and capture remaining time
+        if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+
+            // Save remaining time
+            ttstop = endTime - SystemClock.elapsedRealtime();
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog dialog = new Dialog(Match_tha_fallows_game.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        TextView message = dialog.findViewById(R.id.tvMessage);
+        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            // Show Unity rewarded ad
+            dialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Match_tha_fallows_game.this);
+                UnityAds.show(Match_tha_fallows_game.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        dialog.dismiss();
                     }
-                    startChronometerCountdown(countdownDuration);
-                })
-                .setNegativeButton("No", (dialog, id) -> {
-                    if (isTimerRunning) {
-                        timerHandler.removeCallbacks(timerRunnable);
-                        isTimerRunning = false;
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
                     }
-                    dialog.dismiss();
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            if (isTimerRunning) {
+                                timerHandler.removeCallbacks(timerRunnable);
+                            }
+                            startChronometerCountdown(countdownDuration);
+
+                        } else {
+                            Toast.makeText(Match_tha_fallows_game.this, "முழு காணொளியையும் பார்த்து 30 விநாடிகள் பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
                 });
-        AlertDialog alert = builder.create();
-        alert.show();
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+            }
+        });
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            if (isTimerRunning) {
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
     }
 
 
@@ -1786,22 +1904,37 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
     }
 
     public void show_Allans_fun() {
+        // Pause timer when dialog shows
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+            // Always save current time state, even if negative
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+        }
+
         final Dialog dialog = new Dialog(Match_tha_fallows_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         dialog.setContentView(R.layout.show_allans_dia);
         dialog.show();
 
         TextView exit_text = dialog.findViewById(R.id.exit_text);
         exit_text.startAnimation(zoomAnim());
-        exit_text.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
+        exit_text.setOnClickListener(v -> dialog.dismiss());
+
+        // Add dialog dismiss listener to resume timer
+        dialog.setOnDismissListener(dialogInterface -> {
+            if (!isTimerRunning) {
+                // Resume from saved time state, even if negative
+                focus.setBase(SystemClock.elapsedRealtime() + ttstop);
+                focus.start();
+                isTimerRunning = true;
+                timerHandler.postDelayed(timerRunnable, 1000);
             }
         });
+
         ListView all_ans_list = dialog.findViewById(R.id.all_ans_list);
         ans_adapter ans_adapter = new ans_adapter();
         all_ans_list.setAdapter(ans_adapter);
-
     }
 
     public void setSc() {
@@ -2541,205 +2674,115 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         }
 
     }
-
-    private void rewarded_adnew() {
-
-        AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
-
-        RewardedAd.load(this, sp.getString(Match_tha_fallows_game.this, "RewardedId"),
-                adRequest, new RewardedAdLoadCallback() {
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        // Handle the error.
-                        Log.e("LoadAdError=========", loadAdError.toString());
-                        rewardedAd = null;
-                        reward_status=0;
-                        //isfaild = 2;
-
-                    }
-
-                    @Override
-                    public void onAdLoaded(@NonNull RewardedAd ad) {
-                        rewardedAd = ad;
-                        //  isfaild = 1;
-                        fb_reward = 1;
-                        reward_status=0;
-                        Log.e(TAG, "Ad was Called.=========");
-                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.e(TAG, "Ad was clicked.=========");
-                            }
-
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                rewarded_adnew();
-                                if (reward_status == 1) {
-                                    if (extra_coin_s == 0) {
-                                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                        cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                        int spx = skx + mCoinCount;
-                                        String aStringx = Integer.toString(spx);
-                                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                    }
-                                    Handler handler = new Handler();
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            if (rvo == 2) {
-                                                share_earn2(mCoinCount);
-                                            } else {
-                                                vidcoinearn();
-                                            }
-                                        }
-                                    }, 500);
-                                } else {
-                                    Toast.makeText(Match_tha_fallows_game.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                                }
-
-                                fb_reward = 0;
-                                // Called when ad is dismissed.
-                                // Set the ad reference to null so you don't show the ad a second time.
-                                Log.e(TAG, "Ad dismissed fullscreen content.=========");
-
-                            }
-
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                // Called when ad fails to show.
-                                Log.e(TAG, "Ad failed to show fullscreen content.=========");
-                                rewardedAd = null;
-                                reward_status=0;
-                            }
-
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.e(TAG, "Ad recorded an impression.=========");
-                            }
-
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.e(TAG, "Ad showed fullscreen content.=========");
-                            }
-                        });
-
-                    }
-                });
-    }
-
-    public void show_reward() {
-        if (rewardedAd != null) {
-            rewardedAd.show(Match_tha_fallows_game.this, new OnUserEarnedRewardListener() {
-
-                @Override
-                public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
-                    // Handle the reward.
-                    Log.d(TAG, "The user earned the reward.");
-
-                    rewardedAd = null;
-                    reward_status = 1;
-                    int rewardAmount = rewardItem.getAmount();
-                    String rewardType = rewardItem.getType();
-                }
-
-            });
-
-        } else {
-            Log.d(TAG, "The rewarded ad wasn't ready yet.");
+private void rewarded_adnew() {
+    String placementId = "Rewarded_Android";
+    UnityAds.load(placementId, new IUnityAdsLoadListener() {
+        @Override
+        public void onUnityAdsAdLoaded(String placementId) {
+            Log.d(TAG, "Unity rewarded ad loaded successfully");
+            fb_reward = 1;
+            reward_status = 0;
+            Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading after ad is loaded
         }
 
+        @Override
+        public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+            Log.e(TAG, "Unity rewarded ad failed to load: " + message);
+            fb_reward = 0;
+            reward_status = 0;
+            Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
+            Toast.makeText(Match_tha_fallows_game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+        }
+    });
+}
+
+    public void show_reward() {
+        String placementId = "Rewarded_Android";
+        if (UnityAds.isInitialized()) {
+            Utills.INSTANCE.Loading_Dialog(Match_tha_fallows_game.this);
+            UnityAds.show(Match_tha_fallows_game.this, placementId, new IUnityAdsShowListener() {
+                @Override
+                public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                    Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on show failure
+                    reward_status = 0;
+                    rewarded_adnew();
+                }
+
+                @Override
+                public void onUnityAdsShowStart(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad started showing");
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading when ad starts showing
+                }
+
+                @Override
+                public void onUnityAdsShowClick(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad was clicked");
+                }
+
+                @Override
+                public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                    Log.d(TAG, "Unity rewarded ad completed");
+                    if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                       reward_status = 1;
+                            if (extra_coin_s == 0) {
+                                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                                cfx.moveToFirst();
+                                int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                                int spx = skx + mCoinCount;
+                                String aStringx = Integer.toString(spx);
+                                myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                            }
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (rvo == 2) {
+                                        share_earn2(mCoinCount);
+                                    } else {
+                                        vidcoinearn();
+                                    }
+                                }
+                            }, 500);
+                    } else {
+                        Toast.makeText(Match_tha_fallows_game.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                    }
+                    fb_reward = 0;
+                    rewarded_adnew();
+                }
+            });
+        } else {
+            Log.d(TAG, "Unity Ads is not initialized.");
+            Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading if Unity not initialized
+            reward_status = 0;
+            rewarded_adnew();
+        }
     }
 
     public void industrialload() {
-        AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
-        AdManagerInterstitialAd.load(this,sps.getString(this, "InterstitialId"), adRequest,
-                new AdManagerInterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(@NonNull AdManagerInterstitialAd interstitial) {
-                        interstitialAd = interstitial;
-                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.d(TAG, "Ad was clicked.");
-                            }
+        System.out.println("servercalling=============");
+        String placementId = "Interstitial_Android";
+        UnityAds.load(placementId, new IUnityAdsLoadListener() {
+            @Override
+            public void onUnityAdsAdLoaded(String placementId) {
+                Log.d(TAG, "Unity interstitial ad loaded successfully");
+            }
 
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                Log.d("TAG", "Ad dismissed fullscreen content.");
-                                interstitialAd = null;
-                                timerHandler = null;
-                                Utills.INSTANCE.Loading_Dialog_dismiss();
-                                setSc();
-                                industrialload();
-                            }
-
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                Log.e("TAG", "Ad failed to show fullscreen content.");
-                                interstitialAd = null;
-                                timerHandler = null;
-                                Utills.INSTANCE.Loading_Dialog_dismiss();
-                                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
-                                setSc();
-                            }
-
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.d(TAG, "Ad recorded an impression.");
-                            }
-
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.d(TAG, "Ad showed fullscreen content.");
-                            }
-                        });
-
-                    }
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        // Handle the error
-                        Log.d("TAG", loadAdError.toString());
-                        interstitialAd = null;
-                        timerHandler = null;
-                        Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
-                    }
-
-                });
-
+            @Override
+            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+                Log.e(TAG, "Unity interstitial ad failed to load: " + message);
+                timerHandler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                setSc();
+            }
+        });
     }
-
-    /*public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
-            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
-            handler = new Handler(Looper.myLooper());
-            my_runnable = () -> {
-                if (interstitialAd == null) setSc();
-                else interstitialAd.show(this);
-            };
-            handler.postDelayed(my_runnable, 2500);
-        } else {
-            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") + 1));
-            if (sps.getInt(Match_tha_fallows_game.this, "Game4_Stage_Close_RS") > *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
-                sps.putInt(Match_tha_fallows_game.this, "Game4_Stage_Close_RS", 0);
-
-            setSc();
-            //Toast.makeText(this, ""+sps.getInt(this, "Game4_Stage_Close_RS"), Toast.LENGTH_SHORT).show();
-        }
-
-    }*/
 
     public void adShow() {
         // Fetch the string value from shared preferences or set it to a default value if empty or null
-        String showCountOther = sps.getString(this, "showCountOther");
+    /*    String showCountOther = sps.getString(this, "showCountOther");
         if (showCountOther == null || showCountOther.isEmpty()) {
             showCountOther = "0";  // Default value if the preference is not set or empty
         }
@@ -2747,40 +2790,102 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         try {
             showCount = Integer.parseInt(showCountOther);
         } catch (NumberFormatException e) {
-            // Log the error and handle it appropriately
             showCount = 0;  // Set a fallback value
         }
+*/
+        int currentStageCloseVV = sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS");
+        int showCountOther = 0;
 
-        int currentStageCloseRS = sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS");
+        if (currentStageCloseVV == showCountOther) {
 
-        if (!sps.getString(this, "showCountOther").equals("0")) {
-            if (currentStageCloseRS == showCount && interstitialAd != null) {
                 sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
                 Utills.INSTANCE.Loading_Dialog(this);
-                Handler handler = new Handler(Looper.myLooper());
+
+            new Handler(Looper.myLooper()).postDelayed(() -> {
+                String placementId = "Interstitial_Android";
+
+                if (UnityAds.isInitialized()) {
+                    UnityAds.show(Match_tha_fallows_game.this, placementId, new IUnityAdsShowListener() {
+                        @Override
+                        public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                            Log.e(TAG, "Unity interstitial ad failed to show: " + message);
+                            timerHandler = null;
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
+                            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                            setSc();
+                        }
+
+                        @Override
+                        public void onUnityAdsShowStart(String placementId) {
+                            Log.d(TAG, "Unity interstitial ad started showing");
+                        }
+
+                        @Override
+                        public void onUnityAdsShowClick(String placementId) {
+                            Log.d(TAG, "Unity interstitial ad was clicked");
+                        }
+
+                        @Override
+                        public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                            Log.d(TAG, "Unity interstitial ad completed");
+                            timerHandler = null;
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
+                            setSc();
+                            industrialload(); // If you need to call this
+                        }
+                    });
+                } else {
+                    Log.d(TAG, "Unity Ads is not initialized.");
+                    timerHandler = null;
+                    Utills.INSTANCE.Loading_Dialog_dismiss();
+                    sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+                    setSc();
+                }
+            }, 2500);
+
+              /*  Handler handler = new Handler(Looper.myLooper());
                 Runnable my_runnable = () -> {
-                    if (interstitialAd == null) {
+                    if (!isInterstitialReady) {
                         setSc();
                     } else {
-                        interstitialAd.show(this);
+                        UnityAds.show(this, INTERSTITIAL_PLACEMENT_ID, new IUnityAdsShowListener() {
+                            @Override
+                            public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                                Log.e(TAG, "Unity interstitial ad failed to show: " + message);
+                                Utills.INSTANCE.Loading_Dialog_dismiss();
+                                setSc();
+                                industrialload();
+                            }
+
+                            @Override
+                            public void onUnityAdsShowStart(String placementId) {
+                                Log.d(TAG, "Unity interstitial ad started showing");
+                                Utills.INSTANCE.Loading_Dialog_dismiss();
+                            }
+
+                            @Override
+                            public void onUnityAdsShowClick(String placementId) {
+                                Log.d(TAG, "Unity interstitial ad was clicked");
+                            }
+
+                            @Override
+                            public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                                Log.d(TAG, "Unity interstitial ad completed");
+                                isInterstitialReady = false;
+                                setSc();
+                                industrialload();
+                            }
+                        });
                     }
                 };
-                handler.postDelayed(my_runnable, 2500);
-            } else {
-                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", currentStageCloseRS + 1);
-                if (currentStageCloseRS > showCount) {
-                    sps.putInt(this, "Game4_Stage_Close_RS", 0);
-                }
-                setSc();
-            }
-        }else{
-            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", currentStageCloseRS + 1);
-            if (currentStageCloseRS > showCount) {
+                handler.postDelayed(my_runnable, 2500);*/
+        } else {
+            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", currentStageCloseVV + 1);
+            if (currentStageCloseVV > showCountOther) {
                 sps.putInt(this, "Game4_Stage_Close_RS", 0);
             }
             setSc();
         }
-
     }
 
 
@@ -2960,15 +3065,20 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
     }
 
     public void permission(final String a) {
-        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-        focus.stop();
+        // Pause timer when share view opens
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+        }
 
         String date = sps.getString(Match_tha_fallows_game.this, "date");
         int pos;
         if (date.equals("0")) {
-          //  newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+            //  newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
         } else {
-          //  newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+            //  newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
         }
         helpshare(a);
     }
@@ -3045,10 +3155,17 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
     }
 
     public void dialog(int i) {
-
         final Dialog openDialog_earncoin = new Dialog(Match_tha_fallows_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_earncoin.setContentView(R.layout.earncoin);
 
+        // Pause timer when dialog shows
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+            // Always save current time state, even if negative
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+        }
 
         RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
         RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
@@ -3056,16 +3173,17 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         TextView cancel = openDialog_earncoin.findViewById(R.id.cancel);
         TextView ss = openDialog_earncoin.findViewById(R.id.ssss);
 
-        ss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_earncoin.cancel();
-            }
-        });
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDialog_earncoin.cancel();
+        ss.setOnClickListener(v -> openDialog_earncoin.cancel());
+        cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
+
+        // Add dialog dismiss listener to resume timer
+        openDialog_earncoin.setOnDismissListener(dialog -> {
+            if (!isTimerRunning) {
+                // Resume from saved time state, even if negative
+                focus.setBase(SystemClock.elapsedRealtime() + ttstop);
+                focus.start();
+                isTimerRunning = true;
+                timerHandler.postDelayed(timerRunnable, 1000);
             }
         });
 
@@ -3091,9 +3209,9 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                         String date = sps.getString(Match_tha_fallows_game.this, "date");
                         int pos;
                         if (date.equals("0")) {
-                          //  newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                            //  newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
                         } else {
-                          //  newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                            //  newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
                         }
                         reward_progressBar.dismiss();
                         show_reward();
@@ -3164,7 +3282,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                         } else {
                             pos = 2;
                         }
-                      //  newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+                        //  newhelper5.executeSql("UPDATE newgames5 SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
 
                         openDialog_earncoin.cancel();
                         Intent i = new Intent(Intent.ACTION_SEND);
@@ -3604,8 +3722,6 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         if (openDialog_p != null && openDialog_p.isShowing()) {
             openDialog_p.cancel();
         }
-        rewardedAd = null;
-        interstitialAd = null;
     }
 
     private void price_update() {
@@ -4303,4 +4419,6 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
             return view;
         }
     }
+
+
 }

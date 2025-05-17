@@ -17,6 +17,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.ParseException;
@@ -64,20 +65,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.admanager.AdManagerAdRequest;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAd;
-import com.google.android.gms.ads.admanager.AdManagerInterstitialAdLoadCallback;
-import com.google.android.gms.ads.rewarded.RewardItem;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.unity3d.ads.IUnityAdsInitializationListener;
+import com.unity3d.ads.IUnityAdsLoadListener;
+import com.unity3d.ads.IUnityAdsShowListener;
 import com.unity3d.ads.UnityAds;
 
 import org.json.JSONArray;
@@ -132,9 +125,6 @@ public class Word_Game_Hard extends AppCompatActivity {
     static int mCoinCount = 20;
     static int rvo = 0;
 
-
-    // Facebook variable starts
-    static SharedPreference spd = new SharedPreference();
     final SharedPreference sps = new SharedPreference();
     final int gameid = 4;
     final Context context = this;
@@ -143,17 +133,13 @@ public class Word_Game_Hard extends AppCompatActivity {
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     private final PendingAction pendingAction = PendingAction.NONE;
     int fb_reward = 0;
-    int val = 0;
     int reward_status = 0;
-    // facebook variable ends
-    String btn_str = "";
     Button clear;
     ImageView q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14;
     TextView bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9, bt10, bt11, bt12, bt13, bt14, bt15, bt16;
     EditText word_editer;
     TextView vl1, vl2, vl3, vl4, vl5, vl6, vl7, vl8, vl9, vl10, vl11, vl12, vl13, vl14;
     TextView time, score, word_no;
-    String tr;
     TextView verify;
     LinearLayout ans_set;
     //SQLiteDatabase sqLiteDatabase1;
@@ -161,33 +147,22 @@ public class Word_Game_Hard extends AppCompatActivity {
     Typeface typ;
     SQLiteDatabase exdb, dbs, dbn, dbn2;
     Chronometer focus;
-    List<String> test = new ArrayList<String>();
-    int level;
-    long timeWhenStopped = 0;
     int x = 0;
-    int r = 1;
     int sk;
     String letterid;
     int b_score = 0;
     int counter = 0;
-    int total = 70;
-    int counter2 = 0;
-    int total2 = 10;
     int f_sec;
     TextView toggleButton;
     int counter3 = 0;
-    int total3 = 90;
     TextView settings;
-    // MediaPlayer w1=new MediaPlayer();
-    TextView cancel;
     SoundPool click, win, coin, worng, cr_ans;
     int soundId1, soundId2, soundId3, soundId4, soundId5;
     int sv = 0;
-    RadioButton fn1, fn2, fn3;
-    LinearLayout adds,adsLay1;
+    LinearLayout adds, adsLay1;
     Dialog openDialog;
     LinearLayout addsdialog;
-    TextView tx1, tx2;
+    TextView tx2;
     int current_sc;
     int total_sc;
     int c_counter = 0;
@@ -196,13 +171,11 @@ public class Word_Game_Hard extends AppCompatActivity {
     int case2 = 0, tot2 = 50, tt_case2, tt_tot2;
     Typeface tyr;
     PopupWindow popupWindow;
-    int gt = 0;
     int tans;
     int tscore;
     int ttime;
     RelativeLayout w_head, helpshare_layout;
-    // Myadapter adapter;
-    TextView shareq, h_gplues, h_watts_app, h_facebook;
+    TextView h_gplues, h_watts_app, h_facebook;
     String email = "";
     Timer t1, th;
     int t, t2;
@@ -212,7 +185,6 @@ public class Word_Game_Hard extends AppCompatActivity {
     EditText usertxt;
     LinearLayout qtw;
     String answers;
-    int defTimeOut = 0;
     int u_id;
     String downok = "", downnodata = "";
     DownloadFileAsync downloadFileAsync;
@@ -224,7 +196,6 @@ public class Word_Game_Hard extends AppCompatActivity {
     SeekBar progress;
     TextView ex_bones, bs_points;
     TextView earncoin;
-    int ry;
     String retype = "s";
     RelativeLayout edit_buttons_layout;
     TextView skip;
@@ -233,7 +204,6 @@ public class Word_Game_Hard extends AppCompatActivity {
     int share_name = 0;
     int setting_access = 0;
     RelativeLayout adsicon, adsicon2;
-    int loadaddcontent = 0;
     Newgame_DataBaseHelper newhelper;
     Newgame_DataBaseHelper2 newhelper2;
     Newgame_DataBaseHelper3 newhelper3;
@@ -247,10 +217,13 @@ public class Word_Game_Hard extends AppCompatActivity {
     int randomno;
     FirebaseAnalytics mFirebaseAnalytics;
     int dia_dismiss = 0;
+    private long endTime = 0; // required for countdown calculation
     private Handler timerHandler;
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
-    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+    private boolean isTimeFullyExpired = false;  // Add this at the top of your class
+
+    OnBackPressedCallback callback = new OnBackPressedCallback(true) {
         @Override
         public void handleOnBackPressed() {
             sps.putString(Word_Game_Hard.this, "game_area", "on");
@@ -285,7 +258,7 @@ public class Word_Game_Hard extends AppCompatActivity {
                     if (date.equals("0")) pos = 1;
                     else pos = 2;
 
-                  //  myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+                    //  myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
                     myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
 
                     // String date = sps.getString(Word_Game_Hard.this, "date");
@@ -307,10 +280,11 @@ public class Word_Game_Hard extends AppCompatActivity {
                     openDialog_p.dismiss();
                 });
                 no.setOnClickListener(v -> {
-                    openDialog_p.dismiss();
+
                     if (ttstop > 0) {
                         startChronometerCountdown(ttstop);
                     }
+                    openDialog_p.dismiss();
                 });
 
                 openDialog_p.setOnDismissListener(dialog -> {
@@ -326,10 +300,6 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         }
     };
-    // private MaxRewardedAd rewardedAd;
-    // private MaxInterstitialAd mInterstitialAd;
-    private RewardedAd rewardedAd;
-    private AdManagerInterstitialAd interstitialAd;
 
     private static final String UNITY_GAME_ID = "5819977";  // your Game ID
     private static final boolean TEST_MODE = true;
@@ -352,11 +322,13 @@ public class Word_Game_Hard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_word__game);
+        timerHandler = new Handler(Looper.getMainLooper());
         UnityAds.initialize(this, UNITY_GAME_ID, TEST_MODE, new IUnityAdsInitializationListener() {
             @Override
             public void onInitializationComplete() {
                 System.out.println("Unity Ads Initialization Complete");
             }
+
             @Override
             public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
                 System.out.println("Unity Ads Initialization Failed: " + message);
@@ -407,9 +379,9 @@ public class Word_Game_Hard extends AppCompatActivity {
         rewarded_adnew();
         if (sps.getInt(Word_Game_Hard.this, "purchase_ads") == 0) {
             // industrialload();
-            if (!sps.getString(Word_Game_Hard.this, "InterstitialId").equals("") || sps.getString(Word_Game_Hard.this, "InterstitialId") != null) {
-                industrialload();
-            }
+            // if (!sps.getString(Word_Game_Hard.this, "InterstitialId").equals("") || sps.getString(Word_Game_Hard.this, "InterstitialId") != null) {
+            industrialload();
+            //}
         }
         adds = findViewById(R.id.ads_lay);
         adsLay1 = findViewById(R.id.adsLay1);
@@ -430,7 +402,7 @@ public class Word_Game_Hard extends AppCompatActivity {
                 );
                 adsLay1.setVisibility(View.GONE);
             }
-        }else adsLay1.setVisibility(View.GONE);
+        } else adsLay1.setVisibility(View.GONE);
 
         if (!Utills.INSTANCE.isColumnExists(this, "answertable", "rd"))
             myDbHelper.executeSql("alter table answertable add column rd integer DEFAULT 0");
@@ -662,7 +634,6 @@ public class Word_Game_Hard extends AppCompatActivity {
         vl14 = findViewById(R.id.ans14);
 
 
-
         Bundle extras;
         extras = getIntent().getExtras();
         if (extras != null) {
@@ -722,6 +693,11 @@ public class Word_Game_Hard extends AppCompatActivity {
         });
         earncoin.setOnClickListener(v -> dialog(0));
         bt1.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             // c1.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -731,6 +707,11 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         });
         bt2.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             // c2.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -739,6 +720,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             word_editer.append(ts);
         });
         bt3.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             // c3.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -747,6 +733,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             word_editer.append(ts);
         });
         bt5.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             // c4.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -755,6 +746,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             word_editer.append(ts);
         });
         bt6.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             //c5.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -763,6 +759,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             word_editer.append(ts);
         });
         bt7.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             //c6.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -771,6 +772,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             word_editer.append(ts);
         });
         bt9.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             // c7.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -779,6 +785,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             word_editer.append(ts);
         });
         bt10.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             //  c8.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -787,6 +798,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             word_editer.append(ts);
         });
         bt11.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             //c9.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -795,6 +811,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             word_editer.append(ts);
         });
         bt4.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             // c10.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -803,6 +824,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             word_editer.append(ts);
         });
         bt8.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             //c11.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -811,6 +837,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             word_editer.append(ts);
         });
         bt12.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             // c12.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -820,6 +851,11 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         });
         bt13.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             // c13.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -828,6 +864,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             word_editer.append(ts);
         });
         bt14.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             //c14.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -836,6 +877,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             word_editer.append(ts);
         });
         bt15.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             //c15.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -844,6 +890,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             word_editer.append(ts);
         });
         bt16.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             // c16.start();
             click.play(soundId1, sv, sv, 0, 0, sv);
             Animation shake = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.button_shake);
@@ -859,11 +910,21 @@ public class Word_Game_Hard extends AppCompatActivity {
             permission(a);
         });
         h_watts_app.setOnClickListener(view -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 2;
             String a = "com.whatsapp";
             permission(a);
         });
         h_facebook.setOnClickListener(view -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             share_name = 1;
             final String a = "com.facebook.katana";
             permission(a);
@@ -894,6 +955,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         });
 
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
+        LinearLayout resetLayout = findViewById(R.id.resetLayout);
 
         skipLayout.setOnClickListener(v -> {
             focus.stop();
@@ -904,7 +966,10 @@ public class Word_Game_Hard extends AppCompatActivity {
             } else Toast.makeText(Word_Game_Hard.this, "Not Available", Toast.LENGTH_SHORT).show();
 
         });
+        resetLayout.setOnClickListener(view -> {
 
+            showResetDialog();
+        });
 
 
         skip.setOnClickListener(v -> {
@@ -919,6 +984,11 @@ public class Word_Game_Hard extends AppCompatActivity {
 
 
         verify.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             String ans = word_editer.getText().toString();
             if (ans.length() != 0) {
                 Cursor cs = myDbHelper.getQry("select * from answertable where answer LIKE'" + ans + "'and isfinish='1'and levelid='" + letterid + "'and gameid='" + gameid + "' and rd='" + rdvalu + "' ");
@@ -1147,6 +1217,11 @@ public class Word_Game_Hard extends AppCompatActivity {
 
 
         q1.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -1203,6 +1278,17 @@ public class Word_Game_Hard extends AppCompatActivity {
                 }
 
             } else {
+
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
+
                 final Dialog openDialog = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
@@ -1267,6 +1353,9 @@ public class Word_Game_Hard extends AppCompatActivity {
                     }
                 });
                 no.setOnClickListener(v127 -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop); // resume from where paused
+                    }
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
                     openDialog.dismiss();
                 });
@@ -1275,6 +1364,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             else dialog(1);
         });
         q2.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -1330,6 +1424,15 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
@@ -1392,6 +1495,9 @@ public class Word_Game_Hard extends AppCompatActivity {
                     }
                 });
                 no.setOnClickListener(v125 -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop); // resume from where paused
+                    }
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
                     openDialog.dismiss();
                 });
@@ -1400,6 +1506,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             else dialog(1);
         });
         q3.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
 
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
@@ -1429,7 +1540,6 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                         sps.putInt(getApplicationContext(), "ach6_a1", 0);
 
-
                         vl3.setText(sa);
                         vl3.setTextColor(getResources().getColor(R.color.rippelColor1));
                         q3.setBackgroundResource(R.drawable.tick_background);
@@ -1457,6 +1567,15 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
@@ -1523,22 +1642,32 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                     }
                 });
-                no.setOnClickListener(v123 -> openDialog.dismiss());
+                no.setOnClickListener(v127 -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop); // resume from where paused
+                    }
+                    openDialog.dismiss();
+                });
                 if (!isFinishing()) openDialog.show();
             }
             else dialog(1);
         });
         q4.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
             if (sk > 50) if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
-                Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "' and rd='" + rdvalu + "' order by random() limit 1");
+                Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' order by random() limit 1");
                 cd.moveToFirst();
                 if (cd.getCount() != 0) {
                     if (x <= tans) {
                         String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
-                        myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "' and rd='" + rdvalu + "'");
+                        myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
                         myDbHelper.executeSql("UPDATE answertable SET useranswer=1 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "'");
 
                         //Score Adding
@@ -1582,6 +1711,15 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
@@ -1643,6 +1781,9 @@ public class Word_Game_Hard extends AppCompatActivity {
                     }
                 });
                 no.setOnClickListener(v121 -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop); // resume from where paused
+                    }
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
                     openDialog.dismiss();
                 });
@@ -1651,6 +1792,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             else dialog(1);
         });
         q5.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -1705,6 +1851,15 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
@@ -1767,6 +1922,9 @@ public class Word_Game_Hard extends AppCompatActivity {
                     }
                 });
                 no.setOnClickListener(v119 -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop); // resume from where paused
+                    }
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
                     openDialog.dismiss();
                 });
@@ -1775,6 +1933,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             else dialog(1);
         });
         q6.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -1830,6 +1993,15 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
@@ -1893,6 +2065,9 @@ public class Word_Game_Hard extends AppCompatActivity {
                     }
                 });
                 no.setOnClickListener(v117 -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop); // resume from where paused
+                    }
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
                     openDialog.dismiss();
                 });
@@ -1901,7 +2076,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             else dialog(1);
         });
         q7.setOnClickListener(v -> {
-
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -1958,6 +2137,15 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
@@ -2022,6 +2210,9 @@ public class Word_Game_Hard extends AppCompatActivity {
                     }
                 });
                 no.setOnClickListener(v115 -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop); // resume from where paused
+                    }
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
                     openDialog.dismiss();
                 });
@@ -2030,6 +2221,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             else dialog(1);
         });
         q8.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -2086,6 +2282,15 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
@@ -2149,6 +2354,9 @@ public class Word_Game_Hard extends AppCompatActivity {
                     }
                 });
                 no.setOnClickListener(v113 -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop); // resume from where paused
+                    }
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
                     openDialog.dismiss();
                 });
@@ -2156,14 +2364,17 @@ public class Word_Game_Hard extends AppCompatActivity {
             }
             else dialog(1);
         });
-
-
         q9.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
             if (sk > 50) if (sps.getString(getApplicationContext(), "checkbox_ans").equals("yes")) {
-                Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "' and rd='" + rdvalu + "' order by random() limit 1");
+                Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' order by random() limit 1");
                 cd.moveToFirst();
                 if (cd.getCount() != 0) {
                     if (x <= tans) {
@@ -2214,6 +2425,15 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
@@ -2278,6 +2498,9 @@ public class Word_Game_Hard extends AppCompatActivity {
                     }
                 });
                 no.setOnClickListener(v111 -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop); // resume from where paused
+                    }
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
                     openDialog.dismiss();
                 });
@@ -2286,7 +2509,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             else dialog(1);
         });
         q10.setOnClickListener(v -> {
-
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -2343,6 +2570,15 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
@@ -2406,6 +2642,9 @@ public class Word_Game_Hard extends AppCompatActivity {
                     }
                 });
                 no.setOnClickListener(v19 -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop); // resume from where paused
+                    }
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
                     openDialog.dismiss();
                 });
@@ -2414,7 +2653,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             else dialog(1);
         });
         q11.setOnClickListener(v -> {
-
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -2473,6 +2716,15 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
@@ -2535,6 +2787,9 @@ public class Word_Game_Hard extends AppCompatActivity {
                     }
                 });
                 no.setOnClickListener(v17 -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop); // resume from where paused
+                    }
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
                     openDialog.dismiss();
                 });
@@ -2543,6 +2798,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             else dialog(1);
         });
         q12.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -2598,6 +2858,15 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
@@ -2659,6 +2928,9 @@ public class Word_Game_Hard extends AppCompatActivity {
                     }
                 });
                 no.setOnClickListener(v15 -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop); // resume from where paused
+                    }
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
                     openDialog.dismiss();
                 });
@@ -2667,7 +2939,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             else dialog(1);
         });
         q13.setOnClickListener(v -> {
-
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -2724,6 +3000,15 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
@@ -2788,6 +3073,9 @@ public class Word_Game_Hard extends AppCompatActivity {
                     }
                 });
                 no.setOnClickListener(v13 -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop); // resume from where paused
+                    }
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
                     openDialog.dismiss();
                 });
@@ -2796,6 +3084,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             else dialog(1);
         });
         q14.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
             int sk = cfw.getInt(cfw.getColumnIndexOrThrow("coins"));
@@ -2848,6 +3141,15 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
@@ -2908,6 +3210,9 @@ public class Word_Game_Hard extends AppCompatActivity {
                     }
                 });
                 no.setOnClickListener(v1 -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop); // resume from where paused
+                    }
                     sps.putString(getApplicationContext(), "checkbox_ans", "");
                     openDialog.dismiss();
                 });
@@ -2920,50 +3225,248 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         // sps.putInt(Word_Game_Hard.this,"bones_prog",300);
         ex_bones.setOnClickListener(v -> {
-
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
             if (sps.getInt(Word_Game_Hard.this, "bones_prog") != 0) {
-                sps.putInt(getApplicationContext(), "bones_prog", sps.getInt(Word_Game_Hard.this, "bones_prog") - 1);
-                Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' order by random() limit 1");
-                cd.moveToFirst();
-                if (cd.getCount() != 0) {
-
-                    if (x <= tans) {
-                        String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
-                        myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
-                        myDbHelper.executeSql("UPDATE answertable SET useranswer=0 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
-                        bones_ans(sa);
-                        ex_bones.setText("" + sps.getInt(Word_Game_Hard.this, "bones_prog"));
-                        b_score = b_score + 10;
-                        x++;
-                    }
-                    if (x >= tans) {
-                        verify.setVisibility(View.INVISIBLE);
-                        ex_bones.setVisibility(View.INVISIBLE);
-
-                        focus.stop();
-                        update_price();
-
-                        String date = sps.getString(Word_Game_Hard.this, "date");
-                        if (date.equals("0"))
-                            myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid='" + letterid + "'and gameid='" + gameid + "'");
-                        else
-                            myDbHelper.executeSql("UPDATE dailytest SET isfinish='1' WHERE levelid='" + letterid + "'and gameid='" + gameid + "'");
-                        completegame();
-                        Handler handler = new Handler(Looper.myLooper());
-                        handler.postDelayed(() -> adShow(), 2000);
-                    }
-                }
+                nocoinReduceDialog();
             } else
                 Toast.makeText(Word_Game_Hard.this, "தொடர்ந்து சரியான  10 விடைகளை கண்டுபிடித்தால், கூடுதல் விடைகளை நாணயங்கள் குறையாமல் அறிந்து கொள்ளலாம்.", Toast.LENGTH_SHORT).show();
 
         });
 
-        clear.setOnClickListener(v -> pressKey());
+        clear.setOnClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return;
+            }
+            pressKey();});
         clear.setOnLongClickListener(v -> {
+             long remaining = endTime - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return true;
+            }
             word_editer.setText("");
             return false;
         });
     }
+
+    private void showResetDialog() {
+        // ✅ Pause and capture remaining time
+        if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+
+            // Save remaining time
+            ttstop = endTime - SystemClock.elapsedRealtime();
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog dialog = new Dialog(Word_Game_Hard.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            // Show Unity rewarded ad
+            dialog.dismiss();
+
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Word_Game_Hard.this);
+                UnityAds.show(Word_Game_Hard.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            // ✅ Step 1: Stop current timer
+                            if (timerHandler != null && timerRunnable != null) {
+                                timerHandler.removeCallbacks(timerRunnable);
+                            }
+                            isTimerRunning = false;
+                            focus.setText("00:00"); // reset view text
+
+                            // ✅ Step 2: Reset game state
+                            x = 0;
+                            b_score = 0;
+                            word_editer.setText("");
+
+                            // ✅ Step 3: Clear UI
+                            TextView[] answerViews = {vl1, vl2, vl3, vl4, vl5, vl6, vl7, vl8, vl9, vl10, vl11, vl12, vl13, vl14};
+                            ImageView[] imageViews = {q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14};
+
+                            for (int i = 0; i < answerViews.length; i++) {
+                                answerViews[i].setText("");
+                                imageViews[i].setImageResource(R.drawable.yellow_question);
+                                imageViews[i].setClickable(true);
+                                imageViews[i].setVisibility(i == 0 ? View.VISIBLE : View.GONE); // Only q1 visible
+                            }
+
+                            // ✅ Step 4: Reset DB
+                            String date = sps.getString(Word_Game_Hard.this, "date");
+                            int pos = date.equals("0") ? 1 : 2;
+                            myDbHelper.executeSql("UPDATE answertable SET isfinish='0', useranswer=NULL WHERE levelid='" + letterid + "' AND gameid='" + gameid + "' AND rd='" + pos + "'");
+
+                            // ✅ Step 5: Restart timer with fresh duration
+                            int emptyLines = getEmptyAnswerCount();  // use original logic if needed
+                            long countdownTimeMillis = emptyLines * 30 * 1000L;
+                            if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000L;
+
+                            startChronometerCountdown(countdownTimeMillis);
+
+                            Toast.makeText(Word_Game_Hard.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(Word_Game_Hard.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+            }
+        });
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    private void nocoinReduceDialog() {
+        // ✅ Pause and capture remaining time
+        if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+
+            // Save remaining time
+            ttstop = endTime - SystemClock.elapsedRealtime();
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog dialog = new Dialog(Word_Game_Hard.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        TextView message = dialog.findViewById(R.id.tvMessage);
+        message.setText("கூடுதல் விடைகளை நாணயங்கள் குறையாமல் அறிந்து கொள்ள காணொளியை பாருங்கள்");
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            // Show Unity rewarded ad
+            dialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Word_Game_Hard.this);
+                UnityAds.show(Word_Game_Hard.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            sps.putInt(getApplicationContext(), "bones_prog", sps.getInt(Word_Game_Hard.this, "bones_prog") - 1);
+                            Cursor cd = myDbHelper.getQry("SELECT answer FROM answertable where isfinish='0'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' order by random() limit 1");
+                            cd.moveToFirst();
+                            if (cd.getCount() != 0) {
+
+                                if (x <= tans) {
+                                    String sa = cd.getString(cd.getColumnIndexOrThrow("answer"));
+                                    myDbHelper.executeSql("UPDATE answertable SET isfinish=1 WHERE answer='" + sa + "'and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
+                                    myDbHelper.executeSql("UPDATE answertable SET useranswer=0 WHERE answer='" + sa + "' and levelid='" + letterid + "'and gameid='" + gameid + "'and rd='" + rdvalu + "' ");
+                                    bones_ans(sa);
+                                    ex_bones.setText("" + sps.getInt(Word_Game_Hard.this, "bones_prog"));
+                                    b_score = b_score + 10;
+                                    x++;
+                                }
+                                if (x >= tans) {
+                                    verify.setVisibility(View.INVISIBLE);
+                                    ex_bones.setVisibility(View.INVISIBLE);
+
+                                    focus.stop();
+                                    update_price();
+
+                                    String date = sps.getString(Word_Game_Hard.this, "date");
+                                    if (date.equals("0"))
+                                        myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid='" + letterid + "'and gameid='" + gameid + "'");
+                                    else
+                                        myDbHelper.executeSql("UPDATE dailytest SET isfinish='1' WHERE levelid='" + letterid + "'and gameid='" + gameid + "'");
+                                    completegame();
+                                    Handler handler = new Handler(Looper.myLooper());
+                                    handler.postDelayed(() -> adShow(), 2000);
+                                }
+                            }
+
+                        } else {
+                            Toast.makeText(Word_Game_Hard.this, "முழு காணொளியையும் பார்த்து விடைகளை நாணயங்கள் குறையாமல் அறிந்து கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+            }
+        });
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
 
     private void startChronometerCountdown(long durationInMillis) {
         if (focus == null) return;
@@ -2976,60 +3479,154 @@ public class Word_Game_Hard extends AppCompatActivity {
             timerHandler.removeCallbacks(timerRunnable);
         }
 
-        long endTime = SystemClock.elapsedRealtime() + durationInMillis;
+        endTime = SystemClock.elapsedRealtime() + durationInMillis;
+        isTimeFullyExpired = false;
 
         timerRunnable = new Runnable() {
             @Override
             public void run() {
-                if (timerHandler == null) return;  // Fix for crash
+                if (timerHandler == null) return;
 
                 long remainingMillis = endTime - SystemClock.elapsedRealtime();
 
                 if (remainingMillis <= 0) {
                     focus.setText("00:00");
                     isTimerRunning = false;
+                    isTimeFullyExpired = true;
                     showExtendTimeDialog();
                 } else {
                     int seconds = (int) (remainingMillis / 1000) % 60;
                     int minutes = (int) ((remainingMillis / (1000 * 60)) % 60);
                     String timeStr = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
                     focus.setText(timeStr);
-                    timerHandler.postDelayed(this, 1000);  // Will not crash now
+
+                    timerHandler.postDelayed(this, 1000);
                 }
             }
         };
 
-        if (timerHandler != null) {
-            timerHandler.post(timerRunnable);
-        }
+        timerHandler.post(timerRunnable);
         isTimerRunning = true;
     }
+
 
     private int getEmptyAnswerCount() {
         int emptyCount = 0;
 
-        if (vl1.getVisibility() == View.VISIBLE && vl1.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl2.getVisibility() == View.VISIBLE && vl2.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl3.getVisibility() == View.VISIBLE && vl3.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl4.getVisibility() == View.VISIBLE && vl4.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl5.getVisibility() == View.VISIBLE && vl5.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl6.getVisibility() == View.VISIBLE && vl6.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl7.getVisibility() == View.VISIBLE && vl7.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl8.getVisibility() == View.VISIBLE && vl8.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl9.getVisibility() == View.VISIBLE && vl9.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl10.getVisibility() == View.VISIBLE && vl10.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl11.getVisibility() == View.VISIBLE && vl11.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl12.getVisibility() == View.VISIBLE && vl12.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl13.getVisibility() == View.VISIBLE && vl13.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl14.getVisibility() == View.VISIBLE && vl14.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl1.getVisibility() == View.VISIBLE && vl1.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl2.getVisibility() == View.VISIBLE && vl2.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl3.getVisibility() == View.VISIBLE && vl3.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl4.getVisibility() == View.VISIBLE && vl4.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl5.getVisibility() == View.VISIBLE && vl5.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl6.getVisibility() == View.VISIBLE && vl6.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl7.getVisibility() == View.VISIBLE && vl7.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl8.getVisibility() == View.VISIBLE && vl8.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl9.getVisibility() == View.VISIBLE && vl9.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl10.getVisibility() == View.VISIBLE && vl10.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl11.getVisibility() == View.VISIBLE && vl11.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl12.getVisibility() == View.VISIBLE && vl12.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl13.getVisibility() == View.VISIBLE && vl13.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl14.getVisibility() == View.VISIBLE && vl14.getText().toString().trim().isEmpty())
+            emptyCount++;
 
         System.out.println("Empty & Visible count Word game Hard: " + emptyCount);
         return emptyCount;
     }
 
     private void showExtendTimeDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(Word_Game_Hard.this);
-        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
+
+        // ✅ Pause and capture remaining time
+        if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+
+            // Save remaining time
+            ttstop = endTime - SystemClock.elapsedRealtime();
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog dialog = new Dialog(Word_Game_Hard.this);
+        dialog.setContentView(R.layout.dialog_reset);
+        TextView message = dialog.findViewById(R.id.tvMessage);
+        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        Button btnYes = dialog.findViewById(R.id.btnYes);
+        Button btnNo = dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(v -> {
+            // Show Unity rewarded ad
+            dialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Word_Game_Hard.this);
+                UnityAds.show(Word_Game_Hard.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            int emptyLines = getEmptyAnswerCount();
+                            long countdownTimeMillis = emptyLines * 30 * 1000L;
+                            startChronometerCountdown(countdownTimeMillis); // Restart with another 30s
+                            isTimeFullyExpired = false;
+
+                        } else {
+                            Toast.makeText(Word_Game_Hard.this, "முழு காணொளியையும் பார்த்து 30 விநாடிகள் பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+            }
+        });
+
+        btnNo.setOnClickListener(v -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop); // resume from where paused
+            }
+            dialog.dismiss();
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
+
+
+       /* AlertDialog.Builder builder = new AlertDialog.Builder(Word_Game_Hard.this);
+        builder.setMessage("Time's up! Do you want to extend by 30 seconds watch ad?");
         builder.setCancelable(false);
         builder.setPositiveButton("Yes", (dialog, which) -> {
             int emptyLines = getEmptyAnswerCount();
@@ -3043,7 +3640,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         });
 
         AlertDialog dialog = builder.create();
-        dialog.show();
+        dialog.show();*/
     }
 
     private void pluesanim() {
@@ -3168,7 +3765,15 @@ public class Word_Game_Hard extends AppCompatActivity {
     }
 
     private void feedbackdialog() {
+        // ✅ Pause and capture remaining time
+        if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
 
+            // Save remaining time
+            ttstop = endTime - SystemClock.elapsedRealtime();
+            if (ttstop < 0) ttstop = 0;
+        }
 
         final Dialog openDialog = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog.setContentView(R.layout.userfeedback);
@@ -3191,6 +3796,13 @@ public class Word_Game_Hard extends AppCompatActivity {
         final TextView clear = openDialog.findViewById(R.id.clear);
         final TextView sends = openDialog.findViewById(R.id.sends);
         final TextView cancel = openDialog.findViewById(R.id.feed_close);
+
+        // Add dismiss listener to resume timer when dialog is closed
+        openDialog.setOnDismissListener(dialog -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
 
         openDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -3274,13 +3886,11 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         }
         bt1.setOnClickListener(v -> {
-
-            String ts = bt1.getText().toString();
+                      String ts = bt1.getText().toString();
             usertxt.append(ts);
 
         });
         bt2.setOnClickListener(v -> {
-
             String ts = bt2.getText().toString();
             usertxt.append(ts);
         });
@@ -3300,12 +3910,10 @@ public class Word_Game_Hard extends AppCompatActivity {
             usertxt.append(ts);
         });
         bt7.setOnClickListener(v -> {
-
             String ts = bt7.getText().toString();
             usertxt.append(ts);
         });
         bt9.setOnClickListener(v -> {
-
             String ts = bt9.getText().toString();
             usertxt.append(ts);
         });
@@ -3315,7 +3923,6 @@ public class Word_Game_Hard extends AppCompatActivity {
             usertxt.append(ts);
         });
         bt11.setOnClickListener(v -> {
-
             String ts = bt11.getText().toString();
             usertxt.append(ts);
         });
@@ -3331,7 +3938,6 @@ public class Word_Game_Hard extends AppCompatActivity {
             usertxt.append(ts);
         });
         bt12.setOnClickListener(v -> {
-
             String ts = bt12.getText().toString();
             usertxt.append(ts);
 
@@ -3399,8 +4005,10 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         });
         nextspace.setOnClickListener(v -> usertxt.append(","));
-        clear.setOnClickListener(v -> dialogkey());
+        clear.setOnClickListener(v -> {
+            dialogkey();} );
         clear.setOnLongClickListener(v -> {
+
             usertxt.setText("");
             return false;
         });
@@ -3553,7 +4161,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         }
     }
 
-    public void nextfont() {
+  /*  public void nextfont() {
 
         //Font Setting
 
@@ -3587,7 +4195,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         score.setTypeface(typ);
         verify.setTypeface(typ);
         focus.setTypeface(typ);
-    }
+    }*/
 
     private void stopAndResetTimer() {
         if (timerHandler != null && timerRunnable != null) {
@@ -4192,9 +4800,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         openDialog_daily = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_daily.setContentView(R.layout.daily_bones_newd2);
         openDialog_daily.setCancelable(false);
-        // TextView b_score = (TextView) openDialog.findViewById(R.id.b_score);
         TextView ok_y = openDialog_daily.findViewById(R.id.ok_y);
-        // TextView b_close = (TextView) openDialog.findViewById(R.id.b_close);
         ea = 100;
         Calendar calendar3 = Calendar.getInstance();
         int cur_year1 = calendar3.get(Calendar.YEAR);
@@ -4278,10 +4884,8 @@ public class Word_Game_Hard extends AppCompatActivity {
                     show_reward();
                 } else new Handler(Looper.myLooper()).postDelayed(() -> {
                     reward_progressBar.dismiss();
-                    // mShowVideoButton.setVisibility(View.VISIBLE);
                     if (fb_reward == 1) show_reward();
                     else {
-                        //reward(Word_Game_Hard.this);
                         rewarded_adnew();
                         Toast.makeText(Word_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                     }
@@ -4311,14 +4915,12 @@ public class Word_Game_Hard extends AppCompatActivity {
     }
 
     private void simple() {
-//second game layout visibility
         LinearLayout linearLayout;
         linearLayout = findViewById(R.id.anslist2);
         linearLayout.setVisibility(View.GONE);
         LinearLayout linearLayout1;
         linearLayout1 = findViewById(R.id.list2_pic);
         linearLayout1.setVisibility(View.GONE);
-        //
 
         vl1.setVisibility(View.VISIBLE);
         vl2.setVisibility(View.VISIBLE);
@@ -4391,7 +4993,6 @@ public class Word_Game_Hard extends AppCompatActivity {
                     show_reward();
                     openDialog_earncoin.cancel();
 
-                    // mShowVideoButton.setVisibility(View.VISIBLE);
                 } else {
 
                     rewarded_adnew();
@@ -4408,7 +5009,6 @@ public class Word_Game_Hard extends AppCompatActivity {
         });
 
         wp.setOnClickListener(view -> {
-            // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             if (isNetworkAvailable(this)) {
                 final boolean appinstalled = appInstalledOrNot("com.whatsapp");
                 if (appinstalled) {
@@ -4429,7 +5029,6 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         });
         gplus.setOnClickListener(view -> {
-            // toast("இணையதள சேவையை சரிபார்க்கவும் ");
             if (isNetworkAvailable(this)) {
 
                 final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
@@ -4472,834 +5071,818 @@ public class Word_Game_Hard extends AppCompatActivity {
         return app_installed;
     }
 
-        public void setSc() {
+    public void setSc() {
 
 
-            if (s == 1) {
-                openDialog_p.dismiss();
-                s = 0;
-            }
-            sps.putString(Word_Game_Hard.this, "answer_tb", "");
+        if (s == 1) {
+            openDialog_p.dismiss();
+            s = 0;
+        }
+        sps.putString(Word_Game_Hard.this, "answer_tb", "");
 
 
-            long timeElapsed = SystemClock.elapsedRealtime() - focus.getBase();
-            int hours = (int) (timeElapsed / 3600000);
-            int minutes = (int) (timeElapsed - hours * 3600000) / 60000;
-            int seconds = (int) (timeElapsed - hours * 3600000 - minutes * 60000) / 1000;
+        long timeElapsed = SystemClock.elapsedRealtime() - focus.getBase();
+        int hours = (int) (timeElapsed / 3600000);
+        int minutes = (int) (timeElapsed - hours * 3600000) / 60000;
+        int seconds = (int) (timeElapsed - hours * 3600000 - minutes * 60000) / 1000;
 
-            int min = hours * 60;
-            int sec = min * 60;
-            int sec2 = minutes * 60;
-            f_sec = sec + sec2 + seconds;
+        int min = hours * 60;
+        int sec = min * 60;
+        int sec2 = minutes * 60;
+        f_sec = sec + sec2 + seconds;
 
 
-            TextView arputham = openDialog.findViewById(R.id.arputham);
-            TextView extracoin = openDialog.findViewById(R.id.extracoin);
-            next_continue = openDialog.findViewById(R.id.continues);
-            ttscores = openDialog.findViewById(R.id.tts_score);
-            final TextView bsscores = openDialog.findViewById(R.id.bs_score);
-            final TextView dumy = openDialog.findViewById(R.id.bs_score_dum);
-            final TextView cns1 = openDialog.findViewById(R.id.cnse1);
-            final TextView cns2 = openDialog.findViewById(R.id.cnse2);
-            final TextView cns3 = openDialog.findViewById(R.id.cnse3);
-            final TextView cns4 = openDialog.findViewById(R.id.cnse4);
-            final TextView cns5 = openDialog.findViewById(R.id.cnse5);
-            final TextView cns6 = openDialog.findViewById(R.id.cnse6);
-            final TextView cns7 = openDialog.findViewById(R.id.cnse7);
-            addsdialog = openDialog.findViewById(R.id.ads_lay);
-            tx2 = openDialog.findViewById(R.id.tt2);
-            final TextView wtp = openDialog.findViewById(R.id.wtp);
-            final TextView fbs = openDialog.findViewById(R.id.fbp);
-            final TextView gplus = openDialog.findViewById(R.id.gplus);
-            final LinearLayout vid_earn = openDialog.findViewById(R.id.vid_earn);
-            final LinearLayout rewardvideo = openDialog.findViewById(R.id.rewardvideo);
+        TextView arputham = openDialog.findViewById(R.id.arputham);
+        TextView extracoin = openDialog.findViewById(R.id.extracoin);
+        next_continue = openDialog.findViewById(R.id.continues);
+        ttscores = openDialog.findViewById(R.id.tts_score);
+        final TextView bsscores = openDialog.findViewById(R.id.bs_score);
+        final TextView dumy = openDialog.findViewById(R.id.bs_score_dum);
+        final TextView cns1 = openDialog.findViewById(R.id.cnse1);
+        final TextView cns2 = openDialog.findViewById(R.id.cnse2);
+        final TextView cns3 = openDialog.findViewById(R.id.cnse3);
+        final TextView cns4 = openDialog.findViewById(R.id.cnse4);
+        final TextView cns5 = openDialog.findViewById(R.id.cnse5);
+        final TextView cns6 = openDialog.findViewById(R.id.cnse6);
+        final TextView cns7 = openDialog.findViewById(R.id.cnse7);
+        addsdialog = openDialog.findViewById(R.id.ads_lay);
+        tx2 = openDialog.findViewById(R.id.tt2);
+        final TextView wtp = openDialog.findViewById(R.id.wtp);
+        final TextView fbs = openDialog.findViewById(R.id.fbp);
+        final TextView gplus = openDialog.findViewById(R.id.gplus);
+        final LinearLayout vid_earn = openDialog.findViewById(R.id.vid_earn);
+        final LinearLayout rewardvideo = openDialog.findViewById(R.id.rewardvideo);
 
-            ImageView prize_logo = openDialog.findViewById(R.id.prize_logo);
-            if (sps.getInt(Word_Game_Hard.this, "remoteConfig_prize") == 1)
-                prize_logo.setVisibility(View.VISIBLE);
-            else prize_logo.setVisibility(View.GONE);
-            prize_logo.setOnClickListener(v -> {
-                if (isNetworkAvailable(this))
-                    if (sps.getString(Word_Game_Hard.this, "price_registration").equals("com")) {
-                        finish();
-                        Intent i = new Intent(Word_Game_Hard.this, Game_Status.class);
-                        startActivity(i);
-                    } else if (sps.getString(Word_Game_Hard.this, "otp_verify").equals("yes")) {
-                        finish();
-                        Intent i = new Intent(Word_Game_Hard.this, LoginActivity.class);
-                        startActivity(i);
-                    } else {
-                        finish();
-                        Intent i = new Intent(Word_Game_Hard.this, Price_Login.class);
-                        startActivity(i);
+        ImageView prize_logo = openDialog.findViewById(R.id.prize_logo);
+        if (sps.getInt(Word_Game_Hard.this, "remoteConfig_prize") == 1)
+            prize_logo.setVisibility(View.VISIBLE);
+        else prize_logo.setVisibility(View.GONE);
+        prize_logo.setOnClickListener(v -> {
+            if (isNetworkAvailable(this))
+                if (sps.getString(Word_Game_Hard.this, "price_registration").equals("com")) {
+                    finish();
+                    Intent i = new Intent(Word_Game_Hard.this, Game_Status.class);
+                    startActivity(i);
+                } else if (sps.getString(Word_Game_Hard.this, "otp_verify").equals("yes")) {
+                    finish();
+                    Intent i = new Intent(Word_Game_Hard.this, LoginActivity.class);
+                    startActivity(i);
+                } else {
+                    finish();
+                    Intent i = new Intent(Word_Game_Hard.this, Price_Login.class);
+                    startActivity(i);
+                }
+            else
+                Toast.makeText(Word_Game_Hard.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
+        });
+
+        LinearLayout ads_layout = openDialog.findViewById(R.id.fl_adplaceholder);
+
+        TextView video_earn = openDialog.findViewById(R.id.video_earn);
+        video_earn.setText("காணொளியை பார்த்து " + sps.getInt(Word_Game_Hard.this, "reward_coin_txt") + "+ நாணயங்கள் பெற");
+
+        Animation myFadeInAnimation = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.blink_animation);
+        vid_earn.startAnimation(myFadeInAnimation);
+
+
+        if (sps.getInt(Word_Game_Hard.this, "purchase_ads") == 1)
+            ads_layout.setVisibility(View.GONE);
+        else if (isNetworkAvailable(context)) {
+        } else ads_layout.setVisibility(View.GONE);
+
+
+        next_continue.setVisibility(View.INVISIBLE);
+
+
+        if (sps.getString(Word_Game_Hard.this, "complite_reg").equals("yes")) {
+            String dates = sps.getString(Word_Game_Hard.this, "date");
+            if (dates.equals("0")) rewardvideo.setVisibility(View.VISIBLE);
+        }
+
+
+        Cursor csk = myDbHelper.getQry("select * from answertable where gameid='" + gameid + "' and levelid='" + letterid + "' and rd='" + rdvalu + "' and isfinish='1' and useranswer='0'");
+        csk.moveToFirst();
+        if (csk.getCount() == 0) rewardvideo.setVisibility(View.INVISIBLE);
+
+
+        vid_earn.setOnClickListener(v -> {
+            rvo = 2;
+            if (isNetworkAvailable(context)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    rewardvideo.setVisibility(View.INVISIBLE);
+                } else new Handler(Looper.myLooper()).postDelayed(() -> {
+                    reward_progressBar.dismiss();
+                    if (fb_reward == 1) show_reward();
+                    else {
+
+                        rewarded_adnew();
+                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                     }
-                else
-                    Toast.makeText(Word_Game_Hard.this, "இணையதள சேவையை சரிபார்க்கவும்", Toast.LENGTH_SHORT).show();
-            });
+                }, 2000);
+            } else
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
 
-            LinearLayout ads_layout = openDialog.findViewById(R.id.fl_adplaceholder);
-
-            TextView video_earn = openDialog.findViewById(R.id.video_earn);
-            video_earn.setText("காணொளியை பார்த்து " + sps.getInt(Word_Game_Hard.this, "reward_coin_txt") + "+ நாணயங்கள் பெற");
-
-            Animation myFadeInAnimation = AnimationUtils.loadAnimation(Word_Game_Hard.this, R.anim.blink_animation);
-            vid_earn.startAnimation(myFadeInAnimation);
+        });
 
 
-            //  New_Main_Activity.load_addFromMain_multiplayer(Word_Game_Hard.this,ads_layout);
-            if (sps.getInt(Word_Game_Hard.this, "purchase_ads") == 1)
-                ads_layout.setVisibility(View.GONE);
-            else if (isNetworkAvailable(context)) {
-                //New_Main_Activity.load_add_fb_rect_score_screen(context, ads_layout);
-            } else ads_layout.setVisibility(View.GONE);
+        c_counter = 0;
+        current_sc = 0;
+        case2 = 0;
+        tt_case2 = 0;
+        tt_tot2 = 0;
+        total_sc = 0;
+        c_total = 0;
+        ttscores.setText("");
+
+        final RelativeLayout adsicon = openDialog.findViewById(R.id.adsicon);
+        Animation shake;
+        shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulam);
+        adsicon.startAnimation(shake);
 
 
-            next_continue.setVisibility(View.INVISIBLE);
+        rewardvideo.setOnClickListener(v -> {
+            rvo = 2;
+            if (isNetworkAvailable(context)) {
+                final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
+                if (fb_reward == 1) {
+                    reward_progressBar.dismiss();
+                    show_reward();
+                    rewardvideo.setVisibility(View.INVISIBLE);
+                } else new Handler(Looper.myLooper()).postDelayed(() -> {
+                    reward_progressBar.dismiss();
+                    if (fb_reward == 1) show_reward();
+                    else {
+
+                        rewarded_adnew();
+                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                    }
+                }, 2000);
+            } else
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+        });
+        wtp.setOnClickListener(view -> {
+            if (isNetworkAvailable(this)) {
+                final boolean appinstalled = appInstalledOrNot("com.whatsapp");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.whatsapp");
+
+                    String msg = ("நான் சொல்லிஅடி செயலியில் சொல் விளையாட்டில் நிலை " + word_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivity(Intent.createChooser(i, "Share via"));
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 21);
 
 
-            if (sps.getString(Word_Game_Hard.this, "complite_reg").equals("yes")) {
-                String dates = sps.getString(Word_Game_Hard.this, "date");
-                if (dates.equals("0")) rewardvideo.setVisibility(View.VISIBLE);
-            }
-
-
-            Cursor csk = myDbHelper.getQry("select * from answertable where gameid='" + gameid + "' and levelid='" + letterid + "' and rd='" + rdvalu + "' and isfinish='1' and useranswer='0'");
-            csk.moveToFirst();
-            if (csk.getCount() == 0) rewardvideo.setVisibility(View.INVISIBLE);
-
-
-            vid_earn.setOnClickListener(v -> {
-                rvo = 2;
-                if (isNetworkAvailable(context)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
-                        reward_progressBar.dismiss();
-                        show_reward();
-                        rewardvideo.setVisibility(View.INVISIBLE);
-                    } else new Handler(Looper.myLooper()).postDelayed(() -> {
-                        reward_progressBar.dismiss();
-                        // mShowVideoButton.setVisibility(View.VISIBLE);
-                        if (fb_reward == 1) show_reward();
-                        else {
-
-                            rewarded_adnew();
-                            Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                        }
-                    }, 2000);
                 } else
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
 
-            });
+            } else
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+        });
+        fbs.setOnClickListener(view -> {
 
+        });
+        gplus.setOnClickListener(view -> {
+
+            if (isNetworkAvailable(this)) {
+                final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
+                if (appinstalled) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.setPackage("com.google.android.apps.plus");
+
+                    String msg = ("நான் சொல்லிஅடி செயலியில் சொல் விளையாட்டில்  நிலை " + word_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
+                    i.putExtra(Intent.EXTRA_TEXT, msg);
+                    startActivityForResult(Intent.createChooser(i, "Share via"), 16);
+
+
+                } else
+                    Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+
+            } else
+                Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
+
+        });
+
+
+        if (b_score >= tscore && f_sec <= ttime) {
+            b_score = 0;
+            arputham.setTypeface(tyr);
+            arputham.setText("Iè ÜŸ¹î‹");
+            extracoin.setTypeface(tyr);
+            extracoin.setText("Ã´î™ ï£íòƒèœ");
+            tx2.setTypeface(tyr);
+            tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
+            next_continue.setTypeface(tyr);
+            next_continue.setText("ªî£ì˜è");
+            String date = sps.getString(Word_Game_Hard.this, "date");
+            if (!date.equals("0")) next_continue.setText("சரி");
+            Handler handler1 = new Handler(Looper.myLooper());
+            handler1.postDelayed(() -> {
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                cns6.setVisibility(View.VISIBLE);
+            }, 500);
+            Handler handler2 = new Handler(Looper.myLooper());
+            handler2.postDelayed(() -> {
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                cns4.setVisibility(View.VISIBLE);
+            }, 1000);
+            Handler handler3 = new Handler(Looper.myLooper());
+            handler3.postDelayed(() -> {
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                cns3.setVisibility(View.VISIBLE);
+            }, 1500);
+            Handler handler4 = new Handler(Looper.myLooper());
+            handler4.postDelayed(() -> {
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                cns1.setVisibility(View.VISIBLE);
+            }, 2000);
+            Handler handler5 = new Handler(Looper.myLooper());
+            handler5.postDelayed(() -> {
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                cns2.setVisibility(View.VISIBLE);
+            }, 2500);
+            Handler handler6 = new Handler(Looper.myLooper());
+            handler6.postDelayed(() -> {
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                cns5.setVisibility(View.VISIBLE);
+            }, 3000);
+            Handler handler7 = new Handler(Looper.myLooper());
+            handler7.postDelayed(() -> {
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                cns7.setVisibility(View.VISIBLE);
+            }, 3500);
+
+            Handler handler8 = new Handler(Looper.myLooper());
+            handler8.postDelayed(() -> {
+                int[] locationInWindow = new int[2];
+                cns7.getLocationInWindow(locationInWindow);
+                int[] locationOnScreen = new int[2];
+                cns7.getLocationOnScreen(locationOnScreen);
+                float sourceX = locationOnScreen[0];
+                float sourceY = locationOnScreen[1];
+                int[] locationInWindowSecond = new int[2];
+                dumy.getLocationInWindow(locationInWindowSecond);
+                int[] locationOnScreenSecond = new int[2];
+                dumy.getLocationOnScreen(locationOnScreenSecond);
+                float destinationX = locationOnScreenSecond[0];
+                float destinationY = locationOnScreenSecond[1];
+                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                transAnimation.setDuration(400);
+                cns7.startAnimation(transAnimation);
+                cns7.postDelayed(() -> cns7.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+
+            }, 3900);
+            Handler handler9 = new Handler(Looper.myLooper());
+            handler9.postDelayed(() -> {
+                int[] locationInWindow = new int[2];
+                cns5.getLocationInWindow(locationInWindow);
+                int[] locationOnScreen = new int[2];
+                cns5.getLocationOnScreen(locationOnScreen);
+                float sourceX = locationOnScreen[0];
+                float sourceY = locationOnScreen[1];
+                int[] locationInWindowSecond = new int[2];
+                dumy.getLocationInWindow(locationInWindowSecond);
+                int[] locationOnScreenSecond = new int[2];
+                dumy.getLocationOnScreen(locationOnScreenSecond);
+                float destinationX = locationOnScreenSecond[0];
+                float destinationY = locationOnScreenSecond[1];
+                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                transAnimation.setDuration(400);
+                cns5.startAnimation(transAnimation);
+                cns5.postDelayed(() -> cns5.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+
+            }, 4300);
+            Handler handler10 = new Handler(Looper.myLooper());
+            handler10.postDelayed(() -> {
+                int[] locationInWindow = new int[2];
+                cns2.getLocationInWindow(locationInWindow);
+                int[] locationOnScreen = new int[2];
+                cns2.getLocationOnScreen(locationOnScreen);
+                float sourceX = locationOnScreen[0];
+                float sourceY = locationOnScreen[1];
+                int[] locationInWindowSecond = new int[2];
+                dumy.getLocationInWindow(locationInWindowSecond);
+                int[] locationOnScreenSecond = new int[2];
+                dumy.getLocationOnScreen(locationOnScreenSecond);
+                float destinationX = locationOnScreenSecond[0];
+                float destinationY = locationOnScreenSecond[1];
+                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                transAnimation.setDuration(400);
+                cns2.startAnimation(transAnimation);
+                cns2.postDelayed(() -> cns2.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+
+            }, 4700);
+            Handler handler11 = new Handler(Looper.myLooper());
+            handler11.postDelayed(() -> {
+                int[] locationInWindow = new int[2];
+                cns1.getLocationInWindow(locationInWindow);
+                int[] locationOnScreen = new int[2];
+                cns1.getLocationOnScreen(locationOnScreen);
+                float sourceX = locationOnScreen[0];
+                float sourceY = locationOnScreen[1];
+                int[] locationInWindowSecond = new int[2];
+                dumy.getLocationInWindow(locationInWindowSecond);
+                int[] locationOnScreenSecond = new int[2];
+                dumy.getLocationOnScreen(locationOnScreenSecond);
+                float destinationX = locationOnScreenSecond[0];
+                float destinationY = locationOnScreenSecond[1];
+                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                transAnimation.setDuration(400);
+                cns1.startAnimation(transAnimation);
+                cns1.postDelayed(() -> cns1.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+
+            }, 5100);
+            Handler handler12 = new Handler(Looper.myLooper());
+            handler12.postDelayed(() -> {
+                int[] locationInWindow = new int[2];
+                cns3.getLocationInWindow(locationInWindow);
+                int[] locationOnScreen = new int[2];
+                cns3.getLocationOnScreen(locationOnScreen);
+                float sourceX = locationOnScreen[0];
+                float sourceY = locationOnScreen[1];
+                int[] locationInWindowSecond = new int[2];
+                dumy.getLocationInWindow(locationInWindowSecond);
+                int[] locationOnScreenSecond = new int[2];
+                dumy.getLocationOnScreen(locationOnScreenSecond);
+                float destinationX = locationOnScreenSecond[0];
+                float destinationY = locationOnScreenSecond[1];
+                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                transAnimation.setDuration(400);
+                cns3.startAnimation(transAnimation);
+                cns3.postDelayed(() -> cns3.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+            }, 5500);
+            Handler handler13 = new Handler(Looper.myLooper());
+            handler13.postDelayed(() -> {
+                int[] locationInWindow = new int[2];
+                cns4.getLocationInWindow(locationInWindow);
+                int[] locationOnScreen = new int[2];
+                cns4.getLocationOnScreen(locationOnScreen);
+                float sourceX = locationOnScreen[0];
+                float sourceY = locationOnScreen[1];
+                int[] locationInWindowSecond = new int[2];
+                dumy.getLocationInWindow(locationInWindowSecond);
+                int[] locationOnScreenSecond = new int[2];
+                dumy.getLocationOnScreen(locationOnScreenSecond);
+                float destinationX = locationOnScreenSecond[0];
+                float destinationY = locationOnScreenSecond[1];
+                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                transAnimation.setDuration(400);
+                cns4.startAnimation(transAnimation);
+                cns4.postDelayed(() -> cns4.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+            }, 5900);
+            Handler handler14 = new Handler(Looper.myLooper());
+            handler14.postDelayed(() -> {
+                int[] locationInWindow = new int[2];
+                cns6.getLocationInWindow(locationInWindow);
+                int[] locationOnScreen = new int[2];
+                cns6.getLocationOnScreen(locationOnScreen);
+                float sourceX = locationOnScreen[0];
+                float sourceY = locationOnScreen[1];
+                int[] locationInWindowSecond = new int[2];
+                dumy.getLocationInWindow(locationInWindowSecond);
+                int[] locationOnScreenSecond = new int[2];
+                dumy.getLocationOnScreen(locationOnScreenSecond);
+                float destinationX = locationOnScreenSecond[0];
+                float destinationY = locationOnScreenSecond[1];
+                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                transAnimation.setDuration(400);
+                cns6.startAnimation(transAnimation);
+                cns6.postDelayed(() -> cns6.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+            }, 6300);
 
             c_counter = 0;
-            current_sc = 0;
-            case2 = 0;
-            tt_case2 = 0;
-            tt_tot2 = 0;
-            total_sc = 0;
-            c_total = 0;
-            ttscores.setText("");
+            c_total = 70;
 
-            final RelativeLayout adsicon = openDialog.findViewById(R.id.adsicon);
-            Animation shake;
-            shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.pendulam);
-            adsicon.startAnimation(shake);
+            new Thread(() -> {
+                while (c_counter < c_total) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    bsscores.post(() -> bsscores.setText("" + c_counter));
+                    c_counter++;
+                }
 
-
-            rewardvideo.setOnClickListener(v -> {
-                rvo = 2;
-                if (isNetworkAvailable(context)) {
-                    final ProgressDialog reward_progressBar = ProgressDialog.show(context, "" + "Reward video", "Loading...");
-                    if (fb_reward == 1) {
-                        reward_progressBar.dismiss();
-                        show_reward();
-                        rewardvideo.setVisibility(View.INVISIBLE);
-                    } else new Handler(Looper.myLooper()).postDelayed(() -> {
-                        reward_progressBar.dismiss();
-                        // mShowVideoButton.setVisibility(View.VISIBLE);
-                        if (fb_reward == 1) show_reward();
-                        else {
-
-                            rewarded_adnew();
-                            Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
-                        }
-                    }, 2000);
-                } else
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-            });
-            wtp.setOnClickListener(view -> {
-                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-                if (isNetworkAvailable(this)) {
-                    final boolean appinstalled = appInstalledOrNot("com.whatsapp");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.whatsapp");
-
-                        String msg = ("நான் சொல்லிஅடி செயலியில் சொல் விளையாட்டில் நிலை " + word_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivity(Intent.createChooser(i, "Share via"));
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 21);
+            }).start();
 
 
-                    } else
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            current_sc = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            total_sc = current_sc + 70;
+            String aStringx = Integer.toString(current_sc);
+            ttscores.setText(aStringx);
+            myDbHelper.executeSql("UPDATE score SET coins='" + total_sc + "'");
 
-                } else
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-            });
-            fbs.setOnClickListener(view -> {
+            Handler handler15 = new Handler(Looper.myLooper());
+            handler15.postDelayed(() -> new Thread(() -> {
 
-            });
-            gplus.setOnClickListener(view -> {
+                while (current_sc < total_sc) {
+                    try {
+                        Thread.sleep(45);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    ttscores.post(() -> ttscores.setText("" + current_sc));
+                    current_sc++;
+                }
 
-                // toast("இணையதள சேவையை சரிபார்க்கவும் ");
-                if (isNetworkAvailable(this)) {
-                    final boolean appinstalled = appInstalledOrNot("com.google.android.apps.plus");
-                    if (appinstalled) {
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.setPackage("com.google.android.apps.plus");
+            }).start(), 3900);
+            Handler hand = new Handler(Looper.myLooper());
+            hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 6200);
 
-                        String msg = ("நான் சொல்லிஅடி செயலியில் சொல் விளையாட்டில்  நிலை " + word_no.getText().toString() + " ஐ முடித்துள்ளேன்.நீங்களும் விளையாட விரும்பினால் கீழே உள்ள இணைய முகவரியை சொடுக்கவும்் https://goo.gl/CcA9a8");
-                        i.putExtra(Intent.EXTRA_TEXT, msg);
-                        startActivityForResult(Intent.createChooser(i, "Share via"), 16);
-
-
-                    } else
-                        Toast.makeText(getApplicationContext(), "இந்த செயலி தங்களிடம் இல்லை", Toast.LENGTH_SHORT).show();
-
-                } else
-                    Toast.makeText(getApplicationContext(), "இணையதள சேவையை சரிபார்க்கவும் ", Toast.LENGTH_SHORT).show();
-
-            });
-
-
-            if (b_score >= tscore && f_sec <= ttime) {
-                //condition=1
-                b_score = 0;
-                arputham.setTypeface(tyr);
-                arputham.setText("Iè ÜŸ¹î‹");
-                extracoin.setTypeface(tyr);
-                extracoin.setText("Ã´î™ ï£íòƒèœ");
-                tx2.setTypeface(tyr);
-                tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
-                next_continue.setTypeface(tyr);
-                next_continue.setText("ªî£ì˜è");
-                String date = sps.getString(Word_Game_Hard.this, "date");
-                if (!date.equals("0")) next_continue.setText("சரி");
-                Handler handler1 = new Handler(Looper.myLooper());
-                handler1.postDelayed(() -> {
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    //play1.start();
-                    cns6.setVisibility(View.VISIBLE);
-                }, 500);
-                Handler handler2 = new Handler(Looper.myLooper());
-                handler2.postDelayed(() -> {
-                    //play2.start();
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    cns4.setVisibility(View.VISIBLE);
-                }, 1000);
-                Handler handler3 = new Handler(Looper.myLooper());
-                handler3.postDelayed(() -> {
-                    //play3.start();
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    cns3.setVisibility(View.VISIBLE);
-                }, 1500);
-                Handler handler4 = new Handler(Looper.myLooper());
-                handler4.postDelayed(() -> {
-                    //play4.start();
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    cns1.setVisibility(View.VISIBLE);
-                }, 2000);
-                Handler handler5 = new Handler(Looper.myLooper());
-                handler5.postDelayed(() -> {
-                    //play5.start();
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    cns2.setVisibility(View.VISIBLE);
-                }, 2500);
-                Handler handler6 = new Handler(Looper.myLooper());
-                handler6.postDelayed(() -> {
-                    // play6.start();
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    cns5.setVisibility(View.VISIBLE);
-                }, 3000);
-                Handler handler7 = new Handler(Looper.myLooper());
-                handler7.postDelayed(() -> {
-                    //play7.start();
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    cns7.setVisibility(View.VISIBLE);
-                }, 3500);
-
-                Handler handler8 = new Handler(Looper.myLooper());
-                handler8.postDelayed(() -> {
-                    int[] locationInWindow = new int[2];
-                    cns7.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    cns7.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    dumy.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    dumy.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                    transAnimation.setDuration(400);
-                    cns7.startAnimation(transAnimation);
-                    cns7.postDelayed(() -> cns7.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-
-                }, 3900);
-                Handler handler9 = new Handler(Looper.myLooper());
-                handler9.postDelayed(() -> {
-                    int[] locationInWindow = new int[2];
-                    cns5.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    cns5.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    dumy.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    dumy.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                    transAnimation.setDuration(400);
-                    cns5.startAnimation(transAnimation);
-                    cns5.postDelayed(() -> cns5.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-
-                }, 4300);
-                Handler handler10 = new Handler(Looper.myLooper());
-                handler10.postDelayed(() -> {
-                    int[] locationInWindow = new int[2];
-                    cns2.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    cns2.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    dumy.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    dumy.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                    transAnimation.setDuration(400);
-                    cns2.startAnimation(transAnimation);
-                    cns2.postDelayed(() -> cns2.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-
-                }, 4700);
-                Handler handler11 = new Handler(Looper.myLooper());
-                handler11.postDelayed(() -> {
-                    int[] locationInWindow = new int[2];
-                    cns1.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    cns1.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    dumy.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    dumy.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                    transAnimation.setDuration(400);
-                    cns1.startAnimation(transAnimation);
-                    cns1.postDelayed(() -> cns1.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-
-                }, 5100);
-                Handler handler12 = new Handler(Looper.myLooper());
-                handler12.postDelayed(() -> {
-                    int[] locationInWindow = new int[2];
-                    cns3.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    cns3.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    dumy.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    dumy.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                    transAnimation.setDuration(400);
-                    cns3.startAnimation(transAnimation);
-                    cns3.postDelayed(() -> cns3.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-                }, 5500);
-                Handler handler13 = new Handler(Looper.myLooper());
-                handler13.postDelayed(() -> {
-                    int[] locationInWindow = new int[2];
-                    cns4.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    cns4.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    dumy.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    dumy.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                    transAnimation.setDuration(400);
-                    cns4.startAnimation(transAnimation);
-                    cns4.postDelayed(() -> cns4.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-                }, 5900);
-                Handler handler14 = new Handler(Looper.myLooper());
-                handler14.postDelayed(() -> {
-                    int[] locationInWindow = new int[2];
-                    cns6.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    cns6.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    dumy.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    dumy.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                    transAnimation.setDuration(400);
-                    cns6.startAnimation(transAnimation);
-                    cns6.postDelayed(() -> cns6.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-                }, 6300);
-
+            next_continue.setOnClickListener(view -> {
                 c_counter = 0;
-                c_total = 70;
-
-                new Thread(() -> {
-                    while (c_counter < c_total) {
-                        try {
-                            Thread.sleep(50);
-                        } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                        bsscores.post(() -> bsscores.setText("" + c_counter));
-                        c_counter++;
-                    }
-
-                }).start();
-
-
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                current_sc = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                total_sc = current_sc + 70;
-                String aStringx = Integer.toString(current_sc);
-                ttscores.setText(aStringx);
-                myDbHelper.executeSql("UPDATE score SET coins='" + total_sc + "'");
-
-                Handler handler15 = new Handler(Looper.myLooper());
-                handler15.postDelayed(() -> new Thread(() -> {
-
-                    while (current_sc < total_sc) {
-                        try {
-                            Thread.sleep(45);
-                        } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                        ttscores.post(() -> ttscores.setText("" + current_sc));
-                        current_sc++;
-                    }
-
-                }).start(), 3900);
-                Handler hand = new Handler(Looper.myLooper());
-                hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 6200);
-
-                next_continue.setOnClickListener(view -> {
-                    c_counter = 0;
-                    current_sc = 0;
-                    case2 = 0;
-                    tt_case2 = 0;
-                    tt_tot2 = 0;
-                    total_sc = 0;
-                    c_total = 0;
+                current_sc = 0;
+                case2 = 0;
+                tt_case2 = 0;
+                tt_tot2 = 0;
+                total_sc = 0;
+                c_total = 0;
 
 
                    /* focus.setBase(SystemClock.elapsedRealtime());
                     focus.start();
 */
-                    int emptyLines = getEmptyAnswerCount();
-                    long countdownTimeMillis = emptyLines * 30 * 1000L;
-                    startChronometerCountdown(countdownTimeMillis);
+                int emptyLines = getEmptyAnswerCount();
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                startChronometerCountdown(countdownTimeMillis);
 
-                    dia_dismiss = 1;
-                    openDialog.dismiss();
-                    next();
-                    sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
-
-
-                });
-            } else if (b_score >= tscore && f_sec > ttime) {
-                //Condition 2
-                b_score = 0;
-                arputham.setTypeface(tyr);
-                arputham.setText("ÜŸ¹î‹");
-                extracoin.setTypeface(tyr);
-                extracoin.setText("Ã´î™ ï£íòƒèœ");
-                tx2.setTypeface(tyr);
-                tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
-                next_continue.setTypeface(tyr);
-                next_continue.setText("ªî£ì˜è");
-                String date = sps.getString(Word_Game_Hard.this, "date");
-                if (!date.equals("0")) next_continue.setText("சரி");
-                Handler handler1 = new Handler(Looper.myLooper());
-                handler1.postDelayed(() -> {
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    //play1.start();
-                    cns5.setVisibility(View.VISIBLE);
-                }, 500);
-                Handler handler2 = new Handler(Looper.myLooper());
-                handler2.postDelayed(() -> {
-                    // play2.start();
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    cns2.setVisibility(View.VISIBLE);
-                }, 1000);
-                Handler handler3 = new Handler(Looper.myLooper());
-                handler3.postDelayed(() -> {
-                    //play3.start();
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    cns1.setVisibility(View.VISIBLE);
-                }, 1500);
-                Handler handler4 = new Handler(Looper.myLooper());
-                handler4.postDelayed(() -> {
-                    // play4.start();
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    cns3.setVisibility(View.VISIBLE);
-                }, 2000);
-                Handler handler5 = new Handler(Looper.myLooper());
-                handler5.postDelayed(() -> {
-                    //play5.start();
-                    coin.play(soundId4, sv, sv, 0, 0, sv);
-                    cns4.setVisibility(View.VISIBLE);
-                }, 2500);
+                dia_dismiss = 1;
+                openDialog.dismiss();
+                next();
+                sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
 
 
-                Handler handler8 = new Handler(Looper.myLooper());
-                handler8.postDelayed(() -> {
-                    int[] locationInWindow = new int[2];
-                    cns5.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    cns5.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    dumy.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    dumy.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                    transAnimation.setDuration(400);
-                    cns5.startAnimation(transAnimation);
-                    cns5.postDelayed(() -> cns5.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+            });
+        } else if (b_score >= tscore && f_sec > ttime) {
+            //Condition 2
+            b_score = 0;
+            arputham.setTypeface(tyr);
+            arputham.setText("ÜŸ¹î‹");
+            extracoin.setTypeface(tyr);
+            extracoin.setText("Ã´î™ ï£íòƒèœ");
+            tx2.setTypeface(tyr);
+            tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
+            next_continue.setTypeface(tyr);
+            next_continue.setText("ªî£ì˜è");
+            String date = sps.getString(Word_Game_Hard.this, "date");
+            if (!date.equals("0")) next_continue.setText("சரி");
+            Handler handler1 = new Handler(Looper.myLooper());
+            handler1.postDelayed(() -> {
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                //play1.start();
+                cns5.setVisibility(View.VISIBLE);
+            }, 500);
+            Handler handler2 = new Handler(Looper.myLooper());
+            handler2.postDelayed(() -> {
+                // play2.start();
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                cns2.setVisibility(View.VISIBLE);
+            }, 1000);
+            Handler handler3 = new Handler(Looper.myLooper());
+            handler3.postDelayed(() -> {
+                //play3.start();
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                cns1.setVisibility(View.VISIBLE);
+            }, 1500);
+            Handler handler4 = new Handler(Looper.myLooper());
+            handler4.postDelayed(() -> {
+                // play4.start();
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                cns3.setVisibility(View.VISIBLE);
+            }, 2000);
+            Handler handler5 = new Handler(Looper.myLooper());
+            handler5.postDelayed(() -> {
+                //play5.start();
+                coin.play(soundId4, sv, sv, 0, 0, sv);
+                cns4.setVisibility(View.VISIBLE);
+            }, 2500);
 
-                }, 2500);
-                Handler handler9 = new Handler(Looper.myLooper());
-                handler9.postDelayed(() -> {
-                    int[] locationInWindow = new int[2];
-                    cns2.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    cns2.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    dumy.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    dumy.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                    transAnimation.setDuration(400);
-                    cns2.startAnimation(transAnimation);
-                    cns2.postDelayed(() -> cns2.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
-                }, 2900);
-                Handler handler10 = new Handler(Looper.myLooper());
-                handler10.postDelayed(() -> {
-                    int[] locationInWindow = new int[2];
-                    cns1.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    cns1.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    dumy.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    dumy.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                    transAnimation.setDuration(400);
-                    cns1.startAnimation(transAnimation);
-                    cns1.postDelayed(() -> cns1.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+            Handler handler8 = new Handler(Looper.myLooper());
+            handler8.postDelayed(() -> {
+                int[] locationInWindow = new int[2];
+                cns5.getLocationInWindow(locationInWindow);
+                int[] locationOnScreen = new int[2];
+                cns5.getLocationOnScreen(locationOnScreen);
+                float sourceX = locationOnScreen[0];
+                float sourceY = locationOnScreen[1];
+                int[] locationInWindowSecond = new int[2];
+                dumy.getLocationInWindow(locationInWindowSecond);
+                int[] locationOnScreenSecond = new int[2];
+                dumy.getLocationOnScreen(locationOnScreenSecond);
+                float destinationX = locationOnScreenSecond[0];
+                float destinationY = locationOnScreenSecond[1];
+                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                transAnimation.setDuration(400);
+                cns5.startAnimation(transAnimation);
+                cns5.postDelayed(() -> cns5.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
-                }, 3300);
-                Handler handler11 = new Handler(Looper.myLooper());
-                handler11.postDelayed(() -> {
-                    int[] locationInWindow = new int[2];
-                    cns3.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    cns3.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    dumy.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    dumy.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                    transAnimation.setDuration(400);
-                    cns3.startAnimation(transAnimation);
-                    cns3.postDelayed(() -> cns3.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+            }, 2500);
+            Handler handler9 = new Handler(Looper.myLooper());
+            handler9.postDelayed(() -> {
+                int[] locationInWindow = new int[2];
+                cns2.getLocationInWindow(locationInWindow);
+                int[] locationOnScreen = new int[2];
+                cns2.getLocationOnScreen(locationOnScreen);
+                float sourceX = locationOnScreen[0];
+                float sourceY = locationOnScreen[1];
+                int[] locationInWindowSecond = new int[2];
+                dumy.getLocationInWindow(locationInWindowSecond);
+                int[] locationOnScreenSecond = new int[2];
+                dumy.getLocationOnScreen(locationOnScreenSecond);
+                float destinationX = locationOnScreenSecond[0];
+                float destinationY = locationOnScreenSecond[1];
+                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                transAnimation.setDuration(400);
+                cns2.startAnimation(transAnimation);
+                cns2.postDelayed(() -> cns2.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
-                }, 3700);
-                Handler handler12 = new Handler(Looper.myLooper());
-                handler12.postDelayed(() -> {
-                    int[] locationInWindow = new int[2];
-                    cns4.getLocationInWindow(locationInWindow);
-                    int[] locationOnScreen = new int[2];
-                    cns4.getLocationOnScreen(locationOnScreen);
-                    float sourceX = locationOnScreen[0];
-                    float sourceY = locationOnScreen[1];
-                    int[] locationInWindowSecond = new int[2];
-                    dumy.getLocationInWindow(locationInWindowSecond);
-                    int[] locationOnScreenSecond = new int[2];
-                    dumy.getLocationOnScreen(locationOnScreenSecond);
-                    float destinationX = locationOnScreenSecond[0];
-                    float destinationY = locationOnScreenSecond[1];
-                    TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
-                    transAnimation.setDuration(400);
-                    cns4.startAnimation(transAnimation);
-                    cns4.postDelayed(() -> cns4.setVisibility(View.INVISIBLE), transAnimation.getDuration());
-                }, 4100);
+            }, 2900);
+            Handler handler10 = new Handler(Looper.myLooper());
+            handler10.postDelayed(() -> {
+                int[] locationInWindow = new int[2];
+                cns1.getLocationInWindow(locationInWindow);
+                int[] locationOnScreen = new int[2];
+                cns1.getLocationOnScreen(locationOnScreen);
+                float sourceX = locationOnScreen[0];
+                float sourceY = locationOnScreen[1];
+                int[] locationInWindowSecond = new int[2];
+                dumy.getLocationInWindow(locationInWindowSecond);
+                int[] locationOnScreenSecond = new int[2];
+                dumy.getLocationOnScreen(locationOnScreenSecond);
+                float destinationX = locationOnScreenSecond[0];
+                float destinationY = locationOnScreenSecond[1];
+                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                transAnimation.setDuration(400);
+                cns1.startAnimation(transAnimation);
+                cns1.postDelayed(() -> cns1.setVisibility(View.INVISIBLE), transAnimation.getDuration());
 
+            }, 3300);
+            Handler handler11 = new Handler(Looper.myLooper());
+            handler11.postDelayed(() -> {
+                int[] locationInWindow = new int[2];
+                cns3.getLocationInWindow(locationInWindow);
+                int[] locationOnScreen = new int[2];
+                cns3.getLocationOnScreen(locationOnScreen);
+                float sourceX = locationOnScreen[0];
+                float sourceY = locationOnScreen[1];
+                int[] locationInWindowSecond = new int[2];
+                dumy.getLocationInWindow(locationInWindowSecond);
+                int[] locationOnScreenSecond = new int[2];
+                dumy.getLocationOnScreen(locationOnScreenSecond);
+                float destinationX = locationOnScreenSecond[0];
+                float destinationY = locationOnScreenSecond[1];
+                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                transAnimation.setDuration(400);
+                cns3.startAnimation(transAnimation);
+                cns3.postDelayed(() -> cns3.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+
+            }, 3700);
+            Handler handler12 = new Handler(Looper.myLooper());
+            handler12.postDelayed(() -> {
+                int[] locationInWindow = new int[2];
+                cns4.getLocationInWindow(locationInWindow);
+                int[] locationOnScreen = new int[2];
+                cns4.getLocationOnScreen(locationOnScreen);
+                float sourceX = locationOnScreen[0];
+                float sourceY = locationOnScreen[1];
+                int[] locationInWindowSecond = new int[2];
+                dumy.getLocationInWindow(locationInWindowSecond);
+                int[] locationOnScreenSecond = new int[2];
+                dumy.getLocationOnScreen(locationOnScreenSecond);
+                float destinationX = locationOnScreenSecond[0];
+                float destinationY = locationOnScreenSecond[1];
+                TranslateAnimation transAnimation = new TranslateAnimation(0f, (destinationX - sourceX), 2f, (destinationY - sourceY));
+                transAnimation.setDuration(400);
+                cns4.startAnimation(transAnimation);
+                cns4.postDelayed(() -> cns4.setVisibility(View.INVISIBLE), transAnimation.getDuration());
+            }, 4100);
+
+            case2 = 0;
+            tot2 = 50;
+            new Thread(() -> {
+                while (case2 < tot2) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    bsscores.post(() -> bsscores.setText("" + case2));
+                    case2++;
+                }
+
+            }).start();
+
+
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            tt_tot2 = tt_case2 + 50;
+            String aStringx = Integer.toString(tt_case2);
+            ttscores.setText(aStringx);
+            myDbHelper.executeSql("UPDATE score SET coins='" + tt_tot2 + "'");
+
+
+            Handler handler13 = new Handler(Looper.myLooper());
+            handler13.postDelayed(() -> new Thread(() -> {
+
+                while (tt_case2 < tt_tot2) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    ttscores.post(() -> ttscores.setText("" + tt_case2));
+                    tt_case2++;
+                }
+
+            }).start(), 2500);
+
+
+            Handler hand = new Handler(Looper.myLooper());
+            hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 3500);
+
+            next_continue.setOnClickListener(view -> {
+                c_counter = 0;
+                current_sc = 0;
                 case2 = 0;
-                tot2 = 50;
-                new Thread(() -> {
-                    while (case2 < tot2) {
-                        try {
-                            Thread.sleep(50);
-                        } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                        bsscores.post(() -> bsscores.setText("" + case2));
-                        case2++;
-                    }
-
-                }).start();
-
-
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                tt_tot2 = tt_case2 + 50;
-                String aStringx = Integer.toString(tt_case2);
-                ttscores.setText(aStringx);
-                myDbHelper.executeSql("UPDATE score SET coins='" + tt_tot2 + "'");
-
-
-                Handler handler13 = new Handler(Looper.myLooper());
-                handler13.postDelayed(() -> new Thread(() -> {
-
-                    while (tt_case2 < tt_tot2) {
-                        try {
-                            Thread.sleep(50);
-                        } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                        ttscores.post(() -> ttscores.setText("" + tt_case2));
-                        tt_case2++;
-                    }
-
-                }).start(), 2500);
-
-
-                Handler hand = new Handler(Looper.myLooper());
-                hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 3500);
-
-                next_continue.setOnClickListener(view -> {
-                    c_counter = 0;
-                    current_sc = 0;
-                    case2 = 0;
-                    tt_case2 = 0;
-                    tt_tot2 = 0;
-                    c_counter = 0;
-                    current_sc = 0;
-                    case2 = 0;
-                    tt_case2 = 0;
-                    tt_tot2 = 0;
-                    total_sc = 0;
-                    c_total = 0;
+                tt_case2 = 0;
+                tt_tot2 = 0;
+                c_counter = 0;
+                current_sc = 0;
+                case2 = 0;
+                tt_case2 = 0;
+                tt_tot2 = 0;
+                total_sc = 0;
+                c_total = 0;
 
 
                    /* focus.setBase(SystemClock.elapsedRealtime());
                     focus.start();*/
-                    int emptyLines = getEmptyAnswerCount();
-                    long countdownTimeMillis = emptyLines * 30 * 1000L;
-                    startChronometerCountdown(countdownTimeMillis);
+                int emptyLines = getEmptyAnswerCount();
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                startChronometerCountdown(countdownTimeMillis);
 
-                    dia_dismiss = 1;
-                    openDialog.dismiss();
-                    next();
-                    sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
+                dia_dismiss = 1;
+                openDialog.dismiss();
+                next();
+                sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
 
 
-                });
-            } else if (b_score < tscore) {
-                b_score = 0;
-                arputham.setTypeface(tyr);
-                arputham.setText("Iè ÜŸ¹î‹");
-                extracoin.setTypeface(tyr);
-                extracoin.setText("Ã´î™ ï£íòƒèœ");
-                tx2.setTypeface(tyr);
-                tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
-                next_continue.setTypeface(tyr);
-                next_continue.setText("ªî£ì˜è");
-                String date = sps.getString(Word_Game_Hard.this, "date");
-                if (!date.equals("0")) next_continue.setText("சரி");
-                arputham.setTypeface(tyr);
-                arputham.setText("ï¡Á");
-                extracoin.setTypeface(tyr);
-                extracoin.setText("Ã´î™ ï£íòƒèœ");
-                tx2.setTypeface(tyr);
-                tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
-                next_continue.setTypeface(tyr);
-                next_continue.setText("ªî£ì˜è");
-                String dates = sps.getString(Word_Game_Hard.this, "date");
-                if (!dates.equals("0")) next_continue.setText("சரி");
-                Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                cfx.moveToFirst();
-                tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                tt_tot2 = tt_case2;
-                String aStringx = Integer.toString(tt_case2);
-                ttscores.setText(aStringx);
-                bsscores.setText("0");
+            });
+        } else if (b_score < tscore) {
+            b_score = 0;
+            arputham.setTypeface(tyr);
+            arputham.setText("Iè ÜŸ¹î‹");
+            extracoin.setTypeface(tyr);
+            extracoin.setText("Ã´î™ ï£íòƒèœ");
+            tx2.setTypeface(tyr);
+            tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
+            next_continue.setTypeface(tyr);
+            next_continue.setText("ªî£ì˜è");
+            String date = sps.getString(Word_Game_Hard.this, "date");
+            if (!date.equals("0")) next_continue.setText("சரி");
+            arputham.setTypeface(tyr);
+            arputham.setText("ï¡Á");
+            extracoin.setTypeface(tyr);
+            extracoin.setText("Ã´î™ ï£íòƒèœ");
+            tx2.setTypeface(tyr);
+            tx2.setText("Ã´î™ ï£íò‹ ªðø ðAó¾‹");
+            next_continue.setTypeface(tyr);
+            next_continue.setText("ªî£ì˜è");
+            String dates = sps.getString(Word_Game_Hard.this, "date");
+            if (!dates.equals("0")) next_continue.setText("சரி");
+            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+            cfx.moveToFirst();
+            tt_case2 = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+            tt_tot2 = tt_case2;
+            String aStringx = Integer.toString(tt_case2);
+            ttscores.setText(aStringx);
+            bsscores.setText("0");
 
-                next_continue.setVisibility(View.VISIBLE);
-                next_continue.setOnClickListener(view -> {
-                    c_counter = 0;
-                    current_sc = 0;
-                    case2 = 0;
-                    tt_case2 = 0;
-                    tt_tot2 = 0;
-                    tt_tot2 = 0;
-                    total_sc = 0;
-                    c_total = 0;
+            next_continue.setVisibility(View.VISIBLE);
+            next_continue.setOnClickListener(view -> {
+                c_counter = 0;
+                current_sc = 0;
+                case2 = 0;
+                tt_case2 = 0;
+                tt_tot2 = 0;
+                tt_tot2 = 0;
+                total_sc = 0;
+                c_total = 0;
 
 
                     /*focus.setBase(SystemClock.elapsedRealtime());
                     focus.start();*/
-                    int emptyLines = getEmptyAnswerCount();
-                    long countdownTimeMillis = emptyLines * 30 * 1000L;
-                    startChronometerCountdown(countdownTimeMillis);
+                int emptyLines = getEmptyAnswerCount();
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                startChronometerCountdown(countdownTimeMillis);
 
-                    dia_dismiss = 1;
-                    openDialog.dismiss();
-                    next();
-                    sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
-
-                });
-            }
-
-            openDialog.setOnDismissListener(dialog -> {
-                if (dia_dismiss != 1) {
-                    sps.putString(Word_Game_Hard.this, "game_area", "on");
-                    c_counter = 0;
-                    current_sc = 0;
-                    tt_tot2 = 0;
-                    c_counter = 0;
-                    current_sc = 0;
-                    tt_tot2 = 0;
-                    total_sc = 0;
-                    c_total = 0;
-                    case2 = 0;
-                    tt_case2 = 0;
-
-
-                    String date = sps.getString(Word_Game_Hard.this, "date");
-                    if (date.equals("0")) if (main_act.equals("")) {
-                        finish();
-                        openDialog.dismiss();
-                        Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
-                        startActivity(i);
-                    } else {
-                        openDialog.dismiss();
-                        finish();
-                    }
-                    else if (sps.getString(Word_Game_Hard.this, "Exp_list").equals("on")) {
-                        finish();
-                        openDialog.dismiss();
-                        Intent i = new Intent(Word_Game_Hard.this, Expandable_List_View.class);
-                        startActivity(i);
-
-                    } else if (main_act.equals("")) {
-                        finish();
-                        openDialog.dismiss();
-                        Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
-                        startActivity(i);
-                    } else {
-                        openDialog.dismiss();
-                        finish();
-                    }
-
-
-                } else dia_dismiss = 0;
+                dia_dismiss = 1;
+                openDialog.dismiss();
+                next();
+                sps.putInt(getApplicationContext(), "ins_ad_new", (sps.getInt(getApplicationContext(), "ins_ad_new") + 1));
 
             });
-            openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+        }
+
+        openDialog.setOnDismissListener(dialog -> {
+            if (dia_dismiss != 1) {
                 sps.putString(Word_Game_Hard.this, "game_area", "on");
-                focus.stop();
-                counter = 0;
-                counter3 = 0;
-                focus.stop();
-                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                c_counter = 0;
+                current_sc = 0;
+                tt_tot2 = 0;
+                c_counter = 0;
+                current_sc = 0;
+                tt_tot2 = 0;
+                total_sc = 0;
+                c_total = 0;
+                case2 = 0;
+                tt_case2 = 0;
 
 
                 String date = sps.getString(Word_Game_Hard.this, "date");
-                int pos;
-                if (date.equals("0")) pos = 1;
-                else pos = 2;
-
-                myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-                myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-
-                // String date = sps.getString(Word_Game_Hard.this, "date");
                 if (date.equals("0")) if (main_act.equals("")) {
                     finish();
+                    openDialog.dismiss();
                     Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
                     startActivity(i);
-                } else finish();
+                } else {
+                    openDialog.dismiss();
+                    finish();
+                }
                 else if (sps.getString(Word_Game_Hard.this, "Exp_list").equals("on")) {
                     finish();
+                    openDialog.dismiss();
                     Intent i = new Intent(Word_Game_Hard.this, Expandable_List_View.class);
                     startActivity(i);
+
                 } else if (main_act.equals("")) {
                     finish();
+                    openDialog.dismiss();
                     Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
                     startActivity(i);
-                } else finish();
+                } else {
+                    openDialog.dismiss();
+                    finish();
+                }
 
 
-                //  Toast.makeText(context, "back", Toast.LENGTH_SHORT).show();
+            } else dia_dismiss = 0;
 
-                // Prevent dialog close on back press button
-                return keyCode == KeyEvent.KEYCODE_BACK;
-            });
+        });
+        openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+            sps.putString(Word_Game_Hard.this, "game_area", "on");
+            focus.stop();
+            counter = 0;
+            counter3 = 0;
+            focus.stop();
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
 
-            if (!isFinishing()) openDialog.show();
-        }
+
+            String date = sps.getString(Word_Game_Hard.this, "date");
+            int pos;
+            if (date.equals("0")) pos = 1;
+            else pos = 2;
+
+            myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+            myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+
+            // String date = sps.getString(Word_Game_Hard.this, "date");
+            if (date.equals("0")) if (main_act.equals("")) {
+                finish();
+                Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
+                startActivity(i);
+            } else finish();
+            else if (sps.getString(Word_Game_Hard.this, "Exp_list").equals("on")) {
+                finish();
+                Intent i = new Intent(Word_Game_Hard.this, Expandable_List_View.class);
+                startActivity(i);
+            } else if (main_act.equals("")) {
+                finish();
+                Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
+                startActivity(i);
+            } else finish();
+
+
+            //  Toast.makeText(context, "back", Toast.LENGTH_SHORT).show();
+
+            // Prevent dialog close on back press button
+            return keyCode == KeyEvent.KEYCODE_BACK;
+        });
+
+        if (!isFinishing()) openDialog.show();
+    }
 
     protected void onResume() {
         super.onResume();
@@ -5627,29 +6210,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
-
-        rewardedAd = null;
-        interstitialAd = null;
         timerHandler = null;
-    }
-
-
-    public void timee() {
-        t1 = new Timer();
-        t1.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-
-                t = sps.getInt(getApplicationContext(), "randomtime");
-                if (t > 0) {
-                    t--;
-                    System.out.println("times---" + t);
-                    sps.putInt(getApplicationContext(), "randomtime", t);
-                    System.out.println("time " + t);
-                } else t1.cancel();
-
-            }
-        }, 1000, 1000);
-
     }
 
     public void send_extraword(String feedback) throws UnsupportedEncodingException {
@@ -5702,59 +6263,14 @@ public class Word_Game_Hard extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
-                System.out.print("Result onFailure ========== " +  call);
-                System.out.print("Result onFailure1 ========== " +  t);
+                System.out.print("Result onFailure ========== " + call);
+                System.out.print("Result onFailure1 ========== " + t);
                 // Handle network failures
             }
         });
 
 
     }
-
-/*
-    public void send_extrawordnew(String feedback) {
-        //   Utils.mProgress(Word_Game_Hard.this, ".....", true).show();
-
-        PackageInfo pInfo = null;
-        try {
-            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        HttpClient client = new DefaultHttpClient();
-        HttpPost post = new HttpPost("https://nithra.mobi/solliadi/extrawords.php");
-        try {
-            // i=i+5;
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
-            // Get the deviceID
-
-            email = Utils.android_id(context);
-            // String letter= URLDecoder.decode(feedback,"UTF-8");
-            String finalString = URLEncoder.encode(feedback, "UTF-8");
-            nameValuePairs.add(new BasicNameValuePair("gameid", "4"));
-            nameValuePairs.add(new BasicNameValuePair("rowid", "" + letterid));
-            nameValuePairs.add(new BasicNameValuePair("extraword", finalString));
-            nameValuePairs.add(new BasicNameValuePair("tableid", "" + u_id));
-            String date = sps.getString(Word_Game_Hard.this, "date");
-            if (date.equals("0")) nameValuePairs.add(new BasicNameValuePair("mode", "regular"));
-            else nameValuePairs.add(new BasicNameValuePair("mode", "daily"));
-
-
-            post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            HttpResponse response = client.execute(post);
-            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-
-            String line = "";
-            while ((line = rd.readLine()) != null) Log.e("HttpResponse", line);
-
-        } catch (IOException e) {
-
-        }
-        //  Utils.mProgress.dismiss();
-    }
-*/
-
 
     public void downloadcheck(final String lastid, final String daily) {
         w_head.setVisibility(View.INVISIBLE);
@@ -5766,8 +6282,8 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("lastid", lastid);
-        if (daily.equals("ord"))   map.put("mode",  "regular");
-        else map.put("mode",  "daily");
+        if (daily.equals("ord")) map.put("mode", "regular");
+        else map.put("mode", "daily");
         map.put("email", email);
 
         Call<List<HashMap<String, String>>> call = api.getdownloadcheckdata(map);
@@ -5837,7 +6353,7 @@ public class Word_Game_Hard extends AppCompatActivity {
                         }
 
                     } catch (JSONException e1) {
-                        System.out.print("Result JSONException ========== " + e1 );
+                        System.out.print("Result JSONException ========== " + e1);
 
                     }
 
@@ -5850,8 +6366,7 @@ public class Word_Game_Hard extends AppCompatActivity {
                     head.setVisibility(View.INVISIBLE);
                     nextgamesdialog();
 
-                }
-                else {
+                } else {
                     downok = "";
                     downnodata = "";
                     if (exists("https://nithra.mobi/solliadi/" + email + "-filename.zip"))
@@ -5882,189 +6397,14 @@ public class Word_Game_Hard extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
-                System.out.print("Result onFailure ========== " +  call);
-                System.out.print("Result onFailure1 ========== " +  t);
+                System.out.print("Result onFailure ========== " + call);
+                System.out.print("Result onFailure1 ========== " + t);
                 // Handle network failures
             }
         });
 
 
     }
-
-/*
-    public void downloadchecknew(final String lastid, final String daily) {
-
-        w_head.setVisibility(View.INVISIBLE);
-        Utils.mProgress(Word_Game_Hard.this, " தரவுகளை ஏற்றுகிறது, காத்திருக்கவும்.....", false).show();
-        Utils.mProgress.setCancelable(false);
-        new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected Void doInBackground(Void... params) {
-
-
-                String result = null;
-
-                InputStream is = null;
-                StringBuilder sb = null;
-
-                ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-                nameValuePairs.add(new BasicNameValuePair("lastid", lastid));
-
-                if (daily.equals("ord"))
-                    nameValuePairs.add(new BasicNameValuePair("mode", "regular"));
-                else nameValuePairs.add(new BasicNameValuePair("mode", "daily"));
-                nameValuePairs.add(new BasicNameValuePair("email", email));
-                //nameValuePairs.add(new BasicNameValuePair("type", "a2z"));
-                try {
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost(New_Main_Activity.data_check);
-                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                    HttpResponse response = httpclient.execute(httppost);
-                    HttpEntity entity = response.getEntity();
-                    is = entity.getContent();
-                } catch (Exception e) {
-                    Log.e("log_tag", "Error in https connection" + e.toString());
-                }
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
-                    sb = new StringBuilder();
-                    sb.append(reader.readLine() + "\n");
-                    String line = "0";
-                    while ((line = reader.readLine()) != null) sb.append(line + "\n");
-                    is.close();
-                    result = sb.toString();
-
-                    System.out.print("Result============" + result);
-
-                } catch (Exception e) {
-                }
-
-                try {
-                    if (result != null) {
-                        JSONArray jArray = new JSONArray(result);
-                        System.err.println("Update===" + result);
-                        System.out.println("===  " + jArray.length());
-                        JSONObject json_data = null;
-                        //isvalid=""+jArray.length();
-                        downok = "" + jArray.length();
-                        System.out.print("insert daily ============" + downok);
-
-
-                        if (jArray.length() > 0) {
-                            json_data = jArray.getJSONObject(0);
-                            if (json_data.getString("NoData").equals("NoData"))
-                                downnodata = "NoData";
-                            else {
-                                downnodata = "YesData";
-                                for (int i = 0; i < jArray.length(); i++) {
-                                    json_data = jArray.getJSONObject(i);
-                                    ContentValues cv = new ContentValues();
-                                    cv.put("id", json_data.getString("id"));
-                                    cv.put("gameid", json_data.getString("gameid"));
-                                    cv.put("levelid", json_data.getString("levelid"));
-                                    cv.put("letters", json_data.getString("letters"));
-
-                                    String newName = json_data.getString("answer").replaceAll(" ", "");
-                                    cv.put("answer", newName);
-
-                                    cv.put("hints", json_data.getString("hints"));
-                                    cv.put("imagename", json_data.getString("imagename"));
-                                    cv.put("isfinish", "0");
-
-                                    if (daily.equals("ord")) {
-                                        cv.put("isdownload", "1");
-                                        myDbHelper.insert_data("maintable", null, cv);
-
-                                    } else {
-
-                                        cv.put("date", json_data.getString("date"));
-                                        myDbHelper.insert_data("dailytest", null, cv);
-
-
-                                    }
-
-
-                                }
-                            }
-                        }
-                    }
-
-                } catch (JSONException e1) {
-                } catch (ParseException e1) {
-                }
-
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                System.out.print("down ok!!!============" + downok + "===");
-
-                if (downnodata.equals("NoData")) {
-                    Utils.mProgress.dismiss();
-                    head.setVisibility(View.INVISIBLE);
-                    nextgamesdialog();
-
-                }
-                else {
-                    downok = "";
-                    downnodata = "";
-                    if (exists("https://nithra.mobi/solliadi/" + email + "-filename.zip"))
-                        checkmemory();
-                    else {
-                        Utils.mProgress.dismiss();
-
-                        String date = sps.getString(Word_Game_Hard.this, "date");
-                        if (date.equals("0")) {
-                            Cursor c;
-                            c = myDbHelper.getQry("select * from maintable where gameid='4' and isfinish='0' order by id limit 1");
-                            c.moveToFirst();
-                            if (c.getCount() != 0) next();
-                            else nextgamesdialog();
-                        } else {
-                            Cursor c;
-                            c = myDbHelper.getQry("select * from dailytest where gameid='" + gameid + "' and isfinish='0' and date='" + date + "'");
-                            c.moveToFirst();
-                            if (c.getCount() != 0) next();
-                            else nextgamesdialog();
-                        }
-
-
-                    }
-
-                }
-
-*/
-/*
-if(downok.equals("")){
-        head.setVisibility(View.INVISIBLE);
-        new AlertDialog.Builder(Word_Game_Hard.this)
-                            *//*
-*/
-/*.setTitle("Delete entry")*//*
-*/
-/*
-                .setMessage("பதிவுகள் ஏதும் இல்லை .பிறகு முயற்சிக்கவும் ")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
-                        startActivity(i);
-                        finish();
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
-}else{
-}*//*
-
-
-            }
-        }.execute();
-    }
-*/
 
     public void checkmemory() {
         String url = "";
@@ -6180,14 +6520,14 @@ if(downok.equals("")){
         RetofitClient retrofit = new RetofitClient();
         Retrofitstart api = retrofit.RetrofitExample().create(Retrofitstart.class);
 
-        HashMap<String,String> map = new  HashMap<String,String>();
-        map.put("filename",email + "-filename.zip");
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("filename", email + "-filename.zip");
 
-        Call<List<HashMap<String,String>>> call = api.getdeletezipdata(map);
+        Call<List<HashMap<String, String>>> call = api.getdeletezipdata(map);
 
-        call.enqueue(new Callback<List<HashMap<String,String>>>() {
+        call.enqueue(new Callback<List<HashMap<String, String>>>() {
             @Override
-            public void onResponse(Call<List<HashMap<String,String>>> call, Response<List<HashMap<String,String>>> response) {
+            public void onResponse(Call<List<HashMap<String, String>>> call, Response<List<HashMap<String, String>>> response) {
                 if (response.isSuccessful()) {
                     /*String date = sps.getString(New_Main_Activity.this, "date");
                     BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -6195,8 +6535,8 @@ if(downok.equals("")){
                     String line = "";
                     while ((line = rd.readLine()) != null) Log.e("HttpResponse", line);*/
 
-                    Gson gson= new Gson();
-                    String result =gson.toJson(response.body());
+                    Gson gson = new Gson();
+                    String result = gson.toJson(response.body());
 
                     System.out.print("Result============123" + result);
                 } else {
@@ -6206,68 +6546,15 @@ if(downok.equals("")){
             }
 
             @Override
-            public void onFailure(Call<List<HashMap<String,String>>> call, Throwable t) {
-                System.out.print("Result onFailure ========== " +  call);
-                System.out.print("Result onFailure1 ========== " +  t);
+            public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
+                System.out.print("Result onFailure ========== " + call);
+                System.out.print("Result onFailure1 ========== " + t);
                 // Handle network failures
             }
         });
 
 
     }
-
-   /* public void newdownnew() {
-
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-
-                String result = null;
-
-                InputStream is = null;
-                StringBuilder sb = null;
-
-                ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-
-                nameValuePairs.add(new BasicNameValuePair("filename", email + "-filename.zip"));
-                //nameValuePairs.add(new BasicNameValuePair("type", "a2z"));
-                try {
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost("https://nithra.mobi/solliadi/solliadi1.php");
-                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                    HttpResponse response = httpclient.execute(httppost);
-                    HttpEntity entity = response.getEntity();
-                    is = entity.getContent();
-                } catch (Exception e) {
-                    Log.e("log_tag", "Error in https connection" + e.toString());
-                }
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1), 8);
-                    sb = new StringBuilder();
-                    sb.append(reader.readLine() + "\n");
-                    String line = "0";
-                    while ((line = reader.readLine()) != null) sb.append(line + "\n");
-                    is.close();
-                    result = sb.toString();
-
-                    System.out.print("Result============123" + result);
-
-                } catch (Exception e) {
-                }
-
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-
-            }
-
-        }.execute();
-
-    }*/
 
     public void unpackZip(String ZIP_FILE_NAME) throws IOException {
 
@@ -6300,392 +6587,168 @@ if(downok.equals("")){
         bos.close();
     }
 
-  /*  public void rewarded_adnew() {
-        rewardedAd = MaxRewardedAd.getInstance(getResources().getString(R.string.Reward_Ins), this);
-        rewardedAd.setListener(new MaxRewardedAdListener() {
+    private void rewarded_adnew() {
+        String placementId = "Rewarded_Android";
+        UnityAds.load(placementId, new IUnityAdsLoadListener() {
             @Override
-            public void onRewardedVideoStarted(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onRewardedVideoCompleted(MaxAd ad) {
-                reward_status = 1;
-            }
-
-            @Override
-            public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
+            public void onUnityAdsAdLoaded(String placementId) {
+                Log.d(TAG, "Unity rewarded ad loaded successfully");
                 fb_reward = 1;
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading after ad is loaded
             }
 
             @Override
-            public void onAdDisplayed(MaxAd ad) {
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                rewarded_adnew();
-                if (reward_status == 1) {
-                    if (extra_coin_s == 0) {
-                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                        cfx.moveToFirst();
-                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                        int spx = skx + mCoinCount;
-                        String aStringx = Integer.toString(spx);
-                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                    }
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (rvo == 2) {
-                                share_earn2(mCoinCount);
-                            } else {
-                                vidcoinearn();
-                            }
-                        }
-                    }, 500);
-                } else {
-                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                }
-
+            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+                Log.e(TAG, "Unity rewarded ad failed to load: " + message);
                 fb_reward = 0;
-
-
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, MaxError error) {
-                rewardedAd = null;
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                rewardedAd.loadAd();
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
+                Toast.makeText(Word_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
             }
         });
-        rewardedAd.loadAd();
-    }*/
-
-    private void rewarded_adnew() {
-
-        AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
-
-        RewardedAd.load(this, sps.getString(Word_Game_Hard.this, "RewardedId"),
-                adRequest, new RewardedAdLoadCallback() {
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        // Handle the error.
-                        Log.e("LoadAdError=========", loadAdError.toString());
-                        rewardedAd = null;
-                        reward_status=0;
-                        //isfaild = 2;
-
-                    }
-
-                    @Override
-                    public void onAdLoaded(@NonNull RewardedAd ad) {
-                        rewardedAd = ad;
-                        //  isfaild = 1;
-                        fb_reward = 1;
-                        reward_status=0;
-                        Log.e(TAG, "Ad was Called.=========");
-                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.e(TAG, "Ad was clicked.=========");
-                            }
-
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                rewarded_adnew();
-                                if (reward_status == 1) {
-                                    if (extra_coin_s == 0) {
-                                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                        cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                        int spx = skx + mCoinCount;
-                                        String aStringx = Integer.toString(spx);
-                                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                    }
-                                    Handler handler = new Handler();
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            if (rvo == 2) {
-                                                share_earn2(mCoinCount);
-                                            } else {
-                                                vidcoinearn();
-                                            }
-                                        }
-                                    }, 500);
-                                } else {
-                                    Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-
-                                }
-
-                                fb_reward = 0;
-                                // Called when ad is dismissed.
-                                // Set the ad reference to null so you don't show the ad a second time.
-                                Log.e(TAG, "Ad dismissed fullscreen content.=========");
-
-                            }
-
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                // Called when ad fails to show.
-                                Log.e(TAG, "Ad failed to show fullscreen content.=========");
-                                rewardedAd = null;
-                                reward_status=0;
-                            }
-
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.e(TAG, "Ad recorded an impression.=========");
-                            }
-
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.e(TAG, "Ad showed fullscreen content.=========");
-                            }
-                        });
-
-                    }
-                });
     }
-
-    /*public void show_reward() {
-        if (rewardedAd != null && rewardedAd.isReady()) {
-            rewardedAd.showAd();
-            reward_status = 1;
-        } else {
-            Log.d("TAG", "The rewarded ad wasn't ready yet.");
-        }
-    }*/
 
     public void show_reward() {
-        if (rewardedAd != null) {
-            rewardedAd.show(Word_Game_Hard.this, new OnUserEarnedRewardListener() {
-
+        String placementId = "Rewarded_Android";
+        if (UnityAds.isInitialized()) {
+            Utills.INSTANCE.Loading_Dialog(Word_Game_Hard.this);
+            UnityAds.show(Word_Game_Hard.this, placementId, new IUnityAdsShowListener() {
                 @Override
-                public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
-                    // Handle the reward.
-                    Log.d(TAG, "The user earned the reward.");
-
-                    rewardedAd = null;
-                    reward_status = 1;
-                    int rewardAmount = rewardItem.getAmount();
-                    String rewardType = rewardItem.getType();
+                public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                    Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on show failure
+                    reward_status = 0;
+                    rewarded_adnew();
                 }
 
-            });
+                @Override
+                public void onUnityAdsShowStart(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad started showing");
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading when ad starts showing
+                }
 
+                @Override
+                public void onUnityAdsShowClick(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad was clicked");
+                }
+
+                @Override
+                public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                    Log.d(TAG, "Unity rewarded ad completed");
+                    if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                        reward_status = 1;
+                        if (extra_coin_s == 0) {
+                            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                            cfx.moveToFirst();
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                            int spx = skx + mCoinCount;
+                            String aStringx = Integer.toString(spx);
+                            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+                        }
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (rvo == 2) {
+                                    share_earn2(mCoinCount);
+                                } else {
+                                    vidcoinearn();
+                                }
+                            }
+                        }, 500);
+                    } else {
+                        Toast.makeText(context, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                    }
+                    fb_reward = 0;
+                    rewarded_adnew();
+                }
+            });
         } else {
-            Log.d(TAG, "The rewarded ad wasn't ready yet.");
+            Log.d(TAG, "Unity Ads is not initialized.");
+            Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading if Unity not initialized
+            reward_status = 0;
+            rewarded_adnew();
         }
-
     }
-
-   /* private void industrialload() {
-        //AppLovinSdk.getInstance( this ).showMediationDebugger();
-        AppLovinSdk.getInstance(this).setMediationProvider("max");
-        AppLovinSdk.initializeSdk(this, config -> {
-            // AppLovin SDK is initialized, start loading ads
-            if (mInterstitialAd != null && mInterstitialAd.isReady()) return;
-            System.out.println("ad shown  showAdWithDelay initialize done ");
-            mInterstitialAd = new MaxInterstitialAd(getResources().getString(R.string.Ragasiya_sorgal_ins), Word_Game_Hard.this);
-            mInterstitialAd.setListener(new MaxAdListener() {
-                @Override
-                public void onAdLoaded(MaxAd ad) {
-                    System.out.println("ad shown loaded : " + ad.getWaterfall());
-                }
-
-                @Override
-                public void onAdDisplayed(MaxAd ad) {
-                    handler = null;
-                }
-
-                @Override
-                public void onAdHidden(MaxAd ad) {
-                    Log.d("TAG", "Ad dismissed fullscreen content.");
-                    mInterstitialAd = null;
-                    handler = null;
-                    Utills.INSTANCE.Loading_Dialog_dismiss();
-                    setSc();
-                    industrialload();
-                }
-
-                @Override
-                public void onAdClicked(MaxAd ad) {
-
-                }
-
-                @Override
-                public void onAdLoadFailed(String adUnitId, MaxError error) {
-                    Log.d("TAG", error.toString());
-                    mInterstitialAd = null;
-                    handler = null;
-                    Log.i("TAG", "onAdLoadedfailed" + error.getMessage());
-                }
-
-                @Override
-                public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                    Log.e("TAG", "Ad failed to show fullscreen content.");
-                    mInterstitialAd = null;
-                    handler = null;
-                    Utills.INSTANCE.Loading_Dialog_dismiss();
-                    sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
-                    setSc();
-                }
-            });
-
-            // Load the first ad
-            mInterstitialAd.loadAd();
-
-        });
-
-    }*/
 
     public void industrialload() {
-        AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
-        AdManagerInterstitialAd.load(this, sps.getString(this, "InterstitialId"), adRequest,
-                new AdManagerInterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(@NonNull AdManagerInterstitialAd interstitial) {
-                        interstitialAd = interstitial;
-                        interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.d(TAG, "Ad was clicked.");
-                            }
+        System.out.println("servercalling=============");
+        String placementId = "Interstitial_Android";
+        UnityAds.load(placementId, new IUnityAdsLoadListener() {
+            @Override
+            public void onUnityAdsAdLoaded(String placementId) {
+                Log.d(TAG, "Unity interstitial ad loaded successfully");
+            }
 
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                Log.d("TAG", "Ad dismissed fullscreen content.");
-                                interstitialAd = null;
-                                timerHandler = null;
-                                Utills.INSTANCE.Loading_Dialog_dismiss();
-                                setSc();
-                                industrialload();
-                            }
-
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                Log.e("TAG", "Ad failed to show fullscreen content.");
-                                interstitialAd = null;
-                                timerHandler = null;
-                                Utills.INSTANCE.Loading_Dialog_dismiss();
-                                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
-                                setSc();
-                            }
-
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.d(TAG, "Ad recorded an impression.");
-                            }
-
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.d(TAG, "Ad showed fullscreen content.");
-                            }
-                        });
-
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        Log.d("TAG", loadAdError.toString());
-                        interstitialAd = null;
-                        timerHandler = null;
-                        Log.i("TAG", "onAdLoadedfailed" + loadAdError.getMessage());
-                    }
-
-                });
-
-    }
-
-  /*  public void adShow() {
-        if (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") == *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")) && interstitialAd != null) {
-            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
-            handler = new Handler(Looper.myLooper());
-            my_runnable = () -> {
-                if (interstitialAd == null) setSc();
-                else
-                    interstitialAd.show(this);
-            };
-            handler.postDelayed(my_runnable, 2500);
-        } else {
-            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", (sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS") + 1));
-            if (sps.getInt(context, "Game4_Stage_Close_RS") > *//*Utills.interstitialadCount*//* Integer.parseInt( sps.getString(this, "showCountOther")))
-                sps.putInt(context, "Game4_Stage_Close_RS", 0);
-
-            setSc();
-            //Toast.makeText(this, ""+sps.getInt(this, "Game4_Stage_Close_RS"), Toast.LENGTH_SHORT).show();
-        }
-
-    }
-*/
-  private int safeParseInt(String value, int defaultValue) {
-      if (value != null && !value.isEmpty()) {
-          try {
-              return Integer.parseInt(value);
-          } catch (NumberFormatException e) {
-              return defaultValue; // Return the default value if parsing fails
-          }
-      }
-      return defaultValue; // Also return default if the input is null or empty
-  }
-
-    public void adShow() {
-        int showCountOther = safeParseInt(sps.getString(this, "showCountOther"), 0);
-        int currentStageCloseRS = sps.getInt(getApplicationContext(), "Game4_Stage_Close_RS");
-
-        if (!sps.getString(this, "showCountOther").equals("0")) {
-            if (currentStageCloseRS == showCountOther && interstitialAd != null) {
-                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
-                Utills.INSTANCE.Loading_Dialog(this);
-                Handler handler = new Handler(Looper.myLooper());
-                Runnable my_runnable = () -> {
-                    if (interstitialAd == null) {
-                        setSc();
-                    } else {
-                        interstitialAd.show(this);
-                    }
-                };
-                handler.postDelayed(my_runnable, 2500);
-            } else {
-                currentStageCloseRS++;
-                sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", currentStageCloseRS);
-                if (currentStageCloseRS > showCountOther) {
-                    sps.putInt(context, "Game4_Stage_Close_RS", 0);
-                }
+            @Override
+            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+                Log.e(TAG, "Unity interstitial ad failed to load: " + message);
+                timerHandler = null;
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
                 setSc();
             }
-        }else{
-            currentStageCloseRS++;
-            sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", currentStageCloseRS);
-            if (currentStageCloseRS > showCountOther) {
-                sps.putInt(context, "Game4_Stage_Close_RS", 0);
+        });
+    }
+
+    public void adShow() {
+        int currentStageCloseVV = sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV");
+        int showCountOther = 0; // Set this to your desired show count
+
+        if (currentStageCloseVV == showCountOther) {
+            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+            Utills.INSTANCE.Loading_Dialog(this);
+
+            new Handler(Looper.myLooper()).postDelayed(() -> {
+                String placementId = "Interstitial_Android";
+
+                if (UnityAds.isInitialized()) {
+                    UnityAds.show(Word_Game_Hard.this, placementId, new IUnityAdsShowListener() {
+                        @Override
+                        public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                            Log.e(TAG, "Unity interstitial ad failed to show: " + message);
+                            timerHandler = null;
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
+                            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                            setSc();
+                        }
+
+                        @Override
+                        public void onUnityAdsShowStart(String placementId) {
+                            Log.d(TAG, "Unity interstitial ad started showing");
+                        }
+
+                        @Override
+                        public void onUnityAdsShowClick(String placementId) {
+                            Log.d(TAG, "Unity interstitial ad was clicked");
+                        }
+
+                        @Override
+                        public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                            Log.d(TAG, "Unity interstitial ad completed");
+                            timerHandler = null;
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
+                            setSc();
+                            industrialload(); // If you need to call this
+                        }
+                    });
+                } else {
+                    Log.d(TAG, "Unity Ads is not initialized.");
+                    timerHandler = null;
+                    Utills.INSTANCE.Loading_Dialog_dismiss();
+                    sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
+                    setSc();
+                }
+            }, 2500);
+        } else {
+            currentStageCloseVV++;
+            sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", currentStageCloseVV);
+
+            if (currentStageCloseVV > showCountOther) {
+                sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
             }
+
             setSc();
         }
 

@@ -98,14 +98,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.admanager.AdManagerAdRequest;
-import com.google.android.gms.ads.rewarded.RewardItem;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.gms.tasks.Task;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
@@ -120,6 +112,9 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.gson.Gson;
+import com.unity3d.ads.IUnityAdsLoadListener;
+import com.unity3d.ads.IUnityAdsShowListener;
+import com.unity3d.ads.UnityAds;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -171,6 +166,7 @@ import nithra.tamil.word.game.solliadi.match_tha_fallows.Match_tha_fallows_game;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.DataBaseHelper_wordsearch;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.Word_search_main;
 import nithra.tamil.word.game.solliadi.word_search_game.Models.game_class.Word_search_levels;
+import nithra.tamil.word.game.solliadi.word_search_game.Models.game_class.game_level_page;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -374,9 +370,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private BillingManager mBillingManager;
-    //private MaxRewardedAd rewardedAd;
-    private RewardedAd rewardedAd;
-
     DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
     String dates = "";
 
@@ -3340,9 +3333,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             openDialogterm.dismiss();
             openDialogterm = null;
         }
-        if (rewardedAd != null) {
-            rewardedAd = null;
-        }
 
     }
 
@@ -4841,7 +4831,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
 
         //initialized the admanager ads id
-        if (!sp.getString(this, "Date_AD").equals(dates) || sp.getString(this, "Date_AD") == "") {
+   /*     if (!sp.getString(this, "Date_AD").equals(dates) || sp.getString(this, "Date_AD") == "") {
             if (isNetworkAvailable(this)) {
                 System.out.println("enter setAdKey");
                 // setAdKey();
@@ -4853,7 +4843,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         } else {
             System.out.println("Tommorow call the Ad");
-        }
+        }*/
 
         //  noDataAdded();
 
@@ -4930,7 +4920,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         }
     }
 
-    private void rewarded_adnew() {
+  //old
+    /*  private void rewarded_adnew() {
 
         System.out.println("the values for reward_status ====== : " + reward_status);
 
@@ -5008,8 +4999,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     }
                 });
     }
-
-
     public void show_reward() {
         if (rewardedAd != null) {
             Activity activityContext = New_Main_Activity.this;
@@ -5034,7 +5023,90 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             Log.d(TAG, "The rewarded ad wasn't ready yet.");
         }
 
+    }*/
+
+  //new
+    private void rewarded_adnew() {
+        String placementId = "Rewarded_Android";
+        UnityAds.load(placementId, new IUnityAdsLoadListener() {
+            @Override
+            public void onUnityAdsAdLoaded(String placementId) {
+                Log.d(TAG, "Unity rewarded ad loaded successfully");
+                fb_reward = 1;
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading after ad is loaded
+            }
+
+            @Override
+            public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError error, String message) {
+                Log.e(TAG, "Unity rewarded ad failed to load: " + message);
+                fb_reward = 0;
+                reward_status = 0;
+                Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
+                Toast.makeText(New_Main_Activity.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+    public void show_reward() {
+        String placementId = "Rewarded_Android";
+        if (UnityAds.isInitialized()) {
+            Utills.INSTANCE.Loading_Dialog(New_Main_Activity.this);
+            UnityAds.show(New_Main_Activity.this, placementId, new IUnityAdsShowListener() {
+                @Override
+                public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                    Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on show failure
+                    reward_status = 0;
+                    rewarded_adnew();
+                }
+
+                @Override
+                public void onUnityAdsShowStart(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad started showing");
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading when ad starts showing
+                }
+
+                @Override
+                public void onUnityAdsShowClick(String placementId) {
+                    Log.d(TAG, "Unity rewarded ad was clicked");
+                }
+
+                @Override
+                public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                    Log.d(TAG, "Unity rewarded ad completed");
+                    if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                        reward_status = 1;
+                        if (extra_coin_s == 0) {
+                            Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
+                            cfx.moveToFirst();
+                            int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
+                            //coin increase
+                            int spx = skx + mCoinCount;
+                            String aStringx = Integer.toString(spx);
+                            myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
+
+                        }
+                        Handler handler = new Handler(Objects.requireNonNull(Looper.myLooper()));
+                        handler.postDelayed(New_Main_Activity.this::vidcoinearn, 500);
+                        handler.postDelayed(New_Main_Activity.this::score_update, 500);
+                    } else {
+                        Toast.makeText(New_Main_Activity.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                    }
+                    fb_reward = 0;
+                    rewarded_adnew();
+                }
+            });
+        } else {
+            Log.d(TAG, "Unity Ads is not initialized.");
+            Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading if Unity not initialized
+            reward_status = 0;
+            rewarded_adnew();
+        }
+    }
+
+
+
+
 
     /*private void app_update_manager() {
         appUpdateManager = AppUpdateManagerFactory.create(New_Main_Activity.this);
@@ -5276,7 +5348,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         }
     }
 
-    public void RemoteConfigureAds() {
+ /*   public void RemoteConfigureAds() {
 
         final FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
@@ -5310,8 +5382,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                        // new SharedPreference().putString(this, "Date_AD", dates);
                         sp.putString(context, "showCountNoti", obj.getString("showCountNoti").toString());
                         //sp.putString(context, "showCountOther", jsonObject.getString("showCountOther").toString()-1);
-                       /* int showCountOther = Integer.parseInt(jsonObject.getString("showCountOther")) - 1;
-                        sp.putString(context, "showCountOther", String.valueOf(showCountOther));*/
+                       *//* int showCountOther = Integer.parseInt(jsonObject.getString("showCountOther")) - 1;
+                        sp.putString(context, "showCountOther", String.valueOf(showCountOther));*//*
                         int showCountOther = 0;
                         if (!obj.getString("showCountOther").isEmpty()) {
                             showCountOther = Integer.parseInt(obj.getString("showCountOther")) - 1;
@@ -5334,10 +5406,10 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 noDataAdded();
             }
         });
-    }
+    }*/
 
 
-    private void setAdKey() {
+/*    private void setAdKey() {
         final String[] strnew = {""};
         final Handler handler = new Handler(Looper.myLooper()) {
             public void handleMessage(Message msg) {
@@ -5356,8 +5428,8 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                         sp.putString(context, "RewardedId", jsonObject.getString("Rewarded").toString());
                         sp.putString(context, "showCountNoti", jsonObject.getString("showCountNoti").toString());
                         //sp.putString(context, "showCountOther", jsonObject.getString("showCountOther").toString()-1);
-                       /* int showCountOther = Integer.parseInt(jsonObject.getString("showCountOther")) - 1;
-                        sp.putString(context, "showCountOther", String.valueOf(showCountOther));*/
+                       *//* int showCountOther = Integer.parseInt(jsonObject.getString("showCountOther")) - 1;
+                        sp.putString(context, "showCountOther", String.valueOf(showCountOther));*//*
                         int showCountOther = 0;
                         if (!jsonObject.getString("showCountOther").isEmpty()) {
                             showCountOther = Integer.parseInt(jsonObject.getString("showCountOther")) - 1;
@@ -5402,16 +5474,16 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         };
         checkUpdate.start();
         //json_data.getString("cat");
-    }
+    }*/
 
-    void noDataAdded() {
+ /*   void noDataAdded() {
         sp.putString(context, "BannerId", "/23102680889,23066960576/MB_NITHARA_BANNER");
         sp.putString(context, "InterstitialId", "/23102680889,23066960576/MB_NITHARA_INTERSTITIAL");
         sp.putString(context, "RewardedId", "/23102680889,23066960576/MB_NITHRA_REWARDED");
         sp.putString(context, "showCountNoti", "3");
         sp.putString(context, "showCountOther", "10");
         sp.putString(context, "Date_AD", dates);
-    }
+    }*/
 
     public void terms_and_policy() {
         notiPermission();
