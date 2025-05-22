@@ -575,8 +575,16 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         }
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+
+        if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 0) {
+            tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+        } else {
+            tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+        }
 
         btnYes.setOnClickListener(v -> {
+            if(sps.getInt(Ote_to_Tamil.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Ote_to_Tamil.this);
                 UnityAds.show(Ote_to_Tamil.this, "Rewarded_Android", new IUnityAdsShowListener() {
@@ -612,6 +620,10 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                 ttstop = countdownDuration;
                 startChronometerCountdown(countdownDuration);
                 dialog.dismiss();
+            }
+            }else{
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                resetGame();
             }
         });
 
@@ -711,7 +723,12 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         Dialog dialog = new Dialog(Ote_to_Tamil.this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+    //    message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(Ote_to_Tamil.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -724,6 +741,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
             String placementId = "Rewarded_Android";
+                    if(sps.getInt(Ote_to_Tamil.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Ote_to_Tamil.this);
                 UnityAds.show(Ote_to_Tamil.this, placementId, new IUnityAdsShowListener() {
@@ -764,6 +782,13 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                 Log.d(TAG, "Unity Ads is not initialized.");
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
             }
+                    }else{
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        if (isTimerRunning) {
+                            timerHandler.removeCallbacks(timerRunnable);
+                        }
+                        startChronometerCountdown(countdownDuration);
+                    }
         });
 
         btnNo.setOnClickListener(v -> {
@@ -4913,6 +4938,7 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
         continueButton.setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Ote_to_Tamil.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Ote_to_Tamil.this);
                 UnityAds.show(Ote_to_Tamil.this, placementId, new IUnityAdsShowListener() {
@@ -4948,6 +4974,10 @@ public class Ote_to_Tamil extends AppCompatActivity implements Download_complete
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+            }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
         });

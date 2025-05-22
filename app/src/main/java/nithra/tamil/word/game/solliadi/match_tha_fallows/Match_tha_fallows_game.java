@@ -617,7 +617,16 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
 
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+
+        if (sps.getInt(Match_tha_fallows_game.this, "purchase_ads") == 0) {
+            tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+        } else {
+            tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+        }
+
         btnYes.setOnClickListener(v -> {
+            if(sps.getInt(Match_tha_fallows_game.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Match_tha_fallows_game.this);
                 UnityAds.show(Match_tha_fallows_game.this, "Rewarded_Android", new IUnityAdsShowListener() {
@@ -658,6 +667,11 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                 ttstop = countdownDuration;
                 startChronometerCountdown(countdownDuration);
                 dialog.dismiss();
+            }
+            }else{
+                resetSelectionOnly();
+                ttstop = countdownDuration;
+                startChronometerCountdown(countdownDuration);
             }
         });
 
@@ -779,7 +793,12 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         Dialog dialog = new Dialog(Match_tha_fallows_game.this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+      //  message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(Match_tha_fallows_game.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -793,6 +812,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
             // Show Unity rewarded ad
             dialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Match_tha_fallows_game.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Match_tha_fallows_game.this);
                 UnityAds.show(Match_tha_fallows_game.this, placementId, new IUnityAdsShowListener() {
@@ -830,6 +850,12 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+            }
+            }else{
+                if (isTimerRunning) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                }
+                startChronometerCountdown(countdownDuration);
             }
         });
 
@@ -4523,6 +4549,7 @@ private void rewarded_adnew() {
         continueButton.setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Match_tha_fallows_game.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Match_tha_fallows_game.this);
                 UnityAds.show(Match_tha_fallows_game.this, placementId, new IUnityAdsShowListener() {
@@ -4558,6 +4585,10 @@ private void rewarded_adnew() {
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+            }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
         });

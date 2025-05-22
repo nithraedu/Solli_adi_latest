@@ -506,9 +506,17 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         }
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+
+        if (sps.getInt(Fill_in_blanks.this, "purchase_ads") == 0) {
+            tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+        } else {
+            tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+        }
 
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
+                    if(sps.getInt(Fill_in_blanks.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Fill_in_blanks.this);
                 UnityAds.show(Fill_in_blanks.this, "Rewarded_Android", new IUnityAdsShowListener() {
@@ -548,7 +556,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
                             ttstop = 0;
                             startChronometerCountdown(countdownDuration);
-                            Toast.makeText(Fill_in_blanks.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(Fill_in_blanks.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
 
                         }else {
                             Toast.makeText(Fill_in_blanks.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
@@ -562,6 +570,21 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 }
                 dialog.dismiss();
             }
+                    }else{
+
+                        // Clear only if user changed it
+                        if (!ed1.getText().toString().equals(ed1.getTag())) ed1.setText("");
+                        if (!ed2.getText().toString().equals(ed2.getTag())) ed2.setText("");
+                        if (!ed3.getText().toString().equals(ed3.getTag())) ed3.setText("");
+                        if (!ed4.getText().toString().equals(ed4.getTag())) ed4.setText("");
+                        if (!ed5.getText().toString().equals(ed5.getTag())) ed5.setText("");
+                        if (!ed6.getText().toString().equals(ed6.getTag())) ed6.setText("");
+                        if (!ed7.getText().toString().equals(ed7.getTag())) ed7.setText("");
+                        if (!ed8.getText().toString().equals(ed8.getTag())) ed8.setText("");
+
+                        ttstop = 0;
+                        startChronometerCountdown(countdownDuration);
+                    }
         });
 
 
@@ -686,7 +709,12 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         Dialog dialog = new Dialog(Fill_in_blanks.this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+       // message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(Fill_in_blanks.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -699,6 +727,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Fill_in_blanks.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Fill_in_blanks.this);
                 UnityAds.show(Fill_in_blanks.this, placementId, new IUnityAdsShowListener() {
@@ -736,6 +765,11 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+            }
+            }else{
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                isTimeExpired = false; // ✅ Reset when user extends time
+                startChronometerCountdown(countdownDuration);
             }
         });
 
@@ -5512,6 +5546,7 @@ public void industrialload() {
         continueButton.setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Fill_in_blanks.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Fill_in_blanks.this);
                 UnityAds.show(Fill_in_blanks.this, placementId, new IUnityAdsShowListener() {
@@ -5547,6 +5582,10 @@ public void industrialload() {
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+            }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
         });

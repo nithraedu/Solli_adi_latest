@@ -996,8 +996,16 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         }
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+
+        if (sps.getInt(WordError_correction.this, "purchase_ads") == 0) {
+            tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+        } else {
+            tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+        }
 
         btnYes.setOnClickListener(v -> {
+                    if(sps.getInt(WordError_correction.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(WordError_correction.this);
                 UnityAds.show(WordError_correction.this, "Rewarded_Android", new IUnityAdsShowListener() {
@@ -1036,6 +1044,11 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                 startChronometerCountdown(countdownDuration);
                 dialog.dismiss();
             }
+                    }else{
+                        ttstop = countdownDuration;
+                        c_edit.setText(""); // clear input
+                        startChronometerCountdown(countdownDuration);
+                    }
         });
 
         btnNo.setOnClickListener(v -> {
@@ -1136,7 +1149,12 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         Dialog dialog = new Dialog(WordError_correction.this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+      //  message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(WordError_correction.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -1150,6 +1168,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
             // Show Unity rewarded ad
             dialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(WordError_correction.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(WordError_correction.this);
                 UnityAds.show(WordError_correction.this, placementId, new IUnityAdsShowListener() {
@@ -1187,6 +1206,12 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+            }
+            }else{
+                if (isTimerRunning) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                }
+                startChronometerCountdown(countdownDuration);
             }
         });
 
@@ -5576,6 +5601,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         continueButton.setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(WordError_correction.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(WordError_correction.this);
                 UnityAds.show(WordError_correction.this, placementId, new IUnityAdsShowListener() {
@@ -5611,6 +5637,10 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+            }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
         });

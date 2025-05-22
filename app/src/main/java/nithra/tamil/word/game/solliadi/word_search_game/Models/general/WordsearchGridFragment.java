@@ -72,6 +72,7 @@
     import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper3;
     import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
     import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
+    import nithra.tamil.word.game.solliadi.Quiz_Game;
     import nithra.tamil.word.game.solliadi.R;
     import nithra.tamil.word.game.solliadi.SharedPreference;
     import nithra.tamil.word.game.solliadi.Solukul_Sol;
@@ -402,6 +403,16 @@
         }
 
         private void showResetDialog() {
+            // Store current remaining time before pausing
+            long remainingTime;
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+                // Calculate remaining time
+                remainingTime = countdownDurationMillis - (SystemClock.elapsedRealtime() - (SystemClock.elapsedRealtime() + countdownDurationMillis - chronometer.getBase()));
+            } else {
+                remainingTime = 0;
+            }
+
             Dialog dialog = new Dialog(getActivity());
             dialog.setContentView(R.layout.dialog_reset);
             if (dialog.getWindow() != null) {
@@ -410,9 +421,16 @@
             }
             Button btnYes = dialog.findViewById(R.id.btnYes);
             Button btnNo = dialog.findViewById(R.id.btnNo);
+            TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+            if (sp.getInt(getContext(), "purchase_ads") == 0) {
+                tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+            } else {
+                tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+            }
 
             btnYes.setOnClickListener(v -> {
                 dialog.dismiss();
+                if(sp.getInt(getContext(),"purchase_ads") ==0){
                 if (UnityAds.isInitialized()) {
                     Utills.INSTANCE.Loading_Dialog(getActivity());
                     UnityAds.show(getActivity(), "Rewarded_Android", new IUnityAdsShowListener() {
@@ -439,7 +457,6 @@
                         @Override
                         public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
                             if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
-
                                 myDialog_class.media_player(getActivity(), R.raw.click, "normal");
 
                                 mFoundWords.clear();
@@ -461,35 +478,100 @@
                                 screatch_txt.setText("");
                                 screatch_txt.setVisibility(View.INVISIBLE);
 
-                                // Reset timer
+                                // Reset timer with full duration
                                 if (timerHandler != null && timerRunnable != null) {
                                     timerHandler.removeCallbacks(timerRunnable);
                                 }
-
                                 startTimerBasedOnAnswerCount(mSolution.size());
-                                Toast.makeText(getActivity(), "Game has been reset.", Toast.LENGTH_SHORT).show();
+                           //     Toast.makeText(getActivity(), "Game has been reset.", Toast.LENGTH_SHORT).show();
 
-                            }else {
+                            } else {
                                 Toast.makeText(getActivity(), "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                             }
                             rewarded_adnew();
                         }
                     });
                 } else {
-                   /* if (ttstop > 0) {
-                        startChronometerCountdown(ttstop); // resume from where paused
-                    }*/
                     dialog.dismiss();
+                }
+                }else{
+                    myDialog_class.media_player(getActivity(), R.raw.click, "normal");
+
+                    mFoundWords.clear();
+                    find_word.clear();
+
+                    // Reset UI highlights
+                    wordsearchGridView.reset();
+                    wordsearchGridView.wordMaintain(new HashSet<>());
+
+                    if (mWordAdapter != null) {
+                        mWordAdapter.setWordsFound(new HashSet<>());
+                        mWordAdapter.notifyDataSetChanged();
+                    }
+
+                    counts.setText("0/" + mSolution.size());
+
+                    tinyDB.putListObject("found" + level_category + level_id, new ArrayList<>());
+
+                    screatch_txt.setText("");
+                    screatch_txt.setVisibility(View.INVISIBLE);
+
+                    // Reset timer with full duration
+                    if (timerHandler != null && timerRunnable != null) {
+                        timerHandler.removeCallbacks(timerRunnable);
+                    }
+                    startTimerBasedOnAnswerCount(mSolution.size());
                 }
             });
 
-
             btnNo.setOnClickListener(v -> {
-               /* if (ttstop > 0) {
-                    startChronometerCountdown(ttstop); // resume from where paused
-                }*/
                 dialog.dismiss();
             });
+
+            dialog.setOnDismissListener(dialogInterface -> {
+                // Resume timer with remaining time when dialog is dismissed
+                if (!isGameCompleted) {
+                    if (remainingTime > 0) {
+                        // Resume with remaining time
+                        countdownDurationMillis = remainingTime;
+                        long endTime = SystemClock.elapsedRealtime() + remainingTime;
+                        
+                        if (timerHandler == null) {
+                            timerHandler = new Handler(Looper.getMainLooper());
+                        }
+                        
+                        timerRunnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                long remainingMillis = endTime - SystemClock.elapsedRealtime();
+                                if (remainingMillis <= 0) {
+                                    chronometer.setText("00:00");
+                                    isTimerRunning = false;
+                                    isAnswerSelectionEnabled = false;
+                                    showExtendTimeDialog();
+                                } else {
+                                    int seconds = (int) (remainingMillis / 1000) % 60;
+                                    int minutes = (int) ((remainingMillis / (1000 * 60)) % 60);
+                                    String timeStr = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+                                    chronometer.setText(timeStr);
+
+                                    if (timerHandler != null) {
+                                        timerHandler.postDelayed(this, 1000);
+                                    }
+                                }
+                            }
+                        };
+                        
+                        if (timerHandler != null) {
+                            timerHandler.post(timerRunnable);
+                        }
+                    } else {
+                        // If no remaining time, start fresh
+                        startTimerBasedOnAnswerCount(mSolution.size());
+                    }
+                }
+            });
+
             dialog.setCancelable(false);
             dialog.show();
         }
@@ -682,7 +764,12 @@
             Dialog dialog = new Dialog(getActivity());
             dialog.setContentView(R.layout.dialog_reset);
             TextView message = dialog.findViewById(R.id.tvMessage);
-            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+          //  message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+            if (sp.getInt(getContext(), "purchase_ads") == 0) {
+                message.setText("நேரம் முடிந்துவிட்டது! மேலும் நேரத்தைப் பெற? காணொளியை பாருங்கள்");
+            } else {
+                message.setText("நேரம் முடிந்துவிட்டது! மேலும் நேரத்தைப் பெற வேண்டுமா?");
+            }
 
             if (dialog.getWindow() != null) {
                 dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -695,6 +782,7 @@
             btnYes.setOnClickListener(v -> {
                 dialog.dismiss();
                 String placementId = "Rewarded_Android";
+                if(sp.getInt(getContext(), "purchase_ads") ==0){
                 if (UnityAds.isInitialized()) {
                     Utills.INSTANCE.Loading_Dialog(getActivity());
                     UnityAds.show(getActivity(), placementId, new IUnityAdsShowListener() {
@@ -740,6 +828,20 @@
                 } else {
                     Log.d(TAG, "Unity Ads is not initialized.");
                     Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+                }
+                }else{
+                    Utills.INSTANCE.Loading_Dialog_dismiss();
+                    isExtendDialogVisible = false;
+
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        int totalWords = mSolution.size();
+                        int answeredWords = mFoundWords.size();
+                        int unansweredWords = totalWords - answeredWords;
+                        isAnswerSelectionEnabled = true;
+
+                        long extendDurationMillis = unansweredWords * 5 * 1000L;
+                        startTimerBasedOnAnswerCount(unansweredWords);
+                    });
                 }
             });
 

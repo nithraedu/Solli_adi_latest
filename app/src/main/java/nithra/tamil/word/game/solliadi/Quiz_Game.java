@@ -416,7 +416,12 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         Dialog dialog = new Dialog(Quiz_Game.this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+      //  message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(Quiz_Game.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -426,8 +431,11 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
 
+
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
+
+            if(sps.getInt(Quiz_Game.this, "purchase_ads") ==0){
             String placementId = "Rewarded_Android";
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Quiz_Game.this);
@@ -465,6 +473,10 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+            }
+            }else{
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                startChronometerCountdown(countdownDuration); // Restart with another 30s
             }
         });
 
@@ -2805,6 +2817,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         continueButton.setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Quiz_Game.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Quiz_Game.this);
                 UnityAds.show(Quiz_Game.this, placementId, new IUnityAdsShowListener() {
@@ -2840,6 +2853,10 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+            }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
         });

@@ -376,7 +376,12 @@ public class Clue_Game_Hard extends AppCompatActivity {
         Dialog dialog = new Dialog(Clue_Game_Hard.this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+       // message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(Clue_Game_Hard.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -389,6 +394,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Clue_Game_Hard.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Clue_Game_Hard.this);
                 UnityAds.show(Clue_Game_Hard.this, placementId, new IUnityAdsShowListener() {
@@ -425,6 +431,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+            }
+            }else{
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                startChronometerCountdown(countdownDuration);
             }
         });
 
@@ -847,8 +857,17 @@ public class Clue_Game_Hard extends AppCompatActivity {
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
 
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+
+        if (sps.getInt(Clue_Game_Hard.this, "purchase_ads") == 0) {
+            tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+        } else {
+            tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+        }
+
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
+                    if(sps.getInt(Clue_Game_Hard.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Clue_Game_Hard.this);
                 UnityAds.show(Clue_Game_Hard.this, "Rewarded_Android", new IUnityAdsShowListener() {
@@ -883,7 +902,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                             if (clue3_txt != null) clue3_txt.setText("");
                             startChronometerCountdown(countdownDuration);
 
-                            Toast.makeText(Clue_Game_Hard.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(Clue_Game_Hard.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
 
                         }else {
                             Toast.makeText(Clue_Game_Hard.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
@@ -897,6 +916,15 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 }
                 dialog.dismiss();
             }
+                    }else{
+                        ttstop = 0;
+                        if (c_edit != null) c_edit.setText("");
+                        if (clue2 != null) clue2.setText("");
+                        if (clue3 != null) clue3.setText("");
+                        if (clue2_txt != null) clue2_txt.setText("");
+                        if (clue3_txt != null) clue3_txt.setText("");
+                        startChronometerCountdown(countdownDuration);
+                    }
         });
 
 
@@ -5997,6 +6025,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
         continueButton.setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Clue_Game_Hard.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Clue_Game_Hard.this);
                 UnityAds.show(Clue_Game_Hard.this, placementId, new IUnityAdsShowListener() {
@@ -6032,6 +6061,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+            }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
         });

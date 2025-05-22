@@ -468,8 +468,17 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
 
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+
+        if (sps.getInt(Jamble_word_game.this, "purchase_ads") == 0) {
+            tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+        } else {
+            tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+        }
+
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
+            if(sps.getInt(Jamble_word_game.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Jamble_word_game.this);
                 UnityAds.show(Jamble_word_game.this, "Rewarded_Android", new IUnityAdsShowListener() {
@@ -500,7 +509,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                             resetvalues();  // Clear existing values and state
                             applyShuffledWords(first, first.length);  // Reapply original word shuffle
                             startChronometerCountdown(countdownDuration);
-                            Toast.makeText(Jamble_word_game.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
+                        //    Toast.makeText(Jamble_word_game.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
 
                         }else {
                             Toast.makeText(Jamble_word_game.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
@@ -513,6 +522,12 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                     startChronometerCountdown(ttstop); // resume from where paused
                 }
                 dialog.dismiss();
+            }
+            }else{
+                ttstop = countdownDuration;
+                resetvalues();  // Clear existing values and state
+                applyShuffledWords(first, first.length);  // Reapply original word shuffle
+                startChronometerCountdown(countdownDuration);
             }
         });
 
@@ -599,7 +614,12 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         Dialog dialog = new Dialog(Jamble_word_game .this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+  //      message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(Jamble_word_game.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -612,6 +632,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Jamble_word_game.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Jamble_word_game .this);
                 UnityAds.show(Jamble_word_game  .this, placementId, new IUnityAdsShowListener() {
@@ -648,6 +669,10 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+            }
+            }else{
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                startChronometerCountdown(countdownDuration);
             }
         });
 
@@ -3459,6 +3484,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         continueButton.setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Jamble_word_game.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Jamble_word_game.this);
                 UnityAds.show(Jamble_word_game.this, placementId, new IUnityAdsShowListener() {
@@ -3494,6 +3520,10 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+            }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
         });

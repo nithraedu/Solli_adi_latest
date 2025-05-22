@@ -348,6 +348,7 @@ public class Picture_Game_Hard extends AppCompatActivity {
             }
         });
 
+
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
 
@@ -673,48 +674,61 @@ public class Picture_Game_Hard extends AppCompatActivity {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
 
+        if (sps.getInt(Picture_Game_Hard.this, "purchase_ads") == 0) {
+            tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+        } else {
+            tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+        }
         btnYes.setOnClickListener(v -> {
-            if (UnityAds.isInitialized()) {
-                Utills.INSTANCE.Loading_Dialog(Picture_Game_Hard.this);
-                UnityAds.show(Picture_Game_Hard.this, "Rewarded_Android", new IUnityAdsShowListener() {
-                    @Override
-                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
-                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        reward_status = 0;
-                        rewarded_adnew();
-                        dialog.dismiss();
-                    }
-
-                    @Override
-                    public void onUnityAdsShowStart(String placementId) {
-                        Log.d(TAG, "Unity rewarded ad started showing");
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                    }
-
-                    @Override
-                    public void onUnityAdsShowClick(String placementId) {
-                        Log.d(TAG, "Unity rewarded ad was clicked");
-                    }
-
-                    @Override
-                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
-                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
-                            ttstop = 0;
-                            p_edit.setText("");
-                            startChronometerCountdown(countdownDuration);
+            if(sps.getInt(Picture_Game_Hard.this, "purchase_ads") ==0){
+                if (UnityAds.isInitialized()) {
+                    Utills.INSTANCE.Loading_Dialog(Picture_Game_Hard.this);
+                    UnityAds.show(Picture_Game_Hard.this, "Rewarded_Android", new IUnityAdsShowListener() {
+                        @Override
+                        public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                            Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
+                            reward_status = 0;
+                            rewarded_adnew();
+                            dialog.dismiss();
                         }
-                        dialog.dismiss();
-                    }
-                });
-            } else {
+
+                        @Override
+                        public void onUnityAdsShowStart(String placementId) {
+                            Log.d(TAG, "Unity rewarded ad started showing");
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
+                        }
+
+                        @Override
+                        public void onUnityAdsShowClick(String placementId) {
+                            Log.d(TAG, "Unity rewarded ad was clicked");
+                        }
+
+                        @Override
+                        public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                            if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                                ttstop = 0;
+                                p_edit.setText("");
+                                startChronometerCountdown(countdownDuration);
+                            }
+                            dialog.dismiss();
+                        }
+                    });
+                } else {
+                    ttstop = countdownDuration;
+                    startChronometerCountdown(countdownDuration);
+                    dialog.dismiss();
+                }
+            }else{
                 ttstop = countdownDuration;
                 startChronometerCountdown(countdownDuration);
                 dialog.dismiss();
             }
+
         });
 
         btnNo.setOnClickListener(v -> {
@@ -781,7 +795,11 @@ public class Picture_Game_Hard extends AppCompatActivity {
         Dialog dialog = new Dialog(Picture_Game_Hard.this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(Picture_Game_Hard.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -794,46 +812,54 @@ public class Picture_Game_Hard extends AppCompatActivity {
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
             String placementId = "Rewarded_Android";
-            if (UnityAds.isInitialized()) {
-                Utills.INSTANCE.Loading_Dialog(Picture_Game_Hard.this);
-                UnityAds.show(Picture_Game_Hard.this, placementId, new IUnityAdsShowListener() {
-                    @Override
-                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
-                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
-                        Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here
-                    }
-
-                    @Override
-                    public void onUnityAdsShowStart(String placementId) {
-                        Log.d(TAG, "Unity rewarded ad started showing");
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                    }
-
-                    @Override
-                    public void onUnityAdsShowClick(String placementId) {
-                        Log.d(TAG, "Unity rewarded ad was clicked");
-                    }
-
-                    @Override
-                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
-                        Log.d(TAG, "Unity rewarded ad completed");
-                        Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here too, just in case
-                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
-                            new Handler(Looper.getMainLooper()).post(() -> {
-                                isAnswerSelectionEnabled = true;
-                                startChronometerCountdown(countdownDuration); // Restart with another 30s
-                            });
-
-                        } else {
-                            Toast.makeText(Picture_Game_Hard.this, "முழு காணொளியையும் பார்த்து 30 விநாடிகள் பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                if(sps.getInt(Picture_Game_Hard.this, "purchase_ads") ==0){
+                if (UnityAds.isInitialized()) {
+                    Utills.INSTANCE.Loading_Dialog(Picture_Game_Hard.this);
+                    UnityAds.show(Picture_Game_Hard.this, placementId, new IUnityAdsShowListener() {
+                        @Override
+                        public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                            Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                            Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here
                         }
-                        rewarded_adnew(); // Load next ad
-                    }
+
+                        @Override
+                        public void onUnityAdsShowStart(String placementId) {
+                            Log.d(TAG, "Unity rewarded ad started showing");
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
+                        }
+
+                        @Override
+                        public void onUnityAdsShowClick(String placementId) {
+                            Log.d(TAG, "Unity rewarded ad was clicked");
+                        }
+
+                        @Override
+                        public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                            Log.d(TAG, "Unity rewarded ad completed");
+                            Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here too, just in case
+                            if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                                new Handler(Looper.getMainLooper()).post(() -> {
+                                    isAnswerSelectionEnabled = true;
+                                    startChronometerCountdown(countdownDuration); // Restart with another 30s
+                                });
+
+                            } else {
+                                Toast.makeText(Picture_Game_Hard.this, "முழு காணொளியையும் பார்த்து 30 விநாடிகள் பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                            }
+                            rewarded_adnew(); // Load next ad
+                        }
+                    });
+                } else {
+                    Log.d(TAG, "Unity Ads is not initialized.");
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+                }
+            }else{
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    isAnswerSelectionEnabled = true;
+                    startChronometerCountdown(countdownDuration); // Restart with another 30s
                 });
-            } else {
-                Log.d(TAG, "Unity Ads is not initialized.");
-                Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
             }
+
         });
 
         btnNo.setOnClickListener(v -> {
@@ -957,6 +983,10 @@ public class Picture_Game_Hard extends AppCompatActivity {
         }
         openDialog_s = new Dialog(Picture_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
+        Complete_count = sps.getInt(getApplicationContext(), "completed_count_picture_game_hard")+1;
+        System.out.println("Completed count === :"+Complete_count);
+        sps.putInt(getApplicationContext(), "completed_count_picture_game_hard", Integer.parseInt(String.valueOf(Complete_count)));
+
         adsicon = openDialog_s.findViewById(R.id.adsicon);
 
 
@@ -3985,10 +4015,6 @@ public class Picture_Game_Hard extends AppCompatActivity {
         }
 
         next_continue.setOnClickListener(view -> {
-            Complete_count = sps.getInt(getApplicationContext(), "completed_count_picture_game_hard")+1;
-            System.out.println("Completed count === :"+Complete_count);
-            sps.putInt(getApplicationContext(), "completed_count_picture_game_hard", Integer.parseInt(String.valueOf(Complete_count)));
-
             dia_dismiss = 1;
             openDialog_s.dismiss();
             next();
@@ -6844,44 +6870,51 @@ public class Picture_Game_Hard extends AppCompatActivity {
 
         continueButton.setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
-            String placementId = "Rewarded_Android";
-            if (UnityAds.isInitialized()) {
-                Utills.INSTANCE.Loading_Dialog(Picture_Game_Hard.this);
-                UnityAds.show(Picture_Game_Hard.this, placementId, new IUnityAdsShowListener() {
-                    @Override
-                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
-                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                        continueToNextGame();
-                    }
-
-                    @Override
-                    public void onUnityAdsShowStart(String placementId) {
-                        Log.d(TAG, "Unity rewarded ad started showing");
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                    }
-
-                    @Override
-                    public void onUnityAdsShowClick(String placementId) {
-                        Log.d(TAG, "Unity rewarded ad was clicked");
-                    }
-
-                    @Override
-                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
-                        Log.d(TAG, "Unity rewarded ad completed");
-                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
-                            skipCounter = 0;
+            if(sps.getInt(Picture_Game_Hard.this, "purchase_ads") ==0){
+                String placementId = "Rewarded_Android";
+                if (UnityAds.isInitialized()) {
+                    Utills.INSTANCE.Loading_Dialog(Picture_Game_Hard.this);
+                    UnityAds.show(Picture_Game_Hard.this, placementId, new IUnityAdsShowListener() {
+                        @Override
+                        public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                            Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
                             continueToNextGame();
-                        } else {
-                            Toast.makeText(Picture_Game_Hard.this, "முழு காணொளியையும் பார்த்து அடுத்த விளையாட்டுக்கு செல்லவும்.", Toast.LENGTH_SHORT).show();
                         }
-                        rewarded_adnew(); // Load next ad
-                    }
-                });
-            } else {
-                Log.d(TAG, "Unity Ads is not initialized.");
+
+                        @Override
+                        public void onUnityAdsShowStart(String placementId) {
+                            Log.d(TAG, "Unity rewarded ad started showing");
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
+                        }
+
+                        @Override
+                        public void onUnityAdsShowClick(String placementId) {
+                            Log.d(TAG, "Unity rewarded ad was clicked");
+                        }
+
+                        @Override
+                        public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                            Log.d(TAG, "Unity rewarded ad completed");
+                            if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                                skipCounter = 0;
+                                continueToNextGame();
+                            } else {
+                                Toast.makeText(Picture_Game_Hard.this, "முழு காணொளியையும் பார்த்து அடுத்த விளையாட்டுக்கு செல்லவும்.", Toast.LENGTH_SHORT).show();
+                            }
+                            rewarded_adnew(); // Load next ad
+                        }
+                    });
+                } else {
+                    Log.d(TAG, "Unity Ads is not initialized.");
+                    continueToNextGame();
+                }
+            }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
+
+
         });
 
         // Add dismiss listener to resume timer when bottom sheet is dismissed

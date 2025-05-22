@@ -418,16 +418,17 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         }
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
 
-        /*btnYes.setOnClickListener(v -> {
-            // Restart 30-second timer
-            ttstop = 0;
-            startChronometerCountdown(countdownDuration);
-            dialog.dismiss();
-        });*/
+        if (sps.getInt(Missing_Words.this, "purchase_ads") == 0) {
+            tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+        } else {
+            tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+        }
 
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
+                    if(sps.getInt(Missing_Words.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Missing_Words.this);
                 UnityAds.show(Missing_Words.this, "Rewarded_Android", new IUnityAdsShowListener() {
@@ -456,7 +457,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                         if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
                             ttstop = 0;
                             startChronometerCountdown(countdownDuration);
-                            Toast.makeText(Missing_Words.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(Missing_Words.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
 
                         }else {
                             Toast.makeText(Missing_Words.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
@@ -470,6 +471,10 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                 }
                 dialog.dismiss();
             }
+                    }else{
+                        ttstop = 0;
+                        startChronometerCountdown(countdownDuration);
+                    }
         });
 
         btnNo.setOnClickListener(v -> {
@@ -600,7 +605,12 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         Dialog dialog = new Dialog(Missing_Words.this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+       // message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(Missing_Words.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -613,6 +623,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Missing_Words.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Missing_Words.this);
                 UnityAds.show(Missing_Words.this, placementId, new IUnityAdsShowListener() {
@@ -649,6 +660,10 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+            }
+            }else{
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                startChronometerCountdown(countdownDuration);
             }
         });
 
@@ -3268,6 +3283,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         continueButton.setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Missing_Words.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Missing_Words.this);
                 UnityAds.show(Missing_Words.this, placementId, new IUnityAdsShowListener() {
@@ -3303,6 +3319,10 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+            }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
         });

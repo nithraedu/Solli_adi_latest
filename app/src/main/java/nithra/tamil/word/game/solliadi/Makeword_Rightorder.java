@@ -1134,9 +1134,16 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         }
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
 
+        if (sps.getInt(Makeword_Rightorder.this, "purchase_ads") == 0) {
+            tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+        } else {
+            tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+        }
 
         btnYes.setOnClickListener(v -> {
+            if(sps.getInt(Makeword_Rightorder.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Makeword_Rightorder.this);
                 UnityAds.show(Makeword_Rightorder.this, "Rewarded_Android", new IUnityAdsShowListener() {
@@ -1175,6 +1182,11 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
                 startChronometerCountdown(countdownDuration);
                 dialog.dismiss();
             }
+            }else{
+                ttstop = countdownDuration;
+                c_edit.setText(""); // clear input
+                startChronometerCountdown(countdownDuration);
+            }
         });
 
         btnNo.setOnClickListener(v -> {
@@ -1201,7 +1213,12 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         Dialog dialog = new Dialog(Makeword_Rightorder.this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        //message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(Makeword_Rightorder.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -1215,6 +1232,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
             // Show Unity rewarded ad
             dialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Makeword_Rightorder.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Makeword_Rightorder.this);
                 UnityAds.show(Makeword_Rightorder.this, placementId, new IUnityAdsShowListener() {
@@ -1252,6 +1270,12 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+            }
+            }else{
+                if (isTimerRunning) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                }
+                startChronometerCountdown(countdownDuration);
             }
         });
 
@@ -4805,6 +4829,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         continueButton.setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Makeword_Rightorder.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Makeword_Rightorder.this);
                 UnityAds.show(Makeword_Rightorder.this, placementId, new IUnityAdsShowListener() {
@@ -4840,6 +4865,10 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+            }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
         });

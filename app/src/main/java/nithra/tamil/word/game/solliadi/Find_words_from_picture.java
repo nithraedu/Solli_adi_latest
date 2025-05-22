@@ -60,6 +60,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.unity3d.ads.IUnityAdsInitializationListener;
@@ -173,7 +174,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     private int skipCounter = 0; // Add skip counter
     private int completedGames = 0; // Track completed games
     private int skippedGames = 0; // Track skipped games
-    int  Complete_count = 0;
+    int Complete_count = 0;
 
 
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
@@ -232,6 +233,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             public void onInitializationComplete() {
                 System.out.println("Unity Ads Initialization Complete");
             }
+
             @Override
             public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
                 System.out.println("Unity Ads Initialization Failed: " + message);
@@ -268,7 +270,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         rewarded_adnew();
         if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 0) {
             industrialload();
-       }
+        }
 
         ///Alter Answer table
 
@@ -468,6 +470,12 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+        if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 0) {
+            tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+        } else {
+            tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+        }
 
         // ✅ Pause timer here
         if (timerHandler != null && timerRunnable != null) {
@@ -476,6 +484,8 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
+            if(sps.getInt(Find_words_from_picture.this, "purchase_ads") ==0){
+
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Find_words_from_picture.this);
                 UnityAds.show(Find_words_from_picture.this, "Rewarded_Android", new IUnityAdsShowListener() {
@@ -538,9 +548,9 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
                             startChronometerCountdown(countdownTimeMillis);
 
-                            Toast.makeText(Find_words_from_picture.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
+                        //    Toast.makeText(Find_words_from_picture.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
 
-                        }else {
+                        } else {
                             Toast.makeText(Find_words_from_picture.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                         }
                         rewarded_adnew();
@@ -551,6 +561,42 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                     startChronometerCountdown(ttstop); // resume from where paused
                 }
                 dialog.dismiss();
+            }}else{
+                // ✅ Step 1: Stop current timer
+                if (timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                }
+                //  isTimerRunning = false;
+                focus.setText("00:00"); // reset view text
+
+                // ✅ Step 2: Reset game state
+                //  x = 0;
+                b_score = 0;
+                ans_count = 0;
+                ans_editer.setText("");
+
+                // ✅ Step 3: Clear UI
+                TextView[] answerViews = {ans1, ans2, ans3, ans4, ans5, ans6, ans7};
+                ImageView[] imageViews = {value_ans1, value_ans2, value_ans3, value_ans4, value_ans5, value_ans6, value_ans7};
+
+                for (int i = 0; i < answerViews.length; i++) {
+                    answerViews[i].setText("");
+                    imageViews[i].setImageResource(R.drawable.yellow_question);
+                    imageViews[i].setClickable(true);
+                    imageViews[i].setVisibility(i == 0 ? View.VISIBLE : View.GONE); // Only q1 visible
+                }
+
+                // ✅ Step 4: Reset DB
+                String date = sps.getString(Find_words_from_picture.this, "date");
+                int pos = date.equals("0") ? 1 : 2;
+                myDbHelper.executeSql("UPDATE answertable SET isfinish = 0, useranswer = NULL WHERE gameid = '" + gameid + "' AND levelid = '" + question_id + "' AND rd = '" + rdvalu + "'");
+
+                // ✅ Step 5: Restart timer with fresh duration
+                int emptyLines = getEmptyAnswerCount();  // use original logic if needed
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000L;
+
+                startChronometerCountdown(countdownTimeMillis);
             }
         });
 
@@ -615,21 +661,29 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     private int getEmptyAnswerCount() {
         int emptyCount = 0;
 
-        if (ans1.getVisibility() == View.VISIBLE && ans1.getText().toString().trim().isEmpty()) emptyCount++;
-        if (ans2.getVisibility() == View.VISIBLE && ans2.getText().toString().trim().isEmpty()) emptyCount++;
-        if (ans3.getVisibility() == View.VISIBLE && ans3.getText().toString().trim().isEmpty()) emptyCount++;
-        if (ans4.getVisibility() == View.VISIBLE && ans4.getText().toString().trim().isEmpty()) emptyCount++;
-        if (ans5.getVisibility() == View.VISIBLE && ans5.getText().toString().trim().isEmpty()) emptyCount++;
-        if (ans6.getVisibility() == View.VISIBLE && ans6.getText().toString().trim().isEmpty()) emptyCount++;
-        if (ans7.getVisibility() == View.VISIBLE && ans7.getText().toString().trim().isEmpty()) emptyCount++;
+        if (ans1.getVisibility() == View.VISIBLE && ans1.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (ans2.getVisibility() == View.VISIBLE && ans2.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (ans3.getVisibility() == View.VISIBLE && ans3.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (ans4.getVisibility() == View.VISIBLE && ans4.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (ans5.getVisibility() == View.VISIBLE && ans5.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (ans6.getVisibility() == View.VISIBLE && ans6.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (ans7.getVisibility() == View.VISIBLE && ans7.getText().toString().trim().isEmpty())
+            emptyCount++;
 
         System.out.println("Empty & Visible count FWFP: " + emptyCount);
         return emptyCount;
     }
+
     void showExtendTimeDialog() {
 
         // ✅ Pause and capture remaining time
-        if ( timerHandler != null && timerRunnable != null) {
+        if (timerHandler != null && timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
             //  isTimerRunning = false;
 
@@ -640,7 +694,12 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         Dialog dialog = new Dialog(Find_words_from_picture.this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        // message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் நேரத்தைப் பெற? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் நேரத்தைப் பெற வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -653,45 +712,52 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
             String placementId = "Rewarded_Android";
-            if (UnityAds.isInitialized()) {
-                Utills.INSTANCE.Loading_Dialog(Find_words_from_picture.this);
-                UnityAds.show(Find_words_from_picture.this, placementId, new IUnityAdsShowListener() {
-                    @Override
-                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
-                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
-                        Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here
-                    }
-
-                    @Override
-                    public void onUnityAdsShowStart(String placementId) {
-                        Log.d(TAG, "Unity rewarded ad started showing");
-                        Utills.INSTANCE.Loading_Dialog_dismiss();
-                    }
-
-                    @Override
-                    public void onUnityAdsShowClick(String placementId) {
-                        Log.d(TAG, "Unity rewarded ad was clicked");
-                    }
-
-                    @Override
-                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
-                        Log.d(TAG, "Unity rewarded ad completed");
-                        Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here too, just in case
-                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
-                            int emptyLines = getEmptyAnswerCount();
-                            long countdownTimeMillis = emptyLines * 30 * 1000L;
-                            startChronometerCountdown(countdownTimeMillis);
-                            isTimeExpired = false; // ✅ reset flag
-
-                        } else {
-                            Toast.makeText(Find_words_from_picture.this, "முழு காணொளியையும் பார்த்து 30 விநாடிகள் பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+            if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 0) {
+                if (UnityAds.isInitialized()) {
+                    Utills.INSTANCE.Loading_Dialog(Find_words_from_picture.this);
+                    UnityAds.show(Find_words_from_picture.this, placementId, new IUnityAdsShowListener() {
+                        @Override
+                        public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                            Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                            Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here
                         }
-                        rewarded_adnew(); // Load next ad
-                    }
-                });
+
+                        @Override
+                        public void onUnityAdsShowStart(String placementId) {
+                            Log.d(TAG, "Unity rewarded ad started showing");
+                            Utills.INSTANCE.Loading_Dialog_dismiss();
+                        }
+
+                        @Override
+                        public void onUnityAdsShowClick(String placementId) {
+                            Log.d(TAG, "Unity rewarded ad was clicked");
+                        }
+
+                        @Override
+                        public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                            Log.d(TAG, "Unity rewarded ad completed");
+                            Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog here too, just in case
+                            if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                                int emptyLines = getEmptyAnswerCount();
+                                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                                startChronometerCountdown(countdownTimeMillis);
+                                isTimeExpired = false; // ✅ reset flag
+
+                            } else {
+                                Toast.makeText(Find_words_from_picture.this, "முழு காணொளியையும் பார்த்து 30 விநாடிகள் பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
+                            }
+                            rewarded_adnew(); // Load next ad
+                        }
+                    });
+                } else {
+                    Log.d(TAG, "Unity Ads is not initialized.");
+                    Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+                }
             } else {
-                Log.d(TAG, "Unity Ads is not initialized.");
-                Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+                int emptyLines = getEmptyAnswerCount();
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                startChronometerCountdown(countdownTimeMillis);
+                isTimeExpired = false; // ✅ reset flag
             }
         });
 
@@ -1179,13 +1245,20 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
         // ❌ Don't hide the answer lines
         // ✅ Instead, just clear and style them
-        ans1.setText(""); ans1.setTextColor(getResources().getColor(R.color.white));
-        ans2.setText(""); ans2.setTextColor(getResources().getColor(R.color.white));
-        ans3.setText(""); ans3.setTextColor(getResources().getColor(R.color.white));
-        ans4.setText(""); ans4.setTextColor(getResources().getColor(R.color.white));
-        ans5.setText(""); ans5.setTextColor(getResources().getColor(R.color.white));
-        ans6.setText(""); ans6.setTextColor(getResources().getColor(R.color.white));
-        ans7.setText(""); ans7.setTextColor(getResources().getColor(R.color.white));
+        ans1.setText("");
+        ans1.setTextColor(getResources().getColor(R.color.white));
+        ans2.setText("");
+        ans2.setTextColor(getResources().getColor(R.color.white));
+        ans3.setText("");
+        ans3.setTextColor(getResources().getColor(R.color.white));
+        ans4.setText("");
+        ans4.setTextColor(getResources().getColor(R.color.white));
+        ans5.setText("");
+        ans5.setTextColor(getResources().getColor(R.color.white));
+        ans6.setText("");
+        ans6.setTextColor(getResources().getColor(R.color.white));
+        ans7.setText("");
+        ans7.setTextColor(getResources().getColor(R.color.white));
 
         // Keep them visible
         ans1.setVisibility(View.VISIBLE);
@@ -1478,7 +1551,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         clear.setOnClickListener(v -> {
             if (focus.getText().toString().equals("00:00")) {
                 showExtendTimeDialog();  // ✅ Show dialog only when timer is exactly 00:00
-                return ; // Prevent keyboard from opening
+                return; // Prevent keyboard from opening
             }
             chr = 1;
             mCustomKeyboard.letter_del_change("1");
@@ -1521,7 +1594,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         p_facebook.setOnClickListener(v -> {
             if (focus.getText().toString().equals("00:00")) {
                 showExtendTimeDialog();  // ✅ Show dialog only when timer is exactly 00:00
-                return ; // Prevent keyboard from opening
+                return; // Prevent keyboard from opening
             }
             share_name = 1;
             final String a = "com.facebook.katana";
@@ -1563,7 +1636,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     private void verify_data() {
         if (focus.getText().toString().equals("00:00")) {
             showExtendTimeDialog();  // ✅ Show dialog only when timer is exactly 00:00
-            return ; // Prevent keyboard from opening
+            return; // Prevent keyboard from opening
         }
 
         chr = 1;
@@ -2326,8 +2399,8 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 2500);
 
             next_continue.setOnClickListener(view -> {
-                Complete_count = sps.getInt(getApplicationContext(), "completed_count_find_words_from_picture")+1;
-                System.out.println("Completed count === :"+Complete_count);
+                Complete_count = sps.getInt(getApplicationContext(), "completed_count_find_words_from_picture") + 1;
+                System.out.println("Completed count === :" + Complete_count);
                 sps.putInt(getApplicationContext(), "completed_count_find_words_from_picture", Integer.parseInt(String.valueOf(Complete_count)));
 
                 y = 0;
@@ -2384,8 +2457,8 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
 
             next_continue.setOnClickListener(view -> {
-                Complete_count = sps.getInt(getApplicationContext(), "completed_count_find_words_from_picture")+1;
-                System.out.println("Completed count === :"+Complete_count);
+                Complete_count = sps.getInt(getApplicationContext(), "completed_count_find_words_from_picture") + 1;
+                System.out.println("Completed count === :" + Complete_count);
                 sps.putInt(getApplicationContext(), "completed_count_find_words_from_picture", Integer.parseInt(String.valueOf(Complete_count)));
 
                 y = 0;
@@ -3650,7 +3723,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         }
     }
 
-  //new
+    //new
 
     private void rewarded_adnew() {
         String placementId = "Rewarded_Android";
@@ -3673,6 +3746,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             }
         });
     }
+
     public void show_reward() {
         String placementId = "Rewarded_Android";
         if (UnityAds.isInitialized()) {
@@ -3789,6 +3863,8 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
         bottomSheetDialog.findViewById(R.id.continueToPlayGame).setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
+            if(sps.getInt(Find_words_from_picture.this, "purchase_ads") ==0){
+
             String placementId = "Rewarded_Android";
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Find_words_from_picture.this);
@@ -3806,7 +3882,8 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                     }
 
                     @Override
-                    public void onUnityAdsShowClick(String placementId) {}
+                    public void onUnityAdsShowClick(String placementId) {
+                    }
 
                     @Override
                     public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
@@ -3820,6 +3897,9 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                     }
                 });
             } else {
+                continueToNextGame();
+            } }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
         });

@@ -484,10 +484,17 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
 
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+        if (sps.getInt(Find_difference_between_pictures.this, "purchase_ads") == 0) {
+            tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+        } else {
+            tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+        }
 
 
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
+            if(sps.getInt(Find_difference_between_pictures.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Find_difference_between_pictures.this);
                 UnityAds.show(Find_difference_between_pictures.this, "Rewarded_Android", new IUnityAdsShowListener() {
@@ -521,7 +528,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                             //  isTimerRunning = false;
                             resetGame();
 
-                            Toast.makeText(Find_difference_between_pictures.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(Find_difference_between_pictures.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
 
                         } else {
                             Toast.makeText(Find_difference_between_pictures.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
@@ -534,6 +541,14 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                     startChronometerCountdown(ttstop); // resume from where paused
                 }
                 dialog.dismiss();
+            }
+            }else{
+                // ✅ Step 1: Stop current timer
+                if (timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                }
+                //  isTimerRunning = false;
+                resetGame();
             }
         });
 
@@ -722,7 +737,12 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         Dialog dialog = new Dialog(Find_difference_between_pictures.this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+      //  message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(Find_difference_between_pictures.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் நேரத்தைப் பெற? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் நேரத்தைப் பெற வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -735,6 +755,8 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Find_difference_between_pictures.this, "purchase_ads") ==0){
+
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Find_difference_between_pictures.this);
                 UnityAds.show(Find_difference_between_pictures.this, placementId, new IUnityAdsShowListener() {
@@ -774,6 +796,13 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+            }
+            }else{
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                int emptyLines = getEmptyAnswerCount();
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                startChronometerCountdown(countdownTimeMillis); // Restart with another 30s
+                isTimeExpired = false; // ✅ reset flag
             }
         });
 
@@ -4309,6 +4338,7 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
         bottomSheetDialog.findViewById(R.id.continueToPlayGame).setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Find_difference_between_pictures.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Find_difference_between_pictures.this);
                 UnityAds.show(Find_difference_between_pictures.this, placementId, new IUnityAdsShowListener() {
@@ -4340,6 +4370,10 @@ public class Find_difference_between_pictures extends AppCompatActivity implemen
                     }
                 });
             } else {
+                continueToNextGame();
+            }
+            }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
         });

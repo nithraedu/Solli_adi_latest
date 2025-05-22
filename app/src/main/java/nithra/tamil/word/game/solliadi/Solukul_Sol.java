@@ -721,9 +721,16 @@ public class Solukul_Sol extends AppCompatActivity {
         }
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+        if (sps.getInt(Solukul_Sol.this, "purchase_ads") == 0) {
+            tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+        } else {
+            tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+        }
 
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
+                    if(sps.getInt(Solukul_Sol.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Solukul_Sol.this);
                 UnityAds.show(Solukul_Sol.this, "Rewarded_Android", new IUnityAdsShowListener() {
@@ -784,7 +791,7 @@ public class Solukul_Sol extends AppCompatActivity {
 
                             // Also re-enable the verify button
                             s_verify.setVisibility(View.VISIBLE);
-                            Toast.makeText(Solukul_Sol.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(Solukul_Sol.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
 
                         } else {
                             Toast.makeText(Solukul_Sol.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
@@ -798,6 +805,42 @@ public class Solukul_Sol extends AppCompatActivity {
                 }
                 dialog.dismiss();
             }
+                    }else{
+
+                        // Clear only the text in answer fields, do not change visibility
+                        TextView[] answerFields = {vl1, vl2, vl3, vl4, vl5, vl6, vl7};
+                        ImageView[] tickImages = {im1, im2, im3, im4, im5, im6, im7};
+
+                        for (int i = 0; i < answer_type; i++) {
+                            answerFields[i].setText("");
+                            answerFields[i].setTextColor(getResources().getColor(R.color.black)); // Reset to default color if needed
+                            tickImages[i].setBackgroundResource(R.drawable.yellow_question); // Reset tick background
+                            tickImages[i].setClickable(true); // Enable the button again
+                        }
+
+                        // Hide next image buttons after the first one
+                        if (answer_type > 1) im2.setVisibility(View.INVISIBLE);
+                        if (answer_type > 2) im3.setVisibility(View.INVISIBLE);
+                        if (answer_type > 3) im4.setVisibility(View.INVISIBLE);
+                        if (answer_type > 4) im5.setVisibility(View.INVISIBLE);
+                        if (answer_type > 5) im6.setVisibility(View.INVISIBLE);
+                        if (answer_type > 6) im7.setVisibility(View.INVISIBLE);
+
+                        // Reset x and y counters
+                        x = 1;
+                        y = 0;
+
+                        // Reset timer
+                        int emptyLines = getEmptyAnswerCount();
+                        long countdownTimeMillis = emptyLines * 30 * 1000L;
+                        startChronometerCountdown(countdownTimeMillis);
+
+                        // Reset DB: mark all answers for this level as not finished
+                        myDbHelper.executeSql("UPDATE answertable SET isfinish=0, useranswer=null WHERE levelid='" + letterid + "' AND gameid='" + gameid + "' AND rd='" + rdvalu + "'");
+
+                        // Also re-enable the verify button
+                        s_verify.setVisibility(View.VISIBLE);
+                    }
         });
 
 
@@ -950,7 +993,12 @@ public class Solukul_Sol extends AppCompatActivity {
         Dialog dialog = new Dialog(Solukul_Sol.this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+       // message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(Solukul_Sol.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் நேரத்தைப் பெற? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் நேரத்தைப் பெற வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -963,6 +1011,7 @@ public class Solukul_Sol extends AppCompatActivity {
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Solukul_Sol.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Solukul_Sol.this);
                 UnityAds.show(Solukul_Sol.this, placementId, new IUnityAdsShowListener() {
@@ -1001,6 +1050,12 @@ public class Solukul_Sol extends AppCompatActivity {
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+            }
+            }else{
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                int emptyLines = getEmptyAnswerCount();
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                startChronometerCountdown(countdownTimeMillis);
             }
         });
 
@@ -6591,6 +6646,7 @@ public class Solukul_Sol extends AppCompatActivity {
         bottomSheetDialog.findViewById(R.id.continueToPlayGame).setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Solukul_Sol.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Solukul_Sol.this);
                 UnityAds.show(Solukul_Sol.this, placementId, new IUnityAdsShowListener() {
@@ -6622,6 +6678,10 @@ public class Solukul_Sol extends AppCompatActivity {
                     }
                 });
             } else {
+                continueToNextGame();
+            }
+            }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
         });

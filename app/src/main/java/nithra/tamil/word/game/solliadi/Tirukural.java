@@ -1006,6 +1006,13 @@ public class Tirukural extends AppCompatActivity {
 
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+
+        if (sps.getInt(Tirukural.this, "purchase_ads") == 0) {
+            tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+        } else {
+            tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+        }
 
         // ✅ Pause timer here and store remaining time
         if (timerHandler != null && timerRunnable != null) {
@@ -1019,6 +1026,7 @@ public class Tirukural extends AppCompatActivity {
         btnYes.setOnClickListener(v -> {
             ttstop = 0; // clear saved paused time
             dialog.dismiss();
+            if(sps.getInt(Tirukural.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Tirukural.this);
                 UnityAds.show(Tirukural.this, "Rewarded_Android", new IUnityAdsShowListener() {
@@ -1065,7 +1073,7 @@ public class Tirukural extends AppCompatActivity {
                             c_ans.setBackgroundResource(R.drawable.yellow_question);
 
                             set_question(randomno); // reload question
-                            Toast.makeText(Tirukural.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
+                         //   Toast.makeText(Tirukural.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(Tirukural.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                         }
@@ -1076,6 +1084,29 @@ public class Tirukural extends AppCompatActivity {
                 if (ttstop > 0) {
                     startChronometerCountdown(ttstop); // resume if Unity not ready
                 }
+            }
+            }else{
+                // ✅ Start new 30 sec timer
+                startChronometerCountdown(countdownDuration);
+
+                // ✅ Reset game state
+                word1.setText(""); word2.setText(""); word3.setText("");
+                word4.setText(""); word5.setText(""); word6.setText(""); word7.setText("");
+
+                c_button1.setText(""); c_button2.setText(""); c_button3.setText("");
+                c_button4.setText(""); c_button5.setText(""); c_button6.setText("");
+                c_button7.setText(""); c_button8.setText(""); c_button9.setText("");
+                c_button10.setText(""); c_button11.setText(""); c_button12.setText("");
+
+                clearnew();
+
+                ans_high.setText("");
+                ans_high.setVisibility(View.INVISIBLE);
+
+                c_ans.setEnabled(true);
+                c_ans.setBackgroundResource(R.drawable.yellow_question);
+
+                set_question(randomno); // reload question
             }
         });
 
@@ -1161,7 +1192,12 @@ public class Tirukural extends AppCompatActivity {
         Dialog dialog = new Dialog(Tirukural.this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+      //  message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(Tirukural.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -1174,6 +1210,7 @@ public class Tirukural extends AppCompatActivity {
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Tirukural.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Tirukural.this);
                 UnityAds.show(Tirukural.this, placementId, new IUnityAdsShowListener() {
@@ -1210,6 +1247,10 @@ public class Tirukural extends AppCompatActivity {
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+            }
+            }else{
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                startChronometerCountdown(countdownDuration); // Restart with another 30s
             }
         });
 
@@ -3987,6 +4028,7 @@ public class Tirukural extends AppCompatActivity {
         continueButton.setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Tirukural.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Tirukural.this);
                 UnityAds.show(Tirukural.this, placementId, new IUnityAdsShowListener() {
@@ -4022,6 +4064,10 @@ public class Tirukural extends AppCompatActivity {
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+            }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
         });

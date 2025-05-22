@@ -1095,8 +1095,17 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
 
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+
+        if (sps.getInt(Match_Word.this, "purchase_ads") == 0) {
+            tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+        } else {
+            tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+        }
+
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
+            if(sps.getInt(Match_Word.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Match_Word.this);
                 UnityAds.show(Match_Word.this, "Rewarded_Android", new IUnityAdsShowListener() {
@@ -1183,7 +1192,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                             // Reload same question
                             reset();  // clear button text
                             next();   // re-initialize everything (calls setanswer again)
-                            Toast.makeText(Match_Word.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
+                        //    Toast.makeText(Match_Word.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
 
                         }else {
                             Toast.makeText(Match_Word.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
@@ -1196,6 +1205,68 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                     startChronometerCountdown(ttstop); // resume from where paused
                 }
                 dialog.dismiss();
+            }
+            }else{
+                // Stop timer if running
+                if (isTimerRunning) {
+                    focus.stop();
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+                }
+
+                // Reset UI: clear all answer TextViews and tick icons
+                ans1.setText("");
+                ans2.setText("");
+                ans3.setText("");
+                ans4.setText("");
+                ans5.setText("");
+                ans6.setText("");
+                ans7.setText("");
+                ans8.setText("");
+                ans9.setText("");
+                ans10.setText("");
+
+                value_ans1.setBackgroundResource(R.drawable.yellow_question);
+                value_ans2.setBackgroundResource(R.drawable.yellow_question);
+                value_ans3.setBackgroundResource(R.drawable.yellow_question);
+                value_ans4.setBackgroundResource(R.drawable.yellow_question);
+                value_ans5.setBackgroundResource(R.drawable.yellow_question);
+                value_ans6.setBackgroundResource(R.drawable.yellow_question);
+                value_ans7.setBackgroundResource(R.drawable.yellow_question);
+                value_ans8.setBackgroundResource(R.drawable.yellow_question);
+                value_ans9.setBackgroundResource(R.drawable.yellow_question);
+                value_ans10.setBackgroundResource(R.drawable.yellow_question);
+
+                value_ans1.setClickable(true);
+                value_ans2.setClickable(true);
+                value_ans3.setClickable(true);
+                value_ans4.setClickable(true);
+                value_ans5.setClickable(true);
+                value_ans6.setClickable(true);
+                value_ans7.setClickable(true);
+                value_ans8.setClickable(true);
+                value_ans9.setClickable(true);
+                value_ans10.setClickable(true);
+
+                value_ans2.setVisibility(View.GONE);
+                value_ans3.setVisibility(View.GONE);
+                value_ans4.setVisibility(View.GONE);
+                value_ans5.setVisibility(View.GONE);
+                value_ans6.setVisibility(View.GONE);
+                value_ans7.setVisibility(View.GONE);
+                value_ans8.setVisibility(View.GONE);
+                value_ans9.setVisibility(View.GONE);
+                value_ans10.setVisibility(View.GONE);
+
+                // Reset database entries
+                myDbHelper.executeSql("DELETE FROM answertable WHERE levelid='" + questionid + "' AND gameid='" + gameid + "' AND rd='" + rdvalu + "'");
+
+                // Reset answer input tracking
+                x = 0;
+
+                // Reload same question
+                reset();  // clear button text
+                next();
             }
         });
 
@@ -1280,7 +1351,12 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         Dialog dialog = new Dialog(Match_Word.this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+     //   message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(Match_Word.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -1293,6 +1369,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Match_Word.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Match_Word.this);
                 UnityAds.show(Match_Word.this, placementId, new IUnityAdsShowListener() {
@@ -1328,6 +1405,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // <-- Dismiss loading dialog if not initialized
+            }
+            }else{
+                Utills.INSTANCE.Loading_Dialog_dismiss();
+                startChronometerCountdown(countdownDuration);
             }
         });
 
@@ -6840,6 +6921,7 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
         continueButton.setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Match_Word.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Match_Word.this);
                 UnityAds.show(Match_Word.this, placementId, new IUnityAdsShowListener() {
@@ -6875,6 +6957,10 @@ public class Match_Word extends AppCompatActivity implements Download_completed 
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+            }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
         });

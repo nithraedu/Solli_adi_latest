@@ -3573,12 +3573,19 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         Button btnYes = dialog.findViewById(R.id.btnYes);
         Button btnNo = dialog.findViewById(R.id.btnNo);
+        TextView tvMessage = dialog.findViewById(R.id.tvMessage);
+        if (sps.getInt(Word_Game_Hard.this, "purchase_ads") == 0) {
+            tvMessage.setText("Reset - செய்ய காணொளியை பாருங்கள்");
+        } else {
+            tvMessage.setText("Reset - செய்ய வேண்டுமா?");
+        }
 
         btnYes.setOnClickListener(v -> {
             // Show Unity rewarded ad
             dialog.dismiss();
 
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Word_Game_Hard.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Word_Game_Hard.this);
                 UnityAds.show(Word_Game_Hard.this, placementId, new IUnityAdsShowListener() {
@@ -3638,7 +3645,7 @@ public class Word_Game_Hard extends AppCompatActivity {
 
                             startChronometerCountdown(countdownTimeMillis);
 
-                            Toast.makeText(Word_Game_Hard.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
+                         //   Toast.makeText(Word_Game_Hard.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(Word_Game_Hard.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                         }
@@ -3647,6 +3654,42 @@ public class Word_Game_Hard extends AppCompatActivity {
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+            }
+            }else{
+                // ✅ Step 1: Stop current timer
+                if (timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                }
+                isTimerRunning = false;
+                focus.setText("00:00"); // reset view text
+
+                // ✅ Step 2: Reset game state
+                x = 0;
+                b_score = 0;
+                word_editer.setText("");
+
+                // ✅ Step 3: Clear UI
+                TextView[] answerViews = {vl1, vl2, vl3, vl4, vl5, vl6, vl7, vl8, vl9, vl10, vl11, vl12, vl13, vl14};
+                ImageView[] imageViews = {q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14};
+
+                for (int i = 0; i < answerViews.length; i++) {
+                    answerViews[i].setText("");
+                    imageViews[i].setImageResource(R.drawable.yellow_question);
+                    imageViews[i].setClickable(true);
+                    imageViews[i].setVisibility(i == 0 ? View.VISIBLE : View.GONE); // Only q1 visible
+                }
+
+                // ✅ Step 4: Reset DB
+                String date = sps.getString(Word_Game_Hard.this, "date");
+                int pos = date.equals("0") ? 1 : 2;
+                myDbHelper.executeSql("UPDATE answertable SET isfinish='0', useranswer=NULL WHERE levelid='" + letterid + "' AND gameid='" + gameid + "' AND rd='" + pos + "'");
+
+                // ✅ Step 5: Restart timer with fresh duration
+                int emptyLines = getEmptyAnswerCount();  // use original logic if needed
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000L;
+
+                startChronometerCountdown(countdownTimeMillis);
             }
         });
 
@@ -3859,7 +3902,12 @@ public class Word_Game_Hard extends AppCompatActivity {
         Dialog dialog = new Dialog(Word_Game_Hard.this);
         dialog.setContentView(R.layout.dialog_reset);
         TextView message = dialog.findViewById(R.id.tvMessage);
-        message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+     //   message.setText("நேரம் முடிந்துவிட்டது! மேலும் 30 விநாடிகள் தொடர வேண்டுமா? காணொளியை பாருங்கள்");
+        if (sps.getInt(Word_Game_Hard.this, "purchase_ads") == 0) {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் நேரத்தைப் பெற? காணொளியை பாருங்கள்");
+        } else {
+            message.setText("நேரம் முடிந்துவிட்டது! மேலும் நேரத்தைப் பெற வேண்டுமா?");
+        }
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -3873,6 +3921,7 @@ public class Word_Game_Hard extends AppCompatActivity {
             // Show Unity rewarded ad
             dialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Word_Game_Hard.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Word_Game_Hard.this);
                 UnityAds.show(Word_Game_Hard.this, placementId, new IUnityAdsShowListener() {
@@ -3910,6 +3959,12 @@ public class Word_Game_Hard extends AppCompatActivity {
                 });
             } else {
                 Log.d(TAG, "Unity Ads is not initialized.");
+            }
+            }else{
+                int emptyLines = getEmptyAnswerCount();
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                startChronometerCountdown(countdownTimeMillis); // Restart with another 30s
+                isTimeFullyExpired = false;
             }
         });
 
@@ -8316,6 +8371,7 @@ public class Word_Game_Hard extends AppCompatActivity {
         bottomSheetDialog.findViewById(R.id.continueToPlayGame).setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             String placementId = "Rewarded_Android";
+            if(sps.getInt(Word_Game_Hard.this, "purchase_ads") ==0){
             if (UnityAds.isInitialized()) {
                 Utills.INSTANCE.Loading_Dialog(Word_Game_Hard.this);
                 UnityAds.show(Word_Game_Hard.this, placementId, new IUnityAdsShowListener() {
@@ -8346,6 +8402,10 @@ public class Word_Game_Hard extends AppCompatActivity {
                     }
                 });
             } else {
+                continueToNextGame();
+            }
+            }else{
+                skipCounter = 0;
                 continueToNextGame();
             }
         });
