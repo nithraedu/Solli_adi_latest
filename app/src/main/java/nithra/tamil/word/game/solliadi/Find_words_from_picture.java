@@ -163,12 +163,17 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     private long remainingMillis = 0; // ⏱️ Used to pause/resume manual timer
 
     // private boolean isTimerRunning = false;
-   private boolean isTimeExpired = false;
+    private boolean isTimeExpired = false;
     private boolean isGameCompleted = false;
     private static final String UNITY_GAME_ID = "5819977";  // your Game ID
     private static final boolean TEST_MODE = true;
 
     public static boolean isAnswerSelectionEnabled = true;
+
+    private int skipCounter = 0; // Add skip counter
+    private int completedGames = 0; // Track completed games
+    private int skippedGames = 0; // Track skipped games
+    int  Complete_count = 0;
 
 
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
@@ -235,7 +240,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
         mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.xml.hexkbd);
-            mCustomKeyboard.registerEditText(R.id.ans_editer);
+        mCustomKeyboard.registerEditText(R.id.ans_editer);
 
         newhelper5 = new Newgame_DataBaseHelper5(this);
         myDbHelper = new DataBaseHelper(this);
@@ -262,13 +267,8 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         //Utills.INSTANCE.initializeAdzz(this);
         rewarded_adnew();
         if (sps.getInt(Find_words_from_picture.this, "purchase_ads") == 0) {
-            // Make sure to set the mediation provider value to "max" to ensure proper functionality
             industrialload();
-          /*  if (!sps.getString(Find_words_from_picture.this, "InterstitialId").equals("") || sps.getString(Find_words_from_picture.this, "InterstitialId") != null) {
-                industrialload();
-            }*/
-
-        }
+       }
 
         ///Alter Answer table
 
@@ -319,19 +319,48 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
         LinearLayout resetLayout = findViewById(R.id.resetLayout);
+        /*skipLayout.setOnClickListener(v -> {
+          // Mark current question as finished in the DB
+            String date = sps.getString(Find_words_from_picture.this, "date");
+            if (date.equals("0")) {
+                newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid='" + question_id + "'and gameid='" + gameid + "'");
+            } else {
+                myDbHelper.executeSql("UPDATE dailytest SET isfinish='1' WHERE levelid='" + question_id + "'and gameid='" + gameid + "'");
+            }
+            // Load next question
+            next();
+        });*/
+
         skipLayout.setOnClickListener(v -> {
-           /* if (isGameCompleted) {
-                Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+            skippedGames++;
+            sps.putInt(this, "skipped_games_fwfp", skippedGames);
+
+            // ✅ Build a unique int key for each gameid
+            String skipKey = "skip_count_find_words_from_picture";
+
+            // ✅ Get current count for this gameid
+            int currentSkip = sps.getInt(getApplicationContext(), skipKey);
+
+            if (currentSkip == 0) {
+                // ✅ First time skip for this gameid
+                sps.putInt(getApplicationContext(), skipKey, 1);
+                Log.d("SKIP", "✅ Skip recorded for gameid: " + gameid);
+            } else {
+                // ✅ Already skipped
+                Log.d("SKIP", "❌ Already skipped. Not incrementing again for gameid: " + gameid);
+            }
+
+            if (Integer.parseInt(questionid.getText().toString()) % 5 == 0) {
+                showCongratsBottomSheet();
                 return;
             }
 
-            // Stop timer
-            if (isTimerRunning) {
-                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                focus.stop();
+            // ✅ Pause the timer
+            if (timerHandler != null && timerRunnable != null) {
                 timerHandler.removeCallbacks(timerRunnable);
-                isTimerRunning = false;
-            }*/
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                if (ttstop < 0) ttstop = 0;
+            }
 
             // Mark current question as finished in the DB
             String date = sps.getString(Find_words_from_picture.this, "date");
@@ -340,7 +369,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             } else {
                 myDbHelper.executeSql("UPDATE dailytest SET isfinish='1' WHERE levelid='" + question_id + "'and gameid='" + gameid + "'");
             }
-                        // Load next question
+            // Load next question
             next();
         });
 
@@ -364,7 +393,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
         soundset();
         find();
-        new Handler().postDelayed(() -> {
+       /* new Handler().postDelayed(() -> {
             int emptyLines = getEmptyAnswerCount();
             long countdownTimeMillis = emptyLines * 30 * 1000L;
 
@@ -373,7 +402,15 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
             startChronometerCountdown(countdownTimeMillis);
         }, 200);
-
+*/
+        if (!sps.getString(this, "fn_intro").equals("")) {
+            new Handler().postDelayed(() -> {
+                int emptyLines = getEmptyAnswerCount();
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000;
+                startChronometerCountdown(countdownTimeMillis);
+            }, 200);
+        }
         click();
         try {
             next();
@@ -409,8 +446,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 if (position == 2) {
                     sps.putString(Find_words_from_picture.this, "time_start_fn", "yes");
                     sps.putString(Find_words_from_picture.this, "showcase_dismiss_fn_intro", "yes");
-                    /*focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();*/
                     int emptyLines = getEmptyAnswerCount();
                     long countdownTimeMillis = emptyLines * 30 * 1000L;
                     startChronometerCountdown(countdownTimeMillis);
@@ -471,12 +506,13 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                             if (timerHandler != null && timerRunnable != null) {
                                 timerHandler.removeCallbacks(timerRunnable);
                             }
-                          //  isTimerRunning = false;
+                            //  isTimerRunning = false;
                             focus.setText("00:00"); // reset view text
 
                             // ✅ Step 2: Reset game state
-                          //  x = 0;
+                            //  x = 0;
                             b_score = 0;
+                            ans_count = 0;
                             ans_editer.setText("");
 
                             // ✅ Step 3: Clear UI
@@ -590,35 +626,12 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         System.out.println("Empty & Visible count FWFP: " + emptyCount);
         return emptyCount;
     }
-
-    //old
-/*    void showExtendTimeDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(Find_words_from_picture.this);
-        builder.setMessage("Time's up! Do you want to extend by 30 seconds?");
-        builder.setCancelable(false);
-        builder.setPositiveButton("Yes", (dialog, which) -> {
-            int emptyLines = getEmptyAnswerCount();
-            long countdownTimeMillis = emptyLines * 30 * 1000L;
-            startChronometerCountdown(countdownTimeMillis);
-            isTimeExpired = false; // ✅ reset flag
-            dialog.dismiss();
-        });
-
-        builder.setNegativeButton("No", (dialog, which) -> {
-            dialog.dismiss();
-            // handle what happens if user says no (optional)
-        });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }*/
-
-     void showExtendTimeDialog() {
+    void showExtendTimeDialog() {
 
         // ✅ Pause and capture remaining time
-        if (/*isTimerRunning &&*/ timerHandler != null && timerRunnable != null) {
+        if ( timerHandler != null && timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
-          //  isTimerRunning = false;
+            //  isTimerRunning = false;
 
             // Save remaining time
             ttstop = focus.getBase() - SystemClock.elapsedRealtime();
@@ -715,17 +728,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         });
     }
 
-    private int safeParseInt(String value, int defaultValue) {
-        if (value != null && !value.isEmpty()) {
-            try {
-                return Integer.parseInt(value);
-            } catch (NumberFormatException e) {
-                return defaultValue;
-            }
-        }
-        return defaultValue;
-    }
-
     public void adShow() {
         int currentStageCloseVV = sps.getInt(getApplicationContext(), "Game1_Stage_Close_VV");
         int showCountOther = 0; // Set this to your desired show count
@@ -802,9 +804,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 showcase_dismiss();
             } else {
                 sps.putString(Find_words_from_picture.this, "time_start_fn", "yes");
-               /* focus.setBase(SystemClock.elapsedRealtime());
-                focus.start();*/
-
                 int emptyLines = getEmptyAnswerCount();
                 long countdownTimeMillis = emptyLines * 30 * 1000L;
                 startChronometerCountdown(countdownTimeMillis);
@@ -835,6 +834,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         isTimeExpired = false;
         focus.setText("00:00"); // reset display
     }
+
     private void next() {
         stopAndResetTimer();
         Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
@@ -1054,8 +1054,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                     sps.putString(Find_words_from_picture.this, "time_start_fn", "yes");
 
                 } else {
-                   /* focus.setBase(SystemClock.elapsedRealtime());
-                    focus.start();*/
                     new Handler().postDelayed(() -> {  // ✅ step 2
                         int emptyLines = getEmptyAnswerCount();
                         long countdownTimeMillis = emptyLines * 30 * 1000L;
@@ -1069,7 +1067,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             if (cs.getCount() != 0) {
                 ans_count = cs.getCount();
             }
-            if (ans_count >= final_ans_count) {
+            if (ans_count != 0 && ans_count >= final_ans_count) {
                 if (date.equals("0")) {
                     newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid='" + question_id + "'and gameid='" + gameid + "'");
                 } else {
@@ -1158,62 +1156,62 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         }
     }
 
-  private void reset() {
-      ans_count = 0;
+    private void reset() {
+        ans_count = 0;
 
-      // Hide only icons (question marks), NOT the answer fields
-      value_ans1.setVisibility(View.GONE);
-      value_ans2.setVisibility(View.GONE);
-      value_ans3.setVisibility(View.GONE);
-      value_ans4.setVisibility(View.GONE);
-      value_ans5.setVisibility(View.GONE);
-      value_ans6.setVisibility(View.GONE);
-      value_ans7.setVisibility(View.GONE);
+        // Hide only icons (question marks), NOT the answer fields
+        value_ans1.setVisibility(View.GONE);
+        value_ans2.setVisibility(View.GONE);
+        value_ans3.setVisibility(View.GONE);
+        value_ans4.setVisibility(View.GONE);
+        value_ans5.setVisibility(View.GONE);
+        value_ans6.setVisibility(View.GONE);
+        value_ans7.setVisibility(View.GONE);
 
-      // Reset icons to default background
-      value_ans1.setBackgroundResource(R.drawable.yellow_question);
-      value_ans2.setBackgroundResource(R.drawable.yellow_question);
-      value_ans3.setBackgroundResource(R.drawable.yellow_question);
-      value_ans4.setBackgroundResource(R.drawable.yellow_question);
-      value_ans5.setBackgroundResource(R.drawable.yellow_question);
-      value_ans6.setBackgroundResource(R.drawable.yellow_question);
-      value_ans7.setBackgroundResource(R.drawable.yellow_question);
+        // Reset icons to default background
+        value_ans1.setBackgroundResource(R.drawable.yellow_question);
+        value_ans2.setBackgroundResource(R.drawable.yellow_question);
+        value_ans3.setBackgroundResource(R.drawable.yellow_question);
+        value_ans4.setBackgroundResource(R.drawable.yellow_question);
+        value_ans5.setBackgroundResource(R.drawable.yellow_question);
+        value_ans6.setBackgroundResource(R.drawable.yellow_question);
+        value_ans7.setBackgroundResource(R.drawable.yellow_question);
 
-      // ❌ Don't hide the answer lines
-      // ✅ Instead, just clear and style them
-      ans1.setText(""); ans1.setTextColor(getResources().getColor(R.color.white));
-      ans2.setText(""); ans2.setTextColor(getResources().getColor(R.color.white));
-      ans3.setText(""); ans3.setTextColor(getResources().getColor(R.color.white));
-      ans4.setText(""); ans4.setTextColor(getResources().getColor(R.color.white));
-      ans5.setText(""); ans5.setTextColor(getResources().getColor(R.color.white));
-      ans6.setText(""); ans6.setTextColor(getResources().getColor(R.color.white));
-      ans7.setText(""); ans7.setTextColor(getResources().getColor(R.color.white));
+        // ❌ Don't hide the answer lines
+        // ✅ Instead, just clear and style them
+        ans1.setText(""); ans1.setTextColor(getResources().getColor(R.color.white));
+        ans2.setText(""); ans2.setTextColor(getResources().getColor(R.color.white));
+        ans3.setText(""); ans3.setTextColor(getResources().getColor(R.color.white));
+        ans4.setText(""); ans4.setTextColor(getResources().getColor(R.color.white));
+        ans5.setText(""); ans5.setTextColor(getResources().getColor(R.color.white));
+        ans6.setText(""); ans6.setTextColor(getResources().getColor(R.color.white));
+        ans7.setText(""); ans7.setTextColor(getResources().getColor(R.color.white));
 
-      // Keep them visible
-      ans1.setVisibility(View.VISIBLE);
-      ans2.setVisibility(View.VISIBLE);
-      ans3.setVisibility(View.VISIBLE);
-      ans4.setVisibility(View.VISIBLE);
-      ans5.setVisibility(View.VISIBLE);
-      ans6.setVisibility(View.VISIBLE);
-      ans7.setVisibility(View.VISIBLE);
+        // Keep them visible
+        ans1.setVisibility(View.VISIBLE);
+        ans2.setVisibility(View.VISIBLE);
+        ans3.setVisibility(View.VISIBLE);
+        ans4.setVisibility(View.VISIBLE);
+        ans5.setVisibility(View.VISIBLE);
+        ans6.setVisibility(View.VISIBLE);
+        ans7.setVisibility(View.VISIBLE);
 
-      // Keep containers visible
-      anslist2.setVisibility(View.VISIBLE);
-      list2_pic.setVisibility(View.VISIBLE);
+        // Keep containers visible
+        anslist2.setVisibility(View.VISIBLE);
+        list2_pic.setVisibility(View.VISIBLE);
 
-      // Enable click on icons
-      value_ans1.setClickable(true);
-      value_ans2.setClickable(true);
-      value_ans3.setClickable(true);
-      value_ans4.setClickable(true);
-      value_ans5.setClickable(true);
-      value_ans6.setClickable(true);
-      value_ans7.setClickable(true);
+        // Enable click on icons
+        value_ans1.setClickable(true);
+        value_ans2.setClickable(true);
+        value_ans3.setClickable(true);
+        value_ans4.setClickable(true);
+        value_ans5.setClickable(true);
+        value_ans6.setClickable(true);
+        value_ans7.setClickable(true);
 
-      // Show the verify button
-      verify.setVisibility(View.VISIBLE);
-  }
+        // Show the verify button
+        verify.setVisibility(View.VISIBLE);
+    }
 
 
     public void set_val(int val) {
@@ -1342,12 +1340,27 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         TextView yes = openDialog.findViewById(R.id.yes);
         TextView no = openDialog.findViewById(R.id.no);
         CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+
+        // ✅ Pause the timer
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            if (ttstop < 0) ttstop = 0;
+        }
+
         checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
             if (isChecked) {
                 sps.putString(getApplicationContext(), "checkbox_ans", "yes");
             } else {
                 sps.putString(getApplicationContext(), "checkbox_ans", "");
+            }
+        });
+
+        openDialog.setOnDismissListener(dialog -> {
+            // ✅ Resume previous timer
+            if (remainingMillis > 0) {
+                startChronometerCountdown(remainingMillis);
             }
         });
 
@@ -1452,6 +1465,10 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         });
         no.setOnClickListener(v -> {
             sps.putString(getApplicationContext(), "checkbox_ans", "");
+            // ✅ Resume previous timer
+            if (remainingMillis > 0) {
+                startChronometerCountdown(remainingMillis);
+            }
             openDialog.dismiss();
         });
         if (!isFinishing()) openDialog.show();
@@ -1810,8 +1827,24 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         TextView cancel = openDialog_earncoin.findViewById(R.id.cancel);
         TextView ss = openDialog_earncoin.findViewById(R.id.ssss);
 
+        // ✅ Pause the timer
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            if (ttstop < 0) ttstop = 0;
+        }
+
         ss.setOnClickListener(v -> openDialog_earncoin.cancel());
         cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
+
+        // Add dialog dismiss listener to resume timer
+        openDialog_earncoin.setOnDismissListener(dialog -> {
+            // ✅ Resume previous timer
+            if (remainingMillis > 0) {
+                startChronometerCountdown(remainingMillis);
+            }
+        });
+
         TextView wpro = openDialog_earncoin.findViewById(R.id.wpro);
         if (i == 1) {
             cancel.setVisibility(View.INVISIBLE);
@@ -2293,6 +2326,10 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 2500);
 
             next_continue.setOnClickListener(view -> {
+                Complete_count = sps.getInt(getApplicationContext(), "completed_count_find_words_from_picture")+1;
+                System.out.println("Completed count === :"+Complete_count);
+                sps.putInt(getApplicationContext(), "completed_count_find_words_from_picture", Integer.parseInt(String.valueOf(Complete_count)));
+
                 y = 0;
                 case2 = 0;
                 tot2 = 0;
@@ -2347,6 +2384,10 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
 
             next_continue.setOnClickListener(view -> {
+                Complete_count = sps.getInt(getApplicationContext(), "completed_count_find_words_from_picture")+1;
+                System.out.println("Completed count === :"+Complete_count);
+                sps.putInt(getApplicationContext(), "completed_count_find_words_from_picture", Integer.parseInt(String.valueOf(Complete_count)));
+
                 y = 0;
                 case2 = 0;
                 tot2 = 0;
@@ -2544,8 +2585,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 if (cs.getCount() != 0) {
                     dscore = cs.getInt(cs.getColumnIndexOrThrow("playtime"));
                 }
-               /* focus.setBase(SystemClock.elapsedRealtime() + dscore);
-                focus.start();*/
                 int emptyLines = getEmptyAnswerCount();
                 long countdownTimeMillis = emptyLines * 30 * 1000L;
                 startChronometerCountdown(countdownTimeMillis);
@@ -2698,7 +2737,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 pos = 2;
             }
 
-          //  myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+            //  myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
             myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + question_id + "' and gameid='" + gameid + "' and rd='" + pos + "'");
             //String date = sps.getString(Find_words_from_picture.this, "date");
             if (date.equals("0")) {
@@ -3340,12 +3379,6 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             @Override
             public void onResponse(Call<List<HashMap<String, String>>> call, Response<List<HashMap<String, String>>> response) {
                 if (response.isSuccessful()) {
-                    /*String date = sps.getString(New_Main_Activity.this, "date");
-                    BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-
-                    String line = "";
-                    while ((line = rd.readLine()) != null) Log.e("HttpResponse", line);*/
-
                     Gson gson = new Gson();
                     String result = gson.toJson(response.body());
 
@@ -3617,122 +3650,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         }
     }
 
-/*    private void rewarded_adnew() {
-
-        AdManagerAdRequest adRequest = new AdManagerAdRequest.Builder().build();
-
-        RewardedAd.load(this, sps.getString(this, "RewardedId"),
-                adRequest, new RewardedAdLoadCallback() {
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        // Handle the error.
-                        Log.e("LoadAdError=========", loadAdError.toString());
-                        rewardedAd = null;
-                        reward_status=0;
-                        //isfaild = 2;
-
-                    }
-
-                    @Override
-                    public void onAdLoaded(@NonNull RewardedAd ad) {
-                        rewardedAd = ad;
-                        //  isfaild = 1;
-                        fb_reward = 1;
-                        reward_status=0;
-                        Log.e(TAG, "Ad was Called.=========");
-                        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                            @Override
-                            public void onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.e(TAG, "Ad was clicked.=========");
-                            }
-
-                            @Override
-                            public void onAdDismissedFullScreenContent() {
-                                rewarded_adnew();
-                                if (reward_status == 1) {
-                                    if (extra_coin_s == 0) {
-                                        Cursor cfx = myDbHelper.getQry("SELECT * FROM score ");
-                                        cfx.moveToFirst();
-                                        int skx = cfx.getInt(cfx.getColumnIndexOrThrow("coins"));
-                                        int spx = skx + mCoinCount;
-                                        String aStringx = Integer.toString(spx);
-                                        myDbHelper.executeSql("UPDATE score SET coins='" + spx + "'");
-
-                                    }
-                                    Handler handler = new Handler();
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            if (rvo == 2) {
-                                                share_earn2(mCoinCount);
-                                            } else {
-                                                vidcoinearn();
-                                            }
-                                        }
-                                    }, 500);
-                                } else {
-                                    Toast.makeText(Find_words_from_picture.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
-                                }
-
-                                fb_reward = 0;
-                                // Called when ad is dismissed.
-                                // Set the ad reference to null so you don't show the ad a second time.
-                                Log.e(TAG, "Ad dismissed fullscreen content.=========");
-
-                            }
-
-                            @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                // Called when ad fails to show.
-                                Log.e(TAG, "Ad failed to show fullscreen content.=========");
-                                rewardedAd = null;
-                                reward_status=0;
-                            }
-
-                            @Override
-                            public void onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.e(TAG, "Ad recorded an impression.=========");
-                            }
-
-                            @Override
-                            public void onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.e(TAG, "Ad showed fullscreen content.=========");
-                            }
-                        });
-
-                    }
-                });
-    }
-
-    public void show_reward() {
-        if (rewardedAd != null) {
-
-            //  reward_status = 1;
-            rewardedAd.show(this, new OnUserEarnedRewardListener() {
-
-                @Override
-                public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
-                    // Handle the reward.
-                    Log.d(TAG, "The user earned the reward.");
-
-                    rewardedAd = null;
-                    reward_status = 1;
-                    int rewardAmount = rewardItem.getAmount();
-                    String rewardType = rewardItem.getType();
-                }
-
-            });
-
-        } else {
-            Log.d(TAG, "The rewarded ad wasn't ready yet.");
-        }
-
-    }*/
-
-    //new
+  //new
 
     private void rewarded_adnew() {
         String placementId = "Rewarded_Android";
@@ -3817,6 +3735,116 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
             reward_status = 0;
             rewarded_adnew();
         }
+    }
+
+
+    private void showCongratsBottomSheet() {
+        // ✅ Pause the timer
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            if (ttstop < 0) ttstop = 0;
+        }
+
+        Dialog bottomSheetDialog = new Dialog(this);
+        bottomSheetDialog.setContentView(R.layout.activity_congrats_layout);
+        bottomSheetDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        bottomSheetDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        bottomSheetDialog.getWindow().setGravity(Gravity.BOTTOM);
+        bottomSheetDialog.setCancelable(true); // Allow dismiss on back press
+
+        // ✅ Resume timer on BACK button press
+        bottomSheetDialog.setOnKeyListener((dialog, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                dialog.dismiss();
+                if (remainingMillis > 0) {
+                    startChronometerCountdown(remainingMillis);
+                }
+                return true;
+            }
+            return false;
+        });
+
+        // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+        bottomSheetDialog.setOnDismissListener(dialog -> {
+            if (remainingMillis > 0) {
+                startChronometerCountdown(remainingMillis);
+            }
+        });
+
+        // Populate stats
+        int completed = sps.getInt(getApplicationContext(), "completed_count_find_words_from_picture");
+        int currentGameNo = Integer.parseInt(questionid.getText().toString().trim());
+        int skipped = currentGameNo - completed;
+
+        ((TextView) bottomSheetDialog.findViewById(R.id.skipCount)).setText(String.valueOf(skipped));
+        ((TextView) bottomSheetDialog.findViewById(R.id.completedCount)).setText(String.valueOf(completed));
+        ((TextView) bottomSheetDialog.findViewById(R.id.GameCount)).setText(String.valueOf(currentGameNo));
+
+        // Buttons
+        bottomSheetDialog.findViewById(R.id.exitToPlayGame).setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            finish();
+        });
+
+        bottomSheetDialog.findViewById(R.id.continueToPlayGame).setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Find_words_from_picture.this);
+                UnityAds.show(Find_words_from_picture.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        continueToNextGame();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {}
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            skipCounter = 0;
+                            continueToNextGame();
+                        } else {
+                            Toast.makeText(Find_words_from_picture.this, "முழு காணொளியையும் பார்த்து அடுத்த விளையாட்டுக்கு செல்லவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew();
+                    }
+                });
+            } else {
+                continueToNextGame();
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
+
+
+    private void continueToNextGame() {
+        // ✅ Pause the timer
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            if (ttstop < 0) ttstop = 0;
+        }
+
+        // Mark current question as finished in the DB
+        String date = sps.getString(Find_words_from_picture.this, "date");
+        if (date.equals("0")) {
+            newhelper5.executeSql("UPDATE newgames5 SET isfinish='1' WHERE questionid='" + question_id + "'and gameid='" + gameid + "'");
+        } else {
+            myDbHelper.executeSql("UPDATE dailytest SET isfinish='1' WHERE levelid='" + question_id + "'and gameid='" + gameid + "'");
+        }
+
+        next();
     }
 
     class DownloadFileAsync extends AsyncTask<String, String, String> {

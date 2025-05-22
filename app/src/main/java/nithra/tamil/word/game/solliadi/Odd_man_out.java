@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
@@ -26,6 +27,7 @@ import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -50,6 +52,7 @@ import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.FileProvider;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -169,6 +172,11 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
     private static final String UNITY_GAME_ID = "5819977";  // your Game ID
     private static final boolean TEST_MODE = true;
+
+    private int skipCounter = 0; // Add skip counter
+    private int completedGames = 0; // Track completed games
+    private int skippedGames = 0; // Track skipped games
+    int  Complete_count = 0;
 
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
@@ -316,8 +324,8 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
 
-        skipLayout.setOnClickListener(v -> {
-           /* if (isGameCompleted) {
+        /*skipLayout.setOnClickListener(v -> {
+           *//* if (isGameCompleted) {
                 Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -328,7 +336,7 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
                 focus.stop();
                 timerHandler.removeCallbacks(timerRunnable);
                 isTimerRunning = false;
-            }*/
+            }*//*
 
             // Mark current question as finished in the DB
             String date = sps.getString(Odd_man_out.this, "date");
@@ -337,14 +345,56 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
             } else {
                 newhelper.executeSql("UPDATE newmaintable SET daily='1' WHERE questionid='" + questionid + "'and gameid=" + gameid + "");
             }
-/*
+*//*
             // Reset fields
             c_edit.setText("");
             ans_high.setText("");
             ans_high.setVisibility(View.INVISIBLE);
-            c_ans.setEnabled(true);*/
+            c_ans.setEnabled(true);*//*
 
             // Load next question
+            next();
+        });*/
+
+
+        skipLayout.setOnClickListener(v -> {
+
+            skippedGames++;
+            sps.putInt(this, "skipped_games_odd_man_out", skippedGames);
+            // ✅ Build a unique int key for each gameid
+            String skipKey = "skip_count_odd_man_out";
+
+            // ✅ Get current count for this gameid
+            int currentSkip = sps.getInt(getApplicationContext(), skipKey);
+
+            if (currentSkip == 0) {
+                // ✅ First time skip for this gameid
+                sps.putInt(getApplicationContext(), skipKey, 1);
+                Log.d("SKIP", "✅ Skip recorded for gameid: " + gameid);
+            } else {
+                // ✅ Already skipped
+                Log.d("SKIP", "❌ Already skipped. Not incrementing again for gameid: " + gameid);
+            }
+
+            if (Integer.parseInt(to_no.getText().toString()) % 5 == 0) {
+                showCongratsBottomSheet();
+                return;
+            }
+
+            // Stop timer
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+            // Mark current question as finished in the DB
+            String date = sps.getString(Odd_man_out.this, "date");
+            if (date.equals("0")) {
+                newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE questionid='" + questionid + "'and gameid=" + gameid + "");
+            } else {
+                newhelper.executeSql("UPDATE newmaintable SET daily='1' WHERE questionid='" + questionid + "'and gameid=" + gameid + "");
+            }
             next();
         });
 
@@ -489,10 +539,17 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
         }
 
         bt1.setOnTouchListener((v, event) -> {
-            if (!isTimerRunning && ttstop <= 0) {
+            /*if (!isTimerRunning && ttstop <= 0) {
                 showExtendTimeDialog();  // Show only time extension dialog
                 return true;
+            }*/
+
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return true;
             }
+
             if (event.getAction() == MotionEvent.ACTION_UP) {
 
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -513,8 +570,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
         });
         bt2.setOnTouchListener((v, event) -> {
-            if (!isTimerRunning && ttstop <= 0) {
-                showExtendTimeDialog();  // Show only time extension dialog
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
                 return true;
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -537,8 +595,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
         });
         bt3.setOnTouchListener((v, event) -> {
-            if (!isTimerRunning && ttstop <= 0) {
-                showExtendTimeDialog();  // Show only time extension dialog
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
                 return true;
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -561,8 +620,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
         });
         bt4.setOnTouchListener((v, event) -> {
-            if (!isTimerRunning && ttstop <= 0) {
-                showExtendTimeDialog();  // Show only time extension dialog
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
                 return true;
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -585,8 +645,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
         });
         bt5.setOnTouchListener((v, event) -> {
-            if (!isTimerRunning && ttstop <= 0) {
-                showExtendTimeDialog();  // Show only time extension dialog
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
                 return true;
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -609,8 +670,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
         });
         bt6.setOnTouchListener((v, event) -> {
-            if (!isTimerRunning && ttstop <= 0) {
-                showExtendTimeDialog();  // Show only time extension dialog
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
                 return true;
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -633,8 +695,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
         });
         bts1.setOnTouchListener((v, event) -> {
-            if (!isTimerRunning && ttstop <= 0) {
-                showExtendTimeDialog();  // Show only time extension dialog
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
                 return true;
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -658,8 +721,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
         });
 
         bts2.setOnTouchListener((v, event) -> {
-            if (!isTimerRunning && ttstop <= 0) {
-                showExtendTimeDialog();  // Show only time extension dialog
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
                 return true;
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -683,8 +747,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
         });
 
         bts3.setOnTouchListener((v, event) -> {
-            if (!isTimerRunning && ttstop <= 0) {
-                showExtendTimeDialog();  // Show only time extension dialog
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
                 return true;
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -708,8 +773,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
         });
 
         bts4.setOnTouchListener((v, event) -> {
-            if (!isTimerRunning && ttstop <= 0) {
-                showExtendTimeDialog();  // Show only time extension dialog
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
                 return true;
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -763,9 +829,10 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
 
         hint.setOnClickListener(view -> {
-            if (!isTimerRunning && ttstop <= 0) {
-                showExtendTimeDialog();  // Show only time extension dialog
-                return;
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
+                return ;
             }
             Cursor cfw = myDbHelper.getQry("SELECT * FROM score");
             cfw.moveToFirst();
@@ -793,6 +860,13 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
                 } else {
                     final Dialog openDialog = new Dialog(Odd_man_out.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                     openDialog.setContentView(R.layout.show_ans);
+                    if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                        timerHandler.removeCallbacks(timerRunnable);
+                        isTimerRunning = false;
+                        ttstop = focus.getBase() - SystemClock.elapsedRealtime(); // Save time left
+                        focus.stop();
+                    }
+
                     TextView yes = (TextView) openDialog.findViewById(R.id.yes);
                     TextView no = (TextView) openDialog.findViewById(R.id.no);
                     TextView txt_ex2 = (TextView) openDialog.findViewById(R.id.txt_ex2);
@@ -800,6 +874,14 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
                     txt_ex.setText("வினாக்களை பாதியாக குறைக்க வேண்டுமா?");
                     txt_ex2.setText("மொத்த நாணயங்களில் 50 குறைக்கப்படும்");
                     CheckBox checkbox_ans = (CheckBox) openDialog.findViewById(R.id.checkbox_ans);
+
+                    openDialog.setOnDismissListener(dialog -> {
+                        // ✅ Resume previous timer
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);  // ✅ Resume timer
+                        }
+                    });
+
                     checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                         if (isChecked) {
@@ -849,8 +931,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
             permission(a);
         });
         p_watts_app.setOnClickListener(view -> {
-            if (!isTimerRunning && ttstop <= 0) {
-                showExtendTimeDialog();  // Show only time extension dialog
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
                 return ;
             }
             share_name = 2;
@@ -858,8 +941,9 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
             permission(a);
         });
         p_facebook.setOnClickListener(view -> {
-            if (!isTimerRunning && ttstop <= 0) {
-                showExtendTimeDialog();  // Show only time extension dialog
+            long remaining = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remaining <= 0) {
+                showExtendTimeDialog();
                 return ;
             }
             share_name = 1;
@@ -1017,9 +1101,13 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
         });
 
         btnNo.setOnClickListener(v -> {
-            if (ttstop > 0) {
-                startChronometerCountdown(ttstop); // resume from where paused
+
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
             }
+            isTimerRunning = false;
+            focus.stop();
+            focus.setText("00:00");
             dialog.dismiss();
         });
 
@@ -2645,6 +2733,12 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
         openDialog_earncoin = new Dialog(Odd_man_out.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_earncoin.setContentView(R.layout.earncoin);
 
+        if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime(); // Save time left
+            focus.stop();
+        }
 
         RelativeLayout wp = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnwa);
         RelativeLayout fb = (RelativeLayout) openDialog_earncoin.findViewById(R.id.earnfb);
@@ -2654,6 +2748,13 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
 
         TextView wpro = (TextView) openDialog_earncoin.findViewById(R.id.wpro);
+        openDialog_earncoin.setOnDismissListener(dialog -> {
+            // ✅ Resume previous timer
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);  // ✅ Resume timer
+            }
+        });
+
         if (i == 1) {
             cancel.setVisibility(View.INVISIBLE);
             wpro.setText("இந்த விளையாட்டை தொடர குறைந்தபட்சம் 50  - க்கும் மேற்பட்ட நாணயங்கள் தேவை. எனவே கூடுதல் நாணயங்கள் பெற பகிரவும்.");
@@ -3299,6 +3400,10 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
         }
 
         next_continue.setOnClickListener(view -> {
+            Complete_count = sps.getInt(getApplicationContext(), "completed_count_odd_man_out")+1;
+            System.out.println("Completed count === :"+Complete_count);
+            sps.putInt(getApplicationContext(), "completed_count_odd_man_out", Integer.parseInt(String.valueOf(Complete_count)));
+
             dia_dismiss = 1;
             openDialog_s.dismiss();
             next();
@@ -4610,6 +4715,120 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
             reward_status = 0;
             rewarded_adnew();
         }
+    }
+
+    private void showCongratsBottomSheet() {
+        // Pause the timer when bottom sheet is shown
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop(); // ❗ Important: actually stop the Chronometer UI
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            isTimerRunning = false;
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog bottomSheetDialog = new Dialog(this);
+        bottomSheetDialog.setContentView(R.layout.activity_congrats_layout);
+        bottomSheetDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        bottomSheetDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        bottomSheetDialog.getWindow().setGravity(Gravity.BOTTOM);
+
+        // Fetch completed count from SharedPreferences
+        int completed = sps.getInt(getApplicationContext(), "completed_count_odd_man_out");
+
+        // Corrected skip count calculation
+        TextView skipCount = bottomSheetDialog.findViewById(R.id.skipCount);
+        TextView completedCount = bottomSheetDialog.findViewById(R.id.completedCount);
+        TextView gameCountText = bottomSheetDialog.findViewById(R.id.GameCount);
+
+        int currentGameNo = Integer.parseInt(to_no.getText().toString().trim());
+        int skipped = currentGameNo - completed;
+
+        skipCount.setText(String.valueOf(skipped));
+        completedCount.setText(String.valueOf(completed));
+        gameCountText.setText(String.valueOf(currentGameNo));
+
+        Log.d("CongratsSheet", "Completed: " + completed + ", Skipped: " + skipped);
+
+        CardView exitButton = bottomSheetDialog.findViewById(R.id.exitToPlayGame);
+        CardView continueButton = bottomSheetDialog.findViewById(R.id.continueToPlayGame);
+
+        exitButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            finish();
+        });
+
+        continueButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Odd_man_out.this);
+                UnityAds.show(Odd_man_out.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        continueToNextGame();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            skipCounter = 0;
+                            continueToNextGame();
+                        } else {
+                            Toast.makeText(Odd_man_out.this, "முழு காணொளியையும் பார்த்து அடுத்த விளையாட்டுக்கு செல்லவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+        });
+
+        // Add dismiss listener to resume timer when bottom sheet is dismissed
+        bottomSheetDialog.setOnDismissListener(dialog -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
+
+    private void continueToNextGame() {
+        // Stop timer
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+        }
+
+        // Mark current question as finished in the DB
+        String date = sps.getString(Odd_man_out.this, "date");
+        if (date.equals("0")) {
+            newhelper.executeSql("UPDATE newmaintable SET isfinish='1' WHERE questionid='" + questionid + "'and gameid=" + gameid + "");
+        } else {
+            newhelper.executeSql("UPDATE newmaintable SET daily='1' WHERE questionid='" + questionid + "'and gameid=" + gameid + "");
+        }
+        // Load next question
+        next();
     }
 
     private enum PendingAction {

@@ -64,6 +64,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
@@ -197,6 +198,11 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
     private static final boolean TEST_MODE = true;
     private static final String INTERSTITIAL_PLACEMENT_ID = "Interstitial_Android";
     private boolean isInterstitialReady = false;
+
+    private int skipCounter = 0; // Add skip counter
+    private int completedGames = 0; // Track completed games
+    private int skippedGames = 0; // Track skipped games
+    int  Complete_count = 0;
 
 
     private void backexitnet() {
@@ -418,7 +424,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
             showResetDialog();
         });
 
-        skipLayout.setOnClickListener(v -> {
+       /* skipLayout.setOnClickListener(v -> {
             if (isGameCompleted) {
                 Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
                 return;
@@ -435,6 +441,43 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
             newhelper5.executeSql("update newgames5 set isfinish='1' where questionid='" + questionid + "' and gameid='" + gameid + "'");
 
          // Load next question
+            next();
+        });*/
+
+        skipLayout.setOnClickListener(v -> {
+            skippedGames++;
+            sps.putInt(this, "skipped_games_mtfg", skippedGames);
+
+            // ✅ Build a unique int key for each gameid
+            String skipKey = "skip_count_match_tha_fallows_game";
+
+            // ✅ Get current count for this gameid
+            int currentSkip = sps.getInt(getApplicationContext(), skipKey);
+
+            if (currentSkip == 0) {
+                // ✅ First time skip for this gameid
+                sps.putInt(getApplicationContext(), skipKey, 1);
+                Log.d("SKIP", "✅ Skip recorded for gameid: " + gameid);
+            } else {
+                // ✅ Already skipped
+                Log.d("SKIP", "❌ Already skipped. Not incrementing again for gameid: " + gameid);
+            }
+
+            if (Integer.parseInt(questionid.toString()) % 5 == 0) {
+                showCongratsBottomSheet();
+                return;
+            }
+
+            // Stop timer
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+
+            newhelper5.executeSql("update newgames5 set isfinish='1' where questionid='" + questionid + "' and gameid='" + gameid + "'");
+            // Load next question
             next();
         });
 
@@ -791,13 +834,13 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         });
 
         btnNo.setOnClickListener(v -> {
-            if (ttstop > 0) {
-                startChronometerCountdown(ttstop); // resume from where paused
-            }
-            if (isTimerRunning) {
+            if (timerHandler != null && timerRunnable != null) {
                 timerHandler.removeCallbacks(timerRunnable);
-                isTimerRunning = false;
             }
+            isTimerRunning = false;
+            focus.stop();
+            focus.setText("00:00");
+            
             dialog.dismiss();
         });
 
@@ -2402,6 +2445,10 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                 next_continue.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Complete_count = sps.getInt(getApplicationContext(), "completed_count_match_tha_fallows_game")+1;
+                        System.out.println("Completed count === :"+Complete_count);
+                        sps.putInt(getApplicationContext(), "completed_count_match_tha_fallows_game", Integer.parseInt(String.valueOf(Complete_count)));
+
                         y = 0;
                         case2 = 0;
                         tot2 = 0;
@@ -2458,6 +2505,11 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                 next_continue.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Complete_count = sps.getInt(getApplicationContext(), "completed_count_match_tha_fallows_game")+1;
+                        System.out.println("Completed count === :"+Complete_count);
+                        sps.putInt(getApplicationContext(), "completed_count_match_tha_fallows_game", Integer.parseInt(String.valueOf(Complete_count)));
+
+
                         y = 0;
                         case2 = 0;
                         tot2 = 0;
@@ -2517,6 +2569,12 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
             next_continue.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    Complete_count = sps.getInt(getApplicationContext(), "completed_count_match_tha_fallows_game")+1;
+                    System.out.println("Completed count === :"+Complete_count);
+                    sps.putInt(getApplicationContext(), "completed_count_match_tha_fallows_game", Integer.parseInt(String.valueOf(Complete_count)));
+
+
                     y = 0;
                     case2 = 0;
                     tot2 = 0;
@@ -4420,5 +4478,112 @@ private void rewarded_adnew() {
         }
     }
 
+    private void showCongratsBottomSheet() {
+        // Pause the timer when bottom sheet is shown
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop(); // ❗ Important: actually stop the Chronometer UI
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            isTimerRunning = false;
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog bottomSheetDialog = new Dialog(this);
+        bottomSheetDialog.setContentView(R.layout.activity_congrats_layout);
+        bottomSheetDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        bottomSheetDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        bottomSheetDialog.getWindow().setGravity(Gravity.BOTTOM);
+
+        // Fetch completed count from SharedPreferences
+        int completed = sps.getInt(getApplicationContext(), "completed_count_match_tha_fallows_game");
+
+        // Corrected skip count calculation
+        TextView skipCount = bottomSheetDialog.findViewById(R.id.skipCount);
+        TextView completedCount = bottomSheetDialog.findViewById(R.id.completedCount);
+        TextView gameCountText = bottomSheetDialog.findViewById(R.id.GameCount);
+
+        int currentGameNo = Integer.parseInt(questionid.toString().trim());
+        int skipped = currentGameNo - completed;
+
+        skipCount.setText(String.valueOf(skipped));
+        completedCount.setText(String.valueOf(completed));
+        gameCountText.setText(String.valueOf(currentGameNo));
+
+        Log.d("CongratsSheet", "Completed: " + completed + ", Skipped: " + skipped);
+
+        CardView exitButton = bottomSheetDialog.findViewById(R.id.exitToPlayGame);
+        CardView continueButton = bottomSheetDialog.findViewById(R.id.continueToPlayGame);
+
+        exitButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            finish();
+        });
+
+        continueButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Match_tha_fallows_game.this);
+                UnityAds.show(Match_tha_fallows_game.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        continueToNextGame();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            skipCounter = 0;
+                            continueToNextGame();
+                        } else {
+                            Toast.makeText(Match_tha_fallows_game.this, "முழு காணொளியையும் பார்த்து அடுத்த விளையாட்டுக்கு செல்லவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+        });
+
+        // Add dismiss listener to resume timer when bottom sheet is dismissed
+        bottomSheetDialog.setOnDismissListener(dialog -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
+
+    private void continueToNextGame() {
+        // Stop timer
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+        }
+
+        newhelper5.executeSql("update newgames5 set isfinish='1' where questionid='" + questionid + "' and gameid='" + gameid + "'");
+        // Load next question
+        next();
+    }
 
 }

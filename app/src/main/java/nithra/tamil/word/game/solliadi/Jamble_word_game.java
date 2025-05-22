@@ -49,6 +49,7 @@ import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 import com.google.android.material.snackbar.Snackbar;
@@ -137,13 +138,18 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
     LinearLayout earncoin;
     String answer_shows = "";
     private final long countdownDuration = 30000; // 30 seconds in milliseconds
-    private Handler timerHandler;
+    private Handler timerHandler = new Handler(Looper.getMainLooper()); // ✅ Always initialized
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
     private boolean isGameCompleted = false;
 
     private static final String UNITY_GAME_ID = "5819977";  // your Game ID
     private static final boolean TEST_MODE = true;
+
+    private int skipCounter = 0; // Add skip counter
+    private int completedGames = 0; // Track completed games
+    private int skippedGames = 0; // Track skipped games
+    int  Complete_count = 0;
 
 
     @Override
@@ -247,7 +253,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         });
 
 
-        skipLayout.setOnClickListener(v -> {
+      /*  skipLayout.setOnClickListener(v -> {
             System.out.println("enter class");
             if (isGameCompleted) {
                 Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
@@ -261,6 +267,51 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
             } else {
                 newhelper6.executeSql("UPDATE newgames5 SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
             }
+            // Load next question
+            next();
+        });*/
+
+     skipLayout.setOnClickListener(v -> {
+         skippedGames++;
+         sps.putInt(this, "skipped_game_jwg", skippedGames);
+
+         // ✅ Build a unique int key for each gameid
+         String skipKey = "skip_count_jamble_word_game";
+
+         // ✅ Get current count for this gameid
+         int currentSkip = sps.getInt(getApplicationContext(), skipKey);
+
+         if (currentSkip == 0) {
+             // ✅ First time skip for this gameid
+             sps.putInt(getApplicationContext(), skipKey, 1);
+             Log.d("SKIP", "✅ Skip recorded for gameid: " + gameid);
+         } else {
+             // ✅ Already skipped
+             Log.d("SKIP", "❌ Already skipped. Not incrementing again for gameid: " + gameid);
+         }
+
+         if (Integer.parseInt(c_word_number.getText().toString()) % 5 == 0) {
+             showCongratsBottomSheet();
+             return;
+         }
+
+         // Stop timer
+         if (isTimerRunning) {
+             ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+             focus.stop();
+             timerHandler.removeCallbacks(timerRunnable);
+             isTimerRunning = false;
+         }
+
+
+         // Mark current question as finished in the DB
+            String date = sps.getString(Jamble_word_game.this, "date");
+            if (date.equals("0")) {
+                newhelper6.executeSql("UPDATE newgames5 SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+            } else {
+                newhelper6.executeSql("UPDATE newgames5 SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+            }
+
             // Load next question
             next();
         });
@@ -481,22 +532,14 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         random_arrange(length, words); // Reapply same shuffle logic
     }
 
+
     private void startChronometerCountdown(long durationInMillis) {
-        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
-        focus.setCountDown(true);
-        focus.start();
-
-        // Check if timerHandler is null and initialize it if necessary
-        if (timerHandler == null) {
-            timerHandler = new Handler(Looper.getMainLooper());
-        }
-
-        // Remove existing callbacks to avoid conflicts with the previous timerRunnable
+        // ✅ Remove any existing timer callbacks
         if (timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
 
-        // Create a new Runnable for the countdown
+        // ✅ Set up new Runnable
         timerRunnable = new Runnable() {
             @Override
             public void run() {
@@ -504,17 +547,24 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
-                    showExtendTimeDialog();  // Show dialog when time is up
+                    showExtendTimeDialog();  // Time's up
                 } else {
-                    timerHandler.postDelayed(this, 500);  // Check every 500ms
+                    timerHandler.postDelayed(this, 500);
                 }
             }
         };
 
-        // Post the Runnable to start the countdown
+        // ✅ Setup and start the chronometer
+        focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+        focus.setCountDown(true);
+        focus.start();
+
+        // ✅ Start the runnable
         timerHandler.postDelayed(timerRunnable, 500);
         isTimerRunning = true;
     }
+
+
 
 //old
     /*    private void showExtendTimeDialog() {
@@ -630,6 +680,16 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 } else {
                     final Dialog openDialog = new Dialog(Jamble_word_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                     openDialog.setContentView(R.layout.show_ans);
+                    // Pause the timer when bottom sheet is shown
+                    if (isTimerRunning) {
+                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                        focus.stop(); // ❗ Important: actually stop the Chronometer UI
+                        if (timerHandler != null && timerRunnable != null) {
+                            timerHandler.removeCallbacks(timerRunnable);
+                        }
+                        isTimerRunning = false;
+                        if (ttstop < 0) ttstop = 0;
+                    }
                     TextView yes = openDialog.findViewById(R.id.yes);
                     TextView no = openDialog.findViewById(R.id.no);
                     TextView txt_ex2 = openDialog.findViewById(R.id.txt_ex2);
@@ -642,6 +702,14 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                             sps.putString(getApplicationContext(), "checkbox_ans", "");
                         }
                     });
+
+                    // Add dismiss listener to resume timer when bottom sheet is dismissed
+                    openDialog.setOnDismissListener(dialog -> {
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                    });
+
 
                     yes.setOnClickListener(v -> {
                         openDialog.dismiss();
@@ -1441,6 +1509,11 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         word.setText("ï¡Á");
 
         next_continue.setOnClickListener(view -> {
+            Complete_count = sps.getInt(getApplicationContext(), "completed_count_jamble_word_game")+1;
+            System.out.println("Completed count === :"+Complete_count);
+            sps.putInt(getApplicationContext(), "completed_count_jamble_word_game", Integer.parseInt(String.valueOf(Complete_count)));
+
+
             dia_dismiss = 1;
             openDialog_s.dismiss();
             next();
@@ -2749,7 +2822,16 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         final Dialog openDialog_earncoin = new Dialog(Jamble_word_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_earncoin.setContentView(R.layout.earncoin);
 
-
+        // Pause the timer when bottom sheet is shown
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop(); // ❗ Important: actually stop the Chronometer UI
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            isTimerRunning = false;
+            if (ttstop < 0) ttstop = 0;
+        }
         RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
         RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
         RelativeLayout gplus = openDialog_earncoin.findViewById(R.id.earngplus);
@@ -2757,6 +2839,14 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
 
         TextView cancel = openDialog_earncoin.findViewById(R.id.cancel);
         TextView ss = openDialog_earncoin.findViewById(R.id.ssss);
+
+        // Add dismiss listener to resume timer when bottom sheet is dismissed
+        openDialog_earncoin.setOnDismissListener(dialog -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
+
 
         ss.setOnClickListener(v -> openDialog_earncoin.cancel());
         cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
@@ -3322,6 +3412,121 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
             reward_status = 0;
             rewarded_adnew();
         }
+    }
+
+    private void showCongratsBottomSheet() {
+        // Pause the timer when bottom sheet is shown
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop(); // ❗ Important: actually stop the Chronometer UI
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            isTimerRunning = false;
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog bottomSheetDialog = new Dialog(this);
+        bottomSheetDialog.setContentView(R.layout.activity_congrats_layout);
+        bottomSheetDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        bottomSheetDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        bottomSheetDialog.getWindow().setGravity(Gravity.BOTTOM);
+
+        // Fetch completed count from SharedPreferences
+        int completed = sps.getInt(getApplicationContext(), "completed_count_jamble_word_game");
+
+        // Corrected skip count calculation
+        TextView skipCount = bottomSheetDialog.findViewById(R.id.skipCount);
+        TextView completedCount = bottomSheetDialog.findViewById(R.id.completedCount);
+        TextView gameCountText = bottomSheetDialog.findViewById(R.id.GameCount);
+
+        int currentGameNo = Integer.parseInt(c_word_number.getText().toString().trim());
+        int skipped = currentGameNo - completed;
+
+        skipCount.setText(String.valueOf(skipped));
+        completedCount.setText(String.valueOf(completed));
+        gameCountText.setText(String.valueOf(currentGameNo));
+
+        Log.d("CongratsSheet", "Completed: " + completed + ", Skipped: " + skipped);
+
+        CardView exitButton = bottomSheetDialog.findViewById(R.id.exitToPlayGame);
+        CardView continueButton = bottomSheetDialog.findViewById(R.id.continueToPlayGame);
+
+        exitButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            finish();
+        });
+
+        continueButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Jamble_word_game.this);
+                UnityAds.show(Jamble_word_game.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        continueToNextGame();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            skipCounter = 0;
+                            continueToNextGame();
+                        } else {
+                            Toast.makeText(Jamble_word_game.this, "முழு காணொளியையும் பார்த்து அடுத்த விளையாட்டுக்கு செல்லவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+        });
+
+        // Add dismiss listener to resume timer when bottom sheet is dismissed
+        bottomSheetDialog.setOnDismissListener(dialog -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
+
+    private void continueToNextGame() {
+        // Stop timer
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+        }
+
+        // Mark current question as finished in the DB
+        String date = sps.getString(Jamble_word_game.this, "date");
+        if (date.equals("0")) {
+            newhelper6.executeSql("UPDATE newgames5 SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+        } else {
+            newhelper6.executeSql("UPDATE newgames5 SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+        }
+
+        // Load next question
+        next();
     }
 
 

@@ -62,6 +62,7 @@ import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
@@ -223,83 +224,11 @@ public class Word_Game_Hard extends AppCompatActivity {
     private boolean isTimerRunning = false;
     private boolean isTimeFullyExpired = false;  // Add this at the top of your class
 
-    OnBackPressedCallback callback = new OnBackPressedCallback(true) {
-        @Override
-        public void handleOnBackPressed() {
-            sps.putString(Word_Game_Hard.this, "game_area", "on");
-            if (popupWindow.isShowing()) popupWindow.dismiss();
-            else {
+    private int skipCounter = 0; // Add skip counter
+    private int completedGames = 0; // Track completed games
+    private int skippedGames = 0; // Track skipped games
+    int  Complete_count = 0;
 
-                sps.putInt(Word_Game_Hard.this, "addlodedd", 0);
-                s = 1;
-                openDialog_p = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                openDialog_p.setContentView(R.layout.back_pess);
-                TextView yes = openDialog_p.findViewById(R.id.yes);
-                TextView no = openDialog_p.findViewById(R.id.no);
-                if (isTimerRunning && timerHandler != null) {
-                    timerHandler.removeCallbacks(timerRunnable);
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    focus.stop();
-                }
-
-                yes.setOnClickListener(v -> {
-
-                    focus.stop();
-                    counter = 0;
-                    counter3 = 0;
-
-
-                    focus.stop();
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-
-
-                    String date = sps.getString(Word_Game_Hard.this, "date");
-                    int pos;
-                    if (date.equals("0")) pos = 1;
-                    else pos = 2;
-
-                    //  myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-                    myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
-
-                    // String date = sps.getString(Word_Game_Hard.this, "date");
-                    if (date.equals("0")) if (main_act.equals("")) {
-                        finish();
-                        Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
-                        startActivity(i);
-                    } else finish();
-                    else if (sps.getString(Word_Game_Hard.this, "Exp_list").equals("on")) {
-                        finish();
-                        Intent i = new Intent(Word_Game_Hard.this, Expandable_List_View.class);
-                        startActivity(i);
-                    } else if (main_act.equals("")) {
-                        finish();
-                        Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
-                        startActivity(i);
-                    } else finish();
-
-                    openDialog_p.dismiss();
-                });
-                no.setOnClickListener(v -> {
-
-                    if (ttstop > 0) {
-                        startChronometerCountdown(ttstop);
-                    }
-                    openDialog_p.dismiss();
-                });
-
-                openDialog_p.setOnDismissListener(dialog -> {
-                    // Check if the timer was paused and resume if necessary
-                    if (ttstop > 0) {
-                        startChronometerCountdown(ttstop);
-                    }
-                });
-                openDialog_p.show();
-
-
-            }
-
-        }
-    };
 
     private static final String UNITY_GAME_ID = "5819977";  // your Game ID
     private static final boolean TEST_MODE = true;
@@ -559,15 +488,14 @@ public class Word_Game_Hard extends AppCompatActivity {
         score = findViewById(R.id.word_score_edit);
         feedback = findViewById(R.id.feedback);
         focus = findViewById(R.id.word_time_edit);
-        new Handler().postDelayed(() -> {
-            int emptyLines = getEmptyAnswerCount();
-            long countdownTimeMillis = emptyLines * 30 * 1000L;
-
-            // Set a minimum duration if needed
-            if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000;
-
-            startChronometerCountdown(countdownTimeMillis);
-        }, 200);
+        if (!sps.getString(this, "wn_intro").equals("yes")) {
+            new Handler().postDelayed(() -> {
+                int emptyLines = getEmptyAnswerCount();
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000;
+                startChronometerCountdown(countdownTimeMillis);
+            }, 200);
+        }
 
         w_head = findViewById(R.id.w_head);
         h_gplues = findViewById(R.id.h_gplues);
@@ -957,8 +885,48 @@ public class Word_Game_Hard extends AppCompatActivity {
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
         LinearLayout resetLayout = findViewById(R.id.resetLayout);
 
-        skipLayout.setOnClickListener(v -> {
+      /*  skipLayout.setOnClickListener(v -> {
             focus.stop();
+            String date = sps.getString(Word_Game_Hard.this, "date");
+            if (date.equals("0")) {
+                myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid='" + letterid + "' and gameid='" + gameid + "'");
+                next();
+            } else Toast.makeText(Word_Game_Hard.this, "Not Available", Toast.LENGTH_SHORT).show();
+
+        });*/
+
+        skipLayout.setOnClickListener(v -> {
+
+            skippedGames++;
+            sps.putInt(this, "skipped_games_wgh", skippedGames);
+
+            // ✅ Build a unique int key for each gameid
+            String skipKey = "skip_count_word_game_hard";
+
+            // ✅ Get current count for this gameid
+            int currentSkip = sps.getInt(getApplicationContext(), skipKey);
+
+            if (currentSkip == 0) {
+                // ✅ First time skip for this gameid
+                sps.putInt(getApplicationContext(), skipKey, 1);
+                Log.d("SKIP", "✅ Skip recorded for gameid: " + gameid);
+            } else {
+                // ✅ Already skipped
+                Log.d("SKIP", "❌ Already skipped. Not incrementing again for gameid: " + gameid);
+            }
+
+            if (Integer.parseInt(word_no.getText().toString()) % 5 == 0) {
+                showCongratsBottomSheet();
+                return;
+            }
+
+            // Stop timer
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
             String date = sps.getString(Word_Game_Hard.this, "date");
             if (date.equals("0")) {
                 myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid='" + letterid + "' and gameid='" + gameid + "'");
@@ -1294,6 +1262,24 @@ public class Word_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked) sps.putString(getApplicationContext(), "checkbox_ans", "yes");
@@ -1437,6 +1423,24 @@ public class Word_Game_Hard extends AppCompatActivity {
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
@@ -1581,6 +1585,24 @@ public class Word_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked) sps.putString(getApplicationContext(), "checkbox_ans", "yes");
@@ -1725,6 +1747,24 @@ public class Word_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked) sps.putString(getApplicationContext(), "checkbox_ans", "yes");
@@ -1865,6 +1905,24 @@ public class Word_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked) sps.putString(getApplicationContext(), "checkbox_ans", "yes");
@@ -2007,6 +2065,24 @@ public class Word_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked) sps.putString(getApplicationContext(), "checkbox_ans", "yes");
@@ -2151,6 +2227,24 @@ public class Word_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked) sps.putString(getApplicationContext(), "checkbox_ans", "yes");
@@ -2296,6 +2390,24 @@ public class Word_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked) sps.putString(getApplicationContext(), "checkbox_ans", "yes");
@@ -2439,6 +2551,24 @@ public class Word_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked) sps.putString(getApplicationContext(), "checkbox_ans", "yes");
@@ -2584,6 +2714,24 @@ public class Word_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked) sps.putString(getApplicationContext(), "checkbox_ans", "yes");
@@ -2730,6 +2878,24 @@ public class Word_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked) sps.putString(getApplicationContext(), "checkbox_ans", "yes");
@@ -2872,6 +3038,24 @@ public class Word_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked) sps.putString(getApplicationContext(), "checkbox_ans", "yes");
@@ -3014,6 +3198,24 @@ public class Word_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked) sps.putString(getApplicationContext(), "checkbox_ans", "yes");
@@ -3155,6 +3357,24 @@ public class Word_Game_Hard extends AppCompatActivity {
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked) sps.putString(getApplicationContext(), "checkbox_ans", "yes");
@@ -3254,6 +3474,85 @@ public class Word_Game_Hard extends AppCompatActivity {
             return false;
         });
     }
+
+
+    OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            sps.putString(Word_Game_Hard.this, "game_area", "on");
+            if (popupWindow.isShowing()) popupWindow.dismiss();
+            else {
+
+                sps.putInt(Word_Game_Hard.this, "addlodedd", 0);
+                s = 1;
+                openDialog_p = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                openDialog_p.setContentView(R.layout.back_pess);
+                TextView yes = openDialog_p.findViewById(R.id.yes);
+                TextView no = openDialog_p.findViewById(R.id.no);
+                if (isTimerRunning && timerHandler != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                    focus.stop();
+                }
+
+                yes.setOnClickListener(v -> {
+
+                    focus.stop();
+                    counter = 0;
+                    counter3 = 0;
+
+
+                    focus.stop();
+                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+
+
+                    String date = sps.getString(Word_Game_Hard.this, "date");
+                    int pos;
+                    if (date.equals("0")) pos = 1;
+                    else pos = 2;
+
+                    //  myDbHelper.executeSql("UPDATE answertable SET playtime='" + ttstop + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+                    myDbHelper.executeSql("UPDATE answertable SET levelscore='" + b_score + "' WHERE levelid='" + letterid + "' and gameid='" + gameid + "' and rd='" + pos + "'");
+
+                    // String date = sps.getString(Word_Game_Hard.this, "date");
+                    if (date.equals("0")) if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else finish();
+                    else if (sps.getString(Word_Game_Hard.this, "Exp_list").equals("on")) {
+                        finish();
+                        Intent i = new Intent(Word_Game_Hard.this, Expandable_List_View.class);
+                        startActivity(i);
+                    } else if (main_act.equals("")) {
+                        finish();
+                        Intent i = new Intent(Word_Game_Hard.this, New_Main_Activity.class);
+                        startActivity(i);
+                    } else finish();
+
+                    openDialog_p.dismiss();
+                });
+                no.setOnClickListener(v -> {
+
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                    openDialog_p.dismiss();
+                });
+
+                openDialog_p.setOnDismissListener(dialog -> {
+                    // Check if the timer was paused and resume if necessary
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
+                openDialog_p.show();
+
+
+            }
+
+        }
+    };
 
     private void showResetDialog() {
         // ✅ Pause and capture remaining time
@@ -4956,6 +5255,16 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         final Dialog openDialog_earncoin = new Dialog(Word_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_earncoin.setContentView(R.layout.earncoin);
+        // ✅ Pause the timer
+        if (isTimerRunning) {
+            ttstop = endTime - SystemClock.elapsedRealtime();
+            focus.stop();
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            isTimerRunning = false;
+            if (ttstop < 0) ttstop = 0;
+        }
 
 
         RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
@@ -4966,6 +5275,25 @@ public class Word_Game_Hard extends AppCompatActivity {
 
         ss.setOnClickListener(v -> openDialog_earncoin.cancel());
         cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
+
+        // ✅ Resume timer on BACK button press
+        openDialog_earncoin.setOnKeyListener((dialog, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                dialog.dismiss();
+                if (ttstop > 0) {
+                    startChronometerCountdown(ttstop);
+                }
+                return true;
+            }
+            return false;
+        });
+
+        // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+        openDialog_earncoin.setOnDismissListener(dialog -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
 
         TextView wpro = openDialog_earncoin.findViewById(R.id.wpro);
         if (i == 1) {
@@ -5498,6 +5826,10 @@ public class Word_Game_Hard extends AppCompatActivity {
             hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 6200);
 
             next_continue.setOnClickListener(view -> {
+                Complete_count = sps.getInt(getApplicationContext(), "completed_count_word_game_hard")+1;
+                System.out.println("Completed count === :"+Complete_count);
+                sps.putInt(getApplicationContext(), "completed_count_word_game_hard", Integer.parseInt(String.valueOf(Complete_count)));
+
                 c_counter = 0;
                 current_sc = 0;
                 case2 = 0;
@@ -5713,6 +6045,11 @@ public class Word_Game_Hard extends AppCompatActivity {
             hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 3500);
 
             next_continue.setOnClickListener(view -> {
+                Complete_count = sps.getInt(getApplicationContext(), "completed_count_word_game_hard")+1;
+                System.out.println("Completed count === :"+Complete_count);
+                sps.putInt(getApplicationContext(), "completed_count_word_game_hard", Integer.parseInt(String.valueOf(Complete_count)));
+
+
                 c_counter = 0;
                 current_sc = 0;
                 case2 = 0;
@@ -5772,6 +6109,11 @@ public class Word_Game_Hard extends AppCompatActivity {
 
             next_continue.setVisibility(View.VISIBLE);
             next_continue.setOnClickListener(view -> {
+                Complete_count = sps.getInt(getApplicationContext(), "completed_count_word_game_hard")+1;
+                System.out.println("Completed count === :"+Complete_count);
+                sps.putInt(getApplicationContext(), "completed_count_word_game_hard", Integer.parseInt(String.valueOf(Complete_count)));
+
+
                 c_counter = 0;
                 current_sc = 0;
                 case2 = 0;
@@ -7822,6 +8164,210 @@ public class Word_Game_Hard extends AppCompatActivity {
 
     private enum PendingAction {
         NONE, POST_PHOTO, POST_STATUS_UPDATE
+    }
+
+/*    private void showCongratsBottomSheet() {
+        // Pause the timer when bottom sheet is shown
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop(); // ❗ Important: actually stop the Chronometer UI
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            isTimerRunning = false;
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog bottomSheetDialog = new Dialog(this);
+        bottomSheetDialog.setContentView(R.layout.activity_congrats_layout);
+        bottomSheetDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        bottomSheetDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        bottomSheetDialog.getWindow().setGravity(Gravity.BOTTOM);
+
+        // Fetch completed count from SharedPreferences
+        int completed = sps.getInt(getApplicationContext(), "completed_count_word_game_hard");
+
+        // Corrected skip count calculation
+        TextView skipCount = bottomSheetDialog.findViewById(R.id.skipCount);
+        TextView completedCount = bottomSheetDialog.findViewById(R.id.completedCount);
+        TextView gameCountText = bottomSheetDialog.findViewById(R.id.GameCount);
+
+        int currentGameNo = Integer.parseInt(word_no.getText().toString().trim());
+        int skipped = currentGameNo - completed;
+
+        skipCount.setText(String.valueOf(skipped));
+        completedCount.setText(String.valueOf(completed));
+        gameCountText.setText(String.valueOf(currentGameNo));
+
+        Log.d("CongratsSheet", "Completed: " + completed + ", Skipped: " + skipped);
+
+        CardView exitButton = bottomSheetDialog.findViewById(R.id.exitToPlayGame);
+        CardView continueButton = bottomSheetDialog.findViewById(R.id.continueToPlayGame);
+
+        exitButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            finish();
+        });
+
+        continueButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Word_Game_Hard.this);
+                UnityAds.show(Word_Game_Hard.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        continueToNextGame();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            skipCounter = 0;
+                            continueToNextGame();
+                        } else {
+                            Toast.makeText(Word_Game_Hard.this, "முழு காணொளியையும் பார்த்து அடுத்த விளையாட்டுக்கு செல்லவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+        });
+
+        // Add dismiss listener to resume timer when bottom sheet is dismissed
+        bottomSheetDialog.setOnDismissListener(dialog -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
+
+        bottomSheetDialog.show();
+    }*/
+
+    private void showCongratsBottomSheet() {
+        // ✅ Pause the timer
+        if (isTimerRunning) {
+            ttstop = endTime - SystemClock.elapsedRealtime();
+            focus.stop();
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            isTimerRunning = false;
+            if (ttstop < 0) ttstop = 0;
+        }
+
+        Dialog bottomSheetDialog = new Dialog(this);
+        bottomSheetDialog.setContentView(R.layout.activity_congrats_layout);
+        bottomSheetDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        bottomSheetDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        bottomSheetDialog.getWindow().setGravity(Gravity.BOTTOM);
+        bottomSheetDialog.setCancelable(true); // Allow dismiss on back press
+
+        // ✅ Resume timer on BACK button press
+        bottomSheetDialog.setOnKeyListener((dialog, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                dialog.dismiss();
+                if (ttstop > 0) {
+                    startChronometerCountdown(ttstop);
+                }
+                return true;
+            }
+            return false;
+        });
+
+        // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+        bottomSheetDialog.setOnDismissListener(dialog -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
+
+        // Populate stats
+        int completed = sps.getInt(getApplicationContext(), "completed_count_word_game_hard");
+        int currentGameNo = Integer.parseInt(word_no.getText().toString().trim());
+        int skipped = currentGameNo - completed;
+
+        ((TextView) bottomSheetDialog.findViewById(R.id.skipCount)).setText(String.valueOf(skipped));
+        ((TextView) bottomSheetDialog.findViewById(R.id.completedCount)).setText(String.valueOf(completed));
+        ((TextView) bottomSheetDialog.findViewById(R.id.GameCount)).setText(String.valueOf(currentGameNo));
+
+        // Buttons
+        bottomSheetDialog.findViewById(R.id.exitToPlayGame).setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            finish();
+        });
+
+        bottomSheetDialog.findViewById(R.id.continueToPlayGame).setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Word_Game_Hard.this);
+                UnityAds.show(Word_Game_Hard.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        continueToNextGame();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {}
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            skipCounter = 0;
+                            continueToNextGame();
+                        } else {
+                            Toast.makeText(Word_Game_Hard.this, "முழு காணொளியையும் பார்த்து அடுத்த விளையாட்டுக்கு செல்லவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew();
+                    }
+                });
+            } else {
+                continueToNextGame();
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
+
+
+    private void continueToNextGame() {
+        // Stop timer
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+        }
+
+        String date = sps.getString(Word_Game_Hard.this, "date");
+        if (date.equals("0")) {
+            myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid='" + letterid + "' and gameid='" + gameid + "'");
+            next();
+        } else Toast.makeText(Word_Game_Hard.this, "Not Available", Toast.LENGTH_SHORT).show();
     }
 
     class DownloadFileAsync extends AsyncTask<String, String, String> {

@@ -53,6 +53,7 @@ import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 import com.google.android.material.snackbar.Snackbar;
@@ -149,12 +150,17 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
     int dia_dismiss = 0;
     int coin_anim = 0;
     private final long countdownDuration = 30000; // 30 seconds in milliseconds
-    private Handler timerHandler;
+    private Handler timerHandler = new Handler(Looper.getMainLooper());
+
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
     private boolean isGameCompleted = false;
 
     private boolean isTimeExpired = false;
+
+    private int skippedGames = 0; // Track skipped games
+    int Complete_count = 0;
+    private int skipCounter = 0; // Add skip counter
 
 
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
@@ -354,7 +360,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         });
 
 
-        skipLayout.setOnClickListener(v -> {
+     /*   skipLayout.setOnClickListener(v -> {
             System.out.println("enter class");
             if (isGameCompleted) {
                 Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
@@ -374,6 +380,52 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 newhelper4.executeSql("UPDATE newgamesdb4 SET daily=1 WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
             }
 
+            // Load next question
+            next();
+        });*/
+
+        skipLayout.setOnClickListener(v -> {
+            skippedGames++;
+            sps.putInt(this, "skipped_game_fill_in_blanks", skippedGames);
+
+            // ✅ Build a unique int key for each gameid
+            String skipKey = "skip_count_fill_in_blanks";
+
+            // ✅ Get current count for this gameid
+            int currentSkip = sps.getInt(getApplicationContext(), skipKey);
+
+            if (currentSkip == 0) {
+                // ✅ First time skip for this gameid
+                sps.putInt(getApplicationContext(), skipKey, 1);
+                Log.d("SKIP", "✅ Skip recorded for gameid: " + gameid);
+            } else {
+                // ✅ Already skipped
+                Log.d("SKIP", "❌ Already skipped. Not incrementing again for gameid: " + gameid);
+            }
+
+            int number = Integer.parseInt(c_word_number.getText().toString().trim());
+            if (number % 5 == 0) {
+                showCongratsBottomSheet();
+                return;
+            }
+
+            // Stop timer
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Fill_in_blanks.this, "date");
+            if (date.equals("0")) {
+                newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish=1 WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
+            } else {
+                newhelper4.executeSql("UPDATE newgamesdb4 SET daily=1 WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
+            }
+            c_ans.setEnabled(true);
             // Load next question
             next();
         });
@@ -523,7 +575,7 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
         dialog.show();
     }
 
-    private void startChronometerCountdown(long durationInMillis) {
+   /* private void startChronometerCountdown(long durationInMillis) {
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
         }
@@ -557,7 +609,50 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
 
         isTimerRunning = true;
-    }
+    }*/
+   private void startChronometerCountdown(long durationInMillis) {
+       // Ensure handler is always initialized
+       if (timerHandler == null) {
+           timerHandler = new Handler(Looper.getMainLooper());
+       }
+
+       focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+       focus.setCountDown(true);
+       focus.start();
+
+       // Cancel any previous callbacks
+       if (timerRunnable != null && timerHandler != null) {
+           timerHandler.removeCallbacks(timerRunnable);
+       }
+
+       // Safe runnable
+       timerRunnable = new Runnable() {
+           @Override
+           public void run() {
+               // Defensive null check
+               if (timerHandler == null) {
+                   timerHandler = new Handler(Looper.getMainLooper());
+               }
+
+               long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+               if (remainingMillis <= 0) {
+                   focus.stop();
+                   isTimerRunning = false;
+                   showExtendTimeDialog();  // Show dialog when time is up
+               } else {
+                   if (timerHandler != null) {
+                       timerHandler.postDelayed(this, 500);  // Repeat countdown
+                   }
+               }
+           }
+       };
+
+       // Start timer safely
+       if (timerHandler != null) {
+           timerHandler.postDelayed(timerRunnable, 500);
+       }
+       isTimerRunning = true;
+   }
 
     // ✅ Ensure this is included in `showExtendTimeDialog()`
 /*    private void showExtendTimeDialog() {
@@ -1826,11 +1921,29 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
                 } else {
                     final Dialog openDialog = new Dialog(Fill_in_blanks.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                     openDialog.setContentView(R.layout.show_ans);
+                    // Pause the timer when bottom sheet is shown
+                    if (isTimerRunning) {
+                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                        focus.stop(); // ❗ Important: actually stop the Chronometer UI
+                        if (timerHandler != null && timerRunnable != null) {
+                            timerHandler.removeCallbacks(timerRunnable);
+                        }
+                        isTimerRunning = false;
+                        if (ttstop < 0) ttstop = 0;
+                    }
+
                     TextView yes = openDialog.findViewById(R.id.yes);
                     TextView no = openDialog.findViewById(R.id.no);
                     TextView txt_ex2 = openDialog.findViewById(R.id.txt_ex2);
                     txt_ex2.setText("மொத்த நாணயங்களில் 50 குறைக்கப்படும்");
                     CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                    // Add dismiss listener to resume timer when bottom sheet is dismissed
+                    openDialog.setOnDismissListener(dialog -> {
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                    });
+
                     checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                         if (isChecked) {
@@ -3865,6 +3978,10 @@ public class Fill_in_blanks extends AppCompatActivity implements Download_comple
 
 
         next_continue.setOnClickListener(view -> {
+            Complete_count = sps.getInt(getApplicationContext(), "completed_count_fill_in_blanks")+1;
+            System.out.println("Completed count === :"+Complete_count);
+            sps.putInt(getApplicationContext(), "completed_count_fill_in_blanks", Integer.parseInt(String.valueOf(Complete_count)));
+
             dia_dismiss = 1;
             openDialog_s.dismiss();
             next();
@@ -4356,7 +4473,16 @@ public void industrialload() {
         final Dialog openDialog_earncoin = new Dialog(Fill_in_blanks.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_earncoin.setContentView(R.layout.earncoin);
 
-
+        // Pause the timer when bottom sheet is shown
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop(); // ❗ Important: actually stop the Chronometer UI
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            isTimerRunning = false;
+            if (ttstop < 0) ttstop = 0;
+        }
         RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
         RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
         RelativeLayout gplus = openDialog_earncoin.findViewById(R.id.earngplus);
@@ -4364,6 +4490,13 @@ public void industrialload() {
 
         TextView cancel = openDialog_earncoin.findViewById(R.id.cancel);
         TextView ss = openDialog_earncoin.findViewById(R.id.ssss);
+        // Add dismiss listener to resume timer when bottom sheet is dismissed
+        openDialog_earncoin.setOnDismissListener(dialog -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
+
 
         ss.setOnClickListener(v -> openDialog_earncoin.cancel());
         cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
@@ -5333,6 +5466,124 @@ public void industrialload() {
             rewarded_adnew();
         }
     }
+
+    private void showCongratsBottomSheet() {
+        // Pause the timer when bottom sheet is shown
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop(); // ❗ Important: actually stop the Chronometer UI
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            isTimerRunning = false;
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog bottomSheetDialog = new Dialog(this);
+        bottomSheetDialog.setContentView(R.layout.activity_congrats_layout);
+        bottomSheetDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        bottomSheetDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        bottomSheetDialog.getWindow().setGravity(Gravity.BOTTOM);
+
+        // Fetch completed count from SharedPreferences
+        int completed = sps.getInt(getApplicationContext(), "completed_count_fill_in_blanks");
+
+        // Corrected skip count calculation
+        TextView skipCount = bottomSheetDialog.findViewById(R.id.skipCount);
+        TextView completedCount = bottomSheetDialog.findViewById(R.id.completedCount);
+        TextView gameCountText = bottomSheetDialog.findViewById(R.id.GameCount);
+
+        int currentGameNo = Integer.parseInt(c_word_number.getText().toString().trim());
+        int skipped = currentGameNo - completed;
+
+        skipCount.setText(String.valueOf(skipped));
+        completedCount.setText(String.valueOf(completed));
+        gameCountText.setText(String.valueOf(currentGameNo));
+
+        Log.d("CongratsSheet", "Completed: " + completed + ", Skipped: " + skipped);
+
+        CardView exitButton = bottomSheetDialog.findViewById(R.id.exitToPlayGame);
+        CardView continueButton = bottomSheetDialog.findViewById(R.id.continueToPlayGame);
+
+        exitButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            finish();
+        });
+
+        continueButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Fill_in_blanks.this);
+                UnityAds.show(Fill_in_blanks.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        continueToNextGame();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            skipCounter = 0;
+                            continueToNextGame();
+                        } else {
+                            Toast.makeText(Fill_in_blanks.this, "முழு காணொளியையும் பார்த்து அடுத்த விளையாட்டுக்கு செல்லவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+        });
+
+        // Add dismiss listener to resume timer when bottom sheet is dismissed
+        bottomSheetDialog.setOnDismissListener(dialog -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
+
+    private void continueToNextGame() {
+        // Stop timer
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+        }
+
+        // Mark current question as finished in the DB
+        String date = sps.getString(Fill_in_blanks.this, "date");
+        if (date.equals("0")) {
+            newhelper4.executeSql("UPDATE newgamesdb4 SET isfinish=1 WHERE levelid='" + levelid + "' and gameid='" + gameid + "'");
+        } else {
+            newhelper4.executeSql("UPDATE newgamesdb4 SET daily=1 WHERE levelid='" + levelid + "' and gameid='" + gameid + "' and daily='0'");
+        }
+        c_ans.setEnabled(true);
+
+        // Load next question
+        next();
+    }
+
+
 
     @Override
     public void onDestroy() {

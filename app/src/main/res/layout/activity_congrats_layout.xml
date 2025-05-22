@@ -35,27 +35,46 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/lexend_medium"
-                android:text="You Have Successfully Reached"
+                android:text="வாழ்த்துகள்! நீங்கள் இப்போது"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="16dp" />
 
-            <TextView
-                android:id="@+id/GameCount"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/lexend_black"
-                android:text="5"
-                android:textAlignment="center"
-                android:textColor="@color/red"
-                android:textSize="35dp"
-                android:textStyle="bold" />
+                android:gravity="center"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/GameCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/lexend_black"
+                    android:text="5"
+                    android:textAlignment="center"
+                    android:textColor="@color/red"
+                    android:textSize="35dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/lexend_medium"
+                    android:text=" - வது"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="16dp" />
+
+
+
+            </LinearLayout>
+
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/lexend_medium"
-                android:text="Games"
+                android:text="விளையாட்டை அடைந்துள்ளீர்கள்"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="16dp" />
@@ -80,7 +99,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend_medium"
-                        android:text="Completed"
+                        android:text="முடிக்கப்பட்டது"
                         android:textAlignment="center"
                         android:textColor="@color/black"
                         android:textSize="16dp" />
@@ -112,7 +131,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/lexend_medium"
-                        android:text="Skipped"
+                        android:text="தவிர்க்கப்பட்டது"
                         android:textAlignment="center"
                         android:textColor="@color/black"
                         android:textSize="16dp" />
@@ -141,6 +160,7 @@
                 android:orientation="horizontal">
 
                 <androidx.cardview.widget.CardView
+
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -164,7 +184,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="10dp"
                             android:fontFamily="@font/lexend_medium"
-                            android:text="Exit game"
+                            android:text="விளையாட்டை விட்டு வெளியேறு"
                             android:textAlignment="center"
                             android:textColor="@color/red"
                             android:textSize="14dp" />
@@ -188,7 +208,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="12dp"
                         android:fontFamily="@font/lexend_medium"
-                        android:text="Play next level >>"
+                        android:text="அடுத்த நிலையை விளையாடு >>"
                         android:textAlignment="center"
                         android:textColor="@color/white"
                         android:textSize="14dp" />

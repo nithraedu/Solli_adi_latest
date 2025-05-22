@@ -62,6 +62,7 @@ import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
@@ -214,6 +215,11 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
     private static final String UNITY_GAME_ID = "5819977";  // your Game ID
     private static final boolean TEST_MODE = true;
+
+    private int skipCounter = 0; // Add skip counter
+    private int completedGames = 0; // Track completed games
+    private int skippedGames = 0; // Track skipped games
+    int skip_count = 0 , Complete_count = 0;
 
 
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
@@ -423,9 +429,16 @@ public class Clue_Game_Hard extends AppCompatActivity {
         });
 
         btnNo.setOnClickListener(v -> {
-            if (ttstop > 0) {
+          /*  if (ttstop > 0) {
                 startChronometerCountdown(ttstop); // resume from where paused
+            }*/
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
             }
+            isTimerRunning = false;
+            //  isAnswerSelectionEnabled = false;
+            focus.stop();
+            focus.setText("00:00");
             dialog.dismiss();
         });
 
@@ -529,12 +542,61 @@ public class Clue_Game_Hard extends AppCompatActivity {
             showResetDialog();
         });
 
-        skipLayout.setOnClickListener(v -> {
+  /*      skipLayout.setOnClickListener(v -> {
             if (isGameCompleted) {
                 Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            // Mark current question as finished in the DB
+            String date = sps.getString(Clue_Game_Hard.this, "date");
+            if (date.equals("0")) {
+                myDbHelper.executeSql("UPDATE maintable SET isfinish=1 WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+            } else {
+                myDbHelper.executeSql("UPDATE dailytest SET isfinish=1 WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+            }
+
+            // Reset fields
+            c_edit.setText("");
+            ans_high.setText("");
+            ans_high.setVisibility(View.INVISIBLE);
+            c_ans.setEnabled(true);
+
+            // Load next question
+            next();
+        });*/
+
+        skipLayout.setOnClickListener(v -> {
+
+            skippedGames++;
+            sps.putInt(this, "skipped_games_clue_game_hard", skippedGames);
+            // ✅ Build a unique int key for each gameid
+            String skipKey = "skip_count_clue_game_hard";
+
+            // ✅ Get current count for this gameid
+            int currentSkip = sps.getInt(getApplicationContext(), skipKey);
+
+            if (currentSkip == 0) {
+                // ✅ First time skip for this gameid
+                sps.putInt(getApplicationContext(), skipKey, 1);
+                Log.d("SKIP", "✅ Skip recorded for gameid: " + gameid);
+            } else {
+                // ✅ Already skipped
+                Log.d("SKIP", "❌ Already skipped. Not incrementing again for gameid: " + gameid);
+            }
+
+            if (Integer.parseInt(to_no.getText().toString()) % 5 == 0) {
+                showCongratsBottomSheet();
+                return;
+            }
+
+            // Stop timer
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
             // Mark current question as finished in the DB
             String date = sps.getString(Clue_Game_Hard.this, "date");
             if (date.equals("0")) {
@@ -1454,6 +1516,12 @@ public class Clue_Game_Hard extends AppCompatActivity {
                     } else {
                         final Dialog openDialog = new Dialog(Clue_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                         openDialog.setContentView(R.layout.show_ans);
+                        if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                            timerHandler.removeCallbacks(timerRunnable);
+                            isTimerRunning = false;
+                            ttstop = focus.getBase() - SystemClock.elapsedRealtime(); // Save time left
+                            focus.stop();
+                        }
                         TextView yes = openDialog.findViewById(R.id.yes);
                         TextView no = openDialog.findViewById(R.id.no);
                         TextView txt_ex2 = openDialog.findViewById(R.id.txt_ex2);
@@ -1465,6 +1533,13 @@ public class Clue_Game_Hard extends AppCompatActivity {
                                 sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                             } else {
                                 sps.putString(getApplicationContext(), "checkbox_ans", "");
+                            }
+                        });
+
+                        openDialog.setOnDismissListener(dialog -> {
+                            // ✅ Resume previous timer
+                            if (ttstop > 0) {
+                                startChronometerCountdown(ttstop);  // ✅ Resume timer
                             }
                         });
 
@@ -1532,6 +1607,9 @@ public class Clue_Game_Hard extends AppCompatActivity {
                         });
                         no.setOnClickListener(v1 -> {
                             sps.putString(getApplicationContext(), "checkbox_ans", "");
+                            if (ttstop > 0) {
+                                startChronometerCountdown(ttstop);
+                            }
                             openDialog.dismiss();
                         });
                         if (!isFinishing()) openDialog.show();
@@ -3365,6 +3443,11 @@ public class Clue_Game_Hard extends AppCompatActivity {
         }
 
         next_continue.setOnClickListener(view -> {
+            Complete_count = sps.getInt(getApplicationContext(), "completed_count_clue_game_hard")+1;
+            System.out.println("Completed count === :"+Complete_count);
+            sps.putInt(getApplicationContext(), "completed_count_clue_game_hard", Integer.parseInt(String.valueOf(Complete_count)));
+
+
             dia_dismiss = 1;
             openDialog_s.dismiss();
             next();
@@ -3684,6 +3767,13 @@ public class Clue_Game_Hard extends AppCompatActivity {
     public void dialog(int i) {
         final Dialog openDialog_earncoin = new Dialog(Clue_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_earncoin.setContentView(R.layout.earncoin);
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+            // Always save current time state, even if negative
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+        }
 
 
         RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
@@ -3693,6 +3783,17 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
         TextView cancel = openDialog_earncoin.findViewById(R.id.cancel);
         TextView ss = openDialog_earncoin.findViewById(R.id.ssss);
+
+        // Add dialog dismiss listener to resume timer
+        openDialog_earncoin.setOnDismissListener(dialog -> {
+            if (!isTimerRunning) {
+                // Resume from saved time state, even if negative
+                focus.setBase(SystemClock.elapsedRealtime() + ttstop);
+                focus.start();
+                isTimerRunning = true;
+                timerHandler.postDelayed(timerRunnable, 1000);
+            }
+        });
 
         ss.setOnClickListener(v -> openDialog_earncoin.cancel());
         cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
@@ -5849,6 +5950,129 @@ public class Clue_Game_Hard extends AppCompatActivity {
             rewarded_adnew();
         }
     }
+
+
+    private void showCongratsBottomSheet() {
+        // Pause the timer when bottom sheet is shown
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop(); // ❗ Important: actually stop the Chronometer UI
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            isTimerRunning = false;
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog bottomSheetDialog = new Dialog(this);
+        bottomSheetDialog.setContentView(R.layout.activity_congrats_layout);
+        bottomSheetDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        bottomSheetDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        bottomSheetDialog.getWindow().setGravity(Gravity.BOTTOM);
+
+        // Fetch completed count from SharedPreferences
+        int completed = sps.getInt(getApplicationContext(), "completed_count_clue_game_hard");
+
+        // Corrected skip count calculation
+        TextView skipCount = bottomSheetDialog.findViewById(R.id.skipCount);
+        TextView completedCount = bottomSheetDialog.findViewById(R.id.completedCount);
+        TextView gameCountText = bottomSheetDialog.findViewById(R.id.GameCount);
+
+        int currentGameNo = Integer.parseInt(to_no.getText().toString().trim());
+        int skipped = currentGameNo - completed;
+
+        skipCount.setText(String.valueOf(skipped));
+        completedCount.setText(String.valueOf(completed));
+        gameCountText.setText(String.valueOf(currentGameNo));
+
+        Log.d("CongratsSheet", "Completed: " + completed + ", Skipped: " + skipped);
+
+        CardView exitButton = bottomSheetDialog.findViewById(R.id.exitToPlayGame);
+        CardView continueButton = bottomSheetDialog.findViewById(R.id.continueToPlayGame);
+
+        exitButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            finish();
+        });
+
+        continueButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Clue_Game_Hard.this);
+                UnityAds.show(Clue_Game_Hard.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        continueToNextGame();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            skipCounter = 0;
+                            continueToNextGame();
+                        } else {
+                            Toast.makeText(Clue_Game_Hard.this, "முழு காணொளியையும் பார்த்து அடுத்த விளையாட்டுக்கு செல்லவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+        });
+
+        // Add dismiss listener to resume timer when bottom sheet is dismissed
+        bottomSheetDialog.setOnDismissListener(dialog -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
+
+    private void continueToNextGame() {
+        // Stop timer
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+        }
+
+        // Mark current question as finished in the DB
+        String date = sps.getString(Clue_Game_Hard.this, "date");
+        if (date.equals("0")) {
+            myDbHelper.executeSql("UPDATE maintable SET isfinish=1 WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+        } else {
+            myDbHelper.executeSql("UPDATE dailytest SET isfinish=1 WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
+        }
+
+        // Reset fields
+        c_edit.setText("");
+        ans_high.setText("");
+        ans_high.setVisibility(View.INVISIBLE);
+        c_ans.setEnabled(true);
+
+        // Load next question
+        next();
+    }
+
     private enum PendingAction {
         NONE, POST_PHOTO, POST_STATUS_UPDATE
     }

@@ -62,6 +62,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
@@ -157,7 +158,7 @@ public class Solukul_Sol extends AppCompatActivity {
     // MediaPlayer w1;
     TextView s_settings;
     TextView toggleButton;
-    LinearLayout adds,adsLay1;
+    LinearLayout adds, adsLay1;
     TextView tx1, tx2;
     int skxw;
     int case2 = 0, tot2 = 30, tt_case2, tt_tot2;
@@ -225,6 +226,13 @@ public class Solukul_Sol extends AppCompatActivity {
 
     private static final String UNITY_GAME_ID = "5819977";  // your Game ID
     private static final boolean TEST_MODE = true;
+    private int skipCounter = 0; // Add skip counter
+    private int completedGames = 0; // Track completed games
+    private int skippedGames = 0; // Track skipped games
+    int Complete_count = 0;
+    private long endTime = 0;
+    private boolean isTimeFullyExpired = false;
+
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
@@ -322,6 +330,7 @@ public class Solukul_Sol extends AppCompatActivity {
             public void onInitializationComplete() {
                 System.out.println("Unity Ads Initialization Complete");
             }
+
             @Override
             public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
                 System.out.println("Unity Ads Initialization Failed: " + message);
@@ -359,7 +368,7 @@ public class Solukul_Sol extends AppCompatActivity {
         // Utills.INSTANCE.initializeAdzz(this);
         rewarded_adnew();
         if (sps.getInt(context, "purchase_ads") == 0) {
-             industrialload();
+            industrialload();
            /* if (!sps.getString(this, "InterstitialId").equals("") || sps.getString(this, "InterstitialId") != null) {
                 industrialload();
             }*/
@@ -369,13 +378,57 @@ public class Solukul_Sol extends AppCompatActivity {
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
         LinearLayout resetLayout = findViewById(R.id.resetLayout);
 
-        skipLayout.setOnClickListener(v -> {
+  /*      skipLayout.setOnClickListener(v -> {
             System.out.println("enter class");
-           /* if (isGameCompleted) {
+           *//* if (isGameCompleted) {
                 Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
                 return;
-            }*/
+            }*//*
 
+            // Mark current question as finished in the DB
+            String date = sps.getString(Solukul_Sol.this, "date");
+            if (date.equals("0"))
+                myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid='" + letterid + "' and gameid='" + gameid + "'");
+            else
+                myDbHelper.executeSql("UPDATE dailytest SET isfinish='1' WHERE levelid='" + letterid + "' and gameid='" + gameid + "'");
+
+
+            // Load next question
+            next();
+        });*/
+
+        skipLayout.setOnClickListener(v -> {
+
+            skippedGames++;
+            sps.putInt(this, "skipped_games_solukul_sol", skippedGames);
+
+            // ✅ Build a unique int key for each gameid
+            String skipKey = "skip_count_solukul_sol";
+
+            // ✅ Get current count for this gameid
+            int currentSkip = sps.getInt(getApplicationContext(), skipKey);
+
+            if (currentSkip == 0) {
+                // ✅ First time skip for this gameid
+                sps.putInt(getApplicationContext(), skipKey, 1);
+                Log.d("SKIP", "✅ Skip recorded for gameid: " + gameid);
+            } else {
+                // ✅ Already skipped
+                Log.d("SKIP", "❌ Already skipped. Not incrementing again for gameid: " + gameid);
+            }
+
+            if (Integer.parseInt(s_wordno.getText().toString()) % 5 == 0) {
+                showCongratsBottomSheet();
+                return;
+            }
+
+            // Stop timer
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
             // Mark current question as finished in the DB
             String date = sps.getString(Solukul_Sol.this, "date");
             if (date.equals("0"))
@@ -394,8 +447,6 @@ public class Solukul_Sol extends AppCompatActivity {
         });
 
 
-
-
         adds = findViewById(R.id.ads_lay);
         adsLay1 = findViewById(R.id.adsLay1);
         if (sps.getInt(context, "purchase_ads") == 0) {
@@ -412,7 +463,8 @@ public class Solukul_Sol extends AppCompatActivity {
                         "Ads Should be -- empty : " + sps.getString(context, "BannerId")
                 );
                 adsLay1.setVisibility(View.GONE);
-            }}else adsLay1.setVisibility(View.GONE);
+            }
+        } else adsLay1.setVisibility(View.GONE);
         // Utills.INSTANCE.load_add_AppLovin(this, adds, getResources().getString(R.string.Bottom_Banner));
 
 
@@ -522,6 +574,15 @@ public class Solukul_Sol extends AppCompatActivity {
         progress.setMax(100);
         ex_bones.setText("" + sps.getInt(Solukul_Sol.this, "bones_prog_s"));
 
+        if (!sps.getString(this, "sn_intro").equals("yes")) {
+            new Handler().postDelayed(() -> {
+                int emptyLines = getEmptyAnswerCount();
+                long countdownTimeMillis = emptyLines * 30 * 1000L;
+                if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000;
+                startChronometerCountdown(countdownTimeMillis);
+            }, 200);
+        }
+
         /////////
 
 
@@ -585,9 +646,9 @@ public class Solukul_Sol extends AppCompatActivity {
         if (sps.getInt(Solukul_Sol.this, "reward_coin_txt") == 0)
             sps.putInt(Solukul_Sol.this, "reward_coin_txt", 20);
         focus = findViewById(R.id.s_time_edit);
-       // ← very important, this must be called first
+        // ← very important, this must be called first
 
-// Delay to ensure data is populated if needed
+/*// Delay to ensure data is populated if needed
         new Handler().postDelayed(() -> {
             int emptyLines = getEmptyAnswerCount();
             long countdownTimeMillis = emptyLines * 30 * 1000L;
@@ -596,7 +657,7 @@ public class Solukul_Sol extends AppCompatActivity {
             if (countdownTimeMillis == 0) countdownTimeMillis = 30 * 1000;
 
             startChronometerCountdown(countdownTimeMillis);
-        }, 200); // 200ms delay ensures fields are filled if async
+        }, 200); // 200ms delay ensures fields are filled if async*/
 
 
         click();
@@ -643,6 +704,15 @@ public class Solukul_Sol extends AppCompatActivity {
 
 
     private void showResetDialog() {
+        // ✅ Pause and capture remaining time
+        if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+
+            // Save remaining time
+            ttstop = endTime - SystemClock.elapsedRealtime();
+            if (ttstop < 0) ttstop = 0;
+        }
         Dialog dialog = new Dialog(Solukul_Sol.this);
         dialog.setContentView(R.layout.dialog_reset);
         if (dialog.getWindow() != null) {
@@ -716,7 +786,7 @@ public class Solukul_Sol extends AppCompatActivity {
                             s_verify.setVisibility(View.VISIBLE);
                             Toast.makeText(Solukul_Sol.this, "Game has been reset.", Toast.LENGTH_SHORT).show();
 
-                        }else {
+                        } else {
                             Toast.makeText(Solukul_Sol.this, "முழு காணொளியையும் பார்த்து நாணயங்களை பெற்று கொள்ளவும்.", Toast.LENGTH_SHORT).show();
                         }
                         rewarded_adnew();
@@ -740,6 +810,48 @@ public class Solukul_Sol extends AppCompatActivity {
         dialog.setCancelable(false);
         dialog.show();
     }
+
+    /*    private void startChronometerCountdown(long durationInMillis) {
+            if (focus == null) return;
+
+            if (timerHandler == null) {
+                timerHandler = new Handler(Looper.getMainLooper());
+            }
+
+            if (timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+
+            long endTime = SystemClock.elapsedRealtime() + durationInMillis;
+
+            timerRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (timerHandler == null) return;  // Fix for crash
+
+                    long remainingMillis = endTime - SystemClock.elapsedRealtime();
+
+                    if (remainingMillis <= 0) {
+                        focus.setText("00:00");
+                        isTimerRunning = false;
+                        isTimeExpired = true; // ✅ Set time expired
+                        showExtendTimeDialog();
+                    }
+                    else {
+                        int seconds = (int) (remainingMillis / 1000) % 60;
+                        int minutes = (int) ((remainingMillis / (1000 * 60)) % 60);
+                        String timeStr = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+                        focus.setText(timeStr);
+                        timerHandler.postDelayed(this, 1000);  // Will not crash now
+                    }
+                }
+            };
+
+            if (timerHandler != null) {
+                timerHandler.post(timerRunnable);
+            }
+            isTimerRunning = true;
+        }*/
     private void startChronometerCountdown(long durationInMillis) {
         if (focus == null) return;
 
@@ -751,47 +863,53 @@ public class Solukul_Sol extends AppCompatActivity {
             timerHandler.removeCallbacks(timerRunnable);
         }
 
-        long endTime = SystemClock.elapsedRealtime() + durationInMillis;
+        endTime = SystemClock.elapsedRealtime() + durationInMillis;
+        isTimeFullyExpired = false;
 
         timerRunnable = new Runnable() {
             @Override
             public void run() {
-                if (timerHandler == null) return;  // Fix for crash
+                if (timerHandler == null) return;
 
                 long remainingMillis = endTime - SystemClock.elapsedRealtime();
 
                 if (remainingMillis <= 0) {
                     focus.setText("00:00");
                     isTimerRunning = false;
-                    isTimeExpired = true; // ✅ Set time expired
+                    isTimeFullyExpired = true;
                     showExtendTimeDialog();
-                }
-                else {
+                } else {
                     int seconds = (int) (remainingMillis / 1000) % 60;
                     int minutes = (int) ((remainingMillis / (1000 * 60)) % 60);
                     String timeStr = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
                     focus.setText(timeStr);
-                    timerHandler.postDelayed(this, 1000);  // Will not crash now
+
+                    timerHandler.postDelayed(this, 1000);
                 }
             }
         };
 
-        if (timerHandler != null) {
-            timerHandler.post(timerRunnable);
-        }
+        timerHandler.post(timerRunnable);
         isTimerRunning = true;
     }
 
     private int getEmptyAnswerCount() {
         int emptyCount = 0;
 
-        if (vl1.getVisibility() == View.VISIBLE && vl1.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl2.getVisibility() == View.VISIBLE && vl2.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl3.getVisibility() == View.VISIBLE && vl3.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl4.getVisibility() == View.VISIBLE && vl4.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl5.getVisibility() == View.VISIBLE && vl5.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl6.getVisibility() == View.VISIBLE && vl6.getText().toString().trim().isEmpty()) emptyCount++;
-        if (vl7.getVisibility() == View.VISIBLE && vl7.getText().toString().trim().isEmpty()) emptyCount++;
+        if (vl1.getVisibility() == View.VISIBLE && vl1.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl2.getVisibility() == View.VISIBLE && vl2.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl3.getVisibility() == View.VISIBLE && vl3.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl4.getVisibility() == View.VISIBLE && vl4.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl5.getVisibility() == View.VISIBLE && vl5.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl6.getVisibility() == View.VISIBLE && vl6.getText().toString().trim().isEmpty())
+            emptyCount++;
+        if (vl7.getVisibility() == View.VISIBLE && vl7.getText().toString().trim().isEmpty())
+            emptyCount++;
 
         System.out.println("Empty & Visible count: " + emptyCount);
         return emptyCount;
@@ -1191,11 +1309,38 @@ public class Solukul_Sol extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked)
@@ -1328,12 +1473,38 @@ public class Solukul_Sol extends AppCompatActivity {
 
                 }
             } else {
+// ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
 
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked)
@@ -1466,11 +1637,38 @@ public class Solukul_Sol extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked)
@@ -1601,11 +1799,38 @@ public class Solukul_Sol extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked)
@@ -1736,11 +1961,38 @@ public class Solukul_Sol extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked)
@@ -1873,11 +2125,38 @@ public class Solukul_Sol extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked)
@@ -2007,11 +2286,38 @@ public class Solukul_Sol extends AppCompatActivity {
 
                 }
             } else {
+                // ✅ Pause and capture remaining time
+                if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                    isTimerRunning = false;
+
+                    // Save remaining time
+                    ttstop = endTime - SystemClock.elapsedRealtime();
+                    if (ttstop < 0) ttstop = 0;
+                }
                 final Dialog openDialog = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 openDialog.setContentView(R.layout.show_ans);
                 TextView yes = openDialog.findViewById(R.id.yes);
                 TextView no = openDialog.findViewById(R.id.no);
                 CheckBox checkbox_ans = openDialog.findViewById(R.id.checkbox_ans);
+                // ✅ Resume timer on BACK button press
+                openDialog.setOnKeyListener((dialog, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        dialog.dismiss();
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+                openDialog.setOnDismissListener(dialog -> {
+                    if (ttstop > 0) {
+                        startChronometerCountdown(ttstop);
+                    }
+                });
                 checkbox_ans.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                     if (isChecked)
@@ -3345,7 +3651,16 @@ public class Solukul_Sol extends AppCompatActivity {
     public void dialog(int i) {
         final Dialog openDialog_earncoin = new Dialog(Solukul_Sol.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_earncoin.setContentView(R.layout.earncoin);
-
+        // ✅ Pause the timer
+        if (isTimerRunning) {
+            ttstop = endTime - SystemClock.elapsedRealtime();
+            focus.stop();
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            isTimerRunning = false;
+            if (ttstop < 0) ttstop = 0;
+        }
 
         RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
         RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
@@ -3356,6 +3671,25 @@ public class Solukul_Sol extends AppCompatActivity {
 
         ss.setOnClickListener(v -> openDialog_earncoin.cancel());
         cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
+
+        // ✅ Resume timer on BACK button press
+        openDialog_earncoin.setOnKeyListener((dialog, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                dialog.dismiss();
+                if (ttstop > 0) {
+                    startChronometerCountdown(ttstop);
+                }
+                return true;
+            }
+            return false;
+        });
+
+        // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+        openDialog_earncoin.setOnDismissListener(dialog -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
 
         TextView wpro = openDialog_earncoin.findViewById(R.id.wpro);
         if (i == 1) {
@@ -3776,6 +4110,10 @@ public class Solukul_Sol extends AppCompatActivity {
             hand.postDelayed(() -> next_continue.setVisibility(View.VISIBLE), 2500);
 
             next_continue.setOnClickListener(view -> {
+                Complete_count = sps.getInt(getApplicationContext(), "completed_count_solukul_sol") + 1;
+                System.out.println("Completed count === :" + Complete_count);
+                sps.putInt(getApplicationContext(), "completed_count_solukul_sol", Integer.parseInt(String.valueOf(Complete_count)));
+
                 y = 0;
                 case2 = 0;
                 tot2 = 0;
@@ -3823,6 +4161,10 @@ public class Solukul_Sol extends AppCompatActivity {
 
 
             next_continue.setOnClickListener(view -> {
+                Complete_count = sps.getInt(getApplicationContext(), "completed_count_solukul_sol") + 1;
+                System.out.println("Completed count === :" + Complete_count);
+                sps.putInt(getApplicationContext(), "completed_count_solukul_sol", Integer.parseInt(String.valueOf(Complete_count)));
+
                 y = 0;
                 case2 = 0;
                 tot2 = 0;
@@ -4338,8 +4680,8 @@ public class Solukul_Sol extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
-                System.out.print("Result onFailure ========== " +  call);
-                System.out.print("Result onFailure1 ========== " +  t);
+                System.out.print("Result onFailure ========== " + call);
+                System.out.print("Result onFailure1 ========== " + t);
                 // Handle network failures
             }
         });
@@ -4436,7 +4778,7 @@ public class Solukul_Sol extends AppCompatActivity {
                         }
 
                     } catch (JSONException e1) {
-                        System.out.print("Result JSONException  ========== "+e1);
+                        System.out.print("Result JSONException  ========== " + e1);
 
                     }
 
@@ -4482,8 +4824,8 @@ public class Solukul_Sol extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
-                System.out.print("Result onFailure ========== " +  call);
-                System.out.print("Result onFailure1 ========== " +  t);
+                System.out.print("Result onFailure ========== " + call);
+                System.out.print("Result onFailure1 ========== " + t);
                 // Handle network failures
             }
         });
@@ -4632,8 +4974,8 @@ public class Solukul_Sol extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<HashMap<String, String>>> call, Throwable t) {
-                System.out.print("Result onFailure ========== " +  call);
-                System.out.print("Result onFailure1 ========== " +  t);
+                System.out.print("Result onFailure ========== " + call);
+                System.out.print("Result onFailure1 ========== " + t);
                 // Handle network failures
             }
         });
@@ -4786,6 +5128,7 @@ public class Solukul_Sol extends AppCompatActivity {
             }
         });
     }
+
     public void adShow() {
         int currentStageCloseVV = sps.getInt(getApplicationContext(), "Game3_Stage_Close_ST");
         int showCountOther = 0; // Set this to your desired show count
@@ -6126,6 +6469,7 @@ public class Solukul_Sol extends AppCompatActivity {
             }
         });
     }
+
     public void show_reward() {
         String placementId = "Rewarded_Android";
         if (UnityAds.isInitialized()) {
@@ -6188,6 +6532,121 @@ public class Solukul_Sol extends AppCompatActivity {
             reward_status = 0;
             rewarded_adnew();
         }
+    }
+
+
+    private void showCongratsBottomSheet() {
+        // ✅ Pause the timer
+        if (isTimerRunning) {
+            ttstop = endTime - SystemClock.elapsedRealtime();
+            focus.stop();
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            isTimerRunning = false;
+            if (ttstop < 0) ttstop = 0;
+        }
+
+        Dialog bottomSheetDialog = new Dialog(this);
+        bottomSheetDialog.setContentView(R.layout.activity_congrats_layout);
+        bottomSheetDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        bottomSheetDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        bottomSheetDialog.getWindow().setGravity(Gravity.BOTTOM);
+        bottomSheetDialog.setCancelable(true); // Allow dismiss on back press
+
+        // ✅ Resume timer on BACK button press
+        bottomSheetDialog.setOnKeyListener((dialog, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                dialog.dismiss();
+                if (ttstop > 0) {
+                    startChronometerCountdown(ttstop);
+                }
+                return true;
+            }
+            return false;
+        });
+
+        // ✅ Fallback for other dismiss methods (e.g., tapping outside)
+        bottomSheetDialog.setOnDismissListener(dialog -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
+
+        // Populate stats
+        int completed = sps.getInt(getApplicationContext(), "completed_count_solukul_sol");
+        int currentGameNo = Integer.parseInt(s_wordno.getText().toString().trim());
+        int skipped = currentGameNo - completed;
+
+        ((TextView) bottomSheetDialog.findViewById(R.id.skipCount)).setText(String.valueOf(skipped));
+        ((TextView) bottomSheetDialog.findViewById(R.id.completedCount)).setText(String.valueOf(completed));
+        ((TextView) bottomSheetDialog.findViewById(R.id.GameCount)).setText(String.valueOf(currentGameNo));
+
+        // Buttons
+        bottomSheetDialog.findViewById(R.id.exitToPlayGame).setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            finish();
+        });
+
+        bottomSheetDialog.findViewById(R.id.continueToPlayGame).setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Solukul_Sol.this);
+                UnityAds.show(Solukul_Sol.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        continueToNextGame();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            skipCounter = 0;
+                            continueToNextGame();
+                        } else {
+                            Toast.makeText(Solukul_Sol.this, "முழு காணொளியையும் பார்த்து அடுத்த விளையாட்டுக்கு செல்லவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew();
+                    }
+                });
+            } else {
+                continueToNextGame();
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
+
+
+    private void continueToNextGame() {
+        // Stop timer
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+        }
+
+        // Mark current question as finished in the DB
+        String date = sps.getString(Solukul_Sol.this, "date");
+        if (date.equals("0"))
+            myDbHelper.executeSql("UPDATE maintable SET isfinish='1' WHERE levelid='" + letterid + "' and gameid='" + gameid + "'");
+        else
+            myDbHelper.executeSql("UPDATE dailytest SET isfinish='1' WHERE levelid='" + letterid + "' and gameid='" + gameid + "'");
+
+        next();
     }
 
     private enum PendingAction {

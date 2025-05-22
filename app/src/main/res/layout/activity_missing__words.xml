@@ -537,7 +537,6 @@
             android:id="@+id/c_ans"
             android:layout_width="@dimen/wh_35"
             android:layout_height="@dimen/wh_35"
-            android:layout_below="@+id/clue_R_layout"
             android:layout_centerInParent="true"
             android:layout_centerHorizontal="true"
             android:background="@drawable/yellow_question" />

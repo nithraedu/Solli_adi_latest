@@ -116,6 +116,11 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-7801902919918187~4975978240" />
 
+        <meta-data android:name="unity.ads.gameId"
+            android:value="5819977" />
+        <meta-data android:name="unity.ads.testMode"
+            android:value="true" />
+
         <!-- <activity
              android:name="com.google.android.gms.ads.AdActivity"
              android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />-->

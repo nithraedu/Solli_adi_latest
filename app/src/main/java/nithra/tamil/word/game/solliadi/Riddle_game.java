@@ -55,6 +55,7 @@ import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 import com.google.android.material.snackbar.Snackbar;
@@ -158,6 +159,12 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
     private static final String UNITY_GAME_ID = "5819977";  // your Game ID
     private static final boolean TEST_MODE = true;
 
+    private int skipCounter = 0; // Add skip counter
+    private int completedGames = 0; // Track completed games
+    private int skippedGames = 0; // Track skipped games
+    int skip_count = 0 , Complete_count = 0;
+
+    //   LinearLayout skip_btn;
 
     @Override
     public void download_completed(String status) {
@@ -276,19 +283,78 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         LinearLayout skipLayout = findViewById(R.id.skipLayout);
 
         resetLayout.setOnClickListener(v -> {
-                       if (isTimerRunning) {
+            if (isTimerRunning) {
+                // Get remaining time from base (works with countdown mode)
                 ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                if (ttstop < 0) ttstop = 0;
+
+                // Stop the timer
                 focus.stop();
-                timerHandler.removeCallbacks(timerRunnable);
+                if (timerHandler != null && timerRunnable != null) {
+                    timerHandler.removeCallbacks(timerRunnable);
+                }
+
                 isTimerRunning = false;
             }
+
             showResetDialog();
         });
 
+/*
         skipLayout.setOnClickListener(v -> {
             if (isGameCompleted) {
                 Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
                 return;
+            }
+
+            // Mark current question as finished in the DB
+            String date = sps.getString(Riddle_game.this, "date");
+            if (date.equals("0")) {
+                newhelper3.executeSql("UPDATE right_order SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+            } else {
+                newhelper3.executeSql("UPDATE right_order SET daily=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+            }
+
+            // Reset fields
+            c_edit.setText("");
+            ans_high.setText("");
+            ans_high.setVisibility(View.INVISIBLE);
+            c_ans.setEnabled(true);
+
+            // Load next question
+            next();
+        });*/
+
+        skipLayout.setOnClickListener(v -> {
+
+            skippedGames++;
+            sps.putInt(this, "skipped_games_riddle_game", skippedGames);
+            // ✅ Build a unique int key for each gameid
+            String skipKey = "skip_count_riddle_game";
+
+            // ✅ Get current count for this gameid
+            int currentSkip = sps.getInt(getApplicationContext(), skipKey);
+
+            if (currentSkip == 0) {
+                // ✅ First time skip for this gameid
+                sps.putInt(getApplicationContext(), skipKey, 1);
+                Log.d("SKIP", "✅ Skip recorded for gameid: " + gameid);
+            } else {
+                // ✅ Already skipped
+                Log.d("SKIP", "❌ Already skipped. Not incrementing again for gameid: " + gameid);
+            }
+
+            if (Integer.parseInt(to_no.getText().toString()) % 5 == 0) {
+                showCongratsBottomSheet();
+                return;
+            }
+
+            // Stop timer
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
             }
 
             // Mark current question as finished in the DB
@@ -704,6 +770,17 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                 } else {
                     final Dialog openDialog = new Dialog(Riddle_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                     openDialog.setContentView(R.layout.show_ans);
+                    // Pause the timer when bottom sheet is shown
+                    if (isTimerRunning) {
+                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                        focus.stop(); // ❗ Important: actually stop the Chronometer UI
+                        if (timerHandler != null && timerRunnable != null) {
+                            timerHandler.removeCallbacks(timerRunnable);
+                        }
+                        isTimerRunning = false;
+                        if (ttstop < 0) ttstop = 0;
+                    }
+
                     TextView yes = openDialog.findViewById(R.id.yes);
                     TextView no = openDialog.findViewById(R.id.no);
                     TextView txt_ex2 = openDialog.findViewById(R.id.txt_ex2);
@@ -715,6 +792,12 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                             sps.putString(getApplicationContext(), "checkbox_ans", "yes");
                         } else {
                             sps.putString(getApplicationContext(), "checkbox_ans", "");
+                        }
+                    });
+                    // Add dismiss listener to resume timer when bottom sheet is dismissed
+                    openDialog.setOnDismissListener(dialog -> {
+                        if (ttstop > 0) {
+                            startChronometerCountdown(ttstop);
                         }
                     });
 
@@ -942,7 +1025,8 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
                 });
             } else {
                 if (ttstop > 0) {
-                    startChronometerCountdown(ttstop); // resume from where paused
+                    startChronometerCountdown(ttstop);
+                    isTimerRunning = true;
                 }
                 dialog.dismiss();
             }
@@ -950,7 +1034,8 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
         btnNo.setOnClickListener(v -> {
             if (ttstop > 0) {
-                startChronometerCountdown(ttstop); // resume from where paused
+                startChronometerCountdown(ttstop);
+                isTimerRunning = true;
             }
             dialog.dismiss();
         });
@@ -958,7 +1043,7 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         dialog.show();
     }
 
-    private void startChronometerCountdown(long durationInMillis) {
+  /*  private void startChronometerCountdown(long durationInMillis) {
         // Always initialize handler first
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
@@ -997,7 +1082,42 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
         if (timerHandler != null) {
             timerHandler.postDelayed(timerRunnable, 500);
         }
-    }
+    }*/
+  private void startChronometerCountdown(long durationInMillis) {
+      if (timerHandler == null) {
+          timerHandler = new Handler(Looper.getMainLooper());
+      }
+
+      focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+      focus.setCountDown(true);
+      focus.start();
+
+      if (timerRunnable != null) {
+          timerHandler.removeCallbacks(timerRunnable);
+      }
+
+      timerRunnable = new Runnable() {
+          @Override
+          public void run() {
+              long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+              if (remainingMillis <= 0) {
+                  focus.stop();
+                  isTimerRunning = false;
+                  showExtendTimeDialog();
+              } else {
+                  // Recheck if timerHandler is still valid
+                  if (timerHandler != null) {
+                      timerHandler.postDelayed(this, 500);
+                  } else {
+                      Log.e(TAG, "TimerHandler is null in Runnable");
+                  }
+              }
+          }
+      };
+
+      timerHandler.postDelayed(timerRunnable, 500);
+      isTimerRunning = true;
+  }
 
 
    /* private void showExtendTimeDialog() {
@@ -3783,6 +3903,10 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
 
         next_continue.setOnClickListener(view -> {
+            Complete_count = sps.getInt(getApplicationContext(), "completed_count_riddle_game")+1;
+            System.out.println("Completed count === :"+Complete_count);
+            sps.putInt(getApplicationContext(), "completed_count_riddle_game", Integer.parseInt(String.valueOf(Complete_count)));
+
             sps.putInt(getApplicationContext(), "cluetime", 0);
             dia_dismiss = 1;
             openDialog_s.dismiss();
@@ -4101,7 +4225,14 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
     public void dialog(int i) {
         final Dialog openDialog_earncoin = new Dialog(Riddle_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_earncoin.setContentView(R.layout.earncoin);
-
+        // Pause timer when dialog shows
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+            // Always save current time state, even if negative
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+        }
 
         RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
         RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
@@ -4110,6 +4241,16 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
 
         TextView cancel = openDialog_earncoin.findViewById(R.id.cancel);
         TextView ss = openDialog_earncoin.findViewById(R.id.ssss);
+
+        openDialog_earncoin.setOnDismissListener(dialog -> {
+            if (!isTimerRunning) {
+                // Resume from saved time state, even if negative
+                focus.setBase(SystemClock.elapsedRealtime() + ttstop);
+                focus.start();
+                isTimerRunning = true;
+                timerHandler.postDelayed(timerRunnable, 1000);
+            }
+        });
 
         ss.setOnClickListener(v -> openDialog_earncoin.cancel());
         cancel.setOnClickListener(v -> openDialog_earncoin.cancel());
@@ -5682,6 +5823,128 @@ public class Riddle_game extends AppCompatActivity implements Download_completed
             reward_status = 0;
             rewarded_adnew();
         }
+    }
+
+
+    private void showCongratsBottomSheet() {
+        // Pause the timer when bottom sheet is shown
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop(); // ❗ Important: actually stop the Chronometer UI
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            isTimerRunning = false;
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog bottomSheetDialog = new Dialog(this);
+        bottomSheetDialog.setContentView(R.layout.activity_congrats_layout);
+        bottomSheetDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        bottomSheetDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        bottomSheetDialog.getWindow().setGravity(Gravity.BOTTOM);
+
+        // Fetch completed count from SharedPreferences
+        int completed = sps.getInt(getApplicationContext(), "completed_count_riddle_game");
+
+        // Corrected skip count calculation
+        TextView skipCount = bottomSheetDialog.findViewById(R.id.skipCount);
+        TextView completedCount = bottomSheetDialog.findViewById(R.id.completedCount);
+        TextView gameCountText = bottomSheetDialog.findViewById(R.id.GameCount);
+
+        int currentGameNo = Integer.parseInt(to_no.getText().toString().trim());
+        int skipped = currentGameNo - completed;
+
+        skipCount.setText(String.valueOf(skipped));
+        completedCount.setText(String.valueOf(completed));
+        gameCountText.setText(String.valueOf(currentGameNo));
+
+        Log.d("CongratsSheet", "Completed: " + completed + ", Skipped: " + skipped);
+
+        CardView exitButton = bottomSheetDialog.findViewById(R.id.exitToPlayGame);
+        CardView continueButton = bottomSheetDialog.findViewById(R.id.continueToPlayGame);
+
+        exitButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            finish();
+        });
+
+        continueButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Riddle_game.this);
+                UnityAds.show(Riddle_game.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        continueToNextGame();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            skipCounter = 0;
+                            continueToNextGame();
+                        } else {
+                            Toast.makeText(Riddle_game.this, "முழு காணொளியையும் பார்த்து அடுத்த விளையாட்டுக்கு செல்லவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+        });
+
+        // Add dismiss listener to resume timer when bottom sheet is dismissed
+        bottomSheetDialog.setOnDismissListener(dialog -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
+
+    private void continueToNextGame() {
+        // Stop timer
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+        }
+
+        // Mark current question as finished in the DB
+        String date = sps.getString(Riddle_game.this, "date");
+        if (date.equals("0")) {
+            newhelper3.executeSql("UPDATE right_order SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+        } else {
+            newhelper3.executeSql("UPDATE right_order SET daily=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+        }
+
+        // Reset fields
+        c_edit.setText("");
+        ans_high.setText("");
+        ans_high.setVisibility(View.INVISIBLE);
+        c_ans.setEnabled(true);
+
+        // Load next question
+        next();
     }
 
     private enum PendingAction {

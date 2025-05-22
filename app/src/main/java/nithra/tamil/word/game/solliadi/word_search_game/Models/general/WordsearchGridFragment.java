@@ -171,7 +171,7 @@
         private RecyclerAdapter mWordAdapter;
         private static final String UNITY_GAME_ID = "5819977";  // your Game ID
         private static final boolean TEST_MODE = true;
-    
+
     
         public void showcase_dismiss() {
             Handler handler30 = new Handler(Looper.myLooper());
@@ -179,7 +179,9 @@
     
                 if (sp.getString(context, "ws_general_showcase_intro").equals("")) {
                     showcase_dismiss();
+                    System.out.println("Print class if");
                 } else {
+                    System.out.println("Print class else");
                     startTimer();
                     sp.putString(getActivity(), "ws_general_intro", "no");
                 }
@@ -372,7 +374,10 @@
                 myDialog_class.media_player(getActivity(), R.raw.click, "normal");
                 more_coin("no");
             });
-            startTimerBasedOnAnswerCount(mSolution.size());
+           // startTimerBasedOnAnswerCount(mSolution.size());
+            if (!sp.getString(getActivity(), "ws_general_intro").equals("")) {
+                startTimerBasedOnAnswerCount(mSolution.size());
+            }
     
     
             level_txt.setText(level_id);
@@ -552,7 +557,7 @@
                         sp.putString(getActivity(), "ws_general_showcase_intro", "yes");
                         /*chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
                         chronometer.start();*/
-                        startTimerBasedOnAnswerCount(mSolution.size());
+                      //  startTimerBasedOnAnswerCount(mSolution.size());
     
                     }
                 });
@@ -1192,7 +1197,10 @@
                 System.out.println("88888888888888888888 word : " + word);
                 addWord(word);
             }
-            startTimerBasedOnAnswerCount(mSolution.size());
+            //startTimerBasedOnAnswerCount(mSolution.size());
+            if (!sp.getString(getActivity(), "ws_general_intro").equals("")) {
+                startTimerBasedOnAnswerCount(mSolution.size());
+            }
     
         }
     
@@ -1595,7 +1603,10 @@
     
                 /*chronometer.setBase(SystemClock.elapsedRealtime());
                 chronometer.start();*/
-                startTimerBasedOnAnswerCount(mSolution.size());
+              //  startTimerBasedOnAnswerCount(mSolution.size());
+                if (!sp.getString(getActivity(), "ws_general_intro").equals("")) {
+                    startTimerBasedOnAnswerCount(mSolution.size());
+                }
     
     
     
@@ -1642,7 +1653,10 @@
     
                     /*chronometer.setBase(SystemClock.elapsedRealtime());
                     chronometer.start();*/
-                    startTimerBasedOnAnswerCount(mSolution.size());
+                 //   startTimerBasedOnAnswerCount(mSolution.size());
+                    if (!sp.getString(getActivity(), "ws_general_intro").equals("")) {
+                        startTimerBasedOnAnswerCount(mSolution.size());
+                    }
                     coin_txt.setText("" + coin_point);
     
     
@@ -1980,7 +1994,10 @@
     
                     /*chronometer.setBase(SystemClock.elapsedRealtime());
                     chronometer.start();*/
-                    startTimerBasedOnAnswerCount(mSolution.size());
+                 //   startTimerBasedOnAnswerCount(mSolution.size());
+                    if (!sp.getString(getActivity(), "ws_general_intro").equals("")) {
+                        startTimerBasedOnAnswerCount(mSolution.size());
+                    }
     
                     coin_txt.setText("" + coin_point);
                     coin_txt.startAnimation(bounce_anim);
@@ -2013,7 +2030,10 @@
     
                         /*chronometer.setBase(SystemClock.elapsedRealtime());
                         chronometer.start();*/
-                        startTimerBasedOnAnswerCount(mSolution.size());
+                      //  startTimerBasedOnAnswerCount(mSolution.size());
+                        if (!sp.getString(getActivity(), "ws_general_intro").equals("")) {
+                            startTimerBasedOnAnswerCount(mSolution.size());
+                        }
                         coin_txt.setText("" + coin_point);
     
     
@@ -2189,7 +2209,10 @@
             openDialog_earncoin.setOnDismissListener(dialog -> {
                /* chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
                 chronometer.start();*/
-                startTimerBasedOnAnswerCount(mSolution.size());
+             //   startTimerBasedOnAnswerCount(mSolution.size());
+                if (!sp.getString(getActivity(), "ws_general_intro").equals("")) {
+                    startTimerBasedOnAnswerCount(mSolution.size());
+                }
             });
     
     
@@ -2246,7 +2269,10 @@
                     wordsearchGridView.showHint(hint_word);
                    /* chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
                     chronometer.start();*/
-                    startTimerBasedOnAnswerCount(mSolution.size());
+                  //  startTimerBasedOnAnswerCount(mSolution.size());
+                    if (!sp.getString(getActivity(), "ws_general_intro").equals("")) {
+                        startTimerBasedOnAnswerCount(mSolution.size());
+                    }
                 }
     
             } else {
@@ -2256,7 +2282,10 @@
                     wordsearchGridView.showHint(hint_word);
                     /*chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
                     chronometer.start();*/
-                    startTimerBasedOnAnswerCount(mSolution.size());
+                 //   startTimerBasedOnAnswerCount(mSolution.size());
+                    if (!sp.getString(getActivity(), "ws_general_intro").equals("")) {
+                        startTimerBasedOnAnswerCount(mSolution.size());
+                    }
     
                 } else {
                     if (coin_point >= 20) {
@@ -2273,7 +2302,10 @@
     
                         /*chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
                         chronometer.start();*/
-                        startTimerBasedOnAnswerCount(mSolution.size());
+                      //  startTimerBasedOnAnswerCount(mSolution.size());
+                        if (!sp.getString(getActivity(), "ws_general_intro").equals("")) {
+                            startTimerBasedOnAnswerCount(mSolution.size());
+                        }
     
                     } else {
                         more_coin("yes");
@@ -2286,7 +2318,10 @@
                 dialog.dismiss();
                 /*chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
                 chronometer.start();*/
-                startTimerBasedOnAnswerCount(mSolution.size());
+             //   startTimerBasedOnAnswerCount(mSolution.size());
+                if (!sp.getString(getActivity(), "ws_general_intro").equals("")) {
+                    startTimerBasedOnAnswerCount(mSolution.size());
+                }
     
             });
             done_hint.setOnClickListener(v -> {
@@ -2311,7 +2346,10 @@
     
                     /*chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
                     chronometer.start();*/
-                    startTimerBasedOnAnswerCount(mSolution.size());
+                //    startTimerBasedOnAnswerCount(mSolution.size());
+                    if (!sp.getString(getActivity(), "ws_general_intro").equals("")) {
+                        startTimerBasedOnAnswerCount(mSolution.size());
+                    }
                 } else {
                     more_coin("yes");
                 }
@@ -2959,7 +2997,10 @@
                             dialog.setOnDismissListener(dialog1 -> {
                                /* chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
                                 chronometer.start();*/
-                                startTimerBasedOnAnswerCount(mSolution.size());
+                            //    startTimerBasedOnAnswerCount(mSolution.size());
+                                if (!sp.getString(getActivity(), "ws_general_intro").equals("")) {
+                                    startTimerBasedOnAnswerCount(mSolution.size());
+                                }
                             });
                         }
     

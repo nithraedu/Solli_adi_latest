@@ -55,6 +55,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 
@@ -64,6 +65,9 @@ import com.unity3d.ads.IUnityAdsInitializationListener;
 import com.unity3d.ads.IUnityAdsLoadListener;
 import com.unity3d.ads.IUnityAdsShowListener;
 import com.unity3d.ads.UnityAds;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -158,10 +162,16 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
     private Runnable timerRunnable;
     private boolean isTimerRunning = false;
     private boolean isGameCompleted = false;
+    private int skipCounter = 0; // Add skip counter
+    private static final int MAX_SKIPS = 4; // Maximum number of skips allowed
+    private int gameCount = 1; // Initialize game count to 1
+    private int completedGames = 0; // Track completed games
+    private int skippedGames = 0; // Track skipped games
 
 
     private static final String UNITY_GAME_ID = "5819977";  // your Game ID
     private static final boolean TEST_MODE = true;
+    int skip_count = 0 , Complete_count = 0;
 
 
 
@@ -285,9 +295,25 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
             showResetDialog();
         });
 
-        skipLayout.setOnClickListener(v -> {
-            if (isGameCompleted) {
+/*        skipLayout.setOnClickListener(v -> {
+            *//* if (isGameCompleted) {
                 Toast.makeText(this, "Game already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }*//*
+
+            skipCounter++; // Increment skip counter
+            skippedGames++; // Increment skipped games count
+            sps.putInt(this, "skipped_games", skippedGames); // Save skipped games count
+
+            System.out.println("Game ID 1-- : "+to_no.getText().toString());
+            System.out.println("Game ID 2-- : "+Integer.parseInt(to_no.getText().toString()));
+            System.out.println("Game ID 3-- : "+Integer.parseInt(gameid));
+
+            skip_count = sps.getInt(getApplicationContext(), "skip_count_makeword_rightorder")+ 1;
+            if (Integer.parseInt(to_no.getText().toString()) % 5 == 0) {
+                // Show congrats bottom sheet when game ID is divisible by 5
+                showCongratsBottomSheet();
+
                 return;
             }
 
@@ -304,10 +330,12 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
 
             if (date.equals("0")) {
                 newhelper3.executeSql("UPDATE right_order SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+                sps.putInt(getApplicationContext(), "skip_count_makeword_rightorder", Integer.parseInt(String.valueOf(skip_count)));
             } else {
                 newhelper3.executeSql("UPDATE right_order SET daily=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
             }
             // Reset fields
+            System.out.println("Skip Count === : "+skip_count);
             c_edit.setText("");
             ans_high.setText("");
             ans_high.setVisibility(View.INVISIBLE);
@@ -315,7 +343,55 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
 
             // Load next question
             next();
+        });*/
+
+        skipLayout.setOnClickListener(v -> {
+            skippedGames++;
+            sps.putInt(this, "skipped_games", skippedGames);
+
+            // ✅ Build a unique int key for each gameid
+            String skipKey = "skip_count_makeword_rightorder";
+
+            // ✅ Get current count for this gameid
+            int currentSkip = sps.getInt(getApplicationContext(), skipKey);
+
+            if (currentSkip == 0) {
+                // ✅ First time skip for this gameid
+                sps.putInt(getApplicationContext(), skipKey, 1);
+                Log.d("SKIP", "✅ Skip recorded for gameid: " + gameid);
+            } else {
+                // ✅ Already skipped
+                Log.d("SKIP", "❌ Already skipped. Not incrementing again for gameid: " + gameid);
+            }
+
+            if (Integer.parseInt(to_no.getText().toString()) % 5 == 0) {
+                showCongratsBottomSheet();
+                return;
+            }
+
+            if (isTimerRunning) {
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                focus.stop();
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+            }
+
+            String date = sps.getString(Makeword_Rightorder.this, "date");
+            if (date.equals("0")) {
+                newhelper3.executeSql("UPDATE right_order SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+            } else {
+                newhelper3.executeSql("UPDATE right_order SET daily=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+            }
+
+            c_edit.setText("");
+            ans_high.setText("");
+            ans_high.setVisibility(View.INVISIBLE);
+            c_ans.setEnabled(true);
+
+            next();
         });
+
+
 
 
 
@@ -755,6 +831,17 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
                     } else {
                         final Dialog openDialog = new Dialog(Makeword_Rightorder.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                         openDialog.setContentView(R.layout.show_ans);
+                        // Pause the timer when bottom sheet is shown
+                        if (isTimerRunning) {
+                            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                            focus.stop(); // ❗ Important: actually stop the Chronometer UI
+                            if (timerHandler != null && timerRunnable != null) {
+                                timerHandler.removeCallbacks(timerRunnable);
+                            }
+                            isTimerRunning = false;
+                            if (ttstop < 0) ttstop = 0;
+                        }
+
                         TextView yes = openDialog.findViewById(R.id.yes);
                         TextView no = openDialog.findViewById(R.id.no);
                         TextView txt_ex2 = openDialog.findViewById(R.id.txt_ex2);
@@ -768,7 +855,12 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
                                 sps.putString(getApplicationContext(), "checkbox_ans", "");
                             }
                         });
-
+                        // Add dismiss listener to resume timer when bottom sheet is dismissed
+                        openDialog.setOnDismissListener(dialog -> {
+                            if (ttstop > 0) {
+                                startChronometerCountdown(ttstop);
+                            }
+                        });
                         yes.setOnClickListener(v12 -> {
                             Cursor cd;
                             String date = sps.getString(Makeword_Rightorder.this, "date");
@@ -1164,13 +1256,19 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         });
 
         btnNo.setOnClickListener(v -> {
-            if (ttstop > 0) {
+           /* if (ttstop > 0) {
                 startChronometerCountdown(ttstop); // resume from where paused
             }
             if (isTimerRunning) {
                 timerHandler.removeCallbacks(timerRunnable);
                 isTimerRunning = false;
+            }*/
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
             }
+            isTimerRunning = false;
+            focus.stop();
+            focus.setText("00:00");
             dialog.dismiss();
         });
 
@@ -1180,6 +1278,10 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
 
 
     private void next() {
+        // Save current game count to SharedPreferences
+        sps.putInt(this, "current_game_count", gameCount);
+        completedGames++; // Increment completed games count
+        sps.putInt(this, "completed_games", completedGames); // Save completed games count
 
         c_edit.setText("");
         ans_high.setVisibility(View.GONE);
@@ -2131,138 +2233,7 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
             bt11.setText(word8);
             bt12.setText(word7);
 
-        } else if (type == 10) {
-
-            StringTokenizer tokenizer = new StringTokenizer(a, ",");
-            StringTokenizer word = new StringTokenizer(split_word, ",");
-            String word1 = word.nextToken().trim();
-            String word2 = word.nextToken().trim();
-            String word3 = word.nextToken().trim();
-            String word4 = word.nextToken().trim();
-            String word5 = word.nextToken().trim();
-            String word6 = word.nextToken().trim();
-            String word7 = word.nextToken().trim();
-            String word8 = word.nextToken().trim();
-            String word9 = word.nextToken().trim();
-            String word10 = word.nextToken().trim();
-            String letter1 = tokenizer.nextToken().trim();
-            String letter2 = tokenizer.nextToken().trim();
-            String letter3 = tokenizer.nextToken().trim();
-            String letter4 = tokenizer.nextToken().trim();
-            String letter5 = tokenizer.nextToken().trim();
-            String letter6 = tokenizer.nextToken().trim();
-            String letter7 = tokenizer.nextToken().trim();
-            String letter8 = tokenizer.nextToken().trim();
-            String letter9 = tokenizer.nextToken().trim();
-            String letter10 = tokenizer.nextToken().trim();
-            String letter11 = tokenizer.nextToken().trim();
-            String letter12 = tokenizer.nextToken().trim();
-            String letter13 = tokenizer.nextToken().trim();
-            String letter14 = tokenizer.nextToken().trim();
-            String letter15 = tokenizer.nextToken().trim();
-            bt1.setText(word6);
-            bt2.setText(word1);
-            bt3.setText(word8);
-            bt4.setText(letter3);
-            bt5.setText(word5);
-            bt6.setText(word9);
-            bt7.setText(word10);
-            bt8.setText(word4);
-            bt9.setText(word2);
-            bt10.setText(word3);
-            bt11.setText(word8);
-            bt12.setText(word7);
-
-        } else if (type == 11) {
-
-            StringTokenizer tokenizer = new StringTokenizer(a, ",");
-            StringTokenizer word = new StringTokenizer(split_word, ",");
-            String word1 = word.nextToken().trim();
-            String word2 = word.nextToken().trim();
-            String word3 = word.nextToken().trim();
-            String word4 = word.nextToken().trim();
-            String word5 = word.nextToken().trim();
-            String word6 = word.nextToken().trim();
-            String word7 = word.nextToken().trim();
-            String word8 = word.nextToken().trim();
-            String word9 = word.nextToken().trim();
-            String word10 = word.nextToken().trim();
-            String word11 = word.nextToken().trim();
-            String letter1 = tokenizer.nextToken().trim();
-            String letter2 = tokenizer.nextToken().trim();
-            String letter3 = tokenizer.nextToken().trim();
-            String letter4 = tokenizer.nextToken().trim();
-            String letter5 = tokenizer.nextToken().trim();
-            String letter6 = tokenizer.nextToken().trim();
-            String letter7 = tokenizer.nextToken().trim();
-            String letter8 = tokenizer.nextToken().trim();
-            String letter9 = tokenizer.nextToken().trim();
-            String letter10 = tokenizer.nextToken().trim();
-            String letter11 = tokenizer.nextToken().trim();
-            String letter12 = tokenizer.nextToken().trim();
-            String letter13 = tokenizer.nextToken().trim();
-            String letter14 = tokenizer.nextToken().trim();
-            String letter15 = tokenizer.nextToken().trim();
-            bt1.setText(word6);
-            bt2.setText(word1);
-            bt3.setText(word8);
-            bt4.setText(word11);
-            bt5.setText(word5);
-            bt6.setText(word9);
-            bt7.setText(word10);
-            bt8.setText(word4);
-            bt9.setText(word2);
-            bt10.setText(word3);
-            bt11.setText(word8);
-            bt12.setText(word7);
-
-        } else if (type == 12) {
-
-            StringTokenizer tokenizer = new StringTokenizer(a, ",");
-            StringTokenizer word = new StringTokenizer(split_word, ",");
-            String word1 = word.nextToken().trim();
-            String word2 = word.nextToken().trim();
-            String word3 = word.nextToken().trim();
-            String word4 = word.nextToken().trim();
-            String word5 = word.nextToken().trim();
-            String word6 = word.nextToken().trim();
-            String word7 = word.nextToken().trim();
-            String word8 = word.nextToken().trim();
-            String word9 = word.nextToken().trim();
-            String word10 = word.nextToken().trim();
-            String word11 = word.nextToken().trim();
-            String word12 = word.nextToken().trim();
-            String letter1 = tokenizer.nextToken().trim();
-            String letter2 = tokenizer.nextToken().trim();
-            String letter3 = tokenizer.nextToken().trim();
-            String letter4 = tokenizer.nextToken().trim();
-            String letter5 = tokenizer.nextToken().trim();
-            String letter6 = tokenizer.nextToken().trim();
-            String letter7 = tokenizer.nextToken().trim();
-            String letter8 = tokenizer.nextToken().trim();
-            String letter9 = tokenizer.nextToken().trim();
-            String letter10 = tokenizer.nextToken().trim();
-            String letter11 = tokenizer.nextToken().trim();
-            String letter12 = tokenizer.nextToken().trim();
-            String letter13 = tokenizer.nextToken().trim();
-            String letter14 = tokenizer.nextToken().trim();
-            String letter15 = tokenizer.nextToken().trim();
-            bt1.setText(word6);
-            bt2.setText(word1);
-            bt3.setText(word12);
-            bt4.setText(word11);
-            bt5.setText(word5);
-            bt6.setText(word9);
-            bt7.setText(word10);
-            bt8.setText(word4);
-            bt9.setText(word2);
-            bt10.setText(word3);
-            bt11.setText(word8);
-            bt12.setText(word7);
-
         }
-
-
     }
 
     public void medium1() {
@@ -2559,8 +2530,8 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
             String letter14 = tokenizer.nextToken().trim();
             String letter15 = tokenizer.nextToken().trim();
             bt1.setText(word6);
-            bt2.setText(word8);
-            bt3.setText(letter6);
+            bt2.setText(letter6);
+            bt3.setText(word8);
             bt4.setText(letter3);
             bt5.setText(word5);
             bt6.setText(word4);
@@ -2602,139 +2573,10 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
             bt1.setText(word6);
             bt2.setText(word1);
             bt3.setText(word8);
-            bt4.setText(word9);
-            bt5.setText(word5);
-            bt6.setText(letter3);
-            bt7.setText(word3);
-            bt8.setText(word4);
-            bt9.setText(word2);
-            bt10.setText(word8);
-            bt11.setText(letter6);
-            bt12.setText(word7);
-
-        } else if (type == 10) {
-
-            StringTokenizer tokenizer = new StringTokenizer(a, ",");
-            StringTokenizer word = new StringTokenizer(split_word, ",");
-            String word1 = word.nextToken().trim();
-            String word2 = word.nextToken().trim();
-            String word3 = word.nextToken().trim();
-            String word4 = word.nextToken().trim();
-            String word5 = word.nextToken().trim();
-            String word6 = word.nextToken().trim();
-            String word7 = word.nextToken().trim();
-            String word8 = word.nextToken().trim();
-            String word9 = word.nextToken().trim();
-            String word10 = word.nextToken().trim();
-            String letter1 = tokenizer.nextToken().trim();
-            String letter2 = tokenizer.nextToken().trim();
-            String letter3 = tokenizer.nextToken().trim();
-            String letter4 = tokenizer.nextToken().trim();
-            String letter5 = tokenizer.nextToken().trim();
-            String letter6 = tokenizer.nextToken().trim();
-            String letter7 = tokenizer.nextToken().trim();
-            String letter8 = tokenizer.nextToken().trim();
-            String letter9 = tokenizer.nextToken().trim();
-            String letter10 = tokenizer.nextToken().trim();
-            String letter11 = tokenizer.nextToken().trim();
-            String letter12 = tokenizer.nextToken().trim();
-            String letter13 = tokenizer.nextToken().trim();
-            String letter14 = tokenizer.nextToken().trim();
-            String letter15 = tokenizer.nextToken().trim();
-            bt1.setText(word6);
-            bt2.setText(word10);
-            bt3.setText(word8);
-            bt4.setText(word1);
+            bt4.setText(letter3);
             bt5.setText(word5);
             bt6.setText(word9);
-            bt7.setText(letter3);
-            bt8.setText(word4);
-            bt9.setText(word7);
-            bt10.setText(word3);
-            bt11.setText(word8);
-            bt12.setText(word2);
-
-        } else if (type == 11) {
-
-            StringTokenizer tokenizer = new StringTokenizer(a, ",");
-            StringTokenizer word = new StringTokenizer(split_word, ",");
-            String word1 = word.nextToken().trim();
-            String word2 = word.nextToken().trim();
-            String word3 = word.nextToken().trim();
-            String word4 = word.nextToken().trim();
-            String word5 = word.nextToken().trim();
-            String word6 = word.nextToken().trim();
-            String word7 = word.nextToken().trim();
-            String word8 = word.nextToken().trim();
-            String word9 = word.nextToken().trim();
-            String word10 = word.nextToken().trim();
-            String word11 = word.nextToken().trim();
-            String letter1 = tokenizer.nextToken().trim();
-            String letter2 = tokenizer.nextToken().trim();
-            String letter3 = tokenizer.nextToken().trim();
-            String letter4 = tokenizer.nextToken().trim();
-            String letter5 = tokenizer.nextToken().trim();
-            String letter6 = tokenizer.nextToken().trim();
-            String letter7 = tokenizer.nextToken().trim();
-            String letter8 = tokenizer.nextToken().trim();
-            String letter9 = tokenizer.nextToken().trim();
-            String letter10 = tokenizer.nextToken().trim();
-            String letter11 = tokenizer.nextToken().trim();
-            String letter12 = tokenizer.nextToken().trim();
-            String letter13 = tokenizer.nextToken().trim();
-            String letter14 = tokenizer.nextToken().trim();
-            String letter15 = tokenizer.nextToken().trim();
-            bt1.setText(word2);
-            bt2.setText(word1);
-            bt3.setText(word8);
-            bt4.setText(word4);
-            bt5.setText(word5);
-            bt6.setText(word9);
-            bt7.setText(word7);
-            bt8.setText(word11);
-            bt9.setText(word6);
-            bt10.setText(word3);
-            bt11.setText(word8);
-            bt12.setText(word10);
-
-        } else if (type == 12) {
-
-            StringTokenizer tokenizer = new StringTokenizer(a, ",");
-            StringTokenizer word = new StringTokenizer(split_word, ",");
-            String word1 = word.nextToken().trim();
-            String word2 = word.nextToken().trim();
-            String word3 = word.nextToken().trim();
-            String word4 = word.nextToken().trim();
-            String word5 = word.nextToken().trim();
-            String word6 = word.nextToken().trim();
-            String word7 = word.nextToken().trim();
-            String word8 = word.nextToken().trim();
-            String word9 = word.nextToken().trim();
-            String word10 = word.nextToken().trim();
-            String word11 = word.nextToken().trim();
-            String word12 = word.nextToken().trim();
-            String letter1 = tokenizer.nextToken().trim();
-            String letter2 = tokenizer.nextToken().trim();
-            String letter3 = tokenizer.nextToken().trim();
-            String letter4 = tokenizer.nextToken().trim();
-            String letter5 = tokenizer.nextToken().trim();
-            String letter6 = tokenizer.nextToken().trim();
-            String letter7 = tokenizer.nextToken().trim();
-            String letter8 = tokenizer.nextToken().trim();
-            String letter9 = tokenizer.nextToken().trim();
-            String letter10 = tokenizer.nextToken().trim();
-            String letter11 = tokenizer.nextToken().trim();
-            String letter12 = tokenizer.nextToken().trim();
-            String letter13 = tokenizer.nextToken().trim();
-            String letter14 = tokenizer.nextToken().trim();
-            String letter15 = tokenizer.nextToken().trim();
-            bt1.setText(word6);
-            bt2.setText(word1);
-            bt3.setText(word12);
-            bt4.setText(word11);
-            bt5.setText(word5);
-            bt6.setText(word9);
-            bt7.setText(word10);
+            bt7.setText(letter6);
             bt8.setText(word4);
             bt9.setText(word2);
             bt10.setText(word3);
@@ -2742,7 +2584,6 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
             bt12.setText(word7);
 
         }
-
     }
 
     private void find() {
@@ -3173,6 +3014,9 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
 
 
         next_continue.setOnClickListener(view -> {
+            Complete_count = sps.getInt(getApplicationContext(), "completed_count_makeword_rightorder")+1;
+            System.out.println("Completed count === :"+Complete_count);
+            sps.putInt(getApplicationContext(), "completed_count_makeword_rightorder", Integer.parseInt(String.valueOf(Complete_count)));
             dia_dismiss = 1;
             openDialog_s.dismiss();
             next();
@@ -3998,89 +3842,43 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
         @Override
         public void handleOnBackPressed() {
-            {
-
-                sps.putString(Makeword_Rightorder.this, "game_area", "on");
-                sps.putInt(Makeword_Rightorder.this, "addlodedd", 0);
-
-                s = 1;
-                openDialog_p = new Dialog(Makeword_Rightorder.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                openDialog_p.setContentView(R.layout.back_pess);
-                TextView yes = openDialog_p.findViewById(R.id.yes);
-                TextView no = openDialog_p.findViewById(R.id.no);
-
-                if (isTimerRunning) {
-                    timerHandler.removeCallbacks(timerRunnable);
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    focus.stop();
-                }
-
-                yes.setOnClickListener(v -> {
-
-                   /* String dates = sps.getString(Makeword_Rightorder.this, "date");
-                    int pos;
-                    if (dates.equals("0")) {
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-
-                        //     myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    } else {
-                        ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                        focus.stop();
-                        newhelper3.executeSql("UPDATE right_order SET playtime='" + ttstop + "' WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
-
-                        //    myDbHelper.executeSql("UPDATE right_order SET noclue='" + noclue + "' WHERE levelid='" + w_id + "' and gameid='" + gameid + "'");
-                    }
-*/
-                    ttstop = focus.getBase() - SystemClock.elapsedRealtime();
-                    focus.stop();
-                    String date = sps.getString(Makeword_Rightorder.this, "date");
-                    if (date.equals("0")) {
-                        if (main_act.equals("")) {
-                            finish();
-                            Intent i = new Intent(Makeword_Rightorder.this, New_Main_Activity.class);
-                            startActivity(i);
-                        } else {
-                            finish();
-                        }
-                    } else {
-                        if (sps.getString(Makeword_Rightorder.this, "Exp_list").equals("on")) {
-                            finish();
-                            Intent i = new Intent(Makeword_Rightorder.this, Expandable_List_View.class);
-                            startActivity(i);
-                        } else {
-                            if (main_act.equals("")) {
-                                finish();
-                                Intent i = new Intent(Makeword_Rightorder.this, New_Main_Activity.class);
-                                startActivity(i);
-                            } else {
-                                finish();
-                            }
-                        }
-
-                    }
-
-                    openDialog_p.dismiss();
-
-                });
-                no.setOnClickListener(v -> {
-                    openDialog_p.dismiss();
-                    if (ttstop > 0) {
-                        startChronometerCountdown(ttstop);
-                    }
-                });
-                openDialog_p.setOnDismissListener(dialog -> {
-                    // Check if the timer was paused and resume if necessary
-                    if (ttstop > 0) {
-                        startChronometerCountdown(ttstop);
-                    }
-                });
-                openDialog_p.show();
-
-
-                // return super.onKeyDown(keyCode, event);
+            // If timer is running, pause it
+            if (isTimerRunning && timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+                isTimerRunning = false;
+                // Save remaining time
+                ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+                if (ttstop < 0) ttstop = 0;
             }
+            
+            // Show exit dialog
+            Dialog dialog = new Dialog(Makeword_Rightorder.this);
+            dialog.setContentView(R.layout.dialog_reset);
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            }
+
+            TextView message = dialog.findViewById(R.id.tvMessage);
+            message.setText("நீங்கள் விளையாட்டை விட்டு வெளியேற விரும்புகிறீர்களா?");
+
+            Button btnYes = dialog.findViewById(R.id.btnYes);
+            Button btnNo = dialog.findViewById(R.id.btnNo);
+
+            btnYes.setOnClickListener(v -> {
+                dialog.dismiss();
+                finish();
+            });
+
+            btnNo.setOnClickListener(v -> {
+                dialog.dismiss();
+                // Resume timer if there was remaining time
+                if (ttstop > 0) {
+                    startChronometerCountdown(ttstop);
+                }
+            });
+
+            dialog.show();
         }
     };
 
@@ -4962,5 +4760,125 @@ public class Makeword_Rightorder extends AppCompatActivity implements Download_c
         NONE, POST_PHOTO, POST_STATUS_UPDATE
     }
 
+    private void showCongratsBottomSheet() {
+        // Pause the timer when bottom sheet is shown
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop(); // ❗ Important: actually stop the Chronometer UI
+            if (timerHandler != null && timerRunnable != null) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            isTimerRunning = false;
+            if (ttstop < 0) ttstop = 0;
+        }
+        Dialog bottomSheetDialog = new Dialog(this);
+        bottomSheetDialog.setContentView(R.layout.activity_congrats_layout);
+        bottomSheetDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        bottomSheetDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        bottomSheetDialog.getWindow().setGravity(Gravity.BOTTOM);
+
+        // Fetch completed count from SharedPreferences
+        int completed = sps.getInt(getApplicationContext(), "completed_count_makeword_rightorder");
+
+        // Corrected skip count calculation
+        TextView skipCount = bottomSheetDialog.findViewById(R.id.skipCount);
+        TextView completedCount = bottomSheetDialog.findViewById(R.id.completedCount);
+        TextView gameCountText = bottomSheetDialog.findViewById(R.id.GameCount);
+
+        int currentGameNo = Integer.parseInt(to_no.getText().toString().trim());
+        int skipped = currentGameNo - completed;
+
+        skipCount.setText(String.valueOf(skipped));
+        completedCount.setText(String.valueOf(completed));
+        gameCountText.setText(String.valueOf(currentGameNo));
+
+        Log.d("CongratsSheet", "Completed: " + completed + ", Skipped: " + skipped);
+
+        CardView exitButton = bottomSheetDialog.findViewById(R.id.exitToPlayGame);
+        CardView continueButton = bottomSheetDialog.findViewById(R.id.continueToPlayGame);
+
+        exitButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            finish();
+        });
+
+        continueButton.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            String placementId = "Rewarded_Android";
+            if (UnityAds.isInitialized()) {
+                Utills.INSTANCE.Loading_Dialog(Makeword_Rightorder.this);
+                UnityAds.show(Makeword_Rightorder.this, placementId, new IUnityAdsShowListener() {
+                    @Override
+                    public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
+                        Log.e(TAG, "Unity rewarded ad failed to show: " + message);
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                        continueToNextGame();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowStart(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad started showing");
+                        Utills.INSTANCE.Loading_Dialog_dismiss();
+                    }
+
+                    @Override
+                    public void onUnityAdsShowClick(String placementId) {
+                        Log.d(TAG, "Unity rewarded ad was clicked");
+                    }
+
+                    @Override
+                    public void onUnityAdsShowComplete(String placementId, UnityAds.UnityAdsShowCompletionState state) {
+                        Log.d(TAG, "Unity rewarded ad completed");
+                        if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                            skipCounter = 0;
+                            continueToNextGame();
+                        } else {
+                            Toast.makeText(Makeword_Rightorder.this, "முழு காணொளியையும் பார்த்து அடுத்த விளையாட்டுக்கு செல்லவும்.", Toast.LENGTH_SHORT).show();
+                        }
+                        rewarded_adnew(); // Load next ad
+                    }
+                });
+            } else {
+                Log.d(TAG, "Unity Ads is not initialized.");
+                continueToNextGame();
+            }
+        });
+
+        // Add dismiss listener to resume timer when bottom sheet is dismissed
+        bottomSheetDialog.setOnDismissListener(dialog -> {
+            if (ttstop > 0) {
+                startChronometerCountdown(ttstop);
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
+
+    private void continueToNextGame() {
+        // Stop timer
+        if (isTimerRunning) {
+            ttstop = focus.getBase() - SystemClock.elapsedRealtime();
+            focus.stop();
+            timerHandler.removeCallbacks(timerRunnable);
+            isTimerRunning = false;
+        }
+
+        // Update DB
+        String date = sps.getString(Makeword_Rightorder.this, "date");
+            if (date.equals("0")) {
+                newhelper3.executeSql("UPDATE right_order SET isfinish=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "'");
+            } else {
+                newhelper3.executeSql("UPDATE right_order SET daily=1 WHERE questionid='" + questionid + "' and gameid='" + gameid + "' and daily='0'");
+            }
+
+        // Reset fields
+        c_edit.setText("");
+        ans_high.setText("");
+        ans_high.setVisibility(View.INVISIBLE);
+        c_ans.setEnabled(true);
+
+        // Load next question
+        next();
+    }
 
 }
