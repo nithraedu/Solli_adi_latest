@@ -24,6 +24,7 @@
     import android.os.Looper;
     import android.os.SystemClock;
     import android.os.Vibrator;
+    import android.support.annotation.NonNull;
     import android.text.Html;
     import android.text.method.ScrollingMovementMethod;
     import android.util.DisplayMetrics;
@@ -31,6 +32,7 @@
     import android.view.LayoutInflater;
     import android.view.View;
     import android.view.ViewGroup;
+    import android.view.WindowInsets;
     import android.view.animation.Animation;
     import android.view.animation.AnimationUtils;
     import android.widget.Button;
@@ -42,8 +44,7 @@
     import android.widget.RelativeLayout;
     import android.widget.TextView;
     import android.widget.Toast;
-    
-    import androidx.annotation.NonNull;
+
     import androidx.annotation.Nullable;
     import androidx.fragment.app.Fragment;
     import androidx.recyclerview.widget.GridLayoutManager;
@@ -70,6 +71,7 @@
     import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper;
     import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper2;
     import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper3;
+    import nithra.tamil.word.game.solliadi.Picture_Game_Hard;
     import nithra.tamil.word.game.solliadi.Price_solli_adi.Game_Status;
     import nithra.tamil.word.game.solliadi.Price_solli_adi.Price_Login;
     import nithra.tamil.word.game.solliadi.Quiz_Game;
@@ -203,6 +205,23 @@
             View view = inflater.inflate(R.layout.wordsearch_view, null);
     
             context = getActivity();
+            View decoreView = requireActivity().getWindow().getDecorView();
+            decoreView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets
+                        insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left,top,right,bottom);
+                    v.setBackgroundColor(Color.GRAY); // Android built-in gray
+                    return insets.consumeSystemWindowInsets();
+
+                }
+            });
+
             UnityAds.initialize(context, UNITY_GAME_ID, TEST_MODE, new IUnityAdsInitializationListener() {
                 @Override
                 public void onInitializationComplete() {
@@ -691,7 +710,12 @@
                         chronometer.setText("00:00");
                         isTimerRunning = false;
                         isAnswerSelectionEnabled = false;
-                        showExtendTimeDialog();
+                      //  showExtendTimeDialog();
+                        if (getActivity() != null && isAdded() && !getActivity().isFinishing()) {
+                            showExtendTimeDialog();
+                        } else {
+                            Log.e(TAG, "Activity is finishing. Not showing dialog.");
+                        }
                     } else {
                         int seconds = (int) (remainingMillis / 1000) % 60;
                         int minutes = (int) ((remainingMillis / (1000 * 60)) % 60);
@@ -1567,7 +1591,7 @@
                         new Handler(Looper.myLooper()).postDelayed(() -> {
                             reward_progressBar.dismiss();
     
-                            Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                     //       Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
     
                         }, 2000);
     
@@ -2246,7 +2270,7 @@
                         new Handler(Looper.myLooper()).postDelayed(() -> {
                             reward_progressBar.dismiss();
     
-                            Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
     
                         }, 2000);
     
@@ -2705,7 +2729,10 @@
 
             if (currentStageCloseVV == showCountOther) {
                 sp.putInt(context, "Game3_Stage_Close_ST", 0);
-                Utills.INSTANCE.Loading_Dialog(getActivity());
+               // Utills.INSTANCE.Loading_Dialog(getActivity());
+                if ((Utils.isNetworkAvailable(context)) && (sp.getInt(context, "purchase_ads") ==0) ){
+                    Utills.INSTANCE.Loading_Dialog(getActivity());
+                }
 
                 new Handler(Looper.myLooper()).postDelayed(() -> {
                     String placementId = "Interstitial_Android";
@@ -2887,7 +2914,7 @@
                     fb_reward = 0;
                     reward_status = 0;
                     Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
-                    Toast.makeText(getActivity(), "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                 //   Toast.makeText(getActivity(), "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                 }
             });
         }

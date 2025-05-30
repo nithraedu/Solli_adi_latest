@@ -17,10 +17,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.animation.Animation;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
@@ -33,7 +35,6 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -105,9 +106,24 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         setContentView(R.layout.activity_game_level_page);
+
+        View decoreView = getWindow().getDecorView();
+        decoreView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @android.support.annotation.NonNull
+            @Override
+            public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets
+                    insets) {
+                int left = insets.getSystemWindowInsetLeft();
+                int top = insets.getSystemWindowInsetTop();
+                int right = insets.getSystemWindowInsetRight();
+                int bottom = insets.getSystemWindowInsetBottom();
+                v.setPadding(left,top,right,bottom);
+                v.setBackgroundColor(Color.GRAY); // Android built-in gray
+                return insets.consumeSystemWindowInsets();
+
+            }
+        });
 
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, callback);
@@ -490,7 +506,7 @@ public class game_level_page extends AppCompatActivity implements OnLikeListener
                     new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
 
-                        Toast.makeText(game_level_page.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                     //   Toast.makeText(game_level_page.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
 
                     }, 2000);
 

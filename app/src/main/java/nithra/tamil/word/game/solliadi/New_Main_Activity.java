@@ -86,6 +86,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -146,6 +147,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -3267,7 +3269,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     else {
 
                         rewarded_adnew();
-                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                     //   Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                     }
                 }, 2000);
             } else
@@ -4776,7 +4778,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                     else {
                         //reward(New_Main_Activity.this);
                         rewarded_adnew();
-                        Toast.makeText(New_Main_Activity.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                     //   Toast.makeText(New_Main_Activity.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                     }
                 }, 2000);
             } else
@@ -4794,6 +4796,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
     public void activity_start_screen() {
         setContentView(R.layout.activity_intro__sc);
+
         final SharedPreference sps = new SharedPreference();
         final DrawerLayout drawer;
         RelativeLayout toolbar, user_img_lay;
@@ -4826,8 +4829,19 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         tamila_word.setAnimation(zom2);
         arrow_click.setAnimation(zom2);
 
+
+        // Set up SharedPreferences
+        SharedPreferences sp = getSharedPreferences("app_pref", MODE_PRIVATE);
+
+        // Store first launch time only once
+        long currentTime = System.currentTimeMillis();
+        if (!sp.contains("first_launch_time")) {
+            sp.edit().putLong("first_launch_time", currentTime).apply();
+        }
+        notiPermission();
+
         dates = df.format(Calendar.getInstance().getTime());
-        System.out.println("Cehckig the date  : " + dates + " ....." + sp.getString(this, "Date_AD"));
+        System.out.println("Cehckig the date  : " + dates + " ....." + sp.getString(String.valueOf(this), "Date_AD"));
 
 
         //initialized the admanager ads id
@@ -5043,7 +5057,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
                 fb_reward = 0;
                 reward_status = 0;
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
-                Toast.makeText(New_Main_Activity.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(New_Main_Activity.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -5329,7 +5343,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         } else terms_and_policy();
     }
 
-    void notiPermission() {
+/*    void notiPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && sp.getInt(this, "permission") == 0) {
 
             sp.putInt(this, "permission", 1);
@@ -5346,7 +5360,38 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
             System.out.println("_____________print  con't apply check value  :" + sp.getInt(this, "permission"));
             sp.putInt(this, "permission", sp.getInt(this, "permission") + 1);
         }
+    }*/
+void notiPermission() {
+    SharedPreferences sp = getSharedPreferences("app_pref", MODE_PRIVATE);
+
+    long firstLaunchTime = sp.getLong("first_launch_time", System.currentTimeMillis());
+    long now = System.currentTimeMillis();
+    long diffInMillis = now - firstLaunchTime;
+    long twoDaysInMillis = 2L * 24 * 60 * 60 * 1000;
+
+    boolean isWithinTwoDays = diffInMillis <= twoDaysInMillis;
+
+    // Format today’s date (e.g., 2025-05-28)
+    String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+    String lastAskedDate = sp.getString("notification_permission_last_shown", "");
+
+    boolean isSameDay = today.equals(lastAskedDate);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED &&
+            isWithinTwoDays &&
+            !isSameDay) {
+
+        // Save today's date as last asked date
+        sp.edit().putString("notification_permission_last_shown", today).apply();
+
+        // Show the permission dialog
+        requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 113);
     }
+}
+
+
 
  /*   public void RemoteConfigureAds() {
 

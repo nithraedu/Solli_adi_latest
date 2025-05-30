@@ -24,12 +24,14 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Vibrator;
+import android.support.annotation.NonNull;
 import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -42,7 +44,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
@@ -65,6 +66,7 @@ import nithra.tamil.word.game.solliadi.DataBaseHelper;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper2;
 import nithra.tamil.word.game.solliadi.Newgame_DataBaseHelper3;
+import nithra.tamil.word.game.solliadi.Picture_Game_Hard;
 import nithra.tamil.word.game.solliadi.R;
 import nithra.tamil.word.game.solliadi.SharedPreference;
 import nithra.tamil.word.game.solliadi.Utills;
@@ -323,6 +325,23 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.challenge_view, null);
         System.out.println("-----hh Dailytest_ok : " + Dailytest_ok);
+
+        View decoreView = requireActivity().getWindow().getDecorView();
+        decoreView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @android.support.annotation.NonNull
+            @Override
+            public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets
+                    insets) {
+                int left = insets.getSystemWindowInsetLeft();
+                int top = insets.getSystemWindowInsetTop();
+                int right = insets.getSystemWindowInsetRight();
+                int bottom = insets.getSystemWindowInsetBottom();
+                v.setPadding(left,top,right,bottom);
+                v.setBackgroundColor(Color.GRAY); // Android built-in gray
+                return insets.consumeSystemWindowInsets();
+
+            }
+        });
 
         UnityAds.initialize(context, UNITY_GAME_ID, TEST_MODE, new IUnityAdsInitializationListener() {
             @Override
@@ -995,7 +1014,7 @@ public class challenge_WS_GridFragment extends Fragment implements challenge_WS_
                         // Check if the context is still valid
                         if (context instanceof Activity && !((Activity) context).isFinishing()) {
                             reward_progressBar.dismiss();
-                            Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
 
                     }, 2000);
@@ -2205,7 +2224,10 @@ public void industrialload() {
 
         if (currentStageCloseVV == showCountOther) {
             sp.putInt(context, "Game3_Stage_Close_ST", 0);
-            Utills.INSTANCE.Loading_Dialog(getActivity());
+          //  Utills.INSTANCE.Loading_Dialog(getActivity());
+            if ((Utils.isNetworkAvailable(context)) && (sp.getInt(context, "purchase_ads") ==0) ){
+                Utills.INSTANCE.Loading_Dialog(getActivity());
+            }
 
             new Handler(Looper.myLooper()).postDelayed(() -> {
                 String placementId = "Interstitial_Android";

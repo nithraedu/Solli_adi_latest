@@ -32,6 +32,7 @@ import android.os.StatFs;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -41,6 +42,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -59,7 +61,6 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -330,7 +331,15 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
-                    showExtendTimeDialog();
+                   // showExtendTimeDialog();
+                    // Safely show dialog
+                    runOnUiThread(() -> {
+                        if (!isFinishing()) {
+                            showExtendTimeDialog();  // ✅ Now safe to show
+                        } else {
+                            Log.e(TAG, "Activity is finishing. Not showing dialog.");
+                        }
+                    });
                 } else {
                     if (timerHandler != null) { // 👈 Safe check added
                         timerHandler.postDelayed(this, 500);
@@ -474,6 +483,23 @@ public class Clue_Game_Hard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_clue__game);
+
+        View decoreView = getWindow().getDecorView();
+        decoreView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @android.support.annotation.NonNull
+            @Override
+            public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets
+                    insets) {
+                int left = insets.getSystemWindowInsetLeft();
+                int top = insets.getSystemWindowInsetTop();
+                int right = insets.getSystemWindowInsetRight();
+                int bottom = insets.getSystemWindowInsetBottom();
+                v.setPadding(left,top,right,bottom);
+                v.setBackgroundColor(Color.GRAY); // Android built-in gray
+                return insets.consumeSystemWindowInsets();
+
+            }
+        });
 
         // Ensure that timerHandler is initialized in onResume as well
         if (timerHandler == null) {
@@ -715,6 +741,23 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
         openDialog_s = new Dialog(Clue_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
+
+// Apply insets and background color to dialog's decor view
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            View decorView = openDialog_s.getWindow().getDecorView();
+            decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left, top, right, bottom);
+                    v.setBackgroundColor(Color.GRAY); // Set gray background for dialog
+                    return insets.consumeSystemWindowInsets();
+                }
+            });}
         adsicon = openDialog_s.findViewById(R.id.adsicon);
 
         if (sps.getInt(Clue_Game_Hard.this, "purchase_ads") == 1) {
@@ -1072,7 +1115,10 @@ public class Clue_Game_Hard extends AppCompatActivity {
 
         if (currentStageCloseVV == showCountOther) {
             sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
+            if ((Utils.isNetworkAvailable(context)) && (sps.getInt(Clue_Game_Hard.this, "purchase_ads") ==0) ){
+                Utills.INSTANCE.Loading_Dialog(this);
+            }
+         //   Utills.INSTANCE.Loading_Dialog(this);
 
             new Handler(Looper.myLooper()).postDelayed(() -> {
                 String placementId = "Interstitial_Android";
@@ -3034,7 +3080,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                         } else {
                             //reward();
                             rewarded_adnew();
-                            Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
                     }, 2000);
 
@@ -3361,7 +3407,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                         } else {
                             //reward();
                             rewarded_adnew();
-                            Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
                     }, 2000);
 
@@ -3390,7 +3436,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                         } else {
                             //reward();
                             rewarded_adnew();
-                            Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
                     }, 2000);
 
@@ -3795,6 +3841,25 @@ public class Clue_Game_Hard extends AppCompatActivity {
     public void dialog(int i) {
         final Dialog openDialog_earncoin = new Dialog(Clue_Game_Hard.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_earncoin.setContentView(R.layout.earncoin);
+
+
+// Apply insets and background color to dialog's decor view
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            View decorView = openDialog_s.getWindow().getDecorView();
+            decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left, top, right, bottom);
+                    v.setBackgroundColor(Color.GRAY); // Set gray background for dialog
+                    return insets.consumeSystemWindowInsets();
+                }
+            });}
+
         if (timerHandler != null && timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
             isTimerRunning = false;
@@ -3864,7 +3929,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                     new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
 
-                        Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
 
                     }, 2000);
 
@@ -5911,7 +5976,7 @@ public class Clue_Game_Hard extends AppCompatActivity {
                 fb_reward = 0;
                 reward_status = 0;
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
-                Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(Clue_Game_Hard.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
             }
         });
     }

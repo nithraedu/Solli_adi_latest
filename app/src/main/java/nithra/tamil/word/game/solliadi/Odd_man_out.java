@@ -19,12 +19,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -33,6 +35,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -49,7 +52,6 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -262,6 +264,23 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_odd_man_out);
 
+        View decoreView = getWindow().getDecorView();
+        decoreView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @android.support.annotation.NonNull
+            @Override
+            public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets
+                    insets) {
+                int left = insets.getSystemWindowInsetLeft();
+                int top = insets.getSystemWindowInsetTop();
+                int right = insets.getSystemWindowInsetRight();
+                int bottom = insets.getSystemWindowInsetBottom();
+                v.setPadding(left,top,right,bottom);
+                v.setBackgroundColor(Color.GRAY); // Android built-in gray
+                return insets.consumeSystemWindowInsets();
+
+            }
+        });
+
         UnityAds.initialize(this, UNITY_GAME_ID, TEST_MODE, new IUnityAdsInitializationListener() {
             @Override
             public void onInitializationComplete() {
@@ -459,6 +478,23 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
         }
         openDialog_s = new Dialog(Odd_man_out.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
+
+// Apply insets and background color to dialog's decor view
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            View decorView = openDialog_s.getWindow().getDecorView();
+            decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left, top, right, bottom);
+                    v.setBackgroundColor(Color.GRAY); // Set gray background for dialog
+                    return insets.consumeSystemWindowInsets();
+                }
+            });}
         adsicon = (RelativeLayout) openDialog_s.findViewById(R.id.adsicon);
         ads_layout = (LinearLayout) openDialog_s.findViewById(R.id.fl_adplaceholder);
 
@@ -1002,7 +1038,15 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
-                    showExtendTimeDialog();
+                   // showExtendTimeDialog();
+                    // Safely show dialog
+                    runOnUiThread(() -> {
+                        if (!isFinishing()) {
+                            showExtendTimeDialog();  // ✅ Now safe to show
+                        } else {
+                            Log.e(TAG, "Activity is finishing. Not showing dialog.");
+                        }
+                    });
                 } else {
                     if (timerHandler != null) {  // ✅ Protect here
                         timerHandler.postDelayed(this, 500);
@@ -1494,7 +1538,7 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
                         } else {
                             //reward(Odd_man_out.this);
                             rewarded_adnew();
-                            Toast.makeText(Odd_man_out.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(Odd_man_out.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
                     }, 2000);
 
@@ -2820,7 +2864,7 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
                     new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
 
-                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
 
                     }, 2000);
                 }
@@ -3303,7 +3347,7 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
                         } else {
 
                             rewarded_adnew();
-                            Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
                     }, 2000);
                 }
@@ -3331,7 +3375,7 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
                         } else {
 
                             rewarded_adnew();
-                            Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
                     }, 2000);
                 }
@@ -3589,7 +3633,10 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
 
         if (currentStageCloseVV == showCountOther) {
             sps.putInt(getApplicationContext(), "Game2_Stage_Close_PS", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
+            if ((Utils.isNetworkAvailable(context)) && (sps.getInt(Odd_man_out.this, "purchase_ads") ==0) ){
+                Utills.INSTANCE.Loading_Dialog(this);
+            }
+           // Utills.INSTANCE.Loading_Dialog(this);
 
             new Handler(Looper.myLooper()).postDelayed(() -> {
                 String placementId = "Interstitial_Android";
@@ -4659,7 +4706,7 @@ public class Odd_man_out extends AppCompatActivity implements Download_completed
                 fb_reward = 0;
                 reward_status = 0;
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
-                Toast.makeText(Odd_man_out.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(Odd_man_out.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
             }
         });
     }

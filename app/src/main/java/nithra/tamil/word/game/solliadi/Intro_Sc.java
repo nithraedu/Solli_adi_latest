@@ -1,9 +1,12 @@
 package nithra.tamil.word.game.solliadi;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.view.View;
+import android.view.WindowInsets;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -23,6 +26,24 @@ public class Intro_Sc extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro__sc);
+
+        View decoreView = getWindow().getDecorView();
+        decoreView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @NonNull
+            @Override
+            public WindowInsets onApplyWindowInsets(@NonNull View v, @NonNull WindowInsets
+                    insets) {
+                int left = insets.getSystemWindowInsetLeft();
+                int top = insets.getSystemWindowInsetTop();
+                int right = insets.getSystemWindowInsetRight();
+                int bottom = insets.getSystemWindowInsetBottom();
+                v.setPadding(left,top,right,bottom);
+                v.setBackgroundColor(Color.GRAY); // Android built-in gray
+                return insets.consumeSystemWindowInsets();
+
+            }
+        });
+
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 

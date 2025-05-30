@@ -35,6 +35,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -191,6 +192,23 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_error_correction);
+
+        View decoreView = getWindow().getDecorView();
+        decoreView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @android.support.annotation.NonNull
+            @Override
+            public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @android.support.annotation.NonNull WindowInsets
+                    insets) {
+                int left = insets.getSystemWindowInsetLeft();
+                int top = insets.getSystemWindowInsetTop();
+                int right = insets.getSystemWindowInsetRight();
+                int bottom = insets.getSystemWindowInsetBottom();
+                v.setPadding(left,top,right,bottom);
+                v.setBackgroundColor(Color.GRAY); // Android built-in gray
+                return insets.consumeSystemWindowInsets();
+
+            }
+        });
 
         // Ensure that timerHandler is initialized in onResume as well
         if (timerHandler == null) {
@@ -394,6 +412,23 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
 
         openDialog_s = new Dialog(WordError_correction.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
+
+// Apply insets and background color to dialog's decor view
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            View decorView = openDialog_s.getWindow().getDecorView();
+            decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @android.support.annotation.NonNull WindowInsets insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left, top, right, bottom);
+                    v.setBackgroundColor(Color.GRAY); // Set gray background for dialog
+                    return insets.consumeSystemWindowInsets();
+                }
+            });}
         adsicon = openDialog_s.findViewById(R.id.adsicon);
 
 
@@ -1117,7 +1152,15 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
-                    showExtendTimeDialog();
+                //    showExtendTimeDialog();
+                    // Safely show dialog
+                    runOnUiThread(() -> {
+                        if (!isFinishing()) {
+                            showExtendTimeDialog();  // ✅ Now safe to show
+                        } else {
+                            Log.e(TAG, "Activity is finishing. Not showing dialog.");
+                        }
+                    });
                 } else {
                     // Recheck if timerHandler is still valid
                     if (timerHandler != null) {
@@ -1462,7 +1505,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                     else {
                         //reward(WordError_correction.this);
                         rewarded_adnew();
-                        Toast.makeText(WordError_correction.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(WordError_correction.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                     }
                 }, 2000);
             } else
@@ -4192,7 +4235,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                     else {
                         //
                         rewarded_adnew();
-                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                     }
                 }, 2000);
             } else
@@ -4215,7 +4258,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                     else {
 
                         rewarded_adnew();
-                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                     //   Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                     }
                 }, 2000);
             } else
@@ -4633,7 +4676,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                 fb_reward = 0;
                 reward_status = 0;
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
-                Toast.makeText(WordError_correction.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(WordError_correction.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -4730,7 +4773,10 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
         if (!sps.getString(this, "showCountOther").equals("0")) {
             if (currentStageCloseRS == showCountOther) {
                 sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
-                Utills.INSTANCE.Loading_Dialog(this);
+                if ((Utils.isNetworkAvailable(context)) && (sps.getInt(WordError_correction.this, "purchase_ads") ==0) ){
+                    Utills.INSTANCE.Loading_Dialog(this);
+                }
+               // Utills.INSTANCE.Loading_Dialog(this);
                 Handler handler = new Handler(Looper.myLooper());
                 Runnable my_runnable = () -> {
                     String placementId = "Interstitial_Android";
@@ -4882,7 +4928,7 @@ public class WordError_correction extends AppCompatActivity implements GoogleApi
                     new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
 
-                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
 
                     }, 2000);
                 }

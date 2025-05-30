@@ -26,12 +26,14 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -46,7 +48,6 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -140,6 +141,23 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_missing__words);
+
+        View decoreView = getWindow().getDecorView();
+        decoreView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @android.support.annotation.NonNull
+            @Override
+            public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets
+                    insets) {
+                int left = insets.getSystemWindowInsetLeft();
+                int top = insets.getSystemWindowInsetTop();
+                int right = insets.getSystemWindowInsetRight();
+                int bottom = insets.getSystemWindowInsetBottom();
+                v.setPadding(left,top,right,bottom);
+                v.setBackgroundColor(Color.GRAY); // Android built-in gray
+                return insets.consumeSystemWindowInsets();
+
+            }
+        });
 
         // Ensure that timerHandler is initialized in onResume as well
         if (timerHandler == null) {
@@ -284,6 +302,23 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
 
         openDialog_s = new Dialog(Missing_Words.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
+
+// Apply insets and background color to dialog's decor view
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            View decorView = openDialog_s.getWindow().getDecorView();
+            decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left, top, right, bottom);
+                    v.setBackgroundColor(Color.GRAY); // Set gray background for dialog
+                    return insets.consumeSystemWindowInsets();
+                }
+            });}
         adsicon = openDialog_s.findViewById(R.id.adsicon);
         ads_layout = openDialog_s.findViewById(R.id.fl_adplaceholder);
 
@@ -556,7 +591,15 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
-                    showExtendTimeDialog();  // Show dialog when time is up
+                   // showExtendTimeDialog();  // Show dialog when time is up
+                    // Safely show dialog
+                    runOnUiThread(() -> {
+                        if (!isFinishing()) {
+                            showExtendTimeDialog();  // ✅ Now safe to show
+                        } else {
+                            Log.e(TAG, "Activity is finishing. Not showing dialog.");
+                        }
+                    });
                 } else {
                     if (timerHandler != null) {
                         timerHandler.postDelayed(this, 500);  // Repeat countdown
@@ -1145,7 +1188,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                         } else {
                             //reward(Missing_Words.this);
                             rewarded_adnew();
-                            Toast.makeText(Missing_Words.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        //    Toast.makeText(Missing_Words.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
                     }, 2000);
                 }
@@ -1174,7 +1217,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                         } else {
                             //reward(Missing_Words.this);
                             rewarded_adnew();
-                            Toast.makeText(Missing_Words.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                        //    Toast.makeText(Missing_Words.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
                     }, 2000);
                 }
@@ -1947,6 +1990,24 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
         final Dialog openDialog_earncoin = new Dialog(Missing_Words.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_earncoin.setContentView(R.layout.earncoin);
 
+
+// Apply insets and background color to dialog's decor view
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            View decorView = openDialog_s.getWindow().getDecorView();
+            decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left, top, right, bottom);
+                    v.setBackgroundColor(Color.GRAY); // Set gray background for dialog
+                    return insets.consumeSystemWindowInsets();
+                }
+            });}
+
         // Pause the timer when bottom sheet is shown
         if (isTimerRunning) {
             ttstop = focus.getBase() - SystemClock.elapsedRealtime();
@@ -2009,7 +2070,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                     new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
 
-                        Toast.makeText(Missing_Words.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                     //   Toast.makeText(Missing_Words.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
 
                     }, 2000);
                 }
@@ -2981,7 +3042,7 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
                 fb_reward = 0;
                 reward_status = 0;
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
-                Toast.makeText(Missing_Words.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+            //    Toast.makeText(Missing_Words.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -3182,7 +3243,10 @@ public class Missing_Words extends AppCompatActivity implements View.OnClickList
 
         if (currentStageCloseVV == showCountOther) {
             sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
+            if ((Utils.isNetworkAvailable(this)) && (sps.getInt(Missing_Words.this, "purchase_ads") ==0) ){
+                Utills.INSTANCE.Loading_Dialog(this);
+            }
+         //   Utills.INSTANCE.Loading_Dialog(this);
 
             new Handler(Looper.myLooper()).postDelayed(() -> {
                 String placementId = "Interstitial_Android";

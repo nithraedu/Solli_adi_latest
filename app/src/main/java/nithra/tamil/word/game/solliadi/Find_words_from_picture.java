@@ -33,12 +33,14 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -54,7 +56,6 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
@@ -228,6 +229,24 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_words_from_picture);
+
+        View decoreView = getWindow().getDecorView();
+        decoreView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @android.support.annotation.NonNull
+            @Override
+            public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets
+                    insets) {
+                int left = insets.getSystemWindowInsetLeft();
+                int top = insets.getSystemWindowInsetTop();
+                int right = insets.getSystemWindowInsetRight();
+                int bottom = insets.getSystemWindowInsetBottom();
+                v.setPadding(left,top,right,bottom);
+                v.setBackgroundColor(Color.GRAY); // Android built-in gray
+                return insets.consumeSystemWindowInsets();
+
+            }
+        });
+
         UnityAds.initialize(this, UNITY_GAME_ID, TEST_MODE, new IUnityAdsInitializationListener() {
             @Override
             public void onInitializationComplete() {
@@ -314,6 +333,23 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         soundId4 = spz4.load(Find_words_from_picture.this, R.raw.coins, 1);///
         openDialog_s = new Dialog(Find_words_from_picture.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen);
+
+// Apply insets and background color to dialog's decor view
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            View decorView = openDialog_s.getWindow().getDecorView();
+            decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left, top, right, bottom);
+                    v.setBackgroundColor(Color.GRAY); // Set gray background for dialog
+                    return insets.consumeSystemWindowInsets();
+                }
+            });}
         ads_layout_bottom = openDialog_s.findViewById(R.id.fl_adplaceholder);
 
         //loadRewardedVideoAd();
@@ -638,7 +674,15 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 if (remainingMillis <= 0) {
                     focus.setText("00:00");
                     isTimeExpired = true;
-                    showExtendTimeDialog();
+                  //  showExtendTimeDialog();
+                    // Safely show dialog
+                    runOnUiThread(() -> {
+                        if (!isFinishing()) {
+                            showExtendTimeDialog();  // ✅ Now safe to show
+                        } else {
+                            Log.e(TAG, "Activity is finishing. Not showing dialog.");
+                        }
+                    });
                 } else {
                     int seconds = (int) (remainingMillis / 1000) % 60;
                     int minutes = (int) ((remainingMillis / (1000 * 60)) % 60);
@@ -800,7 +844,9 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
 
         if (currentStageCloseVV == showCountOther) {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
+            if ((Utils.isNetworkAvailable(this)) && (sps.getInt(Find_words_from_picture.this, "purchase_ads") ==0) ){
+                Utills.INSTANCE.Loading_Dialog(this);
+            }
 
             new Handler(Looper.myLooper()).postDelayed(() -> {
                 String placementId = "Interstitial_Android";
@@ -1894,6 +1940,22 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
         openDialog_earncoin.setContentView(R.layout.earncoin);
 
 
+// Apply insets and background color to dialog's decor view
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            View decorView = openDialog_s.getWindow().getDecorView();
+            decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left, top, right, bottom);
+                    v.setBackgroundColor(Color.GRAY); // Set gray background for dialog
+                    return insets.consumeSystemWindowInsets();
+                }
+            });}
         RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
         RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
         RelativeLayout gplus = openDialog_earncoin.findViewById(R.id.earngplus);
@@ -1957,7 +2019,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                     new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
 
-                        Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
 
                     }, 2000);
                 }
@@ -2155,7 +2217,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                         } else {
                             //reward(Find_words_from_picture.this);
                             rewarded_adnew();
-                            Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
                     }, 2000);
                 }
@@ -2184,7 +2246,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                         } else {
                             //reward(Find_words_from_picture.this);
                             rewarded_adnew();
-                            Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
                     }, 2000);
                 }
@@ -2604,6 +2666,23 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
     public void pic_show(int a) {
         openDialogk = new Dialog(Find_words_from_picture.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialogk.setContentView(R.layout.show_pic);
+
+// Apply insets and background color to dialog's decor view
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            View decorView = openDialog_s.getWindow().getDecorView();
+            decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left, top, right, bottom);
+                    v.setBackgroundColor(Color.GRAY); // Set gray background for dialog
+                    return insets.consumeSystemWindowInsets();
+                }
+            });}
         TouchImageView pic_show = openDialogk.findViewById(R.id.pic_show);
         Button cancel = openDialogk.findViewById(R.id.p_cancel);
 
@@ -3742,7 +3821,7 @@ public class Find_words_from_picture extends AppCompatActivity implements Downlo
                 fb_reward = 0;
                 reward_status = 0;
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
-                Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(Find_words_from_picture.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
             }
         });
     }

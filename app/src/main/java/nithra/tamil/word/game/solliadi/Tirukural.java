@@ -30,6 +30,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -37,6 +38,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -53,7 +55,6 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -170,6 +171,23 @@ public class Tirukural extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tirukural);
+
+        View decoreView = getWindow().getDecorView();
+        decoreView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @android.support.annotation.NonNull
+            @Override
+            public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets
+                    insets) {
+                int left = insets.getSystemWindowInsetLeft();
+                int top = insets.getSystemWindowInsetTop();
+                int right = insets.getSystemWindowInsetRight();
+                int bottom = insets.getSystemWindowInsetBottom();
+                v.setPadding(left,top,right,bottom);
+                v.setBackgroundColor(Color.GRAY); // Android built-in gray
+                return insets.consumeSystemWindowInsets();
+
+            }
+        });
 
         // Ensure that timerHandler is initialized in onResume as well
         if (timerHandler == null) {
@@ -382,6 +400,23 @@ public class Tirukural extends AppCompatActivity {
         }else adsLay1.setVisibility(View.GONE);
         openDialog_s = new Dialog(Tirukural.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
+
+// Apply insets and background color to dialog's decor view
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            View decorView = openDialog_s.getWindow().getDecorView();
+            decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left, top, right, bottom);
+                    v.setBackgroundColor(Color.GRAY); // Set gray background for dialog
+                    return insets.consumeSystemWindowInsets();
+                }
+            });}
         myFadeInAnimation = AnimationUtils.loadAnimation(Tirukural.this, R.anim.blink_animation);
 
 
@@ -1147,7 +1182,15 @@ public class Tirukural extends AppCompatActivity {
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
-                    showExtendTimeDialog();
+                  //  showExtendTimeDialog();
+                    // Safely show dialog
+                    runOnUiThread(() -> {
+                        if (!isFinishing()) {
+                            showExtendTimeDialog();  // ✅ Now safe to show
+                        } else {
+                            Log.e(TAG, "Activity is finishing. Not showing dialog.");
+                        }
+                    });
                 } else {
                     localHandler.postDelayed(this, 500);  // Use local handler
                 }
@@ -1674,7 +1717,7 @@ public class Tirukural extends AppCompatActivity {
                         } else {
                             //reward(Tirukural.this);
                             rewarded_adnew();
-                            Toast.makeText(Tirukural.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(Tirukural.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
                     }, 2000);
 
@@ -2547,7 +2590,9 @@ public class Tirukural extends AppCompatActivity {
 
         if (currentStageCloseVV == showCountOther) {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
+            if ((Utils.isNetworkAvailable(context)) && (sps.getInt(Tirukural.this, "purchase_ads") ==0) ){
+                Utills.INSTANCE.Loading_Dialog(this);
+            }
 
             new Handler(Looper.myLooper()).postDelayed(() -> {
                 String placementId = "Interstitial_Android";
@@ -2645,6 +2690,22 @@ public class Tirukural extends AppCompatActivity {
         openDialog_earncoin.setContentView(R.layout.earncoin);
 
 
+// Apply insets and background color to dialog's decor view
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            View decorView = openDialog_s.getWindow().getDecorView();
+            decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left, top, right, bottom);
+                    v.setBackgroundColor(Color.GRAY); // Set gray background for dialog
+                    return insets.consumeSystemWindowInsets();
+                }
+            });}
         RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
         RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
         RelativeLayout gplus = openDialog_earncoin.findViewById(R.id.earngplus);
@@ -2714,7 +2775,7 @@ public class Tirukural extends AppCompatActivity {
                     new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
 
-                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
 
                     }, 2000);
                 }
@@ -3377,7 +3438,7 @@ public class Tirukural extends AppCompatActivity {
                             } else {
 
                                 rewarded_adnew();
-                                Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                              //  Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                             }
                         }, 2000);
                     }
@@ -3411,7 +3472,7 @@ public class Tirukural extends AppCompatActivity {
                             // mShowVideoButton.setVisibility(View.VISIBLE);
                         } else {
                             rewarded_adnew();
-                            Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(context, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
                     }, 2000);
                 }
@@ -3915,7 +3976,7 @@ public class Tirukural extends AppCompatActivity {
                 fb_reward = 0;
                 reward_status = 0;
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
-                Toast.makeText(Tirukural.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(Tirukural.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
             }
         });
     }

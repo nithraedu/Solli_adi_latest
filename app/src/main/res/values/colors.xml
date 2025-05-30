@@ -7,4 +7,5 @@
 
     <color name="holo_blue_dark">#ff0099cc</color>
     <color name="background_floating_material_dark">#565</color>
+    <color name="status_bar_color">#424242</color>
 </resources>

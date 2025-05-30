@@ -26,12 +26,14 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -46,7 +48,6 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -155,6 +156,24 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz__game);
+
+        View decoreView = getWindow().getDecorView();
+        decoreView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @android.support.annotation.NonNull
+            @Override
+            public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets
+                    insets) {
+                int left = insets.getSystemWindowInsetLeft();
+                int top = insets.getSystemWindowInsetTop();
+                int right = insets.getSystemWindowInsetRight();
+                int bottom = insets.getSystemWindowInsetBottom();
+                v.setPadding(left,top,right,bottom);
+                v.setBackgroundColor(Color.GRAY); // Android built-in gray
+                return insets.consumeSystemWindowInsets();
+
+            }
+        });
+
         // Ensure that timerHandler is initialized in onResume as well
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
@@ -206,6 +225,23 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         }
         openDialog_s = new Dialog(Quiz_Game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
+
+// Apply insets and background color to dialog's decor view
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            View decorView = openDialog_s.getWindow().getDecorView();
+            decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left, top, right, bottom);
+                    v.setBackgroundColor(Color.GRAY); // Set gray background for dialog
+                    return insets.consumeSystemWindowInsets();
+                }
+            });}
         adsicon = openDialog_s.findViewById(R.id.adsicon);
         ads_layout = openDialog_s.findViewById(R.id.fl_adplaceholder);
         ads_lay = findViewById(R.id.ads_lay);
@@ -365,7 +401,15 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                     focus.stop();
                     isTimerRunning = false;
                     isTimeExpired = true; // mark time as expired
-                    showExtendTimeDialog();
+                  //  showExtendTimeDialog();
+                    // Safely show dialog
+                    runOnUiThread(() -> {
+                        if (!isFinishing()) {
+                            showExtendTimeDialog();  // ✅ Now safe to show
+                        } else {
+                            Log.e(TAG, "Activity is finishing. Not showing dialog.");
+                        }
+                    });
                 } else {
                     isTimeExpired = false;
                     timerHandler.postDelayed(this, 500);
@@ -1082,7 +1126,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                         } else {
                             //reward(Quiz_Game.this);
                             rewarded_adnew();
-                            Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                      //      Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
                     }, 2000);
                 }
@@ -1111,7 +1155,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                         } else {
                             //reward(Quiz_Game.this);
                             rewarded_adnew();
-                            Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
                     }, 2000);
                 }
@@ -1261,7 +1305,10 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
 
         if (currentStageCloseVV == showCountOther) {
             sps.putInt(getApplicationContext(), "Game1_Stage_Close_VV", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
+            if ((Utils.isNetworkAvailable(this)) && (sps.getInt(Quiz_Game.this, "purchase_ads") ==0) ){
+                Utills.INSTANCE.Loading_Dialog(this);
+            }
+           // Utills.INSTANCE.Loading_Dialog(this);
 
             new Handler(Looper.myLooper()).postDelayed(() -> {
                 String placementId = "Interstitial_Android";
@@ -1611,6 +1658,23 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
         openDialog_earncoin.setContentView(R.layout.earncoin);
 
 
+// Apply insets and background color to dialog's decor view
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            View decorView = openDialog_s.getWindow().getDecorView();
+            decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left, top, right, bottom);
+                    v.setBackgroundColor(Color.GRAY); // Set gray background for dialog
+                    return insets.consumeSystemWindowInsets();
+                }
+            });}
+
         RelativeLayout wp = openDialog_earncoin.findViewById(R.id.earnwa);
         RelativeLayout fb = openDialog_earncoin.findViewById(R.id.earnfb);
         RelativeLayout gplus = openDialog_earncoin.findViewById(R.id.earngplus);
@@ -1674,7 +1738,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                     new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
 
-                        Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
 
                     }, 2000);
                 }
@@ -2703,7 +2767,7 @@ public class Quiz_Game extends AppCompatActivity implements View.OnClickListener
                 fb_reward = 0;
                 reward_status = 0;
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
-                Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+             //   Toast.makeText(Quiz_Game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
             }
         });
     }

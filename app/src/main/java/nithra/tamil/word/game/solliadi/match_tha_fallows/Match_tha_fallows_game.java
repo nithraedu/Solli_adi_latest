@@ -31,6 +31,7 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
@@ -39,6 +40,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -60,7 +62,6 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -241,7 +242,7 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
         qus_txt3.setEnabled(true);
         qus_txt4.setEnabled(true);
         qus_txt5.setEnabled(true);
-
+    
         qus_num_txt1.setEnabled(true);
         qus_num_txt2.setEnabled(true);
         qus_num_txt3.setEnabled(true);
@@ -530,6 +531,23 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
 
         openDialog_s = new Dialog(Match_tha_fallows_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen);
+
+// Apply insets and background color to dialog's decor view
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            View decorView = openDialog_s.getWindow().getDecorView();
+            decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left, top, right, bottom);
+                    v.setBackgroundColor(Color.GRAY); // Set gray background for dialog
+                    return insets.consumeSystemWindowInsets();
+                }
+            });}
         ads_layout_bottom = openDialog_s.findViewById(R.id.fl_adplaceholder);
 
         //loadRewardedVideoAd();
@@ -762,7 +780,15 @@ public class Match_tha_fallows_game extends AppCompatActivity implements View.On
                 if (remainingMillis <= 0) {
                     focus.stop();
                     isTimerRunning = false;
-                    showExtendTimeDialog();
+                    //showExtendTimeDialog();
+                    // Safely show dialog
+                    runOnUiThread(() -> {
+                        if (!isFinishing()) {
+                            showExtendTimeDialog();  // ✅ Now safe to show
+                        } else {
+                            Log.e(TAG, "Activity is finishing. Not showing dialog.");
+                        }
+                    });
                 } else {
                     if (timerHandler != null) {
                         timerHandler.postDelayed(this, 500);
@@ -2883,7 +2909,10 @@ private void rewarded_adnew() {
         if (currentStageCloseVV == showCountOther) {
 
                 sps.putInt(getApplicationContext(), "Game4_Stage_Close_RS", 0);
+            if ((Utils.isNetworkAvailable(this)) && (sps.getInt(Match_tha_fallows_game.this, "purchase_ads") ==0) ){
                 Utills.INSTANCE.Loading_Dialog(this);
+            }
+             //   Utills.INSTANCE.Loading_Dialog(this);
 
             new Handler(Looper.myLooper()).postDelayed(() -> {
                 String placementId = "Interstitial_Android";

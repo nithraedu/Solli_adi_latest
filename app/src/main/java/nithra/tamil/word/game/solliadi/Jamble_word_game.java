@@ -25,6 +25,7 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.Gravity;
@@ -32,6 +33,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -46,7 +48,6 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -156,6 +157,23 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jamble_word_game);
+
+        View decoreView = getWindow().getDecorView();
+        decoreView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @android.support.annotation.NonNull
+            @Override
+            public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets
+                    insets) {
+                int left = insets.getSystemWindowInsetLeft();
+                int top = insets.getSystemWindowInsetTop();
+                int right = insets.getSystemWindowInsetRight();
+                int bottom = insets.getSystemWindowInsetBottom();
+                v.setPadding(left,top,right,bottom);
+                v.setBackgroundColor(Color.GRAY); // Android built-in gray
+                return insets.consumeSystemWindowInsets();
+
+            }
+        });
         // Ensure that timerHandler is initialized in onResume as well
         if (timerHandler == null) {
             timerHandler = new Handler(Looper.getMainLooper());
@@ -180,6 +198,23 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         openDialog_s = new Dialog(Jamble_word_game.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         openDialog_s.setContentView(R.layout.score_screen2);
 
+
+// Apply insets and background color to dialog's decor view
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            View decorView = openDialog_s.getWindow().getDecorView();
+            decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @android.support.annotation.NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@android.support.annotation.NonNull View v, @NonNull WindowInsets insets) {
+                    int left = insets.getSystemWindowInsetLeft();
+                    int top = insets.getSystemWindowInsetTop();
+                    int right = insets.getSystemWindowInsetRight();
+                    int bottom = insets.getSystemWindowInsetBottom();
+                    v.setPadding(left, top, right, bottom);
+                    v.setBackgroundColor(Color.GRAY); // Set gray background for dialog
+                    return insets.consumeSystemWindowInsets();
+                }
+            });}
         newhelper = new Newgame_DataBaseHelper(Jamble_word_game.this);
         newhelper2 = new Newgame_DataBaseHelper2(Jamble_word_game.this);
         newhelper3 = new Newgame_DataBaseHelper3(Jamble_word_game.this);
@@ -548,7 +583,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
     }
 
 
-    private void startChronometerCountdown(long durationInMillis) {
+/*    private void startChronometerCountdown(long durationInMillis) {
         // ✅ Remove any existing timer callbacks
         if (timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
@@ -577,7 +612,56 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
         // ✅ Start the runnable
         timerHandler.postDelayed(timerRunnable, 500);
         isTimerRunning = true;
+    }*/
+private void startChronometerCountdown(long durationInMillis) {
+    // ✅ Ensure timerHandler is initialized
+    if (timerHandler == null) {
+        timerHandler = new Handler(Looper.getMainLooper());
     }
+
+    // ✅ Remove any existing timer callbacks
+    if (timerRunnable != null) {
+        timerHandler.removeCallbacks(timerRunnable);
+    }
+
+    // ✅ Set up new Runnable
+    timerRunnable = new Runnable() {
+        @Override
+        public void run() {
+            long remainingMillis = focus.getBase() - SystemClock.elapsedRealtime();
+            if (remainingMillis <= 0) {
+                focus.stop();
+                isTimerRunning = false;
+            //    showExtendTimeDialog();  // Time's up
+                // Safely show dialog
+                runOnUiThread(() -> {
+                    if (!isFinishing()) {
+                        showExtendTimeDialog();  // ✅ Now safe to show
+                    } else {
+                        Log.e(TAG, "Activity is finishing. Not showing dialog.");
+                    }
+                });
+            } else {
+                if (timerHandler != null) {
+                    timerHandler.postDelayed(this, 500);
+                }
+            }
+        }
+    };
+
+    // ✅ Setup and start the chronometer
+    focus.setBase(SystemClock.elapsedRealtime() + durationInMillis);
+    focus.setCountDown(true);
+    focus.start();
+
+    // ✅ Start the runnable safely
+    if (timerHandler != null) {
+        timerHandler.postDelayed(timerRunnable, 500);
+    }
+
+    isTimerRunning = true;
+}
+
 
 
 
@@ -1437,7 +1521,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                         } else {
                             //reward(Jamble_word_game.this);
                             rewarded_adnew();
-                            Toast.makeText(Jamble_word_game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                     //       Toast.makeText(Jamble_word_game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                         }
                     }, 2000);
                 }
@@ -1468,7 +1552,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                             } else {
                                 //reward(Jamble_word_game.this);
                                 rewarded_adnew();
-                                Toast.makeText(Jamble_word_game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                             //   Toast.makeText(Jamble_word_game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
                             }
                         }, 2000);
                     }
@@ -1811,7 +1895,9 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
 
         if (currentStageCloseVV == showCountOther) {
             sps.putInt(getApplicationContext(), "Game3_Stage_Close_ST", 0);
-            Utills.INSTANCE.Loading_Dialog(this);
+            if ((Utils.isNetworkAvailable(this)) && (sps.getInt(Jamble_word_game.this, "purchase_ads") ==0) ){
+                Utills.INSTANCE.Loading_Dialog(this);
+            }
 
             new Handler(Looper.myLooper()).postDelayed(() -> {
                 String placementId = "Interstitial_Android";
@@ -2903,7 +2989,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                     new Handler(Looper.myLooper()).postDelayed(() -> {
                         reward_progressBar.dismiss();
 
-                        Toast.makeText(Jamble_word_game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+                    //    Toast.makeText(Jamble_word_game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
 
                     }, 2000);
 
@@ -3371,7 +3457,7 @@ public class Jamble_word_game extends AppCompatActivity implements View.OnTouchL
                 fb_reward = 0;
                 reward_status = 0;
                 Utills.INSTANCE.Loading_Dialog_dismiss(); // Dismiss loading on failure
-                Toast.makeText(Jamble_word_game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
+             //   Toast.makeText(Jamble_word_game.this, "மீண்டும் முயற்சிக்கவும்...", Toast.LENGTH_SHORT).show();
             }
         });
     }
