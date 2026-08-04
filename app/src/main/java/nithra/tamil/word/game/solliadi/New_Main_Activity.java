@@ -110,8 +110,6 @@ import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
 import com.google.firebase.inappmessaging.FirebaseInAppMessaging;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.gson.Gson;
 import com.unity3d.ads.IUnityAdsLoadListener;
 import com.unity3d.ads.IUnityAdsShowListener;
@@ -369,7 +367,6 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
     private byte[] mSaveGameData;
 
 
-    private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private BillingManager mBillingManager;
     DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
@@ -666,7 +663,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         if (clr_chace(New_Main_Activity.this)) {
             System.out.println("==============================remote=====");
             date_put(New_Main_Activity.this, "clr_chace", 7);
-            remoteConfig();
+           // remoteConfig();
         }
 
 
@@ -1356,7 +1353,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         prices = findViewById(R.id.price);
         prize_lay = findViewById(R.id.prize_lay);
 
-        prize_enable();
+      //  prize_enable();
 
         sp.putString(New_Main_Activity.this, "sd_prize_st", "");
         // prices.setVisibility(View.GONE);
@@ -3791,7 +3788,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
         }).setNegativeButton("இல்லை", (dialog, which) -> dialog.dismiss()).setIcon(android.R.drawable.ic_dialog_alert).show();
     }
 
-    public void prize_enable() {
+   /* public void prize_enable() {
         mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
 
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder().setMinimumFetchIntervalInSeconds(3600).build();
@@ -3823,9 +3820,9 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         });
 
-    }
+    }*/
 
-    private void remoteConfig() {
+   /* private void remoteConfig() {
         System.out.println("==============================remote");
         sps.putInt(New_Main_Activity.this, "remote_config_first", 1);
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -3862,7 +3859,7 @@ public class New_Main_Activity extends AppCompatActivity implements RippleView.O
 
         });
 
-    }
+    }*/
 
     /**
      * Get the data from the EditText.

@@ -43,8 +43,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+/*import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings*/;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -109,7 +109,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
     Newgame_DataBaseHelper5 newhelper5;
     LinearLayout adds;
     ImageView colour_change;
-    RelativeLayout back_main, type1, type2, type3, type4, type5, type7, prize_lay, et_2;
+    RelativeLayout back_main, type1, type2, type3, type4, type5, type7,  et_2;
     TextView heading_txt1, heading_txt2, heading_txt3, heading_txt4;
     TextView arrow_click, arrow_click_t3, ex_name, nitification;
     ImageView refresh, how_to_play;
@@ -133,7 +133,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
 
         }
     };
-    private FirebaseRemoteConfig mFirebaseRemoteConfig;
+    //private FirebaseRemoteConfig mFirebaseRemoteConfig;
 
     public static boolean determineConnectivity(Context context) {
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -237,18 +237,18 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
         type4 = (RelativeLayout) findViewById(R.id.type4);
         type5 = (RelativeLayout) findViewById(R.id.type5);
         type7 = (RelativeLayout) findViewById(R.id.type7);
-        prize_lay = (RelativeLayout) findViewById(R.id.prize_lay);
-        prize_enable();
+     //   prize_lay = (RelativeLayout) findViewById(R.id.prize_lay);
+       // prize_enable();
         sp.putString(New_Main_Gamelist.this, "sd_prize_st", "");
 
-        if (sp.getInt(New_Main_Gamelist.this, "remoteConfig_prize") == 1) {
+       /* if (sp.getInt(New_Main_Gamelist.this, "remoteConfig_prize") == 1) {
             //prices.setVisibility(View.VISIBLE);
             prize_lay.setVisibility(View.VISIBLE);
         } else {
             // prices.setVisibility(View.GONE);
             prize_lay.setVisibility(View.GONE);
         }
-
+*/
 
         et_2 = (RelativeLayout) findViewById(R.id.et_2);
 
@@ -1259,7 +1259,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
         }
     }
 
-    public void prize_enable() {
+   /* public void prize_enable() {
         mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder().setMinimumFetchIntervalInSeconds(3600).build();
         mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings);
@@ -1289,7 +1289,7 @@ public class New_Main_Gamelist extends AppCompatActivity implements View.OnClick
 
         });
 
-    }
+    }*/
 
     class DownloadFileAsync extends AsyncTask<String, String, String> {
 

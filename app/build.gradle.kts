@@ -7,15 +7,15 @@ plugins {
 
 android {
     namespace = "nithra.tamil.word.game.solliadi"
-    compileSdk = 35
+    compileSdk = 36
     useLibrary("org.apache.http.legacy")
 
     defaultConfig {
         applicationId = "nithra.tamil.word.game.solliadi"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 74 //73
-        versionName = "6.22" //6.21
+        targetSdk = 36
+        versionCode = 75 //74
+        versionName = "6.23" //6.22
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -58,7 +58,7 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.androidx.multidex)
     implementation(libs.picasso)
-    implementation(libs.firebase.config)
+    //implementation(libs.firebase.config)
     androidTestImplementation(libs.androidx.runner)
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.core)
